@@ -1,0 +1,114 @@
+{
+  "name": "react-grid",
+  "version": "0.0.1",
+  "main": "dist/index.js",
+  "description": "React excel like fast grid plugin",
+  "bugs": "https://github.com/underfisk/wonder-grid/issues",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/underfisk/wonder-grid.git"
+  },
+  "engines": {
+    "node": ">= 8"
+  },
+  "scripts": {
+   "lint": "eslint src",
+    "lint-fix": "eslint src --fix",
+    "storybook": "cross-env NODE_ENV=development start-storybook -p 9001 -c storybook -s ./storybook/public",
+    "prettier": "pretty-quick --staged",
+  },
+  "peerDependencies": {
+    "react": ">= 16.13.1",
+    "react-dom": ">= 16.13.1"
+  },
+  "dependencies": {
+    "@material-ui/core": "^4.11.0",
+    "@material-ui/icons": "^4.9.1",
+    "clsx": "^1.1.1",
+    "json2csv": "^5.0.1",
+    "react-virtualized": "^9.21.2"
+  },
+  "devDependencies": {
+    "@storybook/addon-options": "~5.1.11",
+    "@storybook/addon-storysource": "~5.1.11",
+    "@storybook/addons": "~5.1.11",
+    "@storybook/react": "~5.1.11",
+    "@testing-library/dom": "^6.1.0",
+    "@testing-library/jest-dom": "^4.2.4",
+    "@testing-library/react": "^9.1.3",
+    "@types/json2csv": "^5.0.1",
+    "@types/node": "^12.11.7",
+    "@types/react": "latest",
+    "@types/react-dom": "latest",
+    "@types/storybook__react": "latest",
+    "cross-env": "^5.1.6",
+    "del": "^5.1.0",
+    "eslint": "^6.2.2",
+    "eslint-config-airbnb": "^18.0.1",
+    "eslint-config-prettier": "^6.1.0",
+    "eslint-plugin-babel": "^5.1.0",
+    "eslint-plugin-import": "^2.2.0",
+    "eslint-plugin-jsx-a11y": "^6.2.1",
+    "eslint-plugin-prettier": "^3.0.0",
+    "eslint-plugin-react": "^7.9.1",
+    "eslint-plugin-react-hooks": "^2.2.0",
+    "faker": "^5.1.0",
+    "fs-extra": "^8.1.0",
+    "jest": "^24.8.0",
+    "jest-cli": "^24.8.0",
+    "jest-styled-components": "^6.2.0",
+    "jsdom": "^15.1.1",
+    "plop": "^2.5.3",
+    "pre-commit": "^1.2.2",
+    "prettier": "^1.16.4",
+    "pretty-quick": "^1.8.0",
+    "react": "^16.13.1",
+    "react-dev-utils": "^10.2.1",
+    "react-dom": "^16.13.1",
+    "react-test-renderer": "^16.13.1",
+    "regenerator-runtime": "^0.13.1",
+    "require-reload": "^0.2.2",
+    "simple-git": "^1.95.0",
+    "storybook-chromatic": "^2.2.2",
+    "styled-components": "^4.1.1",
+    "tarball-extract": "^0.0.6",
+    "typescript": "^3.6.4",
+    "webpack": "^4.39.3",
+    "webpack-cli": "^3.2.3"
+  },
+  "jest": {
+    "collectCoverage": true,
+    "testURL": "http://localhost/",
+    "coverageReporters": [
+      "lcov"
+    ],
+    "collectCoverageFrom": [
+      "src/js/components/**/*.{js}",
+      "src/js/contexts/**/*.{js}",
+      "src/js/themes/**/*.{js}",
+      "src/js/utils/**/*.{js}",
+      "!src/js/components/**/*.{stories.js}",
+      "!src/js/components/**/stories/*.js"
+    ],
+    "modulePathIgnorePatterns": [
+      "<rootDir>/dist/"
+    ],
+    "testPathIgnorePatterns": [
+      "<rootDir>[/\\\\](dist|node_modules)[/\\\\]"
+    ]
+  },
+  "pre-commit": [
+    "lint-fix",
+    "prettier",
+    "test"
+  ],
+  "keywords": [
+    "component",
+    "library",
+    "react",
+    "atomic design",
+    "ui",
+    "user interface"
+  ]
+}
