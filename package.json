@@ -1,13 +1,13 @@
 {
-  "name": "apollo-grid",
+  "name": "apollo-spreadsheet",
   "version": "0.0.1",
   "main": "dist/index.js",
   "description": "React excel like fast grid plugin",
-  "bugs": "https://github.com/underfisk/wonder-grid/issues",
+  "bugs": "https://github.com/underfisk/apollo-spreadsheet/issues",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/underfisk/wonder-grid.git"
+    "url": "https://github.com/underfisk/apollo-spreadsheet.git"
   },
   "engines": {
     "node": ">= 8"
