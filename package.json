@@ -1,5 +1,5 @@
 {
-  "name": "react-grid",
+  "name": "apollo-grid",
   "version": "0.0.1",
   "main": "dist/index.js",
   "description": "React excel like fast grid plugin",
@@ -16,7 +16,7 @@
    "lint": "eslint src",
     "lint-fix": "eslint src --fix",
     "storybook": "cross-env NODE_ENV=development start-storybook -p 9001 -c storybook -s ./storybook/public",
-    "prettier": "pretty-quick --staged",
+    "prettier": "pretty-quick --staged"
   },
   "peerDependencies": {
     "react": ">= 16.13.1",

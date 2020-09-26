@@ -9,29 +9,13 @@ import React, {
 import { Grid, CellMeasurerCache } from "react-virtualized";
 import CellMeasurer from "../core/CellMeasureWrapper";
 import useLazyRef from "../hooks/useLazyRef";
-import { Column, HeadersData } from "./types/header.type";
+import { Column } from "./types/header.type";
 import { insertDummyCells } from "../utils/helpers";
-import { GridTheme } from "../types/grid-theme";
-import { NavigationCoords } from "../navigation/types/navigation-coords.type";
 import clsx from "clsx";
-
-interface Props {
-  headers: HeadersData;
-  className: string;
-  minRowHeight: number;
-  columnWidth: number;
-  autoHeight: boolean;
-  width: number;
-  scrollLeft: number;
-  isScrolling: boolean;
-  onScroll: Function;
-  height: number;
-  theme?: GridTheme;
-  coords: NavigationCoords;
-}
+import {ColumnGridProps} from "./column-grid-props";
 
 const ColumnGrid = React.memo(
-  forwardRef((props: Props, componentRef) => {
+  forwardRef((props: ColumnGridProps, componentRef) => {
     const { current: cache } = useLazyRef(
       () =>
         new CellMeasurerCache({

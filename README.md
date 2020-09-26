@@ -1,2 +1,2 @@
-# wonder-grid
-react-wonder-grid
+# apollo-grid
+Excel like grid under construction 
