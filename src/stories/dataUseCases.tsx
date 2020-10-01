@@ -1,10 +1,10 @@
 import { getSimpleData } from "../utils/generateData";
-import { Tooltip, Checkbox } from "@material-ui/core";
+import {Tooltip, Checkbox, IconButton} from "@material-ui/core";
 import React from "react";
-import { HeadersData } from "../column/types/header.type";
+import { HeadersData } from "../column-grid/types/header.type";
 import { GridData } from "../types/row.interface";
 import PeopleIcon from "@material-ui/icons/People";
-import { CheckBox } from "@material-ui/icons";
+import DeleteIcon from '@material-ui/icons/Delete';
 
 export const getTopUseCase = () => {
   const headerData: HeadersData = [
@@ -13,6 +13,7 @@ export const getTopUseCase = () => {
         id: "deliverable",
         title: "Deliverable",
         accessor: "deliverableBody",
+        width: '15%'
       },
       {
         // children: "Work Package",
@@ -31,11 +32,13 @@ export const getTopUseCase = () => {
         title: "Work Package",
         tooltip: "You can preview the tooltip in here",
         accessor: "deliverableBody",
+        width: '15%'
       },
       {
         id: "activity",
         accessor: "activityBody",
         title: "Activity",
+        width: '15%'
       },
       {
         id: "order",
@@ -43,27 +46,31 @@ export const getTopUseCase = () => {
         title: "",
         disableNavigation: true,
         readOnly: true,
-        // width: 30
+        width: "2%"
       },
       {
         id: "task",
         accessor: "taskContent",
         title: "Task",
+        width: '16%'
       },
       {
         id: "dp",
         accessor: "dependencies",
         title: "DP",
+        width: "2%"
       },
       {
         id: "estimatedTime",
         title: "Est. Time",
         accessor: "estimatedTime",
+        width: "3%"
       },
       {
         id: "realTime",
         title: "Real Time",
         accessor: "realTime",
+        width: "3%"
       },
       {
         id: "allocated",
@@ -72,34 +79,47 @@ export const getTopUseCase = () => {
           return <PeopleIcon />;
         },
         accessor: "allocated",
+        width: "3%"
       },
       {
         id: "materials",
         title: "Mat Costs",
         accessor: "materials",
+        width: "3%"
       },
       {
         id: "startDate",
         title: "Start Date",
         accessor: "startDate",
+        width: "5%"
       },
       {
         id: "endDate",
         title: "End Date",
         accessor: "endDate",
+        width: "5%"
       },
       {
         id: "taskControl",
         title: "Task Control",
         accessor: "taskControl",
+        width: "8%"
       },
       {
         id: "delete",
         title: "",
-        // renderer: () => {
-        //   return <Checkbox value={false} />;
-        // },
+        renderer: () => {
+          return (
+            <IconButton>
+              <DeleteIcon />
+            </IconButton>
+          )
+        },
+        cellRenderer: () => {
+          return <Checkbox value={false} />
+        },
         accessor: "delete",
+        width: "2%"
       },
     ],
   ];

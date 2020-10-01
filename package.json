@@ -13,7 +13,7 @@
     "node": ">= 8"
   },
   "scripts": {
-   "lint": "eslint src",
+    "lint": "eslint src",
     "lint-fix": "eslint src --fix",
     "storybook": "cross-env NODE_ENV=development start-storybook -p 9001 -c storybook -s ./storybook/public",
     "prettier": "pretty-quick --staged"
@@ -25,6 +25,9 @@
   "dependencies": {
     "@material-ui/core": "^4.11.0",
     "@material-ui/icons": "^4.9.1",
+    "@types/react-virtualized": "^9.21.10",
+    "babel-loader": "^8.1.0",
+    "babel-preset-react-app": "^9.1.2",
     "clsx": "^1.1.1",
     "json2csv": "^5.0.1",
     "react-virtualized": "^9.21.2"

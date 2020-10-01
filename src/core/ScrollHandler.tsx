@@ -42,7 +42,7 @@ const useStyles = makeStyles(() => ({
 }));
 const ScrollHandler = forwardRef(
   (
-    { children, scrollContainer, width, totalColumnWidth }: any,
+    { children, scrollContainer, width, totalColumnWidth, stretchMode }: any,
     componentRef: any
   ) => {
     const scrollChildRef = useRef<any>(null);
@@ -52,8 +52,8 @@ const ScrollHandler = forwardRef(
     const [stickyScroller, setStickyScroller] = useState(true);
     const [scrollLeft, setScrollLeft] = useState(0);
     const [scrolling, setScrolling] = useState(false);
-
     const classes = useStyles();
+
     // exposing api for resetting
     useImperativeHandle(componentRef, () => ({
       recompute: () => {
@@ -109,22 +109,12 @@ const ScrollHandler = forwardRef(
     // call virtualized recompute when window scroller detects resize
     const onResize = useCallback(
       debounce(() => {
-        if (!headerRef.current || !gridRef.current) {
-          return;
-        }
-        headerRef.current.recomputeGridSize();
-        gridRef.current.recomputeGridSize();
+        headerRef.current?.recomputeGridSize();
+        gridRef.current?.recomputeGridSize();
       }, recomputeDebounceTimeout),
       []
     );
 
-    // const onMouseMove = () => {
-    //   console.warn("Updating the scroll visibility")
-    //   if (scrolling){
-    //     return
-    //   }
-    //   setScrolling(true)
-    // }
     return (
       <>
         <WindowScroller
@@ -147,6 +137,7 @@ const ScrollHandler = forwardRef(
                 headerRef,
                 gridRef,
               })}
+              { /** @todo Consider stretch mode to disable horizontal scrolling **/ }
               {totalColumnWidth > width ? (
                 <div
                   id="fake-scroller"
@@ -156,8 +147,7 @@ const ScrollHandler = forwardRef(
                     position: stickyScroller ? "sticky" : "relative",
                     bottom: stickyScroller ? "0px" : "unset",
                   }}
-                  onScroll={(e) => handleScroll(e.target)}
-                 // onMouseMove={onMouseMove}
+                  onScroll={handleScroll}
                   ref={fakeScrollerRef}
                 >
                   <div

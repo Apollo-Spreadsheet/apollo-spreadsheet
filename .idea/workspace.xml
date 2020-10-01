@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="BranchesTreeState">
+    <expand>
+      <path>
+        <item name="ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="LOCAL_ROOT" type="e8cecc67:BranchNodeDescriptor" />
+      </path>
+      <path>
+        <item name="ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="REMOTE_ROOT" type="e8cecc67:BranchNodeDescriptor" />
+      </path>
+      <path>
+        <item name="ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="REMOTE_ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="GROUP_NODE:origin" type="e8cecc67:BranchNodeDescriptor" />
+      </path>
+    </expand>
+    <select />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="0db106f2-354a-47db-8cbd-83b4c430a6ab" name="Default Changelist" comment="Renamed to apollo-spreadsheet">
+      <change afterPath="$PROJECT_DIR$/.idea/codeStyles/codeStyleConfig.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/wonder-grid.iml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/column-grid/types/fixed-column-width-record.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/column-grid/utils/create-fixed-width-mapping.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/column-grid/utils/parseColumnWidthsConfiguration.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/column-grid/utils/percentage-to-pixels.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/yarn.lock" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/column/ColumnGrid.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/column-grid/ColumnGrid.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/column/column-grid-props.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/column-grid/column-grid-props.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/column/stretch-mode.enum.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/types/stretch-mode.enum.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/column/types/header.type.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/column-grid/types/header.type.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/core/GridWrapper.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/core/GridWrapper.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/core/ScrollHandler.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/core/ScrollHandler.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/core/data-transform.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/core/data-transform.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/index.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/stories/Basic.stories.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/stories/Basic.stories.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/stories/dataUseCases.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/stories/dataUseCases.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/storybook/manager-head.html" beforeDir="false" afterPath="$PROJECT_DIR$/storybook/manager-head.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/storybook/preview-head.html" beforeDir="false" afterPath="$PROJECT_DIR$/storybook/preview-head.html" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="HTML File" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="PackageJsonUpdateNotifier">
+    <dismissed value="$PROJECT_DIR$/package.json" />
+  </component>
+  <component name="ProjectId" id="1i2yKdwqxTiELCWr7viqDGJDPYD" />
+  <component name="ProjectLevelVcsManager">
+    <ConfirmationsSetting value="2" id="Add" />
+  </component>
+  <component name="ProjectViewState">
+    <option name="autoscrollFromSource" value="true" />
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">
+    <property name="DefaultHtmlFileTemplate" value="HTML File" />
+    <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
+    <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="node.js.detected.package.eslint" value="true" />
+    <property name="node.js.path.for.package.eslint" value="project" />
+    <property name="node.js.selected.package.eslint" value="(autodetect)" />
+    <property name="nodejs_interpreter_path" value="node" />
+    <property name="nodejs_package_manager_path" value="yarn" />
+    <property name="settings.editor.selected.configurable" value="settings.nodejs" />
+    <property name="ts.external.directory.path" value="$PROJECT_DIR$/node_modules/typescript/lib" />
+    <property name="vue.rearranger.settings.migration" value="true" />
+  </component>
+  <component name="RecentsManager">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/src/types" />
+    </key>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="0db106f2-354a-47db-8cbd-83b4c430a6ab" name="Default Changelist" comment="" />
+      <created>1601119918365</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1601119918365</updated>
+      <workItem from="1601119919398" duration="287000" />
+      <workItem from="1601150422804" duration="602000" />
+      <workItem from="1601153683442" duration="815000" />
+      <workItem from="1601156213300" duration="5000" />
+      <workItem from="1601188795304" duration="2215000" />
+      <workItem from="1601254076306" duration="599000" />
+      <workItem from="1601280594796" duration="603000" />
+      <workItem from="1601370880632" duration="2994000" />
+      <workItem from="1601428669743" duration="607000" />
+      <workItem from="1601447503125" duration="1090000" />
+      <workItem from="1601452586214" duration="745000" />
+      <workItem from="1601458581676" duration="16916000" />
+      <workItem from="1601517767797" duration="1207000" />
+      <workItem from="1601534800610" duration="5857000" />
+      <workItem from="1601561975131" duration="599000" />
+      <workItem from="1601569375093" duration="5840000" />
+    </task>
+    <task id="LOCAL-00001" summary="Rename and new grid props">
+      <created>1601153792605</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1601153792605</updated>
+    </task>
+    <task id="LOCAL-00002" summary="Renamed to apollo-spreadsheet">
+      <created>1601156176887</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1601156176887</updated>
+    </task>
+    <option name="localTasksCounter" value="3" />
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+    <option name="oldMeFiltersMigrated" value="true" />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="Rename and new grid props" />
+    <MESSAGE value="Renamed to apollo-spreadsheet" />
+    <option name="LAST_COMMIT_MESSAGE" value="Renamed to apollo-spreadsheet" />
+  </component>
+  <component name="WindowStateProjectService">
+    <state x="449" y="189" width="1022" height="732" key="SettingsEditor" timestamp="1601119973690">
+      <screen x="0" y="28" width="1920" height="1052" />
+    </state>
+    <state x="449" y="189" width="1022" height="732" key="SettingsEditor/0.28.1920.1052@0.28.1920.1052" timestamp="1601119973690" />
+    <state x="555" y="290" width="800" height="530" key="Vcs.Push.Dialog.v2" timestamp="1601156177797">
+      <screen x="0" y="28" width="1920" height="1052" />
+    </state>
+    <state x="555" y="290" width="800" height="530" key="Vcs.Push.Dialog.v2/0.28.1920.1052@0.28.1920.1052" timestamp="1601156177797" />
+    <state x="741" y="469" width="438" height="172" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2" timestamp="1601153845903">
+      <screen x="0" y="28" width="1920" height="1052" />
+    </state>
+    <state x="741" y="469" width="438" height="172" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2/0.28.1920.1052@0.28.1920.1052" timestamp="1601153845903" />
+  </component>
+</project>

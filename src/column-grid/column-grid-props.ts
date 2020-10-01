@@ -1,16 +1,16 @@
-import {StretchMode} from "./stretch-mode.enum"
+import {StretchMode} from "../types/stretch-mode.enum"
 import {HeadersData} from "./types/header.type";
 import {GridTheme} from "../types/grid-theme";
 import {NavigationCoords} from "../navigation/types/navigation-coords.type";
 
 export interface ColumnGridProps {
-	/** @default StretchMode.None  */
-	stretchMode?: StretchMode
 	headers: HeadersData;
 	className: string;
 	minRowHeight: number;
-	columnWidth: number;
-	autoHeight: boolean;
+
+	defaultColumnWidth: number
+	getColumnWidth: ({index}: { index: number}) => number;
+
 	width: number;
 	scrollLeft: number;
 	isScrolling: boolean;
@@ -18,4 +18,6 @@ export interface ColumnGridProps {
 	height: number;
 	theme?: GridTheme;
 	coords: NavigationCoords;
+	/** @default StretchMode.None  */
+	stretchMode?: StretchMode
 }

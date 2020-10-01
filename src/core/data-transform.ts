@@ -1,4 +1,4 @@
-import {Column, HeadersData} from "../column/types/header.type";
+import {Column, HeadersData} from "../column-grid/types/header.type";
 import {GridCell, GridData, Row} from "../types/row.interface";
 
 //Test only
@@ -38,7 +38,7 @@ export const buildCellFromHeader = (row: TestRow, columns: Column[]) => {
 //that will be merged
 export const rowsToCells = (rows: TestRow[], headers: HeadersData) => {
 	const cells: GridData = []
-	const columns = headers[0]
+	const columns = Array.isArray(headers) ? headers[0] as Column[] : headers as Column[]
 
 	//Ensure we have columns or it is a cleanup
 	if (!columns || columns.length === 0){

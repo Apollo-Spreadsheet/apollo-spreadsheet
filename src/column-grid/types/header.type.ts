@@ -54,4 +54,4 @@ export interface Column<Key = string, Metadata = Object> {
   rowSpan?: number
   colSpan?: number
 }
-export type HeadersData = Array<Column[]>;
+export type HeadersData = Array<Column[]> | Column[];

@@ -1,26 +1,27 @@
-import React, { useRef, useCallback, useState, useEffect } from "react";
-import { storiesOf } from "@storybook/react";
+import React, {useCallback, useEffect, useRef, useState} from "react";
+import {storiesOf} from "@storybook/react";
 
-import { VirtualizedTable } from "../index";
-import { getSimpleData } from "../utils/generateData";
-import { CellChangeParams } from "../core/GridWrapper";
-import { Button, Checkbox } from "@material-ui/core";
-import { IGridApi } from "../types/grid-api.type";
-import { getTopUseCase } from "./dataUseCases";
-import { Cell, GridRow, Row } from "../types/row.interface";
-import { GridTheme } from "../types/grid-theme";
-import { makeStyles } from "@material-ui/core/styles";
-import { buildCellFromHeader, TestRow } from "../core/data-transform";
+import {ApolloSpreadSheet} from "../index";
+import {getSimpleData} from "../utils/generateData";
+import {CellChangeParams} from "../core/GridWrapper";
+import {Button, Checkbox, FormControl, InputLabel, MenuItem, Select} from "@material-ui/core";
+import {IGridApi} from "../types/grid-api.type";
+import {getTopUseCase} from "./dataUseCases";
+import {Row} from "../types/row.interface";
+import {GridTheme} from "../types/grid-theme";
+import {makeStyles} from "@material-ui/core/styles";
+import {StretchMode} from "../types/stretch-mode.enum";
 
 const LargeDataSetTable = () => {
   const { headerData, data } = getSimpleData(500, 50);
 
   return (
-    <VirtualizedTable
+    <ApolloSpreadSheet
       headers={headerData}
       data={data}
       fixedColumnCount={2}
       onCellChange={console.log}
+      minColumnWidth={120}
     />
   );
 };
@@ -78,6 +79,12 @@ const MainTable = () => {
   const classes = useTopStyles();
   const gridApi = useRef<IGridApi | null>(null);
   const [darkTheme, setDarkTheme] = useState(false);
+
+  const [stretchMode, setStrechMode] = React.useState(StretchMode.All);
+
+  const handleChange = (event: React.ChangeEvent<{ value: unknown }>) => {
+    setStrechMode(event.target.value as any);
+  };
 
   const topDarkGridTheme: GridTheme = {
     currentColumnClass: classes.currentColumnClassDark,
@@ -252,7 +259,20 @@ const MainTable = () => {
         onChange={(e) => setDarkTheme((e?.target as any).checked)}
       />
       Dark Theme Test
-      <VirtualizedTable
+      <FormControl>
+        <InputLabel id="demo-simple-select-label">StretchMode</InputLabel>
+        <Select
+          labelId="demo-simple-select-label"
+          id="demo-simple-select"
+          value={stretchMode}
+          onChange={handleChange}
+        >
+          <MenuItem value={StretchMode.None}>None</MenuItem>
+          <MenuItem value={StretchMode.All}>All</MenuItem>
+          <MenuItem value={StretchMode.Last}>Last</MenuItem>
+        </Select>
+      </FormControl>
+      <ApolloSpreadSheet
         headers={headers}
         data={data}
         fixedColumnCount={2}
@@ -261,8 +281,9 @@ const MainTable = () => {
         suppressNavigation={suppressNavigation}
         onGridReady={onGridReady}
         theme={darkTheme ? topDarkGridTheme : topLightGridTheme}
-        // minColumnWidth={10}
         minRowHeight={50}
+        minColumnWidth={10}
+        stretchMode={stretchMode}
         // minColumnHeight={25}
       />
     </>
