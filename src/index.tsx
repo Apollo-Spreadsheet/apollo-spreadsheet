@@ -1,20 +1,20 @@
-import React, {forwardRef, useCallback, useMemo, useRef,} from "react";
+import React, {forwardRef, useCallback, useMemo, useRef,} from "react"
 
-import {AutoSizer, ColumnSizer} from "react-virtualized";
-import ScrollHandler from "./core/ScrollHandler";
-import GridWrapper, {GridWrapperCommonProps} from "./core/GridWrapper";
-import {makeStyles} from "@material-ui/core/styles";
-import ColumnGrid from "./column-grid/ColumnGrid";
-import {useNavigation} from "./navigation/useNavigation";
-import {GridData, GridRow} from "./types/row.interface";
-import {insertDummyCells} from "./utils/helpers";
-import {StretchMode} from "./types/stretch-mode.enum";
-import {FixedColumnWidthRecord} from "./column-grid/types/fixed-column-width-record";
-import {createFixedWidthMapping} from "./column-grid/utils/createFixedWidthMapping";
-import {Column} from "./column-grid/types/header.type";
-import shallowDiffers from "./utils/shallowDiffers";
+import {AutoSizer, ColumnSizer} from "react-virtualized"
+import ScrollHandler from "./core/ScrollHandler"
+import GridWrapper, {GridWrapperCommonProps} from "./core/GridWrapper"
+import {makeStyles} from "@material-ui/core/styles"
+import ColumnGrid from "./column-grid/ColumnGrid"
+import {useNavigation} from "./navigation/useNavigation"
+import {GridData, GridRow} from "./types/row.interface"
+import {insertDummyCells} from "./utils/helpers"
+import {StretchMode} from "./types/stretch-mode.enum"
+import {FixedColumnWidthRecord} from "./column-grid/types/fixed-column-width-record"
+import {createFixedWidthMapping} from "./column-grid/utils/createFixedWidthMapping"
+import {Column} from "./column-grid/types/header.type"
+import shallowDiffers from "./utils/shallowDiffers"
 
-const CONTAINER_SCROLL_WIDTH = 5;
+const CONTAINER_SCROLL_WIDTH = 5
 /** @todo Make it 15 or 10 to be a little bit wider **/
 const useStyles = makeStyles(() => ({
 	root: {
@@ -59,7 +59,7 @@ const useStyles = makeStyles(() => ({
 			display: "none",
 		},
 	},
-}));
+}))
 
 interface Props extends GridWrapperCommonProps {
 	data: GridData;
@@ -77,16 +77,16 @@ interface Props extends GridWrapperCommonProps {
 
 export const ApolloSpreadSheet = forwardRef(
   (props: Props, componentRef: any) => {
-	  const classes = useStyles();
+	  const classes = useStyles()
 	  const columnCount = useMemo(() => {
-		  return props.data.length ? props.data[0].length : 0;
-	  }, [props.data]);
+		  return props.data.length ? props.data[0].length : 0
+	  }, [props.data])
 
-	  const gridContainerRef = useRef<HTMLDivElement | null>(null);
+	  const gridContainerRef = useRef<HTMLDivElement | null>(null)
 	  const minColumnWidth = props.minColumnWidth ?? 60
 	  const rows: Array<GridRow> = useMemo(() => {
-		  return insertDummyCells(props.data);
-	  }, [props.data]);
+		  return insertDummyCells(props.data)
+	  }, [props.data])
 
 	  /**
 	   * Stores the main headers only, nested headers are not required in here
@@ -106,10 +106,10 @@ export const ApolloSpreadSheet = forwardRef(
 	   */
 	  const getColumnAt = useCallback(
 		(index: number, line = 0) => {
-			return props.headers[line]?.[index];
+			return props.headers[line]?.[index]
 		},
 		[props.headers]
-	  );
+	  )
 
 	  const [coords, selectCell, onCellClick] = useNavigation({
 		  defaultCoords: props.defaultCoords ?? {rowIndex: 0, colIndex: 0},
@@ -120,7 +120,7 @@ export const ApolloSpreadSheet = forwardRef(
 		  rowsCount: rows.length,
 		  suppressNavigation: props.suppressNavigation ?? false,
 		  getColumnAt,
-	  });
+	  })
 
 
 	  const fixedColumnWidths = useRef<{ totalSize: number, mapping: FixedColumnWidthRecord }>({
@@ -165,10 +165,10 @@ export const ApolloSpreadSheet = forwardRef(
 			return fixedColumnWidths.current.mapping[index] ?? getColumnWidth({index})
 		}
 
-		//Stores the amount of columns that we want to calculate using the remaining width of the grid
-		const calculatingColumnCount = useMemo(() => {
-			return columnCount - mainHeaders.filter(e => e.width).length
-		}, [columnCount, mainHeaders])
+	  //Stores the amount of columns that we want to calculate using the remaining width of the grid
+	  const calculatingColumnCount = useMemo(() => {
+		  return columnCount - mainHeaders.filter(e => e.width).length
+	  }, [columnCount, mainHeaders])
 
 	  /** @todo Review nested headers width, its still an issue and also NaN's at widths
 	   * **/
@@ -259,8 +259,8 @@ export const ApolloSpreadSheet = forwardRef(
 				{({width}) => renderGridsWrapper(width)}
 			</AutoSizer>
 		</div>
-	  );
+	  )
   }
-);
+)
 
-export default ApolloSpreadSheet;
+export default ApolloSpreadSheet

@@ -116,11 +116,6 @@ const ScrollHandler = forwardRef(
       []
     );
 
-    console.log({
-      stretchMode,
-      width,
-      totalColumnWidth
-    })
     return (
       <>
         <WindowScroller
@@ -144,7 +139,7 @@ const ScrollHandler = forwardRef(
                 gridRef,
               })}
               { /** @todo Consider stretch mode to disable horizontal scrolling **/ }
-              { stretchMode === StretchMode.None && totalColumnWidth > width ? (
+              { stretchMode === StretchMode.None && totalColumnWidth > width && (
                 <div
                   id="fake-scroller"
                   className={classes.root}
@@ -162,7 +157,7 @@ const ScrollHandler = forwardRef(
                     style={{ width: totalColumnWidth }}
                   />
                 </div>
-              ) : null}
+              )}
             </div>
           )}
         </WindowScroller>
