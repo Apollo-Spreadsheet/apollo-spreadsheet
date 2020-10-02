@@ -14,7 +14,7 @@ import {insertDummyCells} from "../utils/helpers";
 import clsx from "clsx";
 import {ColumnGridProps} from "./column-grid-props";
 
-const ColumnGrid = React.memo(
+export const ColumnGrid = React.memo(
   forwardRef((props: ColumnGridProps, componentRef) => {
 	  const {current: cache} = useLazyRef(
 		() =>
@@ -38,6 +38,7 @@ const ColumnGrid = React.memo(
 	  }));
 	  const gridRef = useRef<Grid | null>(null);
 
+	  /** @todo Review insertDummyCells parsing relative to flatMap but also the single array parse is not working well **/
 	  const data = useMemo(() => {
 		  return insertDummyCells(props.headers);
 	  }, [props.headers]);

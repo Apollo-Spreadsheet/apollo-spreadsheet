@@ -10,19 +10,24 @@ import {StretchMode} from "../../types/stretch-mode.enum";
  * @param minColumnWidth
  * @param stretchMode
  */
-export const createFixedWidthMapping = (columns: Column[], containerWidth: number, minColumnWidth: number, stretchMode: StretchMode) => {
+export const createFixedWidthMapping = (columns: Column[], containerWidth: number, minColumnWidth: number, stretchMode: StretchMode, scrollWidth: number) => {
 	const mapping = columns.reduce((acc, e, i) => {
 		if (!e.width) {
 			return acc
 		}
-		acc[i] = parseColumnWidthsConfiguration(e.width, containerWidth, minColumnWidth)
+		const value = parseColumnWidthsConfiguration(e.width, containerWidth)
+		//Avoid creating an entry because react-virtualized grid will use the minimum width
+		if (value < minColumnWidth){
+			return acc
+		}
+		acc[i] = value
 		return acc
 	}, {} as FixedColumnWidthRecord)
 
 	const isAllColWidthsFilled = columns.filter(e => e.width).length === columns.length
 	let totalSize = Object.values(mapping).reduce((acc, e) => acc + e, 0)
 	//Loop over the new mapping and adjust
-	const remainingSize = Math.max(0, containerWidth - totalSize)
+	const remainingSize = Math.max(0, Math.max(0, (containerWidth - scrollWidth)) - totalSize)
 	//We might have a margin that some width is left
 	if (isAllColWidthsFilled && totalSize < containerWidth) {
 		//Add the remaining size into the last
@@ -49,8 +54,7 @@ export const createFixedWidthMapping = (columns: Column[], containerWidth: numbe
 
 	//Add a fallback to prevent overflow which might be possible using rounding numbers
 	if (totalSize > containerWidth) {
-		console.warn("Overflow detected, seizing it")
-		totalSize = containerWidth
+		totalSize = containerWidth - scrollWidth
 	}
 
 	return {

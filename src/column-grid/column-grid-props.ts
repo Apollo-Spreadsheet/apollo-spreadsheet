@@ -5,7 +5,7 @@ import {NavigationCoords} from "../navigation/types/navigation-coords.type";
 
 export interface ColumnGridProps {
 	headers: HeadersData;
-	className: string;
+	className?: string;
 	minRowHeight: number;
 
 	defaultColumnWidth: number

@@ -1,4 +1,4 @@
-import {percentageToPixels} from "./percentage-to-pixels";
+import {percentageToPixels} from "./percentageToPixels";
 
 /**
  * Converts the column widths from percentage or px down to pure number value (which is pixels in the end) for fixed column width configuration
@@ -6,44 +6,45 @@ import {percentageToPixels} from "./percentage-to-pixels";
  * @param containerWidth
  * @param minColumnWidth
  */
-export const parseColumnWidthsConfiguration = (value: number | string, containerWidth: number, minColumnWidth: number) => {
+export const parseColumnWidthsConfiguration = (value: number | string, containerWidth: number) => {
 	const isPercentage = typeof value === 'string' && value.includes('%')
 	const isPixels = typeof value === 'string' && value.includes('px')
-	//TODO If we want to support em/rem https://github.com/tysonmatanich/getEmPixels
-	//TODO In case of percentage we need to validate, there are min values and max otherwise it can blow the whole app
-	//now this validations depend on whether i have strech mode on or off, if i have it off then it won't matter a limit because we'll get a scroll
-	//TODO Maybe we check if the provided brute value is less than the min column width, this might raise conflicts if it is
-	//TODO also check if by using Math.round does not affect by overflowing the containerWidth/available width otherwise we have an issue
+
 	if (isPercentage){
 		const parsedValue = Number(value.toString().replace('%', '').trim())
 		if (isNaN(parsedValue)){
-			throw new Error('Provided % value for column width is invalid, review value: ' + value + " at column id " )
+			throw new Error(`${parsedValue} value is an invalid percentage value`)
 		}
 
-		const result = percentageToPixels( parsedValue, containerWidth)
-		if (result < minColumnWidth){
-			//throw new Error('Provided value is less than the minimum col width provided/default')
+		//Ensure its within a valid range 1-100
+		if (parsedValue < 1 || parsedValue > 100){
+			throw new Error(`${parsedValue} percentage must be 1-100%`)
 		}
 
-		return Math.round(result)
+		return Math.round(percentageToPixels( parsedValue, containerWidth))
 	}
 
 	if (isPixels){
 		const parsedValue = Number(value.toString().replace('px', '').trim())
 		if (isNaN(parsedValue)){
-			throw new Error('Provided pixel value for column width is invalid, review value: ' + value + " at column id " )
+			throw new Error(`${parsedValue} value must be a number`)
 		}
 
-		if (parsedValue < minColumnWidth){
-			//throw new Error('Provided value is less than the minimum col width provided/default')
+		//Ensure it does not overflow
+		if (parsedValue > containerWidth){
+			return containerWidth
 		}
-
 		return parsedValue
 	}
 
-	if (value < minColumnWidth){
-		// throw new Error('Provided value is less than the minimum col width provided/default')
+	//Ensure no random text passes
+	if (typeof value === 'string'){
+		throw new Error(`${value} must be a number, percentage or px`)
 	}
 
+	//Ensure it does not overflow
+	if (value > containerWidth){
+		return containerWidth
+	}
 	return Number(value)
 }

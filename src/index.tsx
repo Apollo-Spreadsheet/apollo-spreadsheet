@@ -10,7 +10,7 @@ import {GridData, GridRow} from "./types/row.interface";
 import {insertDummyCells} from "./utils/helpers";
 import {StretchMode} from "./types/stretch-mode.enum";
 import {FixedColumnWidthRecord} from "./column-grid/types/fixed-column-width-record";
-import {createFixedWidthMapping} from "./column-grid/utils/create-fixed-width-mapping";
+import {createFixedWidthMapping} from "./column-grid/utils/createFixedWidthMapping";
 import {Column} from "./column-grid/types/header.type";
 import shallowDiffers from "./utils/shallowDiffers";
 
@@ -93,7 +93,7 @@ export const ApolloSpreadSheet = forwardRef(
 	   * because this is used as an utility
 	   */
 	  const mainHeaders: Column[] = useMemo(() => {
-		  if (Array.isArray(props.headers) && props.headers.length > 0) {
+		  if (Array.isArray(props.headers[0])) {
 			  return props.headers[0] as Column[]
 		  }
 		  return props.headers as Column[]
@@ -136,7 +136,7 @@ export const ApolloSpreadSheet = forwardRef(
 			  return (containerWidth - fixedColumnWidths.current.totalSize) - CONTAINER_SCROLL_WIDTH
 		  }
 
-		  const {mapping, totalSize} = createFixedWidthMapping(mainHeaders, containerWidth, minColumnWidth, props.stretchMode ?? StretchMode.None)
+		  const {mapping, totalSize} = createFixedWidthMapping(mainHeaders, containerWidth, minColumnWidth, props.stretchMode ?? StretchMode.None, CONTAINER_SCROLL_WIDTH)
 
 		  //Just update with the new calculated (if it was otherwise it might have been a cached result)
 		  fixedColumnWidths.current = {
@@ -153,7 +153,7 @@ export const ApolloSpreadSheet = forwardRef(
 		  }
 
 		  //The available width that the grid will use
-		  return (containerWidth - fixedColumnWidths.current.totalSize) - CONTAINER_SCROLL_WIDTH
+		  return Math.max(0, (containerWidth - fixedColumnWidths.current.totalSize) - CONTAINER_SCROLL_WIDTH)
 	  }
 
 	  /**
@@ -185,7 +185,7 @@ export const ApolloSpreadSheet = forwardRef(
 						scrollContainer={gridContainerRef.current}
 						width={width - CONTAINER_SCROLL_WIDTH}
 						data={props.data}
-						//TODO Might have to be reviewed
+						//TODO Review to use the dynamic width and also review NaN
 						totalColumnWidth={columnWidth * columnCount}
 						stretchMode={props.stretchMode}
 						ref={componentRef}

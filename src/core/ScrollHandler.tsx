@@ -10,6 +10,7 @@ import { createPortal } from "react-dom";
 import { WindowScroller } from "react-virtualized";
 import { debounce } from "lodash";
 import { makeStyles } from "@material-ui/core/styles";
+import {StretchMode} from "../types/stretch-mode.enum";
 
 const recomputeDebounceTimeout = 1000;
 
@@ -115,6 +116,11 @@ const ScrollHandler = forwardRef(
       []
     );
 
+    console.log({
+      stretchMode,
+      width,
+      totalColumnWidth
+    })
     return (
       <>
         <WindowScroller
@@ -138,7 +144,7 @@ const ScrollHandler = forwardRef(
                 gridRef,
               })}
               { /** @todo Consider stretch mode to disable horizontal scrolling **/ }
-              {totalColumnWidth > width ? (
+              { stretchMode === StretchMode.None && totalColumnWidth > width ? (
                 <div
                   id="fake-scroller"
                   className={classes.root}
