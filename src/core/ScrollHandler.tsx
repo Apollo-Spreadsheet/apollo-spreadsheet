@@ -5,14 +5,14 @@ import React, {
   useCallback,
   useImperativeHandle,
   forwardRef,
-} from "react";
-import { createPortal } from "react-dom";
-import { WindowScroller } from "react-virtualized";
-import { debounce } from "lodash";
-import { makeStyles } from "@material-ui/core/styles";
-import {StretchMode} from "../types/stretch-mode.enum";
+} from "react"
+import { createPortal } from "react-dom"
+import { WindowScroller } from "react-virtualized"
+import { debounce } from "lodash"
+import { makeStyles } from "@material-ui/core/styles"
+import {StretchMode} from "../types/stretch-mode.enum"
 
-const recomputeDebounceTimeout = 1000;
+const recomputeDebounceTimeout = 1000
 
 const useStyles = makeStyles(() => ({
   scrollContent: {
@@ -40,35 +40,35 @@ const useStyles = makeStyles(() => ({
       overflowX: 'auto'
     }
   },
-}));
+}))
 const ScrollHandler = forwardRef(
   (
     { children, scrollContainer, width, totalColumnWidth, stretchMode }: any,
     componentRef: any
   ) => {
-    const scrollChildRef = useRef<any>(null);
-    const headerRef = useRef<any>(null);
-    const gridRef = useRef<any>(null);
-    const fakeScrollerRef = useRef<any>(null);
-    const [stickyScroller, setStickyScroller] = useState(true);
-    const [scrollLeft, setScrollLeft] = useState(0);
-    const [scrolling, setScrolling] = useState(false);
-    const classes = useStyles();
+    const scrollChildRef = useRef<any>(null)
+    const headerRef = useRef<any>(null)
+    const gridRef = useRef<any>(null)
+    const fakeScrollerRef = useRef<any>(null)
+    const [stickyScroller, setStickyScroller] = useState(true)
+    const [scrollLeft, setScrollLeft] = useState(0)
+    const [scrolling, setScrolling] = useState(false)
+    const classes = useStyles()
 
     // exposing api for resetting
     useImperativeHandle(componentRef, () => ({
       recompute: () => {
-        setScrollLeft(0);
-        setScrolling(false);
+        setScrollLeft(0)
+        setScrolling(false)
       },
       forceUpdate: () => {
         if (!headerRef.current || !gridRef.current) {
-          return;
+          return
         }
-        headerRef.current.forceUpdate();
-        gridRef.current.forceUpdate();
+        headerRef.current.forceUpdate()
+        gridRef.current.forceUpdate()
       },
-    }));
+    }))
 
     // updating fake scroller if scrolled on grid body
     useEffect(() => {
@@ -76,45 +76,45 @@ const ScrollHandler = forwardRef(
         !fakeScrollerRef.current ||
         fakeScrollerRef.current.scrollLeft === scrollLeft
       ) {
-        return;
+        return
       }
 
-      fakeScrollerRef.current.scrollLeft = scrollLeft;
-    }, [scrollLeft]);
+      fakeScrollerRef.current.scrollLeft = scrollLeft
+    }, [scrollLeft])
 
     // update sticky status of fake scroller on each update if not scrolling
     useEffect(() => {
       if (!scrollChildRef.current || scrolling) {
-        return;
+        return
       }
 
-      const clientRect = scrollChildRef.current.getBoundingClientRect();
+      const clientRect = scrollChildRef.current.getBoundingClientRect()
 
-      setStickyScroller(clientRect.bottom > window.innerHeight);
-    });
+      setStickyScroller(clientRect.bottom > window.innerHeight)
+    })
 
     // reset scrolling flag when scroll stops
     const setNotScrolling = useCallback(
       debounce(() => {
-        setScrolling(false);
+        setScrolling(false)
       }, 100),
       []
-    );
+    )
 
     const handleScroll = useCallback(({ scrollLeft: paramScrollLeft }) => {
-      setScrollLeft(paramScrollLeft);
-      setScrolling(true);
-      setNotScrolling();
-    }, []);
+      setScrollLeft(paramScrollLeft)
+      setScrolling(true)
+      setNotScrolling()
+    }, [])
 
     // call virtualized recompute when window scroller detects resize
     const onResize = useCallback(
       debounce(() => {
-        headerRef.current?.recomputeGridSize();
-        gridRef.current?.recomputeGridSize();
+        headerRef.current?.recomputeGridSize()
+        gridRef.current?.recomputeGridSize()
       }, recomputeDebounceTimeout),
       []
-    );
+    )
 
     return (
       <>
@@ -125,8 +125,8 @@ const ScrollHandler = forwardRef(
           {({ height, isScrolling, scrollTop, registerChild }) => (
             <div
               ref={(ref) => {
-                scrollChildRef.current = ref;
-                registerChild(ref);
+                scrollChildRef.current = ref
+                registerChild(ref)
               }}
             >
               {children({
@@ -175,8 +175,8 @@ const ScrollHandler = forwardRef(
           document.body
         )}
       </>
-    );
+    )
   }
-);
+)
 
-export default ScrollHandler;
+export default ScrollHandler

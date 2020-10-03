@@ -19,15 +19,11 @@
     <select />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="0db106f2-354a-47db-8cbd-83b4c430a6ab" name="Default Changelist" comment="Created unit tests for column utils, refactored some existing methods and TODO's, installed enzyme, configured jest to work with typescript, started working on shallow testing for ColumnGrid and started creating stretch stories which are indeed incomplete">
-      <change afterPath="$PROJECT_DIR$/.eslintignore" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.eslintrc.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.prettierignore" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.prettierrc" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
+    <list default="true" id="0db106f2-354a-47db-8cbd-83b4c430a6ab" name="Default Changelist" comment="Added prettier rules and eslint">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/core/GridWrapper.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/core/GridWrapper.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/core/ScrollHandler.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/core/ScrollHandler.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/index.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/yarn.lock" beforeDir="false" afterPath="$PROJECT_DIR$/yarn.lock" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/editors/TextEditor.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/editors/TextEditor.tsx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -43,6 +39,17 @@
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="JsBowerSettings">
+    <node-interpreter value="project" />
+    <bower-package value="" />
+    <bower.json value="" />
+  </component>
+  <component name="JsFlowSettings">
+    <service-enabled>true</service-enabled>
+    <exe-path />
+    <other-services-enabled>true</other-services-enabled>
+    <auto-save>true</auto-save>
   </component>
   <component name="PackageJsonUpdateNotifier">
     <dismissed value="$PROJECT_DIR$/package.json" />
@@ -63,12 +70,20 @@
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$" />
     <property name="node.js.detected.package.eslint" value="true" />
+    <property name="node.js.detected.package.standard" value="true" />
+    <property name="node.js.detected.package.tslint" value="true" />
     <property name="node.js.path.for.package.eslint" value="project" />
+    <property name="node.js.path.for.package.standard" value="project" />
+    <property name="node.js.path.for.package.tslint" value="project" />
     <property name="node.js.selected.package.eslint" value="(autodetect)" />
+    <property name="node.js.selected.package.standard" value="" />
+    <property name="node.js.selected.package.tslint" value="(autodetect)" />
     <property name="nodejs.jest.jest_package" value="$PROJECT_DIR$/node_modules/jest" />
     <property name="nodejs_interpreter_path" value="node" />
     <property name="nodejs_package_manager_path" value="yarn" />
-    <property name="settings.editor.selected.configurable" value="settings.nodejs" />
+    <property name="prettierjs.PrettierConfiguration.Package" value="$PROJECT_DIR$/node_modules/prettier" />
+    <property name="run.prettier.on.save" value="true" />
+    <property name="settings.editor.selected.configurable" value="Settings.Markdown" />
     <property name="ts.external.directory.path" value="$PROJECT_DIR$/node_modules/typescript/lib" />
     <property name="vue.rearranger.settings.migration" value="true" />
   </component>
@@ -165,7 +180,9 @@
       <workItem from="1601534800610" duration="5857000" />
       <workItem from="1601561975131" duration="599000" />
       <workItem from="1601569375093" duration="5875000" />
-      <workItem from="1601618047479" duration="10461000" />
+      <workItem from="1601618047479" duration="10729000" />
+      <workItem from="1601665269130" duration="43000" />
+      <workItem from="1601698684163" duration="607000" />
     </task>
     <task id="LOCAL-00001" summary="Rename and new grid props">
       <created>1601153792605</created>
@@ -195,7 +212,14 @@
       <option name="project" value="LOCAL" />
       <updated>1601653018268</updated>
     </task>
-    <option name="localTasksCounter" value="5" />
+    <task id="LOCAL-00005" summary="Added prettier rules and eslint">
+      <created>1601653767487</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1601653767487</updated>
+    </task>
+    <option name="localTasksCounter" value="6" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -219,9 +243,14 @@
     <MESSAGE value="Renamed to apollo-spreadsheet" />
     <MESSAGE value="New updates on dynamic fixed column widths and stretch mode&#10;for last and all calculation" />
     <MESSAGE value="Created unit tests for column utils, refactored some existing methods and TODO's, installed enzyme, configured jest to work with typescript, started working on shallow testing for ColumnGrid and started creating stretch stories which are indeed incomplete" />
-    <option name="LAST_COMMIT_MESSAGE" value="Created unit tests for column utils, refactored some existing methods and TODO's, installed enzyme, configured jest to work with typescript, started working on shallow testing for ColumnGrid and started creating stretch stories which are indeed incomplete" />
+    <MESSAGE value="Added prettier rules and eslint" />
+    <option name="LAST_COMMIT_MESSAGE" value="Added prettier rules and eslint" />
   </component>
   <component name="WindowStateProjectService">
+    <state x="806" y="445" width="298" height="219" key="#ESLint" timestamp="1601653797630">
+      <screen x="0" y="28" width="1920" height="1052" />
+    </state>
+    <state x="806" y="445" width="298" height="219" key="#ESLint/0.28.1920.1052@0.28.1920.1052" timestamp="1601653797630" />
     <state width="1897" height="277" key="GridCell.Tab.0.bottom" timestamp="1601653580379">
       <screen x="0" y="28" width="1920" height="1052" />
     </state>
@@ -238,14 +267,14 @@
       <screen x="0" y="28" width="1920" height="1052" />
     </state>
     <state width="1897" height="277" key="GridCell.Tab.0.right/0.28.1920.1052@0.28.1920.1052" timestamp="1601653580379" />
-    <state x="449" y="189" width="1022" height="732" key="SettingsEditor" timestamp="1601119973690">
+    <state x="449" y="189" width="1022" height="732" key="SettingsEditor" timestamp="1601653954053">
       <screen x="0" y="28" width="1920" height="1052" />
     </state>
-    <state x="449" y="189" width="1022" height="732" key="SettingsEditor/0.28.1920.1052@0.28.1920.1052" timestamp="1601119973690" />
-    <state x="555" y="290" width="800" height="530" key="Vcs.Push.Dialog.v2" timestamp="1601653019550">
+    <state x="449" y="189" width="1022" height="732" key="SettingsEditor/0.28.1920.1052@0.28.1920.1052" timestamp="1601653954053" />
+    <state x="555" y="290" width="800" height="530" key="Vcs.Push.Dialog.v2" timestamp="1601653768553">
       <screen x="0" y="28" width="1920" height="1052" />
     </state>
-    <state x="555" y="290" width="800" height="530" key="Vcs.Push.Dialog.v2/0.28.1920.1052@0.28.1920.1052" timestamp="1601653019550" />
+    <state x="555" y="290" width="800" height="530" key="Vcs.Push.Dialog.v2/0.28.1920.1052@0.28.1920.1052" timestamp="1601653768553" />
     <state x="741" y="469" width="438" height="172" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2" timestamp="1601153845903">
       <screen x="0" y="28" width="1920" height="1052" />
     </state>

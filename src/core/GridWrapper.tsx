@@ -6,23 +6,23 @@ import React, {
 	useImperativeHandle,
 	forwardRef,
 	useState,
-} from "react";
-import PropTypes from "prop-types";
-import {Grid, CellMeasurerCache, ScrollParams} from "react-virtualized";
-import CellMeasurer from "./CellMeasureWrapper";
-import {insertDummyCells} from "../utils/helpers";
-import {useLazyRef} from "../hooks/useLazyRef";
-import {HeadersData} from "../column-grid/types/header.type";
-import {GridData, GridRow} from "../types/row.interface";
-import {IGridApi} from "../types/grid-api.type";
-import {NavigationCoords} from "../navigation/types/navigation-coords.type";
-import {SelectCellFn, useNavigation} from "../navigation/useNavigation";
-import TextEditor from "../editors/TextEditor";
-import {createPortal} from "react-dom";
-import {ClickAwayListener} from "@material-ui/core";
-import {GridTheme} from "../types/grid-theme";
-import clsx from "clsx";
-import {GridCellProps} from "react-virtualized/dist/es/Grid";
+} from "react"
+import PropTypes from "prop-types"
+import {Grid, CellMeasurerCache, ScrollParams} from "react-virtualized"
+import CellMeasurer from "./CellMeasureWrapper"
+import {insertDummyCells} from "../utils/helpers"
+import {useLazyRef} from "../hooks/useLazyRef"
+import {HeadersData} from "../column-grid/types/header.type"
+import {GridData, GridRow} from "../types/row.interface"
+import {IGridApi} from "../types/grid-api.type"
+import {NavigationCoords} from "../navigation/types/navigation-coords.type"
+import {SelectCellFn, useNavigation} from "../navigation/useNavigation"
+import TextEditor from "../editors/TextEditor"
+import {createPortal} from "react-dom"
+import {ClickAwayListener} from "@material-ui/core"
+import {GridTheme} from "../types/grid-theme"
+import clsx from "clsx"
+import {GridCellProps} from "react-virtualized/dist/es/Grid"
 
 export interface ICellMountedRegisterData {
 	colIndex: number;
@@ -89,8 +89,8 @@ const GridWrapper = forwardRef((props: Props, componentRef: any) => {
 			minHeight: props.minRowHeight,
 			minWidth: props.defaultColumnWidth,
 		})
-	);
-	const gridRef = useRef<Grid | null>(null);
+	)
+	const gridRef = useRef<Grid | null>(null)
 
 	/**
 	 * Returns a given column at the provided index if exists
@@ -99,31 +99,31 @@ const GridWrapper = forwardRef((props: Props, componentRef: any) => {
 	 */
 	const getColumnAt = useCallback(
 	  (index: number, line = 0) => {
-		  return props.headers[line]?.[index];
+		  return props.headers[line]?.[index]
 	  },
 	  [props.headers]
-	);
+	)
 
 	const [activeEditor, setActiveEditor] = useState<{
 		row: GridRow;
 		rowIndex: number;
 		colIndex: number;
 		editor: JSX.Element;
-	} | null>(null);
-	const [focused, setFocused] = useState(true);
+	} | null>(null)
+	const [focused, setFocused] = useState(true)
 
 	const gridApi = () => {
 		return {
 			recomputeGridSize: () => {
-				gridRef.current?.recomputeGridSize();
+				gridRef.current?.recomputeGridSize()
 			},
 			forceUpdate: () => {
-				gridRef.current?.forceUpdate();
+				gridRef.current?.forceUpdate()
 			},
 			getRowsCount: () => props.rows.length,
 			getRowAt: getColumnAt,
 			getCellAt: ({rowIndex, colIndex}: NavigationCoords) => {
-				return props.rows[rowIndex]?.[colIndex];
+				return props.rows[rowIndex]?.[colIndex]
 			},
 			getColumnAt,
 			// getSelectedCell: () => props.coords,
@@ -131,22 +131,22 @@ const GridWrapper = forwardRef((props: Props, componentRef: any) => {
 			isEditing: () => !!activeEditor,
 			selectedCell: (_cellCoords: NavigationCoords) =>
 			  props.selectCell(_cellCoords),
-		};
-	};
+		}
+	}
 
 	useImperativeHandle(
 	  componentRef,
 	  () => {
-		  return gridApi();
+		  return gridApi()
 	  },
 	  [props.rows, getColumnAt, activeEditor, gridRef.current]
-	);
+	)
 
 	// clear cache and recompute when data changes
 	useEffect(() => {
-		cache.clearAll();
-		gridRef.current?.recomputeGridSize();
-	}, [props.rows]);
+		cache.clearAll()
+		gridRef.current?.recomputeGridSize()
+	}, [props.rows])
 
 	const openEditor = (
 	  row: any,
@@ -158,23 +158,23 @@ const GridWrapper = forwardRef((props: Props, componentRef: any) => {
 	  defaultValue: any
 	) => {
 		if (activeEditor) {
-			return;
+			return
 		}
-		const column = props.headers[0][colIndex];
+		const column = props.headers[0][colIndex]
 		if (!column) {
-			return console.error("Column not found at index " + colIndex);
+			return console.error("Column not found at index " + colIndex)
 		}
 		const isReadOnly = column.readOnly
 		  ? typeof column.readOnly === "function"
 			? column.readOnly(row, column)
 			: column.readOnly
-		  : false;
+		  : false
 
 		if (isReadOnly) {
-			return;
+			return
 		}
 
-		const value = defaultValue ?? "";
+		const value = defaultValue ?? ""
 		// const onCommitCancel = (navigationKey?: NavigationKey) => {
 		// 	setActiveEditor(null)
 		// 	if (navigationKey) {
@@ -182,8 +182,8 @@ const GridWrapper = forwardRef((props: Props, componentRef: any) => {
 		// 	}
 		// }
 		const onCommitCancel = () => {
-			setActiveEditor(null);
-		};
+			setActiveEditor(null)
+		}
 
 		const onCommit = (value: unknown) => {
 			/** @todo We need to know which key was been used **/
@@ -196,10 +196,10 @@ const GridWrapper = forwardRef((props: Props, componentRef: any) => {
 					columnIndex: colIndex,
 					previousValue: defaultValue,
 					value,
-				});
+				})
 			}
-			setActiveEditor(null);
-		};
+			setActiveEditor(null)
+		}
 
 		/**@todo Use this soon  **/
 		  // const editor = column.editor ? getColumnEditor(column.editor): (
@@ -225,27 +225,27 @@ const GridWrapper = forwardRef((props: Props, componentRef: any) => {
 			  /**@todo Column must defined this **/
 			  maxLength={500}
 			/>
-		  );
+		  )
 
 		setActiveEditor({
 			row,
 			rowIndex,
 			colIndex,
 			editor,
-		});
-	};
+		})
+	}
 
 	const onCellDoubleClick = useCallback(
 	  (e, cell, rowIndex, colIndex, defaultValue) => {
-		  e.preventDefault();
+		  e.preventDefault()
 		  if (cell?.dummy) {
 			  return
 		  }
 		  if (!focused) {
-			  setFocused(true);
+			  setFocused(true)
 		  }
 
-		  const row = props.rows[rowIndex];
+		  const row = props.rows[rowIndex]
 		  openEditor(
 			row,
 			rowIndex,
@@ -254,44 +254,44 @@ const GridWrapper = forwardRef((props: Props, componentRef: any) => {
 			e.target["style"].width,
 			e.target["style"].height,
 			defaultValue
-		  );
+		  )
 	  },
 	  [props.rows, activeEditor, focused]
-	);
+	)
 
 	const onCellClick = useCallback((event: any, cell: any, rowIndex: number, columnIndex: number) => {
 		if (cell?.dummy) {
 			return
 		}
 		if (!focused) {
-			setFocused(true);
+			setFocused(true)
 		}
-		props.onCellClick({rowIndex, colIndex: columnIndex, event});
+		props.onCellClick({rowIndex, colIndex: columnIndex, event})
 	}, [focused, props.onCellClick])
 
 	const renderCell = useCallback(
 	  ({style, cell, ref, rowIndex, columnIndex}) => {
-		  const {children} = cell;
+		  const {children} = cell
 		  const isSelected =
 			rowIndex === props.coords.rowIndex &&
-			columnIndex === props.coords.colIndex;
+			columnIndex === props.coords.colIndex
 		  /**
 		   * @todo Not considering well merged cells, i need to look up by merged too
 		   */
-		  const isRowSelected = rowIndex === props.coords.rowIndex;
+		  const isRowSelected = rowIndex === props.coords.rowIndex
 		  if (isSelected) {
-			  style.border = "1px solid blue";
+			  style.border = "1px solid blue"
 		  } else {
 			  //Bind default border
 			  if (!props.theme || !props.theme.rowClass) {
-				  style.border = "1px solid rgb(204, 204, 204)";
+				  style.border = "1px solid rgb(204, 204, 204)"
 			  }
 		  }
 
 		  //Non navigable columns get now a custom disable style
 		  if (props.headers[0][columnIndex]?.disableNavigation) {
 			  /** @todo We can apply the custom class if theme has it by using a class builder such as clsx **/
-			  style.opacity = 0.6;
+			  style.opacity = 0.6
 		  }
 
 		  /**
@@ -323,14 +323,14 @@ const GridWrapper = forwardRef((props: Props, componentRef: any) => {
 			>
 				{typeof children === "function" ? children() : children}
 			</div>
-		  );
+		  )
 	  },
 	  [props.coords, props.theme, props.onCellClick, props.headers, props.width]
-	);
+	)
 
 	const cellRenderer = useCallback(
 	  ({rowIndex, columnIndex, key, parent, style, ...otherArgs}: GridCellProps) => {
-		  const cell = props.rows[rowIndex]?.[columnIndex];
+		  const cell = props.rows[rowIndex]?.[columnIndex]
 
 		  return cell ? (
 			<CellMeasurer
@@ -357,39 +357,38 @@ const GridWrapper = forwardRef((props: Props, componentRef: any) => {
 				  cell,
 			  }}
 			/>
-		  ) : null;
+		  ) : null
 	  },
 	  [props.rows, props.coords, props.theme, props.width]
-	);
+	)
 
 	const onRefMount = useCallback(
 	  (instance) => {
 		  //Pass down for react-virtualized under-layer
 		  if (instance) {
-			  props.registerChild(instance);
+			  props.registerChild(instance)
 		  }
 
 		  //Expose if needed
 		  if (props.onGridReady && (componentRef as any).current) {
-			  props.onGridReady((componentRef as any).current as IGridApi);
+			  props.onGridReady((componentRef as any).current as IGridApi)
 		  }
-		  gridRef.current = instance;
+		  gridRef.current = instance
 	  },
 	  [props.onGridReady, props.registerChild, (componentRef as any).current]
-	);
+	)
 
 	const onClickAway = useCallback(() => {
 		if (props.outsideClickDeselects && focused) {
-			setFocused(false);
-			props.selectCell({rowIndex: -1, colIndex: -1});
+			setFocused(false)
+			props.selectCell({rowIndex: -1, colIndex: -1})
 		}
-	}, [props.outsideClickDeselects, focused]);
+	}, [props.outsideClickDeselects, focused])
 
 	return (
 	  <>
 		  <ClickAwayListener onClickAway={onClickAway}>
 			  <Grid
-				// eslint-disable-next-line react/jsx-props-no-spreading
 				{...props}
 				ref={onRefMount}
 				cellRenderer={cellRenderer}
@@ -409,7 +408,7 @@ const GridWrapper = forwardRef((props: Props, componentRef: any) => {
 			document.getElementById("grid-container") as HTMLElement
 		  )}
 	  </>
-	);
-});
+	)
+})
 
-export default GridWrapper;
+export default GridWrapper
