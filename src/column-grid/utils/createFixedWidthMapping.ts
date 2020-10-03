@@ -1,7 +1,7 @@
-import {parseColumnWidthsConfiguration} from "./parseColumnWidthsConfiguration";
-import {FixedColumnWidthRecord} from "../types/fixed-column-width-record";
-import {Column} from "../types/header.type";
-import {StretchMode} from "../../types/stretch-mode.enum";
+import {parseColumnWidthsConfiguration} from "./parseColumnWidthsConfiguration"
+import {FixedColumnWidthRecord} from "../types/fixed-column-width-record"
+import {Column} from "../types/header.type"
+import {StretchMode} from "../../types/stretch-mode.enum"
 
 /**
  * Creates an object indexing the fixed column widths by its index as key for fast lookup on dynamic widths
@@ -32,7 +32,7 @@ export const createFixedWidthMapping = (columns: Column[], containerWidth: numbe
 	if (isAllColWidthsFilled && totalSize < containerWidth) {
 		//Add the remaining size into the last
 		if (stretchMode === StretchMode.Last) {
-			const last = Object.keys(mapping).pop();
+			const last = Object.keys(mapping).pop()
 			if (last) {
 				mapping[last] += remainingSize
 

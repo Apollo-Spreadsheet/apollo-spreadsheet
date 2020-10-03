@@ -1,4 +1,4 @@
-import {NavigationCoords} from "../navigation/types/navigation-coords.type";
+import {NavigationCoords} from "../navigation/types/navigation-coords.type"
 
 export interface IGridApi {
 	recomputeGridSize: () => void;

@@ -8,7 +8,6 @@ import React, {
 } from "react"
 import {Grid, CellMeasurerCache} from "react-virtualized"
 import CellMeasurer from "../core/CellMeasureWrapper"
-import useLazyRef from "../hooks/useLazyRef"
 import {Column} from "./types/header.type"
 import {insertDummyCells} from "../utils/helpers"
 import clsx from "clsx"

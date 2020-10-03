@@ -1,5 +1,5 @@
-import React from "react";
-import { Popover } from "@material-ui/core";
+import React from "react"
+import { Popover } from "@material-ui/core"
 
 interface Props {
   anchorElement: Element | null;
@@ -48,7 +48,7 @@ export function NavigationMask({
         }}
       />
     </Popover>
-  );
+  )
 }
 
-export default NavigationMask;
+export default NavigationMask

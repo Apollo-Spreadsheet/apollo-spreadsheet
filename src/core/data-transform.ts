@@ -1,5 +1,5 @@
-import {Column, HeadersData} from "../column-grid/types/header.type";
-import {GridCell, GridData, Row} from "../types/row.interface";
+import {Column, HeadersData} from "../column-grid/types/header.type"
+import {GridCell, GridData, Row} from "../types/row.interface"
 
 //Test only
 export interface TestRow {

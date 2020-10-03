@@ -1,7 +1,7 @@
-import React, { CSSProperties, useState } from "react";
-import { Popover, TextField, TextareaAutosize } from "@material-ui/core";
-import { NavigationKey } from "@components/RTable/Editors/navigation-key.enum";
-import ReactNumberFormat from "react-number-format";
+import React, { CSSProperties, useState } from "react"
+import { Popover, TextField, TextareaAutosize } from "@material-ui/core"
+import { NavigationKey } from "@components/RTable/Editors/navigation-key.enum"
+import ReactNumberFormat from "react-number-format"
 interface Props {
   value: string;
   onCommit: (value: string, navigationKey?: NavigationKey) => void;
@@ -16,7 +16,7 @@ const textAreaStyle: CSSProperties = {
   height: "100%",
   resize: "none",
   overflow: "auto",
-};
+}
 
 export function NumericEditor({
   value,
@@ -29,16 +29,16 @@ export function NumericEditor({
 }: Props) {
   const onKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === "Enter" || NavigationKey[e.key]) {
-      e.preventDefault();
-      const newValue = e.target["value"];
+      e.preventDefault()
+      const newValue = e.target["value"]
       if (newValue !== value) {
-        return onCommit(newValue, NavigationKey[e.key]);
+        return onCommit(newValue, NavigationKey[e.key])
       }
-      return onCommitCancel(NavigationKey[e.key]);
+      return onCommitCancel(NavigationKey[e.key])
     }
-  };
+  }
 
-  const parsedValue = isNaN(Number(value)) ? 0 : Number(value);
+  const parsedValue = isNaN(Number(value)) ? 0 : Number(value)
 
   return (
     <Popover
@@ -74,7 +74,7 @@ export function NumericEditor({
         {/*/>*/}
       </div>
     </Popover>
-  );
+  )
 }
 
-export default NumericEditor;
+export default NumericEditor

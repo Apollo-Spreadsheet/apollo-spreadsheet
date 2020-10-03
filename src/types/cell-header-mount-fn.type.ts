@@ -1,4 +1,4 @@
-import { ICellMountedRegisterData } from "../core/GridWrapper";
+import { ICellMountedRegisterData } from "../core/GridWrapper"
 
 export type OnCellOrHeaderMount = (
   data: ICellMountedRegisterData,

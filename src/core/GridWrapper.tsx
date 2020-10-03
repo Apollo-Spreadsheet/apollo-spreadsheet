@@ -7,11 +7,8 @@ import React, {
 	forwardRef,
 	useState,
 } from "react"
-import PropTypes from "prop-types"
 import {Grid, CellMeasurerCache, ScrollParams} from "react-virtualized"
 import CellMeasurer from "./CellMeasureWrapper"
-import {insertDummyCells} from "../utils/helpers"
-import {useLazyRef} from "../hooks/useLazyRef"
 import {HeadersData} from "../column-grid/types/header.type"
 import {GridData, GridRow} from "../types/row.interface"
 import {IGridApi} from "../types/grid-api.type"

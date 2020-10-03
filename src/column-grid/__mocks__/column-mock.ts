@@ -1,4 +1,4 @@
-import {Column} from "../types/header.type";
+import {Column} from "../types/header.type"
 
 export const createColumnMock = (column?: Partial<Column>) => {
 	return {

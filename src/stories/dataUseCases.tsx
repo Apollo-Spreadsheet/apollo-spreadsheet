@@ -1,10 +1,10 @@
-import { getSimpleData } from "../utils/generateData";
-import {Tooltip, Checkbox, IconButton} from "@material-ui/core";
-import React from "react";
-import { HeadersData } from "../column-grid/types/header.type";
-import { GridData } from "../types/row.interface";
-import PeopleIcon from "@material-ui/icons/People";
-import DeleteIcon from '@material-ui/icons/Delete';
+import { getSimpleData } from "../utils/generateData"
+import {Tooltip, Checkbox, IconButton} from "@material-ui/core"
+import React from "react"
+import { HeadersData } from "../column-grid/types/header.type"
+import { GridData } from "../types/row.interface"
+import PeopleIcon from "@material-ui/icons/People"
+import DeleteIcon from '@material-ui/icons/Delete'
 
 export const getTopUseCase = () => {
   const headerData: HeadersData = [
@@ -26,7 +26,7 @@ export const getTopUseCase = () => {
             >
               <p>Work Package</p>
             </Tooltip>
-          );
+          )
         },
         id: "wp",
         title: "Work Package",
@@ -76,7 +76,7 @@ export const getTopUseCase = () => {
         id: "allocated",
         title: "",
         renderer: () => {
-          return <PeopleIcon />;
+          return <PeopleIcon />
         },
         accessor: "allocated",
         width: "3%"
@@ -122,7 +122,7 @@ export const getTopUseCase = () => {
         width: "2%"
       },
     ],
-  ];
+  ]
 
   const data: GridData = [
     [
@@ -287,17 +287,17 @@ export const getTopUseCase = () => {
         children: 'the trash'
       }
     ],
-  ];
+  ]
 
   return {
     data,
     headerData,
-  };
-};
+  }
+}
 
 export const getRandomUseCase = () => {
-  return getSimpleData(20, 8);
-};
+  return getSimpleData(20, 8)
+}
 
 /** @todo Children might need a row grouping but we can do that with a plugin to have rows that have groups **/
 export const getFinancialUseCase = () => {
@@ -336,7 +336,7 @@ export const getFinancialUseCase = () => {
         children: "Ongoing",
       },
     ],
-  ];
+  ]
 
   const data = [
     ...[
@@ -414,10 +414,10 @@ export const getFinancialUseCase = () => {
         },
       ],
     ],
-  ];
+  ]
 
   return {
     data,
     headerData,
-  };
-};
+  }
+}
