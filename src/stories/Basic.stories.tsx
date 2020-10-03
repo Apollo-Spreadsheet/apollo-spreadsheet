@@ -1,19 +1,19 @@
-import React, {useCallback, useEffect, useRef, useState} from "react";
-import {storiesOf} from "@storybook/react";
+import React, {useCallback, useEffect, useRef, useState} from "react"
+import {storiesOf} from "@storybook/react"
 
-import {ApolloSpreadSheet} from "../index";
-import {getSimpleData} from "../utils/generateData";
-import {CellChangeParams} from "../core/GridWrapper";
-import {Button, Checkbox, FormControl, InputLabel, MenuItem, Select} from "@material-ui/core";
-import {IGridApi} from "../types/grid-api.type";
-import {getTopUseCase} from "./dataUseCases";
-import {Row} from "../types/row.interface";
-import {GridTheme} from "../types/grid-theme";
-import {makeStyles} from "@material-ui/core/styles";
-import {StretchMode} from "../types/stretch-mode.enum";
+import {ApolloSpreadSheet} from "../index"
+import {getSimpleData} from "../utils/generateData"
+import {CellChangeParams} from "../core/GridWrapper"
+import {Button, Checkbox, FormControl, InputLabel, MenuItem, Select} from "@material-ui/core"
+import {IGridApi} from "../types/grid-api.type"
+import {getTopUseCase} from "./dataUseCases"
+import {Row} from "../types/row.interface"
+import {GridTheme} from "../types/grid-theme"
+import {makeStyles} from "@material-ui/core/styles"
+import {StretchMode} from "../types/stretch-mode.enum"
 
 const LargeDataSetTable = () => {
-  const { headerData, data } = getSimpleData(500, 50);
+  const { headerData, data } = getSimpleData(50, 50)
 
   return (
     <ApolloSpreadSheet
@@ -23,10 +23,10 @@ const LargeDataSetTable = () => {
       onCellChange={console.log}
       minColumnWidth={120}
     />
-  );
-};
+  )
+}
 
-const { headerData: topHeaders, data: topDefaultData } = getTopUseCase();
+const { headerData: topHeaders, data: topDefaultData } = getTopUseCase()
 const useTopStyles = makeStyles(() => ({
   currentColumnClass: {
     color: "#225890",
@@ -69,51 +69,51 @@ const useTopStyles = makeStyles(() => ({
     backgroundColor: "black",
     color: "white",
   },
-}));
+}))
 const MainTable = () => {
-  const [headers, setHeaders] = useState(topHeaders);
-  const [data, setData] = useState(topDefaultData);
-  const [suppressNavigation, setSuppressNavigation] = useState(false);
-  const [outsideClickDeselects, setOutsideClickDeselect] = useState(true);
+  const [headers, setHeaders] = useState(topHeaders)
+  const [data, setData] = useState(topDefaultData)
+  const [suppressNavigation, setSuppressNavigation] = useState(false)
+  const [outsideClickDeselects, setOutsideClickDeselect] = useState(true)
   // const [gridStatus, setGridStatus] = useState("Mounting");
-  const classes = useTopStyles();
-  const gridApi = useRef<IGridApi | null>(null);
-  const [darkTheme, setDarkTheme] = useState(false);
+  const classes = useTopStyles()
+  const gridApi = useRef<IGridApi | null>(null)
+  const [darkTheme, setDarkTheme] = useState(false)
 
-  const [stretchMode, setStrechMode] = React.useState(StretchMode.All);
+  const [stretchMode, setStrechMode] = React.useState(StretchMode.All)
 
   const handleChange = (event: React.ChangeEvent<{ value: unknown }>) => {
-    setStrechMode(event.target.value as any);
-  };
+    setStrechMode(event.target.value as any)
+  }
 
   const topDarkGridTheme: GridTheme = {
     currentColumnClass: classes.currentColumnClassDark,
     currentRowClass: classes.currentRowClassDark,
     headerClass: classes.headerClassDark,
     rowClass: classes.rowClassDark,
-  };
+  }
 
   const topLightGridTheme: GridTheme = {
     currentColumnClass: classes.currentColumnClass,
     currentRowClass: classes.currentRowClass,
     headerClass: classes.headerClass,
     rowClass: classes.rowClass,
-  };
+  }
 
   const onCellChange = useCallback(
     (changes: CellChangeParams) => {
-      const newData = [...data];
+      const newData = [...data]
       /** @todo Ofc this is temporary the index must come normalized **/
       newData[changes.rowIndex][
         changes.columnIndex === 0 ? 0 : changes.columnIndex - 1
       ] = {
         ...newData[changes.rowIndex][changes.columnIndex],
         children: changes.value,
-      };
-      setData(newData);
+      }
+      setData(newData)
     },
     [data]
-  );
+  )
 
   const insert = (arr, index, newItem) => [
     ...arr.slice(0, index),
@@ -121,7 +121,7 @@ const MainTable = () => {
     newItem,
 
     ...arr.slice(index),
-  ];
+  ]
 
   // const createRow = () => {
   //   const coords = (tableRef.current as any)?.getCoords() as any;
@@ -144,7 +144,7 @@ const MainTable = () => {
   //   setData(updatedRows);
   // };
   const createRowOnBottom = () => {
-    const updatedData = [...data];
+    const updatedData = [...data]
     const newRow: Row = [
       {
         id: "new-" + Math.random(),
@@ -202,26 +202,26 @@ const MainTable = () => {
         id: "delete-" + Math.random(),
         children: "the trash",
       },
-    ];
-    updatedData.push(newRow);
-    setData(updatedData);
-  };
+    ]
+    updatedData.push(newRow)
+    setData(updatedData)
+  }
 
   const onKeyDown = (e) => {
     if (e.key === "Enter") {
-      e.preventDefault();
+      e.preventDefault()
      // createRow();
     }
-  };
+  }
 
   useEffect(() => {
-    document.addEventListener("keydown", onKeyDown);
-    return () => document.removeEventListener("keydown", onKeyDown);
-  }, [gridApi.current]);
+    document.addEventListener("keydown", onKeyDown)
+    return () => document.removeEventListener("keydown", onKeyDown)
+  }, [gridApi.current])
 
   const onGridReady = useCallback((api) => {
-    gridApi.current = api;
-  }, []);
+    gridApi.current = api
+  }, [])
 
   // const exportCSV = useCallback(e => {
   //   e.preventDefault()
@@ -287,8 +287,8 @@ const MainTable = () => {
         // minColumnHeight={25}
       />
     </>
-  );
-};
+  )
+}
 storiesOf("VirtualizedTable (DEMOS)", module)
   .add("Large data set", () => <LargeDataSetTable />)
-  .add("Main table", () => <MainTable />);
+  .add("Main table", () => <MainTable />)

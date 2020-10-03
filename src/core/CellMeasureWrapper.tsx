@@ -1,12 +1,12 @@
-import React, { useMemo, useEffect, useRef } from "react";
-import { CellMeasurer, CellMeasurerCache } from "react-virtualized";
-import { makeStyles } from "@material-ui/core/styles";
-import shallowDiffers from "../utils/shallowDiffers";
+import React, { useMemo, useEffect, useRef } from "react"
+import { CellMeasurer, CellMeasurerCache } from "react-virtualized"
+import { makeStyles } from "@material-ui/core/styles"
+import shallowDiffers from "../utils/shallowDiffers"
 
-const generateArr = (n) => [...Array(n).keys()];
+const generateArr = (n) => [...Array(n).keys()]
 
 const getMaxSum = (generator, x) =>
-  generateArr(x).reduce((sum, i) => sum + generator(i), 0);
+  generateArr(x).reduce((sum, i) => sum + generator(i), 0)
 
 interface Props {
   rowSpan?: number;
@@ -39,42 +39,41 @@ const CellMeasureWrapper = React.memo(
         wordBreak: "break-word",
         textOverflow: "ellipsis",
         textAlign: "center",
-      };
+      }
 
       //Ensure it is 1 by default in case we have none
       if (!rowSpan) {
-        rowSpan = 1;
+        rowSpan = 1
       }
       if (!colSpan) {
-        colSpan = 1;
+        colSpan = 1
       }
 
       const {
-        parent: {
-          props: { columnWidth },
-        },
         rowIndex,
         cache,
-      } = props;
+      } = props
 
       if (rowSpan === 1 && colSpan === 1) {
-        return style ? { ...style, ...defaultStyle } : defaultStyle;
+        return style ? { ...style, ...defaultStyle } : defaultStyle
       }
 
-      const rowGenerator = (row) => cache.rowHeight({ index: rowIndex + row });
+      const rowGenerator = (row) => cache.rowHeight({ index: rowIndex + row })
+      //Retrieve dynamically to calculate colSpan if needed
+      const columnWidth = rendererProps.getColumnWidth({ index: props.columnIndex })
 
       const rowSpanStyle =
         rowSpan === 1
           ? {}
           : {
               height: getMaxSum(rowGenerator, rowSpan),
-            };
+            }
       const colSpanStyle =
         colSpan === 1
           ? {}
           : {
               width: columnWidth * colSpan,
-            };
+            }
 
       const _style = {
         ...style,
@@ -82,14 +81,13 @@ const CellMeasureWrapper = React.memo(
         ...rowSpanStyle,
         ...colSpanStyle,
         zIndex: 1,
-      };
+      }
 
-      return _style;
-    };
+      return _style
+    }
 
-    const spanningStyle = initializeStyles();
+    const spanningStyle = initializeStyles()
     return (
-      // eslint-disable-next-line react/jsx-props-no-spreading
       <CellMeasurer {...props}>
         {({ registerChild }) =>
           cellRenderer({
@@ -99,8 +97,8 @@ const CellMeasureWrapper = React.memo(
           })
         }
       </CellMeasurer>
-    );
+    )
   }
-);
+)
 
-export default CellMeasureWrapper;
+export default CellMeasureWrapper

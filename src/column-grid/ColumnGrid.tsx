@@ -5,56 +5,53 @@ import React, {
 	useCallback,
 	useImperativeHandle,
 	forwardRef,
-} from "react";
-import {Grid, CellMeasurerCache} from "react-virtualized";
-import CellMeasurer from "../core/CellMeasureWrapper";
-import useLazyRef from "../hooks/useLazyRef";
-import {Column} from "./types/header.type";
-import {insertDummyCells} from "../utils/helpers";
-import clsx from "clsx";
-import {ColumnGridProps} from "./column-grid-props";
+} from "react"
+import {Grid, CellMeasurerCache} from "react-virtualized"
+import CellMeasurer from "../core/CellMeasureWrapper"
+import useLazyRef from "../hooks/useLazyRef"
+import {Column} from "./types/header.type"
+import {insertDummyCells} from "../utils/helpers"
+import clsx from "clsx"
+import {ColumnGridProps} from "./column-grid-props"
 
 export const ColumnGrid = React.memo(
   forwardRef((props: ColumnGridProps, componentRef) => {
-	  const {current: cache} = useLazyRef(
-		() =>
-		  new CellMeasurerCache({
-			  defaultWidth: props.defaultColumnWidth,
-			  defaultHeight: props.minRowHeight,
-			  fixedWidth: true,
-			  minHeight: props.minRowHeight,
-			  //We might use another approach in here
-			  minWidth: props.defaultColumnWidth,
-		  })
-	  );
+	  const cache = useRef(new CellMeasurerCache({
+		  defaultWidth: props.defaultColumnWidth,
+		  defaultHeight: props.minRowHeight,
+		  fixedWidth: true,
+		  minHeight: props.minRowHeight,
+		  //We might use another approach in here
+		  minWidth: props.defaultColumnWidth,
+	  })).current
 
 	  useImperativeHandle(componentRef, () => ({
 		  recomputeGridSize: () => {
-			  gridRef.current?.recomputeGridSize();
+			  gridRef.current?.recomputeGridSize()
 		  },
 		  forceUpdate: () => {
-			  gridRef.current?.forceUpdate();
+			  gridRef.current?.forceUpdate()
 		  },
-	  }));
-	  const gridRef = useRef<Grid | null>(null);
+	  }))
+	  const gridRef = useRef<Grid | null>(null)
 
 	  /** @todo Review insertDummyCells parsing relative to flatMap but also the single array parse is not working well **/
 	  const data = useMemo(() => {
-		  return insertDummyCells(props.headers);
-	  }, [props.headers]);
+		  return insertDummyCells(props.headers)
+	  }, [props.headers])
 
 	  // clear cache and recompute when data changes
 	  useEffect(() => {
-		  cache?.clearAll();
-		  gridRef.current?.recomputeGridSize();
-	  }, [data]);
+		  cache?.clearAll()
+		  gridRef.current?.recomputeGridSize()
+	  }, [data])
 
 
 	  const headerRendererWrapper = useCallback(
 		({style, cell, ref, columnIndex, rowIndex}) => {
-			const {title, renderer} = cell as Column;
+			const {title, renderer} = cell as Column
 			/** @todo Cache cell renderer result because if may have not changed so no need to invoke again **/
-			const children = renderer ? (renderer(cell) as any) : title;
+			const children = renderer ? (renderer(cell) as any) : title
 
 			return (
 			  <div
@@ -81,28 +78,29 @@ export const ColumnGrid = React.memo(
 			  >
 				  {children}
 			  </div>
-			);
+			)
 		},
 		[props.coords, props.theme, props.width]
-	  );
+	  )
 
 	  const cellMeasurerWrapperRenderer = useCallback(
 		(args) => {
-			const cell = data[args.rowIndex]?.[args.columnIndex];
+			const cell = data[args.rowIndex]?.[args.columnIndex]
 			if (!cell) {
-				return null;
+				return null
 			}
 			const style = {
 				...args.style,
 				...cell["style"],
 				width: props.getColumnWidth({index: args.columnIndex}),
 				userSelect: "none",
-			};
+			}
 
 			const rendererProps = {
 				...args,
 				cell,
-			};
+				getColumnWidth: props.getColumnWidth
+			}
 			return (
 			  <CellMeasurer
 				cache={cache}
@@ -116,18 +114,18 @@ export const ColumnGrid = React.memo(
 				rendererProps={rendererProps}
 				style={style}
 			  />
-			);
+			)
 		},
 		[data, props.theme, props.coords, props.width]
-	  );
+	  )
 
 	  const columnCount = useMemo(() => {
-		  return data.length ? data[0].length : 0;
-	  }, [data]);
+		  return data.length ? data[0].length : 0
+	  }, [data])
 
 	  const onRefMount = useCallback((instance) => {
-		  gridRef.current = instance;
-	  }, []);
+		  gridRef.current = instance
+	  }, [])
 
 	  return (
 		<Grid
@@ -144,8 +142,8 @@ export const ColumnGrid = React.memo(
 		  columnWidth={props.getColumnWidth}
 		  autoHeight
 		/>
-	  );
+	  )
   })
-);
+)
 
-export default ColumnGrid;
+export default ColumnGrid

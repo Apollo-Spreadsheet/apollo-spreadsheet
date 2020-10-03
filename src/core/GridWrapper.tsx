@@ -80,16 +80,14 @@ interface Props extends GridWrapperCommonProps {
 }
 
 const GridWrapper = forwardRef((props: Props, componentRef: any) => {
-	const {current: cache} = useLazyRef(
-	  () =>
-		new CellMeasurerCache({
-			defaultWidth: props.defaultColumnWidth,
-			defaultHeight: props.minRowHeight,
-			fixedWidth: true,
-			minHeight: props.minRowHeight,
-			minWidth: props.defaultColumnWidth,
-		})
-	)
+	const cache = useRef(new CellMeasurerCache({
+		defaultWidth: props.defaultColumnWidth,
+		defaultHeight: props.minRowHeight,
+		fixedWidth: true,
+		minHeight: props.minRowHeight,
+		minWidth: props.defaultColumnWidth,
+	})).current
+
 	const gridRef = useRef<Grid | null>(null)
 
 	/**
@@ -355,6 +353,7 @@ const GridWrapper = forwardRef((props: Props, componentRef: any) => {
 				  columnIndex,
 				  parent,
 				  cell,
+				  getColumnWidth: props.getColumnWidth
 			  }}
 			/>
 		  ) : null

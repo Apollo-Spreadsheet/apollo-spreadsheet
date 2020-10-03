@@ -1,18 +1,18 @@
-import React, {forwardRef, useCallback, useMemo, useRef,} from "react"
+import React, { forwardRef, useCallback, useMemo, useRef } from 'react'
 
-import {AutoSizer, ColumnSizer} from "react-virtualized"
-import ScrollHandler from "./core/ScrollHandler"
-import GridWrapper, {GridWrapperCommonProps} from "./core/GridWrapper"
-import {makeStyles} from "@material-ui/core/styles"
-import ColumnGrid from "./column-grid/ColumnGrid"
-import {useNavigation} from "./navigation/useNavigation"
-import {GridData, GridRow} from "./types/row.interface"
-import {insertDummyCells} from "./utils/helpers"
-import {StretchMode} from "./types/stretch-mode.enum"
-import {FixedColumnWidthRecord} from "./column-grid/types/fixed-column-width-record"
-import {createFixedWidthMapping} from "./column-grid/utils/createFixedWidthMapping"
-import {Column} from "./column-grid/types/header.type"
-import shallowDiffers from "./utils/shallowDiffers"
+import { AutoSizer, ColumnSizer } from 'react-virtualized'
+import ScrollHandler from './core/ScrollHandler'
+import GridWrapper, { GridWrapperCommonProps } from './core/GridWrapper'
+import { makeStyles } from '@material-ui/core/styles'
+import ColumnGrid from './column-grid/ColumnGrid'
+import { useNavigation } from './navigation/useNavigation'
+import { GridData, GridRow } from './types/row.interface'
+import { insertDummyCells } from './utils/helpers'
+import { StretchMode } from './types/stretch-mode.enum'
+import { FixedColumnWidthRecord } from './column-grid/types/fixed-column-width-record'
+import { createFixedWidthMapping } from './column-grid/utils/createFixedWidthMapping'
+import { Column } from './column-grid/types/header.type'
+import shallowDiffers from './utils/shallowDiffers'
 
 const CONTAINER_SCROLL_WIDTH = 5
 /** @todo Make it 15 or 10 to be a little bit wider **/
@@ -170,6 +170,12 @@ export const ApolloSpreadSheet = forwardRef(
 		  return columnCount - mainHeaders.filter(e => e.width).length
 	  }, [columnCount, mainHeaders])
 
+	  const getTotalColumnWidth = useCallback((getColumnWidth) => {
+	  	    return mainHeaders.reduce((acc, e, i) => {
+	  	    	return acc + getColumnWidthHelper(getColumnWidth)({ index: i})
+	        }, 0)
+	  }, [mainHeaders])
+
 	  /** @todo Review nested headers width, its still an issue and also NaN's at widths
 	   * **/
 	  const renderGridsWrapper = (width: number) => {
@@ -180,14 +186,13 @@ export const ApolloSpreadSheet = forwardRef(
 				  columnCount={calculatingColumnCount}
 				  width={buildColumnTotalWidth(width)}
 				>
-					{({adjustedWidth, columnWidth, registerChild, getColumnWidth}) => (
+					{({adjustedWidth, registerChild, getColumnWidth}) => (
 					  <ScrollHandler
 						scrollContainer={gridContainerRef.current}
 						width={width - CONTAINER_SCROLL_WIDTH}
 						data={props.data}
-						//TODO Review to use the dynamic width and also review NaN
-						totalColumnWidth={columnWidth * columnCount}
-						stretchMode={props.stretchMode}
+						totalColumnWidth={getTotalColumnWidth(getColumnWidth)}
+						stretchMode={props.stretchMode ?? StretchMode.None}
 						ref={componentRef}
 					  >
 						  {({
@@ -210,7 +215,6 @@ export const ApolloSpreadSheet = forwardRef(
 								  minRowHeight={props.minColumnHeight ?? 50}
 								  scrollLeft={scrollLeft}
 								  isScrolling={isScrolling}
-								  onScroll={onScroll}
 								  height={height}
 								  theme={props.theme}
 								  coords={coords}

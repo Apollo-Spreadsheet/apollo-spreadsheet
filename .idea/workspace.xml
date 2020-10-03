@@ -20,22 +20,13 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="0db106f2-354a-47db-8cbd-83b4c430a6ab" name="Default Changelist" comment="Fixed the scroll restore on cell editors by material ui modal, disabled it to prevent interacting with the container scroll">
-      <change afterPath="$PROJECT_DIR$/src/merged-cells/validator-warnings.ts" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/navigation/__tests__/navigation.utils.spec.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/wonder-grid.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/wonder-grid.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/cell-merger/merged-data.types.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/merged-cells/merged-data.types.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/cell-merger/merger-validator.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/merged-cells/merged-cells-validator.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/cell-merger/useCellMerger.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/merged-cells/useMergedCells.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/cell-merger/validator-warnings.ts" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/hooks/useLazyRef.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/hooks/useLazyRef.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/navigation/NavigationMask.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/navigation/NavigationMask.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/navigation/useNavigation.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/navigation/useNavigation.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/utils/helpers.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/utils/helpers.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/utils/isFunction.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/utils/isFunction.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/utils/shallowDiffers.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/utils/shallowDiffers.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/yarn.lock" beforeDir="false" afterPath="$PROJECT_DIR$/yarn.lock" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/column-grid/ColumnGrid.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/column-grid/ColumnGrid.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/column-grid/column-grid-props.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/column-grid/column-grid-props.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/core/CellMeasureWrapper.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/core/CellMeasureWrapper.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/core/GridWrapper.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/core/GridWrapper.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/core/ScrollHandler.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/core/ScrollHandler.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/index.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/stories/Basic.stories.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/stories/Basic.stories.tsx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
