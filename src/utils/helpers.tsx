@@ -1,12 +1,16 @@
 /* eslint-disable react/prop-types */
 import React from "react";
 import { Cell } from "../types/row.interface";
+/** @todo Move this file and rename into the core */
+
 
 const generateDummy = ({ parent, index, totalDummies, dummyFor }) => {
   const style: any = {};
   const first = index === 0;
   const last = index === totalDummies - 1;
 
+  /** @todo Review this part, we might only provide a className with theme to indicate whether its the last
+   * column or last row or even for spanns, the user might want to do something about it **/
   if (dummyFor === "colSpan") {
     style.borderLeft = 0;
     if (!last) {
@@ -36,11 +40,16 @@ const generateDummy = ({ parent, index, totalDummies, dummyFor }) => {
   };
 };
 
-/**@todo Recreate this **/
+/**@todo Re create this without being an object and also move into a different file this kind of process
+ *  **/
 const dummyBuffer = {
   init() {
     // @ts-ignore
     this.buffer = new Map();
+  },
+  dispose() {
+    // @ts-ignore
+    this.buffer = null
   },
   extract(index) {
     // @ts-ignore
@@ -83,10 +92,15 @@ const dummyBuffer = {
   },
 };
 
+/**
+ * Requires a re-write due to flatMap, unknown types and the data not being passed
+ * with interface and as row(with cells)
+ * @param data
+ */
 export function insertDummyCells(data: any[] = []) {
   dummyBuffer.init();
 
-  return data.map((row: any) => {
+  const transformedData = data.map((row: any) => {
     let lastRowSpanI = -1;
     let finalCellIndex = 0;
 
@@ -148,4 +162,9 @@ export function insertDummyCells(data: any[] = []) {
 
     return cells;
   });
+
+  //Release the used memory of the map
+  dummyBuffer.dispose()
+
+  return transformedData
 }

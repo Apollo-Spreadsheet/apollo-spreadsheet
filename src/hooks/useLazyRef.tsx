@@ -1,6 +1,11 @@
 import {useRef} from "react";
 
-export function useLazyRef<T = any>(func: Function){
+/**
+ * Creates a ref using `useRef` hook that is initialized by a function later on
+ * @example Used for cache construction with react-virtualized
+ * @param func
+ */
+export function useLazyRef<T = any>(func: () => T){
 	const ref = useRef<T | null>(null);
 
 	if (!ref.current) {

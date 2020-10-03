@@ -4,6 +4,13 @@ import { Popover } from "@material-ui/core";
 interface Props {
   anchorElement: Element | null;
 }
+
+/**
+ * @todo We need to use a mask instead of borders, borders will provoke a full renderer and the mask
+ * can provide also multiple selection if needed or any kind of operation without the need of invoking grid lifecycle methods
+ * @param anchorElement
+ * @constructor
+ */
 export function NavigationMask({
   anchorElement,
 }: Props) {

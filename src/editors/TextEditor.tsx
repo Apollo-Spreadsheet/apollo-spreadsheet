@@ -57,6 +57,10 @@ export function TextEditor({ value, onCommit, onCommitCancel, anchorRef, cellWid
 		return onCommitCancel(navigationKey)
 	}
 
+	/**
+	 * @todo Most of popover properties must be moved into BaseEditor and this text/numerical etc editors must just return
+	 * the inner editing cell content
+	 */
 	return (
 		<Popover
 			anchorEl={anchorRef}

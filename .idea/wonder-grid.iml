@@ -5,6 +5,8 @@
       <sourceFolder url="file://$MODULE_DIR$/src/column-grid/utils/__tests__" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/src/column-grid/__mocks__" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/src/column-grid/__tests__" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/src/merged-cells/__tests__" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/src/navigation/__tests__" isTestSource="true" />
       <excludeFolder url="file://$MODULE_DIR$/.tmp" />
       <excludeFolder url="file://$MODULE_DIR$/temp" />
       <excludeFolder url="file://$MODULE_DIR$/tmp" />

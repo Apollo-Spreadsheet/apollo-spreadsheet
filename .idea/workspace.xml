@@ -19,11 +19,23 @@
     <select />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="0db106f2-354a-47db-8cbd-83b4c430a6ab" name="Default Changelist" comment="Added prettier rules and eslint">
+    <list default="true" id="0db106f2-354a-47db-8cbd-83b4c430a6ab" name="Default Changelist" comment="Fixed the scroll restore on cell editors by material ui modal, disabled it to prevent interacting with the container scroll">
+      <change afterPath="$PROJECT_DIR$/src/merged-cells/validator-warnings.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/navigation/__tests__/navigation.utils.spec.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/wonder-grid.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/wonder-grid.iml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/core/GridWrapper.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/core/GridWrapper.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/core/ScrollHandler.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/core/ScrollHandler.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/editors/TextEditor.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/editors/TextEditor.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/cell-merger/merged-data.types.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/merged-cells/merged-data.types.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/cell-merger/merger-validator.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/merged-cells/merged-cells-validator.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/cell-merger/useCellMerger.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/merged-cells/useMergedCells.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/cell-merger/validator-warnings.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/hooks/useLazyRef.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/hooks/useLazyRef.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/navigation/NavigationMask.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/navigation/NavigationMask.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/navigation/useNavigation.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/navigation/useNavigation.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/utils/helpers.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/utils/helpers.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/utils/isFunction.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/utils/isFunction.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/utils/shallowDiffers.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/utils/shallowDiffers.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/yarn.lock" beforeDir="false" afterPath="$PROJECT_DIR$/yarn.lock" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -94,7 +106,7 @@
       <recent name="$PROJECT_DIR$/src/types" />
     </key>
   </component>
-  <component name="RunManager" selected="Jest.&lt;ColumnGrid /&gt;">
+  <component name="RunManager" selected="Jest.Navigation utils">
     <configuration name="Create fixed width mapping" type="JavaScriptTestRunnerJest" temporary="true" nameIsGenerated="true">
       <node-interpreter value="project" />
       <node-options value="" />
@@ -105,6 +117,19 @@
       <test-file value="$PROJECT_DIR$/src/column-grid/utils/__tests__/create-fixed-width-mapping.spec.ts" />
       <test-names>
         <test-name value="Create fixed width mapping" />
+      </test-names>
+      <method v="2" />
+    </configuration>
+    <configuration name="Navigation utils" type="JavaScriptTestRunnerJest" temporary="true" nameIsGenerated="true">
+      <node-interpreter value="project" />
+      <node-options value="" />
+      <jest-package value="$PROJECT_DIR$/node_modules/jest" />
+      <working-dir value="$PROJECT_DIR$" />
+      <envs />
+      <scope-kind value="SUITE" />
+      <test-file value="$PROJECT_DIR$/src/navigation/__tests__/navigation.utils.spec.ts" />
+      <test-names>
+        <test-name value="Navigation utils" />
       </test-names>
       <method v="2" />
     </configuration>
@@ -149,6 +174,7 @@
     </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="Jest.Navigation utils" />
         <item itemvalue="Jest.&lt;ColumnGrid /&gt;" />
         <item itemvalue="Jest.percentageToPixels()" />
         <item itemvalue="Jest.parseColumnWidthsConfiguration" />
@@ -182,7 +208,8 @@
       <workItem from="1601569375093" duration="5875000" />
       <workItem from="1601618047479" duration="10729000" />
       <workItem from="1601665269130" duration="43000" />
-      <workItem from="1601698684163" duration="607000" />
+      <workItem from="1601698684163" duration="1366000" />
+      <workItem from="1601710568241" duration="1364000" />
     </task>
     <task id="LOCAL-00001" summary="Rename and new grid props">
       <created>1601153792605</created>
@@ -219,7 +246,14 @@
       <option name="project" value="LOCAL" />
       <updated>1601653767487</updated>
     </task>
-    <option name="localTasksCounter" value="6" />
+    <task id="LOCAL-00006" summary="Fixed the scroll restore on cell editors by material ui modal, disabled it to prevent interacting with the container scroll">
+      <created>1601702457894</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1601702457894</updated>
+    </task>
+    <option name="localTasksCounter" value="7" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -244,37 +278,38 @@
     <MESSAGE value="New updates on dynamic fixed column widths and stretch mode&#10;for last and all calculation" />
     <MESSAGE value="Created unit tests for column utils, refactored some existing methods and TODO's, installed enzyme, configured jest to work with typescript, started working on shallow testing for ColumnGrid and started creating stretch stories which are indeed incomplete" />
     <MESSAGE value="Added prettier rules and eslint" />
-    <option name="LAST_COMMIT_MESSAGE" value="Added prettier rules and eslint" />
+    <MESSAGE value="Fixed the scroll restore on cell editors by material ui modal, disabled it to prevent interacting with the container scroll" />
+    <option name="LAST_COMMIT_MESSAGE" value="Fixed the scroll restore on cell editors by material ui modal, disabled it to prevent interacting with the container scroll" />
   </component>
   <component name="WindowStateProjectService">
     <state x="806" y="445" width="298" height="219" key="#ESLint" timestamp="1601653797630">
       <screen x="0" y="28" width="1920" height="1052" />
     </state>
     <state x="806" y="445" width="298" height="219" key="#ESLint/0.28.1920.1052@0.28.1920.1052" timestamp="1601653797630" />
-    <state width="1897" height="277" key="GridCell.Tab.0.bottom" timestamp="1601653580379">
+    <state width="1897" height="277" key="GridCell.Tab.0.bottom" timestamp="1601711237548">
       <screen x="0" y="28" width="1920" height="1052" />
     </state>
-    <state width="1897" height="277" key="GridCell.Tab.0.bottom/0.28.1920.1052@0.28.1920.1052" timestamp="1601653580379" />
-    <state width="1897" height="277" key="GridCell.Tab.0.center" timestamp="1601653580379">
+    <state width="1897" height="277" key="GridCell.Tab.0.bottom/0.28.1920.1052@0.28.1920.1052" timestamp="1601711237548" />
+    <state width="1897" height="277" key="GridCell.Tab.0.center" timestamp="1601711237548">
       <screen x="0" y="28" width="1920" height="1052" />
     </state>
-    <state width="1897" height="277" key="GridCell.Tab.0.center/0.28.1920.1052@0.28.1920.1052" timestamp="1601653580379" />
-    <state width="1897" height="277" key="GridCell.Tab.0.left" timestamp="1601653580378">
+    <state width="1897" height="277" key="GridCell.Tab.0.center/0.28.1920.1052@0.28.1920.1052" timestamp="1601711237548" />
+    <state width="1897" height="277" key="GridCell.Tab.0.left" timestamp="1601711237547">
       <screen x="0" y="28" width="1920" height="1052" />
     </state>
-    <state width="1897" height="277" key="GridCell.Tab.0.left/0.28.1920.1052@0.28.1920.1052" timestamp="1601653580378" />
-    <state width="1897" height="277" key="GridCell.Tab.0.right" timestamp="1601653580379">
+    <state width="1897" height="277" key="GridCell.Tab.0.left/0.28.1920.1052@0.28.1920.1052" timestamp="1601711237547" />
+    <state width="1897" height="277" key="GridCell.Tab.0.right" timestamp="1601711237548">
       <screen x="0" y="28" width="1920" height="1052" />
     </state>
-    <state width="1897" height="277" key="GridCell.Tab.0.right/0.28.1920.1052@0.28.1920.1052" timestamp="1601653580379" />
-    <state x="449" y="189" width="1022" height="732" key="SettingsEditor" timestamp="1601653954053">
+    <state width="1897" height="277" key="GridCell.Tab.0.right/0.28.1920.1052@0.28.1920.1052" timestamp="1601711237548" />
+    <state x="449" y="189" width="1022" height="732" key="SettingsEditor" timestamp="1601702471361">
       <screen x="0" y="28" width="1920" height="1052" />
     </state>
-    <state x="449" y="189" width="1022" height="732" key="SettingsEditor/0.28.1920.1052@0.28.1920.1052" timestamp="1601653954053" />
-    <state x="555" y="290" width="800" height="530" key="Vcs.Push.Dialog.v2" timestamp="1601653768553">
+    <state x="449" y="189" width="1022" height="732" key="SettingsEditor/0.28.1920.1052@0.28.1920.1052" timestamp="1601702471361" />
+    <state x="555" y="290" width="800" height="530" key="Vcs.Push.Dialog.v2" timestamp="1601702459470">
       <screen x="0" y="28" width="1920" height="1052" />
     </state>
-    <state x="555" y="290" width="800" height="530" key="Vcs.Push.Dialog.v2/0.28.1920.1052@0.28.1920.1052" timestamp="1601653768553" />
+    <state x="555" y="290" width="800" height="530" key="Vcs.Push.Dialog.v2/0.28.1920.1052@0.28.1920.1052" timestamp="1601702459470" />
     <state x="741" y="469" width="438" height="172" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2" timestamp="1601153845903">
       <screen x="0" y="28" width="1920" height="1052" />
     </state>
