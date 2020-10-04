@@ -15,7 +15,8 @@
   "scripts": {
     "lint": "eslint src",
     "lint-fix": "eslint src --fix",
-    "storybook": "cross-env NODE_ENV=development start-storybook -p 9001 -c storybook -s ./storybook/public",
+    "storybook": "cross-env NODE_ENV=development start-storybook -p 9001  -s ./.storybook/public",
+    "build": "yarn build-storybook -o ./out",
     "prettier": "pretty-quick --staged",
     "test": "jest"
   },
