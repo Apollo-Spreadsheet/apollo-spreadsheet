@@ -1,7 +1,5 @@
 import React, { useMemo, useEffect, useRef } from "react"
 import { CellMeasurer, CellMeasurerCache } from "react-virtualized"
-import { makeStyles } from "@material-ui/core/styles"
-import shallowDiffers from "../utils/shallowDiffers"
 
 const generateArr = (n) => [...Array(n).keys()]
 
