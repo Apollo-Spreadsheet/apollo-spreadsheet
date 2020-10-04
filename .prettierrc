@@ -9,6 +9,7 @@
   "singleQuote": true,
   "trailingComma": "all",
   "useTabs": true,
-  "vueIndentScriptAndStyle": false,
-  "printWidth": 120
+  "printWidth": 100,
+  "tabWidth": 2,
+  "jsxBracketSameLine": false
 }

@@ -31,7 +31,9 @@ export const buildCellFromHeader = (row: TestRow, columns: Column[]) => {
 																																						const data = {
 																																							id: `cell-${row.id}-${col.id}`,
 																																							data: col.cellRenderer
-																																								? col.cellRenderer({ row })
+																																								? col.cellRenderer({
+																																										row,
+																																								  })
 																																								: row[col.accessor],
 																																						}
 																																						cell.push(data)
