@@ -9,4 +9,3 @@ export const isDefined = () => {}
 export const isZero = () => {}
 
 export const isSingleSpan = () => {}
-

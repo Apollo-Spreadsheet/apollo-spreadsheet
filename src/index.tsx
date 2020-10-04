@@ -12,7 +12,7 @@ import { FixedColumnWidthRecord } from './column-grid/types/fixed-column-width-r
 import { createFixedWidthMapping } from './column-grid/utils/createFixedWidthMapping'
 import { Column } from './column-grid/types/header.type'
 import shallowDiffers from './helpers/shallowDiffers'
-import {insertDummyCells} from "./core/insertDummyCells"
+import { insertDummyCells } from './core/insertDummyCells'
 
 const CONTAINER_SCROLL_WIDTH = 5
 /** @todo Make it 15 or 10 to be a little bit wider **/
@@ -178,7 +178,7 @@ export const ApolloSpreadSheet = forwardRef((props: Props, componentRef: any) =>
 	const getTotalColumnWidth = useCallback(
 		getColumnWidth => {
 			let value = 0
-			for(let i = 0; i < columnCount; i++){
+			for (let i = 0; i < columnCount; i++) {
 				value += getColumnWidthHelper(getColumnWidth)({ index: i })
 			}
 			return value - CONTAINER_SCROLL_WIDTH
@@ -194,7 +194,7 @@ export const ApolloSpreadSheet = forwardRef((props: Props, componentRef: any) =>
 					columnCount={calculatingColumnCount}
 					width={buildColumnTotalWidth(width)}
 				>
-					{({  registerChild, getColumnWidth }) => (
+					{({ registerChild, getColumnWidth }) => (
 						<ScrollHandler
 							scrollContainer={gridContainerRef.current}
 							width={width - CONTAINER_SCROLL_WIDTH}

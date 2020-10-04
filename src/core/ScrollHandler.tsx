@@ -1,4 +1,4 @@
-import React, {useState, useRef, useEffect, useCallback, useImperativeHandle, forwardRef, useMemo} from 'react'
+import React, { useState, useRef, useEffect, useCallback, useImperativeHandle, forwardRef, useMemo } from 'react'
 import { createPortal } from 'react-dom'
 import { WindowScroller } from 'react-virtualized'
 import { debounce } from 'lodash'
@@ -152,7 +152,7 @@ const ScrollHandler = forwardRef(
 								headerRef,
 								gridRef,
 							})}
-							{ displayHorizontalScroll && (
+							{displayHorizontalScroll && (
 								<div
 									id="fake-scroller"
 									className={classes.root}
@@ -162,7 +162,7 @@ const ScrollHandler = forwardRef(
 										bottom: stickyScroller ? '0px' : 'unset',
 									}}
 									onScroll={e => {
-										handleHorizontalScroll({ scrollLeft: e.target['scrollLeft']})
+										handleHorizontalScroll({ scrollLeft: e.target['scrollLeft'] })
 									}}
 									ref={fakeScrollerRef}
 								>

@@ -1,3 +1,3 @@
-import {ICellClickProps} from "./cell-click-props.type"
+import { ICellClickProps } from './cell-click-props.type'
 
-export type OnCellClick = (data: ICellClickProps) => void;
+export type OnCellClick = (data: ICellClickProps) => void

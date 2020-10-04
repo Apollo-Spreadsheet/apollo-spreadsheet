@@ -1,6 +1,6 @@
-import React, {CSSProperties} from 'react'
-import {Popover} from '@material-ui/core'
-import {NavigationKey} from './navigation-key.enum'
+import React, { CSSProperties } from 'react'
+import { Popover } from '@material-ui/core'
+import { NavigationKey } from './navigation-key.enum'
 import ReactNumberFormat from 'react-number-format'
 
 interface Props {

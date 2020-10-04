@@ -1,14 +1,14 @@
-import React, {useState} from 'react'
-import {GridRow} from "../types/row.interface"
+import React, { useState } from 'react'
+import { GridRow } from '../types/row.interface'
 
 interface IEditorState {
 	isEditing: boolean
 	editor?: {
 		node: JSX.Element
 		/** @todo Not sure if necessary having the row because it might change during editor being active **/
-		row: GridRow;
-		rowIndex: number;
-		colIndex: number;
+		row: GridRow
+		rowIndex: number
+		colIndex: number
 		initialValue: string
 	}
 }

@@ -2,11 +2,11 @@
  * Public interface to seed row data
  */
 export interface Cell<Key = string> {
-  id: Key;
-  /** @todo Remove this, the header using cellRenderer or plain data with acessor controls the content **/
-  children: any;
-  rowSpan?: number;
-  colSpan?: number;
+	id: Key
+	/** @todo Remove this, the header using cellRenderer or plain data with acessor controls the content **/
+	children: any
+	rowSpan?: number
+	colSpan?: number
 }
 
 /**
@@ -14,11 +14,11 @@ export interface Cell<Key = string> {
  * internal states
  */
 export interface GridCell extends Cell {
-  parentRow?: Cell;
-  style?: any;
-  gridType?: string;
-  dummy?: boolean;
-  dummyFor?: string;
+	parentRow?: Cell
+	style?: any
+	gridType?: string
+	dummy?: boolean
+	dummyFor?: string
 }
 
 export type GridRow = Array<GridCell>

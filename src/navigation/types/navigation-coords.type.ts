@@ -1,5 +1,4 @@
-
 export interface NavigationCoords {
-	rowIndex: number;
-	colIndex: number;
+	rowIndex: number
+	colIndex: number
 }

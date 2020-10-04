@@ -1,7 +1,7 @@
-import {parseColumnWidthsConfiguration} from "./parseColumnWidthsConfiguration"
-import {FixedColumnWidthRecord} from "../types/fixed-column-width-record"
-import {Column} from "../types/header.type"
-import {StretchMode} from "../../types/stretch-mode.enum"
+import { parseColumnWidthsConfiguration } from './parseColumnWidthsConfiguration'
+import { FixedColumnWidthRecord } from '../types/fixed-column-width-record'
+import { Column } from '../types/header.type'
+import { StretchMode } from '../../types/stretch-mode.enum'
 
 /**
  * Creates an object indexing the fixed column widths by its index as key for fast lookup on dynamic widths
@@ -10,14 +10,20 @@ import {StretchMode} from "../../types/stretch-mode.enum"
  * @param minColumnWidth
  * @param stretchMode
  */
-export const createFixedWidthMapping = (columns: Column[], containerWidth: number, minColumnWidth: number, stretchMode: StretchMode, scrollWidth: number) => {
+export const createFixedWidthMapping = (
+	columns: Column[],
+	containerWidth: number,
+	minColumnWidth: number,
+	stretchMode: StretchMode,
+	scrollWidth: number,
+) => {
 	const mapping = columns.reduce((acc, e, i) => {
 		if (!e.width) {
 			return acc
 		}
 		const value = parseColumnWidthsConfiguration(e.width, containerWidth)
 		//Avoid creating an entry because react-virtualized grid will use the minimum width
-		if (value < minColumnWidth){
+		if (value < minColumnWidth) {
 			return acc
 		}
 		acc[i] = value
@@ -27,7 +33,7 @@ export const createFixedWidthMapping = (columns: Column[], containerWidth: numbe
 	const isAllColWidthsFilled = columns.filter(e => e.width).length === columns.length
 	let totalSize = Object.values(mapping).reduce((acc, e) => acc + e, 0)
 	//Loop over the new mapping and adjust
-	const remainingSize = Math.max(0, Math.max(0, (containerWidth - scrollWidth)) - totalSize)
+	const remainingSize = Math.max(0, Math.max(0, containerWidth - scrollWidth) - totalSize)
 	//We might have a margin that some width is left
 	if (isAllColWidthsFilled && totalSize < containerWidth) {
 		//Add the remaining size into the last
@@ -59,6 +65,6 @@ export const createFixedWidthMapping = (columns: Column[], containerWidth: numbe
 
 	return {
 		totalSize,
-		mapping
+		mapping,
 	}
 }

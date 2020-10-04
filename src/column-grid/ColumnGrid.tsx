@@ -4,7 +4,7 @@ import CellMeasurer from '../core/CellMeasureWrapper'
 import { Column } from './types/header.type'
 import clsx from 'clsx'
 import { ColumnGridProps } from './column-grid-props'
-import {insertDummyCells} from "../core/insertDummyCells"
+import { insertDummyCells } from '../core/insertDummyCells'
 
 export const ColumnGrid = React.memo(
 	forwardRef((props: ColumnGridProps, componentRef) => {
