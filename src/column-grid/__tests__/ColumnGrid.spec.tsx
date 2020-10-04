@@ -12,7 +12,6 @@ describe('<ColumnGrid />', () => {
 		width: 100,
 		scrollLeft: 0,
 		isScrolling: false,
-		onScroll: () => {},
 		height: 100,
 		coords: { rowIndex: 0, colIndex: 0}
 	}

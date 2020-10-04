@@ -19,8 +19,13 @@
     <select />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="0db106f2-354a-47db-8cbd-83b4c430a6ab" name="Default Changelist" comment="Refactored dummy buffer into its own class &#10;Fixed the width by removing adjusted width from react-virtualized, it was returning NaNs&#10;Renamed general utils into helpers and moved the insertDummyCells into the core utils&#10;Adjusted the storybook for stretch modes &#10;Started working on the idea of useEditorManager to manage all the necessary editors">
-      <change beforePath="$PROJECT_DIR$/src/core/dummy-buffer.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/core/dummy-buffer.ts" afterDir="false" />
+    <list default="true" id="0db106f2-354a-47db-8cbd-83b4c430a6ab" name="Default Changelist" comment="Added some notes on grid wrapper regarding dummy cells having the normal row/cell style&#10;Renamed row to cell class on theme and added comments">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/column-grid/__tests__/ColumnGrid.spec.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/column-grid/__tests__/ColumnGrid.spec.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/core/GridWrapper.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/core/GridWrapper.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/core/ScrollHandler.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/core/ScrollHandler.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/index.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/stories/Stretch.stories.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/stories/Stretch.stories.tsx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -200,7 +205,7 @@
       <workItem from="1601717964343" duration="42000" />
       <workItem from="1601726821554" duration="67000" />
       <workItem from="1601793448973" duration="840000" />
-      <workItem from="1601807225505" duration="1909000" />
+      <workItem from="1601807225505" duration="7719000" />
     </task>
     <task id="LOCAL-00001" summary="Rename and new grid props">
       <created>1601153792605</created>
@@ -265,7 +270,14 @@
       <option name="project" value="LOCAL" />
       <updated>1601808944537</updated>
     </task>
-    <option name="localTasksCounter" value="10" />
+    <task id="LOCAL-00010" summary="Added some notes on grid wrapper regarding dummy cells having the normal row/cell style&#10;Renamed row to cell class on theme and added comments">
+      <created>1601809431296</created>
+      <option name="number" value="00010" />
+      <option name="presentableId" value="LOCAL-00010" />
+      <option name="project" value="LOCAL" />
+      <updated>1601809431296</updated>
+    </task>
+    <option name="localTasksCounter" value="11" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -294,7 +306,8 @@
     <MESSAGE value="Fixed nested headers issue that was not catching the right width (also the NaN issue with cell measurer) and started reviewing the horizontal scroll problem" />
     <MESSAGE value="Prettier and removed the usage of lazyRef hook" />
     <MESSAGE value="Refactored dummy buffer into its own class &#10;Fixed the width by removing adjusted width from react-virtualized, it was returning NaNs&#10;Renamed general utils into helpers and moved the insertDummyCells into the core utils&#10;Adjusted the storybook for stretch modes &#10;Started working on the idea of useEditorManager to manage all the necessary editors" />
-    <option name="LAST_COMMIT_MESSAGE" value="Refactored dummy buffer into its own class &#10;Fixed the width by removing adjusted width from react-virtualized, it was returning NaNs&#10;Renamed general utils into helpers and moved the insertDummyCells into the core utils&#10;Adjusted the storybook for stretch modes &#10;Started working on the idea of useEditorManager to manage all the necessary editors" />
+    <MESSAGE value="Added some notes on grid wrapper regarding dummy cells having the normal row/cell style&#10;Renamed row to cell class on theme and added comments" />
+    <option name="LAST_COMMIT_MESSAGE" value="Added some notes on grid wrapper regarding dummy cells having the normal row/cell style&#10;Renamed row to cell class on theme and added comments" />
   </component>
   <component name="WindowStateProjectService">
     <state x="806" y="445" width="298" height="219" key="#ESLint" timestamp="1601653797630">
@@ -321,10 +334,10 @@
       <screen x="0" y="28" width="1920" height="1052" />
     </state>
     <state x="449" y="189" width="1022" height="732" key="SettingsEditor/0.28.1920.1052@0.28.1920.1052" timestamp="1601702471361" />
-    <state x="555" y="290" width="800" height="530" key="Vcs.Push.Dialog.v2" timestamp="1601808945430">
+    <state x="555" y="290" width="800" height="530" key="Vcs.Push.Dialog.v2" timestamp="1601809432132">
       <screen x="0" y="28" width="1920" height="1052" />
     </state>
-    <state x="555" y="290" width="800" height="530" key="Vcs.Push.Dialog.v2/0.28.1920.1052@0.28.1920.1052" timestamp="1601808945430" />
+    <state x="555" y="290" width="800" height="530" key="Vcs.Push.Dialog.v2/0.28.1920.1052@0.28.1920.1052" timestamp="1601809432132" />
     <state x="741" y="469" width="438" height="172" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2" timestamp="1601153845903">
       <screen x="0" y="28" width="1920" height="1052" />
     </state>

@@ -21,8 +21,13 @@ const ExampleTable = ({ headerData, data, stretchMode }) => {
 
 storiesOf('Stretch Modes', module)
 	.add('None (with remaining width left and no scroll)', () => {
-		const { headerData, data } = getSimpleData(10, 3)
-		return <ExampleTable headerData={headerData} data={data} stretchMode={StretchMode.None} />
+		const { data } = getSimpleData(10, 3)
+		const headers: Column[] = [
+			createColumnMock({ width: '20%', title: 'First' }),
+			createColumnMock({ width: '20%', title: 'Second' }),
+			createColumnMock({ width: '50%', title: 'Third' }),
+		]
+		return <ExampleTable headerData={[headers]} data={data} stretchMode={StretchMode.None} />
 	})
 	.add('None (fixed widths with scroll)', () => {
 		const headers: Column[] = [

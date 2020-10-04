@@ -63,7 +63,6 @@ interface Props extends GridWrapperCommonProps {
 	scrollLeft: number;
 	scrollTop: number;
 	isScrolling: boolean;
-	onScroll: (params: ScrollParams) => any;
 	height: number;
 	registerChild: Function;
 	gridContainerRef: HTMLDivElement | null;
@@ -281,13 +280,13 @@ const GridWrapper = forwardRef((props: Props, componentRef: any) => {
 			  style.border = "1px solid blue"
 		  } else {
 			  //Bind default border
-			  if (!props.theme || !props.theme.cellClass) {
+			  if (!props.theme || !props.theme.cellClass && !cell.dummy) {
 				  style.border = "1px solid rgb(204, 204, 204)"
 			  }
 		  }
 
 		  //Non navigable columns get now a custom disable style
-		  if (props.headers[0][columnIndex]?.disableNavigation) {
+		  if (props.headers[0][columnIndex]?.disableNavigation && !cell.dummy) {
 			  /** @todo We can apply the custom class if theme has it by using a class builder such as clsx **/
 			  style.opacity = 0.6
 		  }
@@ -301,17 +300,18 @@ const GridWrapper = forwardRef((props: Props, componentRef: any) => {
 		   * @todo The children renderer has to be controlled via the custom column configuration
 		   * */
 
+		  const cellClassName = !cell.dummy && isRowSelected && props.theme?.currentRowClass
+		    ? clsx(props.theme?.cellClass, props.theme?.currentRowClass)
+		    : !cell.dummy ? props.theme?.cellClass: undefined
+
+		  //Ensure dummies does not have border
+		  if (cell.dummy){
+			  style.border = '0px'
+		  }
+
 		  return (
 			<div
-			  /**
-			  *  @todo Removing most of the custom styling on dummy cells! it is applying borders and other things
-			  that must not be on dummies, dummies are supposed to be invisible
-				*/
-			  className={
-				  isRowSelected && props.theme?.currentRowClass
-					? clsx(props.theme?.cellClass, props.theme?.currentRowClass)
-					: props.theme?.cellClass
-			  }
+			  className={cellClassName}
 			  style={{
 				  display: "flex",
 				  justifyContent: cell?.dummy ? 'top' : "center",

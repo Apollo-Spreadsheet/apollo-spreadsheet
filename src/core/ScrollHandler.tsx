@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect, useCallback, useImperativeHandle, forwardRef } from 'react'
+import React, {useState, useRef, useEffect, useCallback, useImperativeHandle, forwardRef, useMemo} from 'react'
 import { createPortal } from 'react-dom'
 import { WindowScroller } from 'react-virtualized'
 import { debounce } from 'lodash'
@@ -12,7 +12,7 @@ const useStyles = makeStyles(() => ({
 		height: '10px',
 	},
 	root: {
-		overflowX: 'auto',
+		overflowX: 'hidden',
 		minHeight: '10px',
 		'&::-webkit-scrollbar-track': {
 			borderRadius: '10px',
@@ -30,12 +30,30 @@ const useStyles = makeStyles(() => ({
 			'-webkit-box-shadow': 'inset 0 0 6px rgba(0,0,0,.3)',
 		},
 		'&:hover': {
-			//overflowX: 'auto',
+			overflowX: 'auto',
 		},
 	},
 }))
+
+interface ScrollHandlerChildrenProps {
+	height: number
+	isScrolling: boolean
+	scrollTop: number
+	scrollLeft: number
+	headerRef: React.MutableRefObject<any>
+	gridRef: React.MutableRefObject<any>
+}
+
+export type ScrollHandlerChildrenFn = (props: ScrollHandlerChildrenProps) => any
+interface Props {
+	stretchMode: StretchMode
+	totalColumnWidth: number
+	width: number
+	scrollContainer: Element | null
+	children: ScrollHandlerChildrenFn
+}
 const ScrollHandler = forwardRef(
-	({ children, scrollContainer, width, totalColumnWidth, stretchMode }: any, componentRef: any) => {
+	({ children, scrollContainer, width, totalColumnWidth, stretchMode }: Props, componentRef: any) => {
 		const scrollChildRef = useRef<any>(null)
 		const headerRef = useRef<any>(null)
 		const gridRef = useRef<any>(null)
@@ -67,7 +85,7 @@ const ScrollHandler = forwardRef(
 			}
 
 			fakeScrollerRef.current.scrollLeft = scrollLeft
-		}, [scrollLeft])
+		})
 
 		// update sticky status of fake scroller on each update if not scrolling
 		useEffect(() => {
@@ -78,7 +96,7 @@ const ScrollHandler = forwardRef(
 			const clientRect = scrollChildRef.current.getBoundingClientRect()
 
 			setStickyScroller(clientRect.bottom > window.innerHeight)
-		}, [scrolling])
+		})
 
 		// reset scrolling flag when scroll stops
 		const setNotScrolling = useCallback(
@@ -88,7 +106,7 @@ const ScrollHandler = forwardRef(
 			[],
 		)
 
-		const handleScroll = useCallback(
+		const handleHorizontalScroll = useCallback(
 			({ scrollLeft: paramScrollLeft }) => {
 				//Prevent a re-render when the target scroll left hasn't change
 				if (scrollLeft === paramScrollLeft) {
@@ -110,6 +128,18 @@ const ScrollHandler = forwardRef(
 			[],
 		)
 
+		console.log({
+			totalColumnWidth,
+			width,
+			stretchMode,
+			displayScroll: stretchMode === StretchMode.None && totalColumnWidth > width,
+			fakeScrollerRef: fakeScrollerRef.current,
+			scrollChildRef: scrollChildRef.current
+		})
+		const displayHorizontalScroll = useMemo(() => {
+			return stretchMode === StretchMode.None && totalColumnWidth > width
+		}, [width, totalColumnWidth, stretchMode])
+
 		/**
 		 * @todo Consider the possibility of using WindowScroller + ScrollSync or just ScrollSync (we will need the scroll sync feature probably for fixed rows/columns and also for horizontal scroll precision)
 		 * */
@@ -125,15 +155,13 @@ const ScrollHandler = forwardRef(
 						>
 							{children({
 								height,
-								onScroll: handleScroll,
 								isScrolling: isScrolling || scrolling,
 								scrollTop,
 								scrollLeft,
 								headerRef,
 								gridRef,
 							})}
-							{/** @todo Consider stretch mode to disable horizontal scrolling **/}
-							{ stretchMode === StretchMode.None && totalColumnWidth > width && (
+							{ displayHorizontalScroll && (
 								<div
 									id="fake-scroller"
 									className={classes.root}
@@ -142,7 +170,9 @@ const ScrollHandler = forwardRef(
 										position: stickyScroller ? 'sticky' : 'relative',
 										bottom: stickyScroller ? '0px' : 'unset',
 									}}
-									onScroll={handleScroll}
+									onScroll={e => {
+										handleHorizontalScroll({ scrollLeft: e.target['scrollLeft']})
+									}}
 									ref={fakeScrollerRef}
 								>
 									<div
