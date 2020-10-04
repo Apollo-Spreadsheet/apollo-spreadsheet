@@ -90,14 +90,14 @@ const MainTable = () => {
 		currentColumnClass: classes.currentColumnClassDark,
 		currentRowClass: classes.currentRowClassDark,
 		headerClass: classes.headerClassDark,
-		rowClass: classes.rowClassDark,
+		cellClass: classes.rowClassDark,
 	}
 
 	const topLightGridTheme: GridTheme = {
 		currentColumnClass: classes.currentColumnClass,
 		currentRowClass: classes.currentRowClass,
 		headerClass: classes.headerClass,
-		rowClass: classes.rowClass,
+		cellClass: classes.rowClass,
 	}
 
 	const onCellChange = useCallback(

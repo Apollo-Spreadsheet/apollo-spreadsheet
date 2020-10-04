@@ -1,10 +1,10 @@
-import React from "react"
+import React from 'react'
 
 interface IGenerateDummyData {
 	parent: any
 	index: number
 	totalDummies: number
-	dummyFor: "rowSpan" | "colSpan"
+	dummyFor: 'rowSpan' | 'colSpan'
 }
 
 /**
@@ -13,6 +13,12 @@ interface IGenerateDummyData {
 export class DummyBuffer {
 	private readonly _buffer = new Map<number, any>()
 
+	/**
+	 * @param parent
+	 * @param index
+	 * @param totalDummies
+	 * @param dummyFor
+	 */
 	generateDummy({ parent, index, totalDummies, dummyFor }: IGenerateDummyData) {
 		const style: React.CSSProperties = {}
 		const first = index === 0
@@ -20,7 +26,7 @@ export class DummyBuffer {
 
 		/** @todo Review this part, we might only provide a className with theme to indicate whether its the last
 		 * column or last row or even for spanns, the user might want to do something about it **/
-		if (dummyFor === "colSpan") {
+		if (dummyFor === 'colSpan') {
 			style.borderLeft = 0
 			if (!last) {
 				style.borderRight = 0
@@ -36,7 +42,7 @@ export class DummyBuffer {
 			...parent,
 			colSpan: 1,
 			rowSpan: 1,
-			children: "",
+			children: '',
 			dummy: true,
 			dummyFor,
 			first,
@@ -48,7 +54,7 @@ export class DummyBuffer {
 			parentRow: parent /** @todo We might only need the id in the future or the index */,
 		}
 	}
-	
+
 	insert(key: number, arr) {
 		if (this._buffer.has(key)) {
 			this._buffer.get(key).push(...arr)
@@ -56,7 +62,7 @@ export class DummyBuffer {
 			this._buffer.set(key, arr)
 		}
 	}
-	
+
 	extract(index: number) {
 		const arr: any[] = []
 
@@ -64,18 +70,18 @@ export class DummyBuffer {
 			return arr
 		}
 
-		this._buffer.get(index).forEach((item) => {
+		this._buffer.get(index).forEach(item => {
 			if (!item.remainingRows) {
 				return
 			}
 
 			arr.push(
-			  this.generateDummy({
-				  parent: item.parent,
-				  totalDummies: item.parent.rowSpan - 1,
-				  index: item.parent.rowSpan - 1 - item.remainingRows,
-				  dummyFor: "rowSpan",
-			  })
+				this.generateDummy({
+					parent: item.parent,
+					totalDummies: item.parent.rowSpan - 1,
+					index: item.parent.rowSpan - 1 - item.remainingRows,
+					dummyFor: 'rowSpan',
+				}),
 			)
 
 			// eslint-disable-next-line no-param-reassign

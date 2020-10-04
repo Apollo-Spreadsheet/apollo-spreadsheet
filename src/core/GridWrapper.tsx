@@ -13,14 +13,14 @@ import {HeadersData} from "../column-grid/types/header.type"
 import {GridData, GridRow} from "../types/row.interface"
 import {IGridApi} from "../types/grid-api.type"
 import {NavigationCoords} from "../navigation/types/navigation-coords.type"
-import {SelectCellFn, useNavigation} from "../navigation/useNavigation"
+import {SelectCellFn } from "../navigation/useNavigation"
 import TextEditor from "../editors/TextEditor"
 import {createPortal} from "react-dom"
 import {ClickAwayListener} from "@material-ui/core"
 import {GridTheme} from "../types/grid-theme"
 import clsx from "clsx"
 import {GridCellProps} from "react-virtualized/dist/es/Grid"
-import {useEditorManager} from "../editors/useEditorManager";
+import {useEditorManager} from "../editors/useEditorManager"
 
 export interface ICellMountedRegisterData {
 	colIndex: number;
@@ -281,7 +281,7 @@ const GridWrapper = forwardRef((props: Props, componentRef: any) => {
 			  style.border = "1px solid blue"
 		  } else {
 			  //Bind default border
-			  if (!props.theme || !props.theme.rowClass) {
+			  if (!props.theme || !props.theme.cellClass) {
 				  style.border = "1px solid rgb(204, 204, 204)"
 			  }
 		  }
@@ -303,10 +303,14 @@ const GridWrapper = forwardRef((props: Props, componentRef: any) => {
 
 		  return (
 			<div
+			  /**
+			  *  @todo Removing most of the custom styling on dummy cells! it is applying borders and other things
+			  that must not be on dummies, dummies are supposed to be invisible
+				*/
 			  className={
 				  isRowSelected && props.theme?.currentRowClass
-					? clsx(props.theme?.rowClass, props.theme?.currentRowClass)
-					: props.theme?.rowClass
+					? clsx(props.theme?.cellClass, props.theme?.currentRowClass)
+					: props.theme?.cellClass
 			  }
 			  style={{
 				  display: "flex",
