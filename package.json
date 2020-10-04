@@ -18,7 +18,8 @@
     "storybook": "cross-env NODE_ENV=development start-storybook -p 9001  -s ./.storybook/public",
     "build": "yarn build-storybook -o ./out",
     "prettier": "pretty-quick --staged",
-    "test": "jest"
+    "test": "jest",
+    "bundle-check": "bundlesize"
   },
   "peerDependencies": {
     "react": ">= 16.13.1",
@@ -35,6 +36,7 @@
     "enzyme-adapter-react-16": "^1.15.5",
     "enzyme-to-json": "^3.6.1",
     "json2csv": "^5.0.1",
+    "react-number-format": "^4.4.1",
     "react-virtualized": "^9.21.2"
   },
   "devDependencies": {
@@ -57,6 +59,7 @@
     "@types/storybook__react": "latest",
     "@typescript-eslint/eslint-plugin": "^4.3.0",
     "@typescript-eslint/parser": "^4.3.0",
+    "bundlesize": "^0.18.0",
     "cross-env": "^5.1.6",
     "del": "^5.1.0",
     "eslint": "^7.10.0",
@@ -93,6 +96,12 @@
     "webpack": "^4.39.3",
     "webpack-cli": "^3.2.3"
   },
+  "bundlesize": [
+    {
+      "path": "./dist/index.js",
+      "maxSize": "20 kB"
+    }
+  ],
   "pre-commit": [
     "lint-fix",
     "prettier",

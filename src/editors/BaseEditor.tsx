@@ -42,7 +42,7 @@ export function BaseEditor({
 			const cursorEnd = e.target['selectionEnd']
 			console.log({
 				cursorStart,
-				cursorEnd
+				cursorEnd,
 			})
 			if (e.key === NavigationKey.ArrowRight && !isCaretAtEndPosition(0, e.target['value'].length)) {
 				return console.log('Not in the end so')
@@ -60,7 +60,8 @@ export function BaseEditor({
 		<Popover
 			anchorEl={anchorRef}
 			open
-			onClose={onCommitCancel}
+			//Review because this is enforced just to prevent tsc error
+			onClose={() => onCommitCancel(NavigationKey.ArrowUp)}
 			anchorOrigin={{
 				vertical: 'center',
 				horizontal: 'center',
@@ -68,10 +69,9 @@ export function BaseEditor({
 			transformOrigin={{
 				vertical: 'center',
 				horizontal: 'center',
-			}}>
-			<div style={{ width: cellStyle.width, height: maxHeight }}>
-				{editor(value, onKeyDown, maxLength)}
-			</div>
+			}}
+		>
+			<div style={{ width: cellStyle.width, height: maxHeight }}>{editor(value, onKeyDown, maxLength)}</div>
 		</Popover>
 	)
 }

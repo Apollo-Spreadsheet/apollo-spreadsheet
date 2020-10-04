@@ -1,4 +1,4 @@
-import {percentageToPixels} from "./percentageToPixels"
+import { percentageToPixels } from './percentageToPixels'
 
 /**
  * Converts the column widths from percentage or px down to pure number value (which is pixels in the end) for fixed column width configuration
