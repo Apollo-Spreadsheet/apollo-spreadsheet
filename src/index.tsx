@@ -181,7 +181,7 @@ export const ApolloSpreadSheet = forwardRef((props: Props, componentRef: any) =>
 			for(let i = 0; i < columnCount; i++){
 				value += getColumnWidthHelper(getColumnWidth)({ index: i })
 			}
-			return value
+			return value - CONTAINER_SCROLL_WIDTH
 		},
 		[mainHeaders],
 	)

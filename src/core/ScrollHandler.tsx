@@ -127,15 +127,6 @@ const ScrollHandler = forwardRef(
 			}, recomputeDebounceTimeout),
 			[],
 		)
-
-		console.log({
-			totalColumnWidth,
-			width,
-			stretchMode,
-			displayScroll: stretchMode === StretchMode.None && totalColumnWidth > width,
-			fakeScrollerRef: fakeScrollerRef.current,
-			scrollChildRef: scrollChildRef.current
-		})
 		const displayHorizontalScroll = useMemo(() => {
 			return stretchMode === StretchMode.None && totalColumnWidth > width
 		}, [width, totalColumnWidth, stretchMode])
