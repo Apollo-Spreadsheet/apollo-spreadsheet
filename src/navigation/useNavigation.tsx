@@ -5,7 +5,7 @@ import { ICellClickProps } from './types/cell-click-props.type'
 import { NavigationCoords } from './types/navigation-coords.type'
 import { OnCellClick } from './types/cell-click-event.type'
 import { Column } from '../column-grid/types/header.type'
-import { isFunctionType } from '../utils/isFunction'
+import { isFunctionType } from '../helpers/isFunction'
 
 interface Props {
 	defaultCoords: NavigationCoords

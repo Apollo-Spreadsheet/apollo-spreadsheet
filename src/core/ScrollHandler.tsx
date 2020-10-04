@@ -110,6 +110,9 @@ const ScrollHandler = forwardRef(
 			[],
 		)
 
+		/**
+		 * @todo Consider the possibility of using WindowScroller + ScrollSync or just ScrollSync (we will need the scroll sync feature probably for fixed rows/columns and also for horizontal scroll precision)
+		 * */
 		return (
 			<>
 				<WindowScroller scrollElement={scrollContainer || window} onResize={onResize}>

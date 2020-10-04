@@ -20,6 +20,7 @@ import {ClickAwayListener} from "@material-ui/core"
 import {GridTheme} from "../types/grid-theme"
 import clsx from "clsx"
 import {GridCellProps} from "react-virtualized/dist/es/Grid"
+import {useEditorManager} from "../editors/useEditorManager";
 
 export interface ICellMountedRegisterData {
 	colIndex: number;
@@ -99,6 +100,8 @@ const GridWrapper = forwardRef((props: Props, componentRef: any) => {
 	  [props.headers]
 	)
 
+	/** @todo activeEditor will be replaced by editorState **/
+	const [editorState] = useEditorManager()
 	const [activeEditor, setActiveEditor] = useState<{
 		row: GridRow;
 		rowIndex: number;

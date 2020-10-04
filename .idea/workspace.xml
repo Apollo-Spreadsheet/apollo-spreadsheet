@@ -19,14 +19,23 @@
     <select />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="0db106f2-354a-47db-8cbd-83b4c430a6ab" name="Default Changelist" comment="Fixed the scroll restore on cell editors by material ui modal, disabled it to prevent interacting with the container scroll">
+    <list default="true" id="0db106f2-354a-47db-8cbd-83b4c430a6ab" name="Default Changelist" comment="Prettier and removed the usage of lazyRef hook">
+      <change afterPath="$PROJECT_DIR$/src/core/dummy-buffer.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/core/insertDummyCells.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/editors/useEditorManager.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/column-grid/ColumnGrid.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/column-grid/ColumnGrid.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/column-grid/column-grid-props.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/column-grid/column-grid-props.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/core/CellMeasureWrapper.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/core/CellMeasureWrapper.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/core/GridWrapper.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/core/GridWrapper.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/core/ScrollHandler.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/core/ScrollHandler.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/index.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/navigation/useNavigation.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/navigation/useNavigation.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/stories/Basic.stories.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/stories/Basic.stories.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/stories/Stretch.stories.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/stories/Stretch.stories.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/stories/dataUseCases.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/stories/dataUseCases.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/utils/generateData.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/stories/generateData.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/utils/helpers.tsx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/utils/isFunction.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/helpers/isFunction.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/utils/shallowDiffers.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/helpers/shallowDiffers.ts" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -92,6 +101,8 @@
   </component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/src/stories" />
+      <recent name="$PROJECT_DIR$/src/core" />
       <recent name="$PROJECT_DIR$" />
       <recent name="$PROJECT_DIR$/src" />
       <recent name="$PROJECT_DIR$/src/types" />
@@ -201,6 +212,10 @@
       <workItem from="1601665269130" duration="43000" />
       <workItem from="1601698684163" duration="1366000" />
       <workItem from="1601710568241" duration="1364000" />
+      <workItem from="1601717964343" duration="42000" />
+      <workItem from="1601726821554" duration="67000" />
+      <workItem from="1601793448973" duration="840000" />
+      <workItem from="1601807225505" duration="1534000" />
     </task>
     <task id="LOCAL-00001" summary="Rename and new grid props">
       <created>1601153792605</created>
@@ -244,7 +259,21 @@
       <option name="project" value="LOCAL" />
       <updated>1601702457894</updated>
     </task>
-    <option name="localTasksCounter" value="7" />
+    <task id="LOCAL-00007" summary="Fixed nested headers issue that was not catching the right width (also the NaN issue with cell measurer) and started reviewing the horizontal scroll problem">
+      <created>1601717475045</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1601717475045</updated>
+    </task>
+    <task id="LOCAL-00008" summary="Prettier and removed the usage of lazyRef hook">
+      <created>1601717553356</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1601717553356</updated>
+    </task>
+    <option name="localTasksCounter" value="9" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -270,40 +299,46 @@
     <MESSAGE value="Created unit tests for column utils, refactored some existing methods and TODO's, installed enzyme, configured jest to work with typescript, started working on shallow testing for ColumnGrid and started creating stretch stories which are indeed incomplete" />
     <MESSAGE value="Added prettier rules and eslint" />
     <MESSAGE value="Fixed the scroll restore on cell editors by material ui modal, disabled it to prevent interacting with the container scroll" />
-    <option name="LAST_COMMIT_MESSAGE" value="Fixed the scroll restore on cell editors by material ui modal, disabled it to prevent interacting with the container scroll" />
+    <MESSAGE value="Fixed nested headers issue that was not catching the right width (also the NaN issue with cell measurer) and started reviewing the horizontal scroll problem" />
+    <MESSAGE value="Prettier and removed the usage of lazyRef hook" />
+    <option name="LAST_COMMIT_MESSAGE" value="Prettier and removed the usage of lazyRef hook" />
   </component>
   <component name="WindowStateProjectService">
     <state x="806" y="445" width="298" height="219" key="#ESLint" timestamp="1601653797630">
       <screen x="0" y="28" width="1920" height="1052" />
     </state>
     <state x="806" y="445" width="298" height="219" key="#ESLint/0.28.1920.1052@0.28.1920.1052" timestamp="1601653797630" />
-    <state width="1897" height="277" key="GridCell.Tab.0.bottom" timestamp="1601711237548">
+    <state width="1897" height="277" key="GridCell.Tab.0.bottom" timestamp="1601717560860">
       <screen x="0" y="28" width="1920" height="1052" />
     </state>
-    <state width="1897" height="277" key="GridCell.Tab.0.bottom/0.28.1920.1052@0.28.1920.1052" timestamp="1601711237548" />
-    <state width="1897" height="277" key="GridCell.Tab.0.center" timestamp="1601711237548">
+    <state width="1897" height="277" key="GridCell.Tab.0.bottom/0.28.1920.1052@0.28.1920.1052" timestamp="1601717560860" />
+    <state width="1897" height="277" key="GridCell.Tab.0.center" timestamp="1601717560860">
       <screen x="0" y="28" width="1920" height="1052" />
     </state>
-    <state width="1897" height="277" key="GridCell.Tab.0.center/0.28.1920.1052@0.28.1920.1052" timestamp="1601711237548" />
-    <state width="1897" height="277" key="GridCell.Tab.0.left" timestamp="1601711237547">
+    <state width="1897" height="277" key="GridCell.Tab.0.center/0.28.1920.1052@0.28.1920.1052" timestamp="1601717560860" />
+    <state width="1897" height="277" key="GridCell.Tab.0.left" timestamp="1601717560860">
       <screen x="0" y="28" width="1920" height="1052" />
     </state>
-    <state width="1897" height="277" key="GridCell.Tab.0.left/0.28.1920.1052@0.28.1920.1052" timestamp="1601711237547" />
-    <state width="1897" height="277" key="GridCell.Tab.0.right" timestamp="1601711237548">
+    <state width="1897" height="277" key="GridCell.Tab.0.left/0.28.1920.1052@0.28.1920.1052" timestamp="1601717560860" />
+    <state width="1897" height="277" key="GridCell.Tab.0.right" timestamp="1601717560860">
       <screen x="0" y="28" width="1920" height="1052" />
     </state>
-    <state width="1897" height="277" key="GridCell.Tab.0.right/0.28.1920.1052@0.28.1920.1052" timestamp="1601711237548" />
+    <state width="1897" height="277" key="GridCell.Tab.0.right/0.28.1920.1052@0.28.1920.1052" timestamp="1601717560860" />
     <state x="449" y="189" width="1022" height="732" key="SettingsEditor" timestamp="1601702471361">
       <screen x="0" y="28" width="1920" height="1052" />
     </state>
     <state x="449" y="189" width="1022" height="732" key="SettingsEditor/0.28.1920.1052@0.28.1920.1052" timestamp="1601702471361" />
-    <state x="555" y="290" width="800" height="530" key="Vcs.Push.Dialog.v2" timestamp="1601702459470">
+    <state x="555" y="290" width="800" height="530" key="Vcs.Push.Dialog.v2" timestamp="1601717554331">
       <screen x="0" y="28" width="1920" height="1052" />
     </state>
-    <state x="555" y="290" width="800" height="530" key="Vcs.Push.Dialog.v2/0.28.1920.1052@0.28.1920.1052" timestamp="1601702459470" />
+    <state x="555" y="290" width="800" height="530" key="Vcs.Push.Dialog.v2/0.28.1920.1052@0.28.1920.1052" timestamp="1601717554331" />
     <state x="741" y="469" width="438" height="172" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2" timestamp="1601153845903">
       <screen x="0" y="28" width="1920" height="1052" />
     </state>
     <state x="741" y="469" width="438" height="172" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2/0.28.1920.1052@0.28.1920.1052" timestamp="1601153845903" />
+    <state x="623" y="260" width="672" height="678" key="search.everywhere.popup" timestamp="1601717435960">
+      <screen x="0" y="28" width="1920" height="1052" />
+    </state>
+    <state x="623" y="260" width="672" height="678" key="search.everywhere.popup/0.28.1920.1052@0.28.1920.1052" timestamp="1601717435960" />
   </component>
 </project>

@@ -1,6 +1,5 @@
-// @ts-ignore
 import faker from "faker"
-import {Column, HeadersData} from "../column/types/header.type"
+import {Column, HeadersData} from "../column-grid/types/header.type"
 import {GridData, GridRow} from "../types/row.interface"
 
 export const getSimpleData = (rows: number, columns: number) => {
@@ -29,11 +28,11 @@ export const getSimpleData = (rows: number, columns: number) => {
       }
     }
 
-    headerData.push(row)
+    headerData.push(row as any)
   }
 
   for (let i = 0; i < columns; i += 1) {
-    headerData[0].push({
+    (headerData[0] as any).push({
       id: "col-" + Math.random(),
       title: `Column ${i + 1}`,
       accessor: "",
