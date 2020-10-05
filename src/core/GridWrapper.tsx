@@ -224,7 +224,7 @@ const GridWrapper = forwardRef((props: GridWrapperProps, componentRef: React.Ref
 	)
 
 	const renderCell = useCallback(
-		;({ style, cell, ref, rowIndex, columnIndex }) => {
+		({ style, cell, ref, rowIndex, columnIndex }) => {
 			const { children } = cell
 			const isSelected = rowIndex === props.coords.rowIndex && columnIndex === props.coords.colIndex
 			const navigationDisabled = props.headers[0][columnIndex]?.disableNavigation
