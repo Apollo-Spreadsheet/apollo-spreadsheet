@@ -1,18 +1,18 @@
 import React, { forwardRef, useCallback, useMemo, useRef } from 'react'
 
 import { AutoSizer, ColumnSizer } from 'react-virtualized'
-import ScrollHandler from './core/ScrollHandler'
+import ScrollHandler, { ScrollHandlerRef } from './core/ScrollHandler'
 import GridWrapper, { GridWrapperCommonProps } from './core/GridWrapper'
 import { makeStyles } from '@material-ui/core/styles'
-import ColumnGrid from './column-grid/ColumnGrid'
+import ColumnGrid from './columnGrid/ColumnGrid'
 import { useNavigation } from './navigation/useNavigation'
 import { GridData, GridRow } from './types/row.interface'
 import { StretchMode } from './types/stretch-mode.enum'
-import { FixedColumnWidthRecord } from './column-grid/types/fixed-column-width-record'
-import { createFixedWidthMapping } from './column-grid/utils/createFixedWidthMapping'
-import { Column } from './column-grid/types/header.type'
+import { FixedColumnWidthRecord } from './columnGrid/types/fixed-column-width-record'
+import { createFixedWidthMapping } from './columnGrid/utils/createFixedWidthMapping'
+import { Column } from './columnGrid/types/header.type'
 import shallowDiffers from './helpers/shallowDiffers'
-import { insertDummyCells } from './core/insertDummyCells'
+import { insertDummyCells } from './core/utils/insertDummyCells'
 
 const CONTAINER_SCROLL_WIDTH = 5
 /** @todo Make it 15 or 10 to be a little bit wider **/
@@ -75,7 +75,12 @@ interface Props extends GridWrapperCommonProps {
 	stretchMode?: StretchMode
 }
 
-export const ApolloSpreadSheet = forwardRef((props: Props, componentRef: any) => {
+interface ApolloSpreadSheetRef {
+	recompute: () => void
+	forceUpdate: () => void
+}
+
+export const ApolloSpreadSheet = forwardRef((props: Props, componentRef: React.Ref<ApolloSpreadSheetRef>) => {
 	const classes = useStyles()
 	const columnCount = useMemo(() => {
 		return props.data.length ? props.data[0].length : 0
@@ -86,6 +91,7 @@ export const ApolloSpreadSheet = forwardRef((props: Props, componentRef: any) =>
 	const rows: Array<GridRow> = useMemo(() => {
 		return insertDummyCells(props.data)
 	}, [props.data])
+	const scrollHandlerRef = useRef<ScrollHandlerRef | null>(null)
 
 	/**
 	 * Stores the main headers only, nested headers are not required in here
@@ -130,36 +136,66 @@ export const ApolloSpreadSheet = forwardRef((props: Props, componentRef: any) =>
 	const latestColumns = useRef<Column[]>([])
 
 	const buildColumnTotalWidth = (containerWidth: number) => {
-		//Cached value
-		if (!shallowDiffers(mainHeaders, latestColumns.current) && latestContainerWidth.current === containerWidth) {
-			return containerWidth - fixedColumnWidths.current.totalSize - CONTAINER_SCROLL_WIDTH
-		}
+																															//Cached value
+																															if (
+																																!shallowDiffers(
+																																	mainHeaders,
+																																	latestColumns.current,
+																																) &&
+																																latestContainerWidth.current ===
+																																	containerWidth
+																															) {
+																																return (
+																																	containerWidth -
+																																	fixedColumnWidths.current
+																																		.totalSize -
+																																	CONTAINER_SCROLL_WIDTH
+																																)
+																															}
 
-		const { mapping, totalSize } = createFixedWidthMapping(
-			mainHeaders,
-			containerWidth,
-			minColumnWidth,
-			props.stretchMode ?? StretchMode.None,
-			CONTAINER_SCROLL_WIDTH,
-		)
+																															const {
+																																mapping,
+																																totalSize,
+																															} = createFixedWidthMapping(
+																																mainHeaders,
+																																containerWidth,
+																																minColumnWidth,
+																																props.stretchMode ??
+																																	StretchMode.None,
+																																CONTAINER_SCROLL_WIDTH,
+																															)
 
-		//Just update with the new calculated (if it was otherwise it might have been a cached result)
-		fixedColumnWidths.current = {
-			totalSize,
-			mapping,
-		}
+																															//Just update with the new calculated (if it was otherwise it might have been a cached result)
+																															fixedColumnWidths.current = {
+																																totalSize,
+																																mapping,
+																															}
 
-		//Store if it has changed
-		if (shallowDiffers(mainHeaders, latestColumns.current)) {
-			latestColumns.current = mainHeaders as Column[]
-		}
-		if (latestContainerWidth.current !== containerWidth) {
-			latestContainerWidth.current = containerWidth
-		}
+																															//Store if it has changed
+																															if (
+																																shallowDiffers(
+																																	mainHeaders,
+																																	latestColumns.current,
+																																)
+																															) {
+																																latestColumns.current = mainHeaders as Column[]
+																															}
+																															if (
+																																latestContainerWidth.current !==
+																																containerWidth
+																															) {
+																																latestContainerWidth.current = containerWidth
+																															}
 
-		//The available width that the grid will use
-		return Math.max(0, containerWidth - fixedColumnWidths.current.totalSize - CONTAINER_SCROLL_WIDTH)
-	}
+																															//The available width that the grid will use
+																															return Math.max(
+																																0,
+																																containerWidth -
+																																	fixedColumnWidths.current
+																																		.totalSize -
+																																	CONTAINER_SCROLL_WIDTH,
+																															)
+																														}
 
 	/**
 	 * @todo Also we need to support nested headers which means which i'm not sure its okay
@@ -200,7 +236,7 @@ export const ApolloSpreadSheet = forwardRef((props: Props, componentRef: any) =>
 							width={width - CONTAINER_SCROLL_WIDTH}
 							totalColumnWidth={getTotalColumnWidth(getColumnWidth)}
 							stretchMode={props.stretchMode ?? StretchMode.None}
-							ref={componentRef}
+							ref={scrollHandlerRef}
 						>
 							{({ scrollTop, scrollLeft, isScrolling, gridRef, headerRef, height }) => (
 								<>

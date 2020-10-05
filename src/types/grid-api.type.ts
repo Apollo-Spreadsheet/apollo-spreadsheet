@@ -1,6 +1,6 @@
 import { NavigationCoords } from '../navigation/types/navigation-coords.type'
 
-export interface IGridApi {
+export interface GridApi {
 	recomputeGridSize: () => void
 	forceUpdate: () => void
 	getRowCount: () => number

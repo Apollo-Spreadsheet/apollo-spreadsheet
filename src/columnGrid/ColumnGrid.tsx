@@ -1,10 +1,18 @@
-import React, { useRef, useEffect, useMemo, useCallback, useImperativeHandle, forwardRef } from 'react'
+import React, {
+	useRef,
+	useEffect,
+	useMemo,
+	useCallback,
+	useImperativeHandle,
+	forwardRef,
+} from 'react'
 import { Grid, CellMeasurerCache } from 'react-virtualized'
-import CellMeasurer from '../core/CellMeasureWrapper'
+import CellMeasurer from '../cellMeasurer/CellMeasureWrapper'
 import { Column } from './types/header.type'
 import clsx from 'clsx'
 import { ColumnGridProps } from './column-grid-props'
-import { insertDummyCells } from '../core/insertDummyCells'
+import { insertDummyCells } from '../core/utils/insertDummyCells'
+import { MeasurerRendererProps } from '../cellMeasurer/cellMeasureWrapperProps'
 
 export const ColumnGrid = React.memo(
 	forwardRef((props: ColumnGridProps, componentRef) => {
@@ -42,34 +50,47 @@ export const ColumnGrid = React.memo(
 
 		const headerRendererWrapper = useCallback(
 			({ style, cell, ref, columnIndex, rowIndex }) => {
-				const { title, renderer } = cell as Column
-				/** @todo Cache cell renderer result because if may have not changed so no need to invoke again **/
-				const children = renderer ? (renderer(cell) as any) : title
+																													const { title, renderer } = cell as Column
+																													/** @todo Cache cell renderer result because if may have not changed so no need to invoke again **/
+																													const children = renderer
+																														? (renderer(cell) as any)
+																														: title
 
-				return (
-					<div
-						ref={ref}
-						/** @todo We ensure its the first rowIndex to avoid nested getting this but i have to discuss with Pedro **/
-						className={
-							props.coords.colIndex === columnIndex && rowIndex === 0
-								? clsx(props.theme?.headerClass, props.theme?.currentColumnClass)
-								: props.theme?.headerClass
-						}
-						style={{
-							display: 'flex',
-							justifyContent: 'center',
-							padding: '5px',
-							boxSizing: 'border-box',
-							background: '#efefef',
-							border: '1px solid #ccc',
-							cursor: 'default',
-							...style,
-						}}
-					>
-						{children}
-					</div>
-				)
-			},
+																													//Ensure dummy cells doesn't have any styling
+																													const headerClassName =
+																														!cell.dummy &&
+																														props.coords.colIndex === columnIndex &&
+																														rowIndex === 0
+																															? clsx(
+																																	props.theme?.headerClass,
+																																	props.theme?.currentColumnClass,
+																															  )
+																															: !cell.dummy
+																															? props.theme?.headerClass
+																															: undefined
+
+																													/**
+																													 * @todo If it is a nested header we need to load the styling from the theme property and combine using clsx
+																													 */
+																													return (
+																														<div
+																															ref={ref}
+																															className={headerClassName}
+																															style={{
+																																display: 'flex',
+																																justifyContent: 'center',
+																																padding: '5px',
+																																boxSizing: 'border-box',
+																																background: '#efefef',
+																																border: '1px solid #ccc',
+																																cursor: 'default',
+																																...style,
+																															}}
+																														>
+																															{children}
+																														</div>
+																													)
+																												},
 			[props.coords, props.theme, props.width],
 		)
 
@@ -81,12 +102,13 @@ export const ColumnGrid = React.memo(
 				}
 				const style = {
 					...args.style,
+					//TODO Review this style property
 					...cell['style'],
 					width: props.getColumnWidth({ index: args.columnIndex }),
 					userSelect: 'none',
 				}
 
-				const rendererProps = {
+				const rendererProps: MeasurerRendererProps = {
 					...args,
 					cell,
 					getColumnWidth: props.getColumnWidth,
@@ -119,7 +141,7 @@ export const ColumnGrid = React.memo(
 
 		return (
 			<Grid
-				{...(props as any)}
+				{...props}
 				ref={onRefMount}
 				cellRenderer={cellMeasurerWrapperRenderer}
 				deferredMeasurementCache={cache}

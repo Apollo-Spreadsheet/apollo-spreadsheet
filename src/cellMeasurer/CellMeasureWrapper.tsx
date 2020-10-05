@@ -1,27 +1,12 @@
-import React, { useMemo, useEffect, useRef } from 'react'
-import { CellMeasurer, CellMeasurerCache } from 'react-virtualized'
-
-const generateArr = n => [...Array(n).keys()]
-
-const getMaxSum = (generator, x) => generateArr(x).reduce((sum, i) => sum + generator(i), 0)
-
-interface Props {
-  rowSpan?: number
-  colSpan?: number
-  parent: any
-  rowIndex: number
-  columnIndex: number
-  cache: CellMeasurerCache
-  children?: any
-  cellRenderer: Function
-  rendererProps: any
-  style?: React.CSSProperties
-}
+import React from 'react'
+import { CellMeasurer } from 'react-virtualized'
+import { CellMeasureWrapperProps } from './cellMeasureWrapperProps'
+import { getMaxSum } from './utils/getMaxSum'
 
 const CellMeasureWrapper = React.memo(
-	({ rowSpan, colSpan, children, cellRenderer, rendererProps, style, ...props }: Props) => {
+	({ rowSpan, colSpan, cellRenderer, rendererProps, style, ...props }: CellMeasureWrapperProps) => {
 		const initializeStyles = () => {
-			const defaultStyle = {
+			const defaultStyle: React.CSSProperties = {
 				transform: 'translate3d(0, 0, 0)',
 				alignItems: 'center',
 				overflow: 'hidden',
@@ -41,7 +26,7 @@ const CellMeasureWrapper = React.memo(
 			const { rowIndex, cache } = props
 
 			if (rowSpan === 1 && colSpan === 1) {
-				return style ? { ...style, ...defaultStyle } : defaultStyle
+				return style ? ({ ...style, ...defaultStyle } as React.CSSProperties) : defaultStyle
 			}
 
 			const rowGenerator = row => cache.rowHeight({ index: rowIndex + row })
@@ -52,6 +37,9 @@ const CellMeasureWrapper = React.memo(
 				rowSpan === 1
 					? {}
 					: {
+							/** @todo Missing an edge case of the last row to cover or even if its not the last
+							 * it is not evaluating when it has only a child or too and it expands twice the size leaving a big empty space
+							 */
 							height: getMaxSum(rowGenerator, rowSpan),
 					  }
 			const colSpanStyle =
@@ -61,7 +49,7 @@ const CellMeasureWrapper = React.memo(
 							width: columnWidth * colSpan,
 					  }
 
-			const _style = {
+			const _style: React.CSSProperties = {
 				...style,
 				...defaultStyle,
 				...rowSpanStyle,

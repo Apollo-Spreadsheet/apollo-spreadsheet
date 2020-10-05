@@ -1,9 +1,17 @@
-import React, { useRef, useEffect, useMemo, useCallback, useImperativeHandle, forwardRef, useState } from 'react'
+import React, {
+	useRef,
+	useEffect,
+	useMemo,
+	useCallback,
+	useImperativeHandle,
+	forwardRef,
+	useState,
+} from 'react'
 import { Grid, CellMeasurerCache, ScrollParams } from 'react-virtualized'
-import CellMeasurer from './CellMeasureWrapper'
-import { HeadersData } from '../column-grid/types/header.type'
-import { GridData, GridRow } from '../types/row.interface'
-import { IGridApi } from '../types/grid-api.type'
+import CellMeasurer from '../cellMeasurer/CellMeasureWrapper'
+import { HeadersData } from '../columnGrid/types/header.type'
+import { GridCell, GridData, GridRow } from '../types/row.interface'
+import { GridApi } from '../types/grid-api.type'
 import { NavigationCoords } from '../navigation/types/navigation-coords.type'
 import { SelectCellFn } from '../navigation/useNavigation'
 import TextEditor from '../editors/TextEditor'
@@ -13,6 +21,8 @@ import { GridTheme } from '../types/grid-theme'
 import clsx from 'clsx'
 import { GridCellProps } from 'react-virtualized/dist/es/Grid'
 import { useEditorManager } from '../editors/useEditorManager'
+import { MeasurerRendererProps } from '../cellMeasurer/cellMeasureWrapperProps'
+import { RegisterChildFn } from './interfaces/registerChildFn'
 
 export interface ICellMountedRegisterData {
 	colIndex: number
@@ -26,11 +36,11 @@ export interface ICellNodeInfo {
 	elementNodeRef: Element
 }
 
-export interface CellChangeParams {
+export interface CellChangeParams<ValueType = unknown> {
 	rowIndex: number
 	columnIndex: number
-	previousValue: any
-	value: unknown
+	previousValue: ValueType
+	value: ValueType
 }
 
 export interface GridWrapperCommonProps {
@@ -42,7 +52,7 @@ export interface GridWrapperCommonProps {
 	suppressNavigation?: boolean
 	/** @default false **/
 	outsideClickDeselects?: boolean
-	onGridReady?: (gridRef: IGridApi) => void
+	onGridReady?: (gridRef: GridApi) => void
 	theme?: GridTheme
 	onCellChange: (params: CellChangeParams) => void
 }
@@ -56,7 +66,7 @@ interface Props extends GridWrapperCommonProps {
 	scrollTop: number
 	isScrolling: boolean
 	height: number
-	registerChild: Function
+	registerChild: RegisterChildFn
 	gridContainerRef: HTMLDivElement | null
 	coords: NavigationCoords
 	rows: Array<GridRow>
@@ -66,7 +76,7 @@ interface Props extends GridWrapperCommonProps {
 	getColumnWidth: ({ index }: { index: number }) => number
 }
 
-const GridWrapper = forwardRef((props: Props, componentRef: any) => {
+const GridWrapper = forwardRef((props: Props, componentRef: React.Ref<GridApi>) => {
 	const cache = useRef(
 		new CellMeasurerCache({
 			defaultWidth: props.defaultColumnWidth,
@@ -119,7 +129,7 @@ const GridWrapper = forwardRef((props: Props, componentRef: any) => {
 			getActiveEditor: () => activeEditor,
 			isEditing: () => !!activeEditor,
 			selectedCell: (_cellCoords: NavigationCoords) => props.selectCell(_cellCoords),
-		}
+		} as GridApi
 	}
 
 	useImperativeHandle(
@@ -137,13 +147,13 @@ const GridWrapper = forwardRef((props: Props, componentRef: any) => {
 	}, [props.rows])
 
 	const openEditor = (
-		row: any,
+		row: GridRow,
 		rowIndex: number,
 		colIndex: number,
 		anchorRef: Element,
 		cellWidth: React.ReactText,
 		cellHeight: React.ReactText,
-		defaultValue: any,
+		defaultValue: unknown,
 	) => {
 		if (activeEditor) {
 			return
@@ -207,7 +217,7 @@ const GridWrapper = forwardRef((props: Props, componentRef: any) => {
 				anchorRef={anchorRef}
 				cellWidth={cellWidth}
 				cellHeight={cellHeight}
-				value={value}
+				value={value as string}
 				onCommit={onCommit}
 				onCommitCancel={onCommitCancel}
 				/**@todo Column must defined this **/
@@ -248,7 +258,12 @@ const GridWrapper = forwardRef((props: Props, componentRef: any) => {
 	)
 
 	const onCellClick = useCallback(
-		(event: any, cell: any, rowIndex: number, columnIndex: number) => {
+		(
+			event: React.MouseEvent<HTMLDivElement>,
+			cell: GridCell,
+			rowIndex: number,
+			columnIndex: number,
+		) => {
 			if (cell?.dummy) {
 				return
 			}
@@ -331,38 +346,64 @@ const GridWrapper = forwardRef((props: Props, componentRef: any) => {
 
 	const cellRenderer = useCallback(
 		({ rowIndex, columnIndex, key, parent, style, ...otherArgs }: GridCellProps) => {
-			const cell = props.rows[rowIndex]?.[columnIndex]
+																																											const cell =
+																																												props.rows[
+																																													rowIndex
+																																												]?.[
+																																													columnIndex
+																																												]
 
-			return cell ? (
-				<CellMeasurer
-					cache={cache}
-					columnIndex={columnIndex}
-					key={key}
-					parent={parent}
-					rowIndex={rowIndex}
-					rowSpan={cell.rowSpan}
-					colSpan={cell.colSpan}
-					cellRenderer={renderCell}
-					style={{
-						...style,
-						...cell.style,
-						width: props.getColumnWidth({
-							index: columnIndex,
-						}),
-						userSelect: 'none',
-					}}
-					rendererProps={{
-						...otherArgs,
-						style,
-						rowIndex,
-						columnIndex,
-						parent,
-						cell,
-						getColumnWidth: props.getColumnWidth,
-					}}
-				/>
-			) : null
-		},
+																																											const rendererProps: MeasurerRendererProps = {
+																																												...otherArgs,
+																																												style,
+																																												rowIndex,
+																																												columnIndex,
+																																												cell,
+																																												getColumnWidth:
+																																													props.getColumnWidth,
+																																											}
+
+																																											return cell ? (
+																																												<CellMeasurer
+																																													cache={
+																																														cache
+																																													}
+																																													columnIndex={
+																																														columnIndex
+																																													}
+																																													key={key}
+																																													parent={
+																																														parent
+																																													}
+																																													rowIndex={
+																																														rowIndex
+																																													}
+																																													rowSpan={
+																																														cell.rowSpan
+																																													}
+																																													colSpan={
+																																														cell.colSpan
+																																													}
+																																													cellRenderer={
+																																														renderCell
+																																													}
+																																													style={{
+																																														...style,
+																																														...cell.style,
+																																														width: props.getColumnWidth(
+																																															{
+																																																index: columnIndex,
+																																															},
+																																														),
+																																														userSelect:
+																																															'none',
+																																													}}
+																																													rendererProps={
+																																														rendererProps
+																																													}
+																																												/>
+																																											) : null
+																																										},
 		[props.rows, props.coords, props.theme, props.width],
 	)
 
@@ -375,7 +416,7 @@ const GridWrapper = forwardRef((props: Props, componentRef: any) => {
 
 			//Expose if needed
 			if (props.onGridReady && (componentRef as any).current) {
-				props.onGridReady((componentRef as any).current as IGridApi)
+				props.onGridReady((componentRef as any).current as GridApi)
 			}
 			gridRef.current = instance
 		},
@@ -409,7 +450,8 @@ const GridWrapper = forwardRef((props: Props, componentRef: any) => {
 					autoHeight
 				/>
 			</ClickAwayListener>
-			{activeEditor && createPortal(activeEditor.editor, document.getElementById('grid-container') as HTMLElement)}
+			{activeEditor &&
+				createPortal(activeEditor.editor, document.getElementById('grid-container') as HTMLElement)}
 		</>
 	)
 })

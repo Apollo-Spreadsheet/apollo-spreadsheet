@@ -1,9 +1,18 @@
-import React, { useState, useRef, useEffect, useCallback, useImperativeHandle, forwardRef, useMemo } from 'react'
+import React, {
+	useState,
+	useRef,
+	useEffect,
+	useCallback,
+	useImperativeHandle,
+	forwardRef,
+	useMemo,
+} from 'react'
 import { createPortal } from 'react-dom'
-import { WindowScroller } from 'react-virtualized'
+import { Grid, WindowScroller } from 'react-virtualized'
 import { debounce } from 'lodash'
 import { makeStyles } from '@material-ui/core/styles'
 import { StretchMode } from '../types/stretch-mode.enum'
+import { GridApi } from '../types/grid-api.type'
 
 const recomputeDebounceTimeout = 1000
 
@@ -35,16 +44,27 @@ const useStyles = makeStyles(() => ({
 	},
 }))
 
+interface VirtualizedGridRef {
+	forceUpdate: () => void
+	recomputeGridSize: () => void
+}
+
 interface ScrollHandlerChildrenProps {
 	height: number
 	isScrolling: boolean
 	scrollTop: number
 	scrollLeft: number
-	headerRef: React.MutableRefObject<any>
-	gridRef: React.MutableRefObject<any>
+	headerRef: React.MutableRefObject<VirtualizedGridRef | null>
+	gridRef: React.MutableRefObject<GridApi | null>
 }
 
-export type ScrollHandlerChildrenFn = (props: ScrollHandlerChildrenProps) => any
+export interface ScrollHandlerRef {
+	recompute: () => void
+	forceUpdate: () => void
+}
+
+export type ScrollHandlerChildrenFn = (props: ScrollHandlerChildrenProps) => void
+
 interface Props {
 	stretchMode: StretchMode
 	totalColumnWidth: number
@@ -53,11 +73,14 @@ interface Props {
 	children: ScrollHandlerChildrenFn
 }
 const ScrollHandler = forwardRef(
-	({ children, scrollContainer, width, totalColumnWidth, stretchMode }: Props, componentRef: any) => {
-		const scrollChildRef = useRef<any>(null)
-		const headerRef = useRef<any>(null)
-		const gridRef = useRef<any>(null)
-		const fakeScrollerRef = useRef<any>(null)
+	(
+		{ children, scrollContainer, width, totalColumnWidth, stretchMode }: Props,
+		componentRef: React.Ref<ScrollHandlerRef>,
+	) => {
+		const scrollChildRef = useRef<HTMLDivElement | null>(null)
+		const headerRef = useRef<VirtualizedGridRef | null>(null)
+		const gridRef = useRef<GridApi | null>(null)
+		const fakeScrollerRef = useRef<HTMLDivElement | null>(null)
 		const [stickyScroller, setStickyScroller] = useState(true)
 		const [scrollLeft, setScrollLeft] = useState(0)
 		const [scrolling, setScrolling] = useState(false)
@@ -131,9 +154,6 @@ const ScrollHandler = forwardRef(
 			return stretchMode === StretchMode.None && totalColumnWidth > width
 		}, [width, totalColumnWidth, stretchMode])
 
-		/**
-		 * @todo Consider the possibility of using WindowScroller + ScrollSync or just ScrollSync (we will need the scroll sync feature probably for fixed rows/columns and also for horizontal scroll precision)
-		 * */
 		return (
 			<>
 				<WindowScroller scrollElement={scrollContainer || window} onResize={onResize}>

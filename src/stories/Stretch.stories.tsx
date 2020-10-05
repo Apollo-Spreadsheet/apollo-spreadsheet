@@ -3,8 +3,8 @@ import { ApolloSpreadSheet } from '../index'
 import React from 'react'
 import { storiesOf } from '@storybook/react'
 import { StretchMode } from '../types/stretch-mode.enum'
-import { Column } from '../column-grid/types/header.type'
-import { createColumnMock } from '../column-grid/__mocks__/column-mock'
+import { Column } from '../columnGrid/types/header.type'
+import { createColumnMock } from '../columnGrid/__mocks__/column-mock'
 
 const ExampleTable = ({ headerData, data, stretchMode }) => {
 	return (

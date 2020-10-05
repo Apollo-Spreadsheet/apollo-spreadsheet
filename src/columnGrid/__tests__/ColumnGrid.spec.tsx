@@ -20,4 +20,5 @@ describe('<ColumnGrid />', () => {
 	it('should match the snapshot', () => {
 		expect(grid.html()).toMatchSnapshot()
 	})
+
 })
