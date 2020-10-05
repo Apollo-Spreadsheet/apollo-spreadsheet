@@ -9,4 +9,5 @@ export interface GridTheme {
 	currentColumnClass?: string
 	headerClass?: string
 	cellClass?: string
+	disabledCellClass?: string
 }

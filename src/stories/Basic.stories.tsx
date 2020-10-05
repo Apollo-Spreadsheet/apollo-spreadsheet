@@ -3,7 +3,6 @@ import { storiesOf } from '@storybook/react'
 
 import { ApolloSpreadSheet } from '../index'
 import { getSimpleData } from './generateData'
-import { CellChangeParams } from '../core/GridWrapper'
 import { Button, Checkbox, FormControl, InputLabel, MenuItem, Select } from '@material-ui/core'
 import { GridApi } from '../types/grid-api.type'
 import { getTopUseCase } from './dataUseCases'
@@ -11,6 +10,7 @@ import { Row } from '../types/row.interface'
 import { GridTheme } from '../types/grid-theme'
 import { makeStyles } from '@material-ui/core/styles'
 import { StretchMode } from '../types/stretch-mode.enum'
+import { CellChangeParams } from '../core/gridWrapperProps'
 
 const LargeDataSetTable = () => {
 	const { headerData, data } = getSimpleData(50, 50)
@@ -69,6 +69,9 @@ const useTopStyles = makeStyles(() => ({
 		backgroundColor: 'black',
 		color: 'white',
 	},
+	disabledCellClass: {
+		opacity: '0.6',
+	},
 }))
 const MainTable = () => {
 													const [headers, setHeaders] = useState(topHeaders)
@@ -91,12 +94,14 @@ const MainTable = () => {
 														currentRowClass: classes.currentRowClassDark,
 														headerClass: classes.headerClassDark,
 														cellClass: classes.rowClassDark,
+														disabledCellClass: classes.disabledCellClass,
 													}
 
 													const topLightGridTheme: GridTheme = {
 														currentColumnClass: classes.currentColumnClass,
 														currentRowClass: classes.currentRowClass,
 														headerClass: classes.headerClass,
+														disabledCellClass: classes.disabledCellClass,
 														cellClass: classes.rowClass,
 													}
 

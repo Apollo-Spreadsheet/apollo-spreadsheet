@@ -1,8 +1,7 @@
 import React, { forwardRef, useCallback, useMemo, useRef } from 'react'
-
 import { AutoSizer, ColumnSizer } from 'react-virtualized'
-import HorizontalScrollHandler, { ScrollHandlerRef } from './core/HorizontalScrollHandler'
-import GridWrapper, { GridWrapperCommonProps } from './core/GridWrapper'
+import HorizontalScrollHandler from './core/HorizontalScrollHandler'
+import GridWrapper from './core/GridWrapper'
 import { makeStyles } from '@material-ui/core/styles'
 import ColumnGrid from './columnGrid/ColumnGrid'
 import { useNavigation } from './navigation/useNavigation'
@@ -13,6 +12,8 @@ import { createFixedWidthMapping } from './columnGrid/utils/createFixedWidthMapp
 import { Column } from './columnGrid/types/header.type'
 import shallowDiffers from './helpers/shallowDiffers'
 import { insertDummyCells } from './core/utils/insertDummyCells'
+import { GridWrapperCommonProps } from './core/gridWrapperProps'
+import { ScrollHandlerRef } from './core/horizontalScrollHandlerProps'
 
 const CONTAINER_SCROLL_WIDTH = 5
 /** @todo Make it 15 or 10 to be a little bit wider **/

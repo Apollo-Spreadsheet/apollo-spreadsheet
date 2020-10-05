@@ -224,9 +224,10 @@ const GridWrapper = forwardRef((props: GridWrapperProps, componentRef: React.Ref
 	)
 
 	const renderCell = useCallback(
-		({ style, cell, ref, rowIndex, columnIndex }) => {
+		;({ style, cell, ref, rowIndex, columnIndex }) => {
 			const { children } = cell
 			const isSelected = rowIndex === props.coords.rowIndex && columnIndex === props.coords.colIndex
+			const navigationDisabled = props.headers[0][columnIndex]?.disableNavigation
 			/**
 			 * @todo Not considering well merged cells, i need to look up by merged too
 			 */
@@ -240,12 +241,6 @@ const GridWrapper = forwardRef((props: GridWrapperProps, componentRef: React.Ref
 				}
 			}
 
-			//Non navigable columns get now a custom disable style
-			if (props.headers[0][columnIndex]?.disableNavigation && !cell.dummy) {
-				/** @todo We can apply the custom class if theme has it by using a class builder such as clsx **/
-				style.opacity = 0.6
-			}
-
 			/**
 			 * @todo We need to check if the row is a dummy but its parent dummy is not anymore visible
 			 * e.:g
@@ -254,13 +249,14 @@ const GridWrapper = forwardRef((props: GridWrapperProps, componentRef: React.Ref
 			 * @todo Check if creating a lifecycle cell mount/unmount helps
 			 * @todo The children renderer has to be controlled via header accessor and cell renderer if its present
 			 * */
+			let cellClassName = !cell.dummy ? props.theme?.cellClass : undefined
+			if (isRowSelected && !cell.dummy && props.theme?.currentRowClass) {
+				cellClassName = clsx(cellClassName, props.theme?.currentRowClass)
+			}
 
-			const cellClassName =
-				!cell.dummy && isRowSelected && props.theme?.currentRowClass
-					? clsx(props.theme?.cellClass, props.theme?.currentRowClass)
-					: !cell.dummy
-					? props.theme?.cellClass
-					: undefined
+			if (navigationDisabled && !cell.dummy && props.theme?.disabledCellClass) {
+				cellClassName = clsx(cellClassName, props.theme?.disabledCellClass)
+			}
 
 			//Ensure dummies does not have border
 			if (cell.dummy) {
