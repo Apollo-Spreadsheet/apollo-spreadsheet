@@ -1,7 +1,7 @@
 import { getSimpleData } from './generateData'
 import { Tooltip, Checkbox, IconButton } from '@material-ui/core'
 import React from 'react'
-import { HeadersData } from '../column-grid/types/header.type'
+import { HeadersData } from '../columnGrid/types/header.type'
 import { GridData } from '../types/row.interface'
 import PeopleIcon from '@material-ui/icons/People'
 import DeleteIcon from '@material-ui/icons/Delete'
@@ -16,14 +16,6 @@ export const getTopUseCase = () => {
 				width: '15%',
 			},
 			{
-				// children: "Work Package",
-				renderer: () => {
-					return (
-						<Tooltip title={'You can preview this tooltip'} arrow placement={'bottom'}>
-							<p>Work Package</p>
-						</Tooltip>
-					)
-				},
 				id: 'wp',
 				title: 'Work Package',
 				tooltip: 'You can preview the tooltip in here',

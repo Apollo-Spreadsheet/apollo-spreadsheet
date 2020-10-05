@@ -13,6 +13,7 @@ import clsx from 'clsx'
 import { ColumnGridProps } from './column-grid-props'
 import { insertDummyCells } from '../core/utils/insertDummyCells'
 import { MeasurerRendererProps } from '../cellMeasurer/cellMeasureWrapperProps'
+import Tooltip from '@material-ui/core/Tooltip'
 
 export const ColumnGrid = React.memo(
 	forwardRef((props: ColumnGridProps, componentRef) => {
@@ -52,7 +53,15 @@ export const ColumnGrid = React.memo(
 			({ style, cell, ref, columnIndex, rowIndex }) => {
 				const { title, renderer } = cell as Column
 				/** @todo Cache cell renderer result because if may have not changed so no need to invoke again **/
-				const children = renderer ? (renderer(cell) as any) : title
+				const children = renderer ? (
+					(renderer(cell) as any)
+				) : cell.tooltip ? (
+					<Tooltip title={title} arrow placement={'top'} {...cell.tooltipProps}>
+						<span>{title}</span>
+					</Tooltip>
+				) : (
+					title
+				)
 
 				//Ensure dummy cells doesn't have any styling
 				const headerClassName =

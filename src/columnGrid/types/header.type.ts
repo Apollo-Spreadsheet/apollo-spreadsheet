@@ -1,4 +1,5 @@
 import React from 'react'
+import { TooltipProps } from '@material-ui/core'
 
 export interface CellRendererProps {}
 
@@ -26,6 +27,14 @@ export interface Column<Key = string, Metadata = Object> {
 	title: string
 	accessor: string
 	tooltip?: string
+	tooltipProps?: {
+		/** @default true **/
+		arrow?: boolean
+		/** @default false **/
+		open?: boolean
+		/** @default top **/
+		placement?: TooltipProps['placement']
+	}
 	width?: React.ReactText
 	className?: string
 	readOnly?: boolean | Function
