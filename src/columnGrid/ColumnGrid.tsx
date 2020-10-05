@@ -50,47 +50,40 @@ export const ColumnGrid = React.memo(
 
 		const headerRendererWrapper = useCallback(
 			({ style, cell, ref, columnIndex, rowIndex }) => {
-																													const { title, renderer } = cell as Column
-																													/** @todo Cache cell renderer result because if may have not changed so no need to invoke again **/
-																													const children = renderer
-																														? (renderer(cell) as any)
-																														: title
+				const { title, renderer } = cell as Column
+				/** @todo Cache cell renderer result because if may have not changed so no need to invoke again **/
+				const children = renderer ? (renderer(cell) as any) : title
 
-																													//Ensure dummy cells doesn't have any styling
-																													const headerClassName =
-																														!cell.dummy &&
-																														props.coords.colIndex === columnIndex &&
-																														rowIndex === 0
-																															? clsx(
-																																	props.theme?.headerClass,
-																																	props.theme?.currentColumnClass,
-																															  )
-																															: !cell.dummy
-																															? props.theme?.headerClass
-																															: undefined
+				//Ensure dummy cells doesn't have any styling
+				const headerClassName =
+					!cell.dummy && props.coords.colIndex === columnIndex && rowIndex === 0
+						? clsx(props.theme?.headerClass, props.theme?.currentColumnClass)
+						: !cell.dummy
+						? props.theme?.headerClass
+						: undefined
 
-																													/**
-																													 * @todo If it is a nested header we need to load the styling from the theme property and combine using clsx
-																													 */
-																													return (
-																														<div
-																															ref={ref}
-																															className={headerClassName}
-																															style={{
-																																display: 'flex',
-																																justifyContent: 'center',
-																																padding: '5px',
-																																boxSizing: 'border-box',
-																																background: '#efefef',
-																																border: '1px solid #ccc',
-																																cursor: 'default',
-																																...style,
-																															}}
-																														>
-																															{children}
-																														</div>
-																													)
-																												},
+				/**
+				 * @todo If it is a nested header we need to load the styling from the theme property and combine using clsx
+				 */
+				return (
+					<div
+						ref={ref}
+						className={headerClassName}
+						style={{
+							display: 'flex',
+							justifyContent: 'center',
+							padding: '5px',
+							boxSizing: 'border-box',
+							background: '#efefef',
+							border: '1px solid #ccc',
+							cursor: 'default',
+							...style,
+						}}
+					>
+						{children}
+					</div>
+				)
+			},
 			[props.coords, props.theme, props.width],
 		)
 

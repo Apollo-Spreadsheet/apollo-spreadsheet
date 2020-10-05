@@ -13,8 +13,16 @@ import { debounce } from 'lodash'
 import { makeStyles } from '@material-ui/core/styles'
 import { StretchMode } from '../types/stretch-mode.enum'
 import { GridApi } from '../types/grid-api.type'
+import {
+	HorizontalScrollHandlerProps,
+	ScrollHandlerRef,
+	HeaderGridRef,
+} from './horizontalScrollHandlerProps'
 
-const recomputeDebounceTimeout = 1000
+//Time to wait before set non scrolling state
+const RESET_SCROLLING_STATE_DEBOUNCE_TIME = 100
+//Time to wait before recompute the grid
+const RECOMPUTE_DEBOUNCE_TIME = 1000
 
 const useStyles = makeStyles(() => ({
 	scrollContent: {
@@ -44,41 +52,24 @@ const useStyles = makeStyles(() => ({
 	},
 }))
 
-interface VirtualizedGridRef {
-	forceUpdate: () => void
-	recomputeGridSize: () => void
-}
-
-interface ScrollHandlerChildrenProps {
-	height: number
-	isScrolling: boolean
-	scrollTop: number
-	scrollLeft: number
-	headerRef: React.MutableRefObject<VirtualizedGridRef | null>
-	gridRef: React.MutableRefObject<GridApi | null>
-}
-
-export interface ScrollHandlerRef {
-	recompute: () => void
-	forceUpdate: () => void
-}
-
-export type ScrollHandlerChildrenFn = (props: ScrollHandlerChildrenProps) => void
-
-interface Props {
-	stretchMode: StretchMode
-	totalColumnWidth: number
-	width: number
-	scrollContainer: Element | null
-	children: ScrollHandlerChildrenFn
-}
-const ScrollHandler = forwardRef(
+/**
+ * Component responsible for handling the horizontal scroll using a fake scroll technique
+ * and sticking on the bottom if necessary
+ * Only handles the scrollLeft because react-virtualized handles scrollTop for us
+ */
+const HorizontalScrollHandler = forwardRef(
 	(
-		{ children, scrollContainer, width, totalColumnWidth, stretchMode }: Props,
+		{
+			children,
+			scrollContainer,
+			width,
+			totalColumnWidth,
+			stretchMode,
+		}: HorizontalScrollHandlerProps,
 		componentRef: React.Ref<ScrollHandlerRef>,
 	) => {
 		const scrollChildRef = useRef<HTMLDivElement | null>(null)
-		const headerRef = useRef<VirtualizedGridRef | null>(null)
+		const headerRef = useRef<HeaderGridRef | null>(null)
 		const gridRef = useRef<GridApi | null>(null)
 		const fakeScrollerRef = useRef<HTMLDivElement | null>(null)
 		const [stickyScroller, setStickyScroller] = useState(true)
@@ -125,11 +116,11 @@ const ScrollHandler = forwardRef(
 		const setNotScrolling = useCallback(
 			debounce(() => {
 				setScrolling(false)
-			}, 100),
+			}, RESET_SCROLLING_STATE_DEBOUNCE_TIME),
 			[],
 		)
 
-		const handleHorizontalScroll = useCallback(
+		const handleScroll = useCallback(
 			({ scrollLeft: paramScrollLeft }) => {
 				//Prevent a re-render when the target scroll left hasn't change
 				if (scrollLeft === paramScrollLeft) {
@@ -147,9 +138,11 @@ const ScrollHandler = forwardRef(
 			debounce(() => {
 				headerRef.current?.recomputeGridSize()
 				gridRef.current?.recomputeGridSize()
-			}, recomputeDebounceTimeout),
+			}, RECOMPUTE_DEBOUNCE_TIME),
 			[],
 		)
+
+		// Checks the stretch mode and also the total column width vs actual container width
 		const displayHorizontalScroll = useMemo(() => {
 			return stretchMode === StretchMode.None && totalColumnWidth > width
 		}, [width, totalColumnWidth, stretchMode])
@@ -182,7 +175,7 @@ const ScrollHandler = forwardRef(
 										bottom: stickyScroller ? '0px' : 'unset',
 									}}
 									onScroll={e => {
-										handleHorizontalScroll({ scrollLeft: e.target['scrollLeft'] })
+										handleScroll({ scrollLeft: e.target['scrollLeft'] })
 									}}
 									ref={fakeScrollerRef}
 								>
@@ -214,4 +207,4 @@ const ScrollHandler = forwardRef(
 	},
 )
 
-export default ScrollHandler
+export default HorizontalScrollHandler
