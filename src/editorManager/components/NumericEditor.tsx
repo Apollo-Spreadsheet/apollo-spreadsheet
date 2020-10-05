@@ -1,7 +1,7 @@
-import React, { CSSProperties, useState } from 'react'
-import { Popover, TextField, TextareaAutosize } from '@material-ui/core'
-import { NavigationKey } from './navigation-key.enum'
-import { isCaretAtEndPosition } from './utils'
+import React, { CSSProperties } from 'react'
+import { Popover } from '@material-ui/core'
+import { NavigationKey } from '../enums/navigation-key.enum'
+import ReactNumberFormat from 'react-number-format'
 
 interface Props {
 	value: string
@@ -11,22 +11,15 @@ interface Props {
 	cellStyle: CSSProperties
 	maxHeight: number
 	maxLength: number
-	editor: any
+}
+const textAreaStyle: CSSProperties = {
+	width: '100%',
+	height: '100%',
+	resize: 'none',
+	overflow: 'auto',
 }
 
-/**
- * @todo Needs to be created
- * @param value
- * @param maxHeight
- * @param cellStyle
- * @param onCommit
- * @param onCommitCancel
- * @param anchorRef
- * @param maxLength
- * @param editor
- * @constructor
- */
-export function BaseEditor({
+export function NumericEditor({
 	value,
 	maxHeight,
 	cellStyle,
@@ -34,19 +27,9 @@ export function BaseEditor({
 	onCommitCancel,
 	anchorRef,
 	maxLength,
-	editor,
 }: Props) {
 	const onKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
 		if (e.key === 'Enter' || NavigationKey[e.key]) {
-			const cursorStart = e.target['selectionStart']
-			const cursorEnd = e.target['selectionEnd']
-			console.log({
-				cursorStart,
-				cursorEnd,
-			})
-			if (e.key === NavigationKey.ArrowRight && !isCaretAtEndPosition(0, e.target['value'].length)) {
-				return console.log('Not in the end so')
-			}
 			e.preventDefault()
 			const newValue = e.target['value']
 			if (newValue !== value) {
@@ -55,6 +38,8 @@ export function BaseEditor({
 			return onCommitCancel(NavigationKey[e.key])
 		}
 	}
+
+	const parsedValue = isNaN(Number(value)) ? 0 : Number(value)
 
 	return (
 		<Popover
@@ -71,9 +56,27 @@ export function BaseEditor({
 				horizontal: 'center',
 			}}
 		>
-			<div style={{ width: cellStyle.width, height: maxHeight }}>{editor(value, onKeyDown, maxLength)}</div>
+			<div style={{ width: cellStyle.width, height: maxHeight }}>
+				<ReactNumberFormat
+					defaultValue={parsedValue}
+					autoFocus={true}
+					maxLength={10}
+					thousandSeparator
+					suffix={'€'}
+					style={{ height: '100%', width: '100%' }}
+				/>
+				{/*<TextareaAutosize*/}
+				{/*	defaultValue={value}*/}
+				{/*	autoFocus={true}*/}
+				{/*	onKeyDown={onKeyDown}*/}
+				{/*	aria-label='cell editor'*/}
+				{/*	rowsMin={1}*/}
+				{/*	maxLength={maxLength ?? 500}*/}
+				{/*	style={textAreaStyle}*/}
+				{/*/>*/}
+			</div>
 		</Popover>
 	)
 }
 
-export default BaseEditor
+export default NumericEditor

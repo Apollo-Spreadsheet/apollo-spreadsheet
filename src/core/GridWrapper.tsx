@@ -11,14 +11,14 @@ import CellMeasurer from '../cellMeasurer/CellMeasureWrapper'
 import { GridCell, GridData, GridRow } from '../types/row.interface'
 import { GridApi } from '../types/grid-api.type'
 import { NavigationCoords } from '../navigation/types/navigation-coords.type'
-import TextEditor from '../editors/TextEditor'
 import { createPortal } from 'react-dom'
 import { ClickAwayListener } from '@material-ui/core'
 import clsx from 'clsx'
 import { GridCellProps } from 'react-virtualized/dist/es/Grid'
-import { useEditorManager } from '../editors/useEditorManager'
+import { useEditorManager } from '../editorManager/useEditorManager'
 import { MeasurerRendererProps } from '../cellMeasurer/cellMeasureWrapperProps'
 import { GridWrapperProps } from './gridWrapperProps'
+import { TextEditor } from '../editorManager/components/TextEditor'
 
 const GridWrapper = forwardRef((props: GridWrapperProps, componentRef: React.Ref<GridApi>) => {
 	const cache = useRef(
@@ -225,101 +225,66 @@ const GridWrapper = forwardRef((props: GridWrapperProps, componentRef: React.Ref
 
 	const renderCell = useCallback(
 		({ style, cell, ref, rowIndex, columnIndex }) => {
-																												const { children } = cell
-																												const isSelected =
-																													rowIndex === props.coords.rowIndex &&
-																													columnIndex === props.coords.colIndex
-																												/**
-																												 * @todo Not considering well merged cells, i need to look up by merged too
-																												 */
-																												const isRowSelected =
-																													rowIndex === props.coords.rowIndex
-																												if (isSelected) {
-																													style.border = '1px solid blue'
-																												} else {
-																													//Bind default border
-																													if (
-																														!props.theme ||
-																														(!props.theme.cellClass && !cell.dummy)
-																													) {
-																														style.border =
-																															'1px solid rgb(204, 204, 204)'
-																													}
-																												}
+			const { children } = cell
+			const isSelected = rowIndex === props.coords.rowIndex && columnIndex === props.coords.colIndex
+			/**
+			 * @todo Not considering well merged cells, i need to look up by merged too
+			 */
+			const isRowSelected = rowIndex === props.coords.rowIndex
+			if (isSelected) {
+				style.border = '1px solid blue'
+			} else {
+				//Bind default border
+				if (!props.theme || (!props.theme.cellClass && !cell.dummy)) {
+					style.border = '1px solid rgb(204, 204, 204)'
+				}
+			}
 
-																												//Non navigable columns get now a custom disable style
-																												if (
-																													props.headers[0][columnIndex]
-																														?.disableNavigation &&
-																													!cell.dummy
-																												) {
-																													/** @todo We can apply the custom class if theme has it by using a class builder such as clsx **/
-																													style.opacity = 0.6
-																												}
+			//Non navigable columns get now a custom disable style
+			if (props.headers[0][columnIndex]?.disableNavigation && !cell.dummy) {
+				/** @todo We can apply the custom class if theme has it by using a class builder such as clsx **/
+				style.opacity = 0.6
+			}
 
-																												/**
-																												 * @todo We need to check if the row is a dummy but its parent dummy is not anymore visible
-																												 * e.:g
-																												 * dummy 1 has a rowspawn of total 3 but none of its parent are visible, so dummy 3 assume the children value and highlight
-																												 * of the parent because there is none visible
-																												 * @todo Check if creating a lifecycle cell mount/unmount helps
-																												 * @todo The children renderer has to be controlled via header accessor and cell renderer if its present
-																												 * */
+			/**
+			 * @todo We need to check if the row is a dummy but its parent dummy is not anymore visible
+			 * e.:g
+			 * dummy 1 has a rowspawn of total 3 but none of its parent are visible, so dummy 3 assume the children value and highlight
+			 * of the parent because there is none visible
+			 * @todo Check if creating a lifecycle cell mount/unmount helps
+			 * @todo The children renderer has to be controlled via header accessor and cell renderer if its present
+			 * */
 
-																												const cellClassName =
-																													!cell.dummy &&
-																													isRowSelected &&
-																													props.theme?.currentRowClass
-																														? clsx(
-																																props.theme?.cellClass,
-																																props.theme?.currentRowClass,
-																														  )
-																														: !cell.dummy
-																														? props.theme?.cellClass
-																														: undefined
+			const cellClassName =
+				!cell.dummy && isRowSelected && props.theme?.currentRowClass
+					? clsx(props.theme?.cellClass, props.theme?.currentRowClass)
+					: !cell.dummy
+					? props.theme?.cellClass
+					: undefined
 
-																												//Ensure dummies does not have border
-																												if (cell.dummy) {
-																													style.border = '0px'
-																												}
+			//Ensure dummies does not have border
+			if (cell.dummy) {
+				style.border = '0px'
+			}
 
-																												return (
-																													<div
-																														className={cellClassName}
-																														style={{
-																															display: 'flex',
-																															justifyContent: cell?.dummy
-																																? 'top'
-																																: 'center',
-																															padding: '5px',
-																															boxSizing: 'border-box',
-																															...style,
-																														}}
-																														onClick={event =>
-																															onCellClick(
-																																event,
-																																cell,
-																																rowIndex,
-																																columnIndex,
-																															)
-																														}
-																														onDoubleClick={e =>
-																															onCellDoubleClick(
-																																e,
-																																cell,
-																																rowIndex,
-																																columnIndex,
-																																children,
-																															)
-																														}
-																														ref={ref}
-																													>
-																														{typeof children === 'function'
-																															? children()
-																															: children}
-																													</div>
-																												)
-																											},
+			return (
+				<div
+					className={cellClassName}
+					style={{
+						display: 'flex',
+						justifyContent: cell?.dummy ? 'top' : 'center',
+						padding: '5px',
+						boxSizing: 'border-box',
+						...style,
+					}}
+					onClick={event => onCellClick(event, cell, rowIndex, columnIndex)}
+					onDoubleClick={e => onCellDoubleClick(e, cell, rowIndex, columnIndex, children)}
+					ref={ref}
+				>
+					{typeof children === 'function' ? children() : children}
+				</div>
+			)
+		},
 		[props.coords, props.theme, props.onCellClick, props.headers, props.width],
 	)
 

@@ -1,7 +1,7 @@
 import React, { CSSProperties, useRef, useState } from 'react'
 import { Popover, TextField, TextareaAutosize, Fade, Grow } from '@material-ui/core'
-import { NavigationKey } from './/navigation-key.enum'
-import { isCaretAtEndPosition } from './utils'
+import { NavigationKey } from '../enums/navigation-key.enum'
+import { isCaretAtEndPosition } from '../utils/isCaretAtEndPosition'
 
 interface Props {
 	value: string
@@ -19,7 +19,15 @@ const textAreaStyle: CSSProperties = {
 	overflow: 'auto',
 }
 
-export function TextEditor({ value, onCommit, onCommitCancel, anchorRef, cellWidth, cellHeight, maxLength }: Props) {
+export function TextEditor({
+	value,
+	onCommit,
+	onCommitCancel,
+	anchorRef,
+	cellWidth,
+	cellHeight,
+	maxLength,
+}: Props) {
 	const changedValue = useRef<string>(value)
 	const onKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
 		/**
@@ -40,7 +48,10 @@ export function TextEditor({ value, onCommit, onCommitCancel, anchorRef, cellWid
 				return
 			}
 			//Only navigate if we are in the left
-			if ((e.key === NavigationKey.ArrowLeft || e.key === NavigationKey.ArrowUp) && cursorStart > 0) {
+			if (
+				(e.key === NavigationKey.ArrowLeft || e.key === NavigationKey.ArrowUp) &&
+				cursorStart > 0
+			) {
 				return console.warn('YAY')
 			}
 
