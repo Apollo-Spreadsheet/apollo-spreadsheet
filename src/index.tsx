@@ -105,7 +105,7 @@ interface ApolloSpreadSheetRef {
 }
 
 export const ApolloSpreadSheet = forwardRef(
-	;(props: Props, componentRef: React.Ref<ApolloSpreadSheetRef>) => {
+	(props: Props, componentRef: React.Ref<ApolloSpreadSheetRef>) => {
 		const classes = useStyles()
 
 		const gridContainerRef = useRef<HTMLDivElement | null>(null)

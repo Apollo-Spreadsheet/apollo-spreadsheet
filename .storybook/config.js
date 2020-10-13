@@ -1,11 +1,11 @@
-import { addParameters, configure } from '@storybook/react';
-import 'storybook-chromatic';
-import grommetLight from './theme';
+import { addParameters, configure } from '@storybook/react'
+import 'storybook-chromatic'
+import grommetLight from './theme'
 
 const req = require.context('../', true, /\/stories\/.*\.ts$|\/stories\/.*\.tsx$/)
 
 function loadStories() {
-  req.keys().forEach(filename => req(filename));
+	req.keys().forEach(filename => req(filename))
 }
 
 addParameters({

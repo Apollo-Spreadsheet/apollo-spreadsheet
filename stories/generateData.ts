@@ -33,12 +33,12 @@ export const getSimpleData = (rows: number, columns: number) => {
 	}
 
 	for (let i = 0; i < columns; i += 1) {
-																					;(headerData[0] as any).push({
-																						id: 'col-g-' + Math.random() + i,
-																						title: `Column ${i + 1}`,
-																						accessor: '',
-																					})
-																				}
+		;(headerData[0] as any).push({
+			id: 'col-g-' + Math.random() + i,
+			title: `Column ${i + 1}`,
+			accessor: '',
+		})
+	}
 
 	for (let i = 0; i < rows; i += 1) {
 		const row: GridRow = []
