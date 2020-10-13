@@ -1,0 +1,49 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`useData hook should bind selection cell 1`] = `
+Array [
+  Array [
+    Object {
+      "value": <ForwardRef(WithStyles)
+        onClick={[Function]}
+      />,
+    },
+  ],
+]
+`;
+
+exports[`useData hook should mount with rows and merged cells 1`] = `
+Array [
+  Array [
+    Object {
+      "colSpan": 1,
+      "rowSpan": 2,
+      "value": "",
+    },
+  ],
+  Array [
+    Object {
+      "colSpan": undefined,
+      "dummy": true,
+      "dummyFor": "rowSpan",
+      "first": true,
+      "last": true,
+      "parentRow": Object {
+        "rowSpan": 2,
+      },
+      "rowSpan": 1,
+      "style": Object {
+        "borderTop": 0,
+      },
+      "value": "",
+    },
+  ],
+  Array [
+    Object {
+      "colSpan": undefined,
+      "rowSpan": undefined,
+      "value": "",
+    },
+  ],
+]
+`;

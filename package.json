@@ -26,18 +26,24 @@
     "react-dom": ">= 16.13.1"
   },
   "dependencies": {
+    "@date-io/dayjs": "1.x",
     "@material-ui/core": "^4.11.0",
     "@material-ui/icons": "^4.9.1",
+    "@material-ui/pickers": "^3.2.10",
+    "@testing-library/react-hooks": "^3.4.2",
     "@types/react-virtualized": "^9.21.10",
     "babel-loader": "^8.1.0",
     "babel-preset-react-app": "^9.1.2",
+    "clipboardy": "^2.3.0",
     "clsx": "^1.1.1",
+    "dayjs": "^1.9.1",
     "enzyme": "^3.11.0",
     "enzyme-adapter-react-16": "^1.15.5",
     "enzyme-to-json": "^3.6.1",
     "json2csv": "^5.0.1",
-    "react-number-format": "^4.4.1",
-    "react-virtualized": "^9.21.2"
+    "react-datepicker": "^3.2.2",
+    "react-virtualized": "^9.21.2",
+    "rxjs": "^6.6.3"
   },
   "devDependencies": {
     "@babel/preset-typescript": "^7.10.4",
@@ -55,6 +61,7 @@
     "@types/lodash": "^4.14.161",
     "@types/node": "^12.11.7",
     "@types/react": "latest",
+    "@types/react-datepicker": "^3.1.1",
     "@types/react-dom": "latest",
     "@types/storybook__react": "latest",
     "@typescript-eslint/eslint-plugin": "^4.3.0",
@@ -70,7 +77,7 @@
     "eslint-plugin-jsx-a11y": "^6.2.1",
     "eslint-plugin-prettier": "^3.0.0",
     "eslint-plugin-react": "^7.9.1",
-    "eslint-plugin-react-hooks": "^2.2.0",
+    "eslint-plugin-react-hooks": "^4.1.2",
     "faker": "^5.1.0",
     "fs-extra": "^8.1.0",
     "jest": "^26.4.2",

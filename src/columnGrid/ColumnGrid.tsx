@@ -8,12 +8,14 @@ import React, {
 } from 'react'
 import { Grid, CellMeasurerCache } from 'react-virtualized'
 import CellMeasurer from '../cellMeasurer/CellMeasureWrapper'
-import { Column } from './types/header.type'
+import { Header } from './types/header.type'
 import clsx from 'clsx'
 import { ColumnGridProps } from './column-grid-props'
-import { insertDummyCells } from '../core/utils/insertDummyCells'
 import { MeasurerRendererProps } from '../cellMeasurer/cellMeasureWrapperProps'
 import Tooltip from '@material-ui/core/Tooltip'
+import ArrowUpwardIcon from '@material-ui/icons/ArrowUpward'
+import ArrowDownwardIcon from '@material-ui/icons/ArrowDownward'
+import { ROW_SELECTION_HEADER_ID } from '../rowSelection/useRowSelection'
 
 export const ColumnGrid = React.memo(
 	forwardRef((props: ColumnGridProps, componentRef) => {
@@ -21,9 +23,12 @@ export const ColumnGrid = React.memo(
 			new CellMeasurerCache({
 				defaultWidth: props.defaultColumnWidth,
 				defaultHeight: props.minRowHeight,
+				//Width and height are fixed
+				//Width is calculated on useHeaders hook
+				//Height is never going to expand to avoid conflicts
 				fixedWidth: true,
+				fixedHeight: true,
 				minHeight: props.minRowHeight,
-				//We might use another approach in here
 				minWidth: props.defaultColumnWidth,
 			}),
 		).current
@@ -38,20 +43,27 @@ export const ColumnGrid = React.memo(
 		}))
 		const gridRef = useRef<Grid | null>(null)
 
-		/** @todo Review insertDummyCells parsing relative to flatMap but also the single array parse is not working well **/
-		const data = useMemo(() => {
-			return insertDummyCells(props.headers)
-		}, [props.headers])
-
 		// clear cache and recompute when data changes
 		useEffect(() => {
 			cache?.clearAll()
 			gridRef.current?.recomputeGridSize()
-		}, [data])
+		}, [props.data])
+
+		function getSortIndicatorComponent(order: string | undefined) {
+			if (!order) {
+				return null
+			}
+
+			return order === 'asc' ? (
+				<ArrowUpwardIcon style={{ fontSize: '10px' }} dis'flex''flex'} />
+			) : (
+				<ArrowDownwardIcon style={{ fontSize: '10px''flex'splay={'flex'} />
+			)
+		}
 
 		const headerRendererWrapper = useCallback(
 			({ style, cell, ref, columnIndex, rowIndex }) => {
-				const { title, renderer } = cell as Column
+				const { title, renderer } = cell as Header
 				/** @todo Cache cell renderer result because if may have not changed so no need to invoke again **/
 				const children = renderer ? (
 					(renderer(cell) as any)
@@ -63,17 +75,21 @@ export const ColumnGrid = React.memo(
 					title
 				)
 
-				//Ensure dummy cells doesn't have any styling
-				const headerClassName =
-					!cell.dummy && props.coords.colIndex === columnIndex && rowIndex === 0
-						? clsx(props.theme?.headerClass, props.theme?.currentColumnClass)
-						: !cell.dummy
-						? props.theme?.headerClass
-						: undefined
+				let headerClassName = !cell.dummy
+					? cell.isNested
+						? clsx(props.theme?.headerClass, props.theme?.nestedHeaderClass, cell.className)
+						: clsx(props.theme?.headerClass, cell.className)
+					: undefined
+				//If the cell is selected we set the column as selected too
+				if (
+					!cell.dummy &&
+					props.coords.colIndex === columnIndex &&
+					!cell['isNested'] &&
+					rowIndex === 0
+				) {
+					headerClassName = clsx(headerClassName, props.theme?.currentColumnClass)
+				}
 
-				/**
-				 * @todo If it is a nested header we need to load the styling from the theme property and combine using clsx
-				 */
 				return (
 					<div
 						ref={ref}
@@ -87,21 +103,43 @@ export const ColumnGrid = React.memo(
 							border: '1px solid #ccc',
 							cursor: 'default',
 							...style,
+							zIndex: cell.colSpan && cell['isNested'] && !cell.dummy ? 999 : cell.dummy ? 0 : 1,
 						}}
 					>
-						{children}
+						{/** @todo If grid sort is not enabled, we just render the {children} **/}
+						<span
+							onClick={() =>
+								cell.dummy || cell.id === ROW_SELECTION_HEADER_ID
+									? undefined
+									: props.onSortClick(cell.'flex'or)
+							}
+							s'center'								display: 'flex',
+	'center'extAlign: 'center',
+		'center'stifyContent: 'center',
+								alignItems: 'center',
+							}}
+						>
+							{children}
+							{/** @todo Its temporary, create a better sort component if sort is enabled on plugin and also sort goes to the n **/}
+							<div style={{ marginLeft: '10px' }}>
+								{cell.accessor === props.sort?.field
+									? getSortIndicatorComponent(props.sort?.order)
+									: null}
+							</div>
+						</span>
 					</div>
 				)
 			},
-			[props.coords, props.theme, props.width],
+			[props.coords, props.theme, props.width, props.sort],
 		)
 
 		const cellMeasurerWrapperRenderer = useCallback(
 			args => {
-				const cell = data[args.rowIndex]?.[args.columnIndex]
+				const cell = props.data[args.rowIndex]?.[args.columnIndex] as any
 				if (!cell) {
 					return null
 				}
+
 				const style = {
 					...args.style,
 					//TODO Review this style property
@@ -122,20 +160,25 @@ export const ColumnGrid = React.memo(
 						key={args.key}
 						parent={args.parent}
 						rowIndex={args.rowIndex}
-						rowSpan={cell.rowSpan}
-						colSpan={cell.colSpan}
+						//Disable rowSpanning in headers
+						rowSpan={0}
+						colSpan={cell.colSpan ?? 0}
 						cellRenderer={headerRendererWrapper}
 						rendererProps={rendererProps}
 						style={style}
 					/>
 				)
 			},
-			[data, props.theme, props.coords, props.width],
+			[props.data, props.theme, props.coords, props.width, props.sort],
 		)
 
+		const rowCount = useMemo(() => {
+			return props.nestedHeaders ? props.nestedHeaders.length + 1 : 1
+		}, [props.nestedHeaders])
+
 		const columnCount = useMemo(() => {
-			return data.length ? data[0].length : 0
-		}, [data])
+			return props.headers.length
+		}, [props.headers])
 
 		const onRefMount = useCallback(instance => {
 			gridRef.current = instance
@@ -148,10 +191,10 @@ export const ColumnGrid = React.memo(
 				cellRenderer={cellMeasurerWrapperRenderer}
 				deferredMeasurementCache={cache}
 				rowHeight={cache.rowHeight}
-				rowCount={data.length}
+				rowCount={rowCount}
 				columnCount={columnCount}
-				overscanRowCount={2}
-				overscanColumnCount={2}
+				overscanRowCount={props.overscanRowCount ?? 2}
+				overscanColumnCount={props.overscanColumnCount ?? 2}
 				width={props.width}
 				columnWidth={props.getColumnWidth}
 				autoHeight

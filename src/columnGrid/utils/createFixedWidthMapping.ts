@@ -1,6 +1,6 @@
 import { parseColumnWidthsConfiguration } from './parseColumnWidthsConfiguration'
-import { FixedColumnWidthRecord } from '../types/fixed-column-width-record'
-import { Column } from '../types/header.type'
+import { FixedColumnWidthDictionary } from '../types/fixed-column-width-dictionary'
+import { Header } from '../types/header.type'
 import { StretchMode } from '../../types/stretch-mode.enum'
 
 /**
@@ -11,7 +11,7 @@ import { StretchMode } from '../../types/stretch-mode.enum'
  * @param stretchMode
  */
 export const createFixedWidthMapping = (
-	columns: Column[],
+	columns: Header[],
 	containerWidth: number,
 	minColumnWidth: number,
 	stretchMode: StretchMode,
@@ -28,7 +28,7 @@ export const createFixedWidthMapping = (
 		}
 		acc[i] = value
 		return acc
-	}, {} as FixedColumnWidthRecord)
+	}, {} as FixedColumnWidthDictionary)
 
 	const isAllColWidthsFilled = columns.filter(e => e.width).length === columns.length
 	let totalSize = Object.values(mapping).reduce((acc, e) => acc + e, 0)

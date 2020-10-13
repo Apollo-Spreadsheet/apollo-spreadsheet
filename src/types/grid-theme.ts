@@ -8,6 +8,7 @@ export interface GridTheme {
 	 */
 	currentColumnClass?: string
 	headerClass?: string
+	nestedHeaderClass?: string
 	cellClass?: string
 	disabledCellClass?: string
 }

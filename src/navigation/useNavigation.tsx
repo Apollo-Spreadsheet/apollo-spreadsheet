@@ -1,32 +1,53 @@
-import React, { useState, useEffect, useCallback } from 'react'
+import React, { useCallback, useEffect, useRef, useState } from 'react'
 import { isIndexOutOfBoundaries } from './navigation.utils'
-import { GridCell, GridRow } from '../types/row.interface'
 import { ICellClickProps } from './types/cell-click-props.type'
 import { NavigationCoords } from './types/navigation-coords.type'
 import { OnCellClick } from './types/cell-click-event.type'
-import { Column } from '../column-grid/types/header.type'
 import { isFunctionType } from '../helpers/isFunction'
+import { GetColumnAt } from '../columnGrid/useHeaders'
+import { GridCell } from '../gridWrapper/interfaces/gridCell'
+import {
+	BeginEditingParams,
+	CellChangeParams,
+	IEditorState,
+	StopEditingParams,
+} from '../editorManager/useEditorManager'
+import * as clipboardy from 'clipboardy'
+import { ColumnCellType, Header } from '../columnGrid/types/header.type'
+import dayjs from 'dayjs'
+import { ROW_SELECTION_HEADER_ID } from '../rowSelection/useRowSelection'
+import { debounce, DebouncedFunc } from 'lodash'
 
-interface Props {
+interface Props<TRow = unknown> {
 	defaultCoords: NavigationCoords
-	data: Array<GridRow>
-	gridRootRef: HTMLDivElement | null
-	columnsCount: number
-	rowsCount: number
+	data: GridCell[][]
+	columnCount: number
+	rows: TRow[]
 	suppressNavigation: boolean
-	getColumnAt: (colIndex: number) => Column
+	getColumnAt: GetColumnAt
+	beginEditing: (params: BeginEditingParams) => void
+	stopEditing: (params?: StopEditingParams) => void
+	onCellChange?: (params: CellChangeParams) => void
+	editorState: IEditorState | null
 }
 
 export type SelectCellFn = (params: NavigationCoords) => void
 
+export interface KeyDownEventParams {
+	event: KeyboardEvent | React.KeyboardEvent
+}
+
 export function useNavigation({
 	data,
-	gridRootRef,
-	columnsCount,
-	rowsCount,
+	columnCount,
+	rows,
 	defaultCoords,
 	suppressNavigation,
 	getColumnAt,
+	stopEditing,
+	beginEditing,
+	onCellChange,
+	editorState,
 }: Props): [NavigationCoords, SelectCellFn, OnCellClick] {
 	const [coords, setCoords] = useState<NavigationCoords>(defaultCoords)
 	const isMergedCell = (row: any, colIndex: number) => {
@@ -42,6 +63,25 @@ export function useNavigation({
 		return false
 	}
 
+	const delayEditorDebounce = useRef<DebouncedFunc<any> | null>(null)
+
+	//Cancels the debounce if the editor is prematurely open
+	useEffect(() => {
+		if (editorState && delayEditorDebounce.current) {
+			delayEditorDebounce.current.cancel()
+		}
+	}, [editorState])
+
+	//Cleanup the debounce on unmount
+	useEffect(() => {
+		return () => {
+			delayEditorDebounce.current?.cancel()
+		}
+	}, [])
+	/**
+	 * @todo Not working, needs to be created in a different way
+	 * @param id
+	 */
 	const findCellById = (id: string) => {
 		let result: {
 			cell: GridCell | null
@@ -49,10 +89,8 @@ export function useNavigation({
 			cellIndex: number
 		} = { cell: null, rowIndex: -1, cellIndex: -1 }
 		data.map((row, rowIndex) => {
-			// console.log(row)
-			// const flatten = (row as any).flat()
 			row.forEach((cell, cellIndex) => {
-				if (cell?.id === id && !cell.dummy) {
+				if (cell['id'] === id && !cell['dummy']) {
 					result = { cell, rowIndex, cellIndex }
 					return
 				}
@@ -62,6 +100,7 @@ export function useNavigation({
 		return result
 	}
 
+	/** @todo Refactor all of this, dont use ids and use indexes instead for lookups **/
 	const findMergedCellParent = (row: any, colIndex: number) => {
 		// console.log("Checking for row");
 		// console.log({ row, data, colIndex });
@@ -98,6 +137,19 @@ export function useNavigation({
 		return null
 	}
 
+	const getDefaultValueFromValue = (value: unknown) => {
+		if (Array.isArray(value)) {
+			return []
+		}
+		if (typeof value === 'string') {
+			return ''
+		}
+		if (typeof value === 'number') {
+			return 0
+		}
+		return undefined
+	}
+
 	/**
 	 * Recursively looks for the next navigable cell
 	 * @param currentIndex
@@ -117,18 +169,146 @@ export function useNavigation({
 		return nextIndex
 	}
 
-	const onKeyDown = (e: KeyboardEvent) => {
+	const handleCellPaste = async (column: Header, currentValue: unknown) => {
+		try {
+			const text = await clipboardy.read()
+			if (column.validatorHook) {
+				if (column.validatorHook(text)) {
+					return onCellChange?.({ coords, previousValue: currentValue, newValue: text })
+				} else {
+					return
+				}
+			}
+			//Fallback is the column type
+			if (column.type === ColumnCellType.Numeric) {
+				if (!isNaN(Number(text))) {
+					return onCellChange?.({ coords, previousValue: currentValue, newValue: text })
+				} else {
+					return
+				}
+			}
+			if (column.type === ColumnCellType.Calendar) {
+				if (dayjs(text, 'YYYY-MM-DD').format('YYYY-MM-DD') === text) {
+					return onCellChange?.({ coords, previousValue: currentValue, newValue: text })
+				} else {
+					return
+				}
+			}
+
+			return onCellChange?.({ coords, previousValue: currentValue, newValue: text })
+		} catch (ex) {
+			console.error(ex)
+		}
+	}
+
+	const handleCellCut = async (currentValue: unknown) => {
+		await clipboardy.write(String(currentValue))
+		const newValue = getDefaultValueFromValue(currentValue)
+		if (currentValue === newValue) {
+			return
+		}
+		onCellChange?.({ coords, previousValue: currentValue, newValue })
+	}
+
+	const onKeyDown = (event: KeyboardEvent) => {
+		//Block the navigation
+		if (editorState && editorState.isPopup) {
+			return console.log('POPUP')
+		}
 		if (suppressNavigation) {
 			return
 		}
+		const target = document.getElementById(`cell-${coords.rowIndex}-${coords.colIndex}`)
+		if (!target) {
+			return console.error('Cell not found')
+		}
+		console.log({
+			key: event.key,
+			ctrl: event.ctrlKey,
+			shift: event.shiftKey,
+			target: target,
+		})
+		const column = getColumnAt(coords.colIndex)
+		if (!column) {
+			return console.warn('Column not found')
+		}
+
+		const row = rows[coords.rowIndex]
+		if (!row) {
+			return console.warn('Row index')
+		}
+		const currentValue = (row as any)[column.accessor]
+
+		//Common strategy
+		if (editorState) {
+			if (event.key === 'Escape') {
+				event.preventDefault()
+				return stopEditing()
+			}
+
+			if (event.key === 'Enter') {
+				event.preventDefault()
+				return stopEditing()
+			}
+		}
+
+		//Travel like excel rules for non-editing
+		if (!editorState) {
+			if (event.key === 'F2') {
+				event.preventDefault()
+				return beginEditing({
+					coords,
+					targetElement: target,
+				})
+			}
+
+			if (event.key === 'Backspace' || event.key === 'Delete') {
+				if (column.disableBackspace) {
+					return
+				}
+				event.preventDefault()
+				const newValue = getDefaultValueFromValue(currentValue)
+				if (currentValue === newValue) {
+					return
+				}
+				return onCellChange?.({
+					newValue,
+					previousValue: currentValue,
+					coords,
+				})
+			}
+
+			if (event.ctrlKey && event.key === 'x') {
+				if (column.disableCellCut) {
+					return
+				}
+				return handleCellCut(currentValue)
+			}
+			if (event.ctrlKey && event.key === 'c') {
+				return clipboardy.write(currentValue)
+			}
+
+			if (event.ctrlKey && event.key === 'v') {
+				if (column.disableCellPaste) {
+					return
+				}
+				return handleCellPaste(column, currentValue)
+			}
+		}
+
+		//Prevent going further
+		if (editorState) {
+			return
+		}
+
 		/**
 		 * @todo Consider non navigate cells and find the next navigable cell (considering merged cell) and also the direction
 		 * we want to find (if its the next column or previous, next row or previous)
 		 */
-		if (e.key === 'ArrowDown') {
-			e.preventDefault()
+		if (event.key === 'ArrowDown') {
+			event.preventDefault()
 			//Ensure we are not out of boundaries yet
-			if (isIndexOutOfBoundaries(coords.rowIndex + 1, 0, rowsCount - 1)) {
+			if (isIndexOutOfBoundaries(coords.rowIndex + 1, 0, rows.length - 1)) {
 				return
 			}
 
@@ -149,8 +329,8 @@ export function useNavigation({
 			})
 		}
 
-		if (e.key === 'ArrowUp') {
-			e.preventDefault()
+		if (event.key === 'ArrowUp') {
+			event.preventDefault()
 			const nextIndex = coords.rowIndex - 1
 
 			if (nextIndex < 0) {
@@ -180,10 +360,10 @@ export function useNavigation({
 			})
 		}
 
-		if (e.key === 'ArrowRight' || e.key === 'Tab') {
-			e.preventDefault()
+		if (event.key === 'ArrowRight' || (event.key === 'Tab' && !event.shiftKey)) {
+			event.preventDefault()
 			let nextIndex = coords.colIndex + 1
-			if (isIndexOutOfBoundaries(nextIndex, 0, columnsCount - 1)) {
+			if (isIndexOutOfBoundaries(nextIndex, 0, columnCount - 1)) {
 				return
 			}
 			//Is navigable?
@@ -196,13 +376,13 @@ export function useNavigation({
 				nextIndex = findNextNavigableColumnIndex(coords.colIndex, 'right')
 			}
 
-			selectCell({ rowIndex: coords.rowIndex, colIndex: nextIndex })
+			return selectCell({ rowIndex: coords.rowIndex, colIndex: nextIndex })
 		}
 
-		if (e.key === 'ArrowLeft') {
-			e.preventDefault()
+		if (event.key === 'ArrowLeft' || (event.key === 'Tab' && event.shiftKey)) {
+			event.preventDefault()
 			let nextIndex = coords.colIndex - 1
-			if (isIndexOutOfBoundaries(nextIndex, 0, columnsCount - 1)) {
+			if (isIndexOutOfBoundaries(nextIndex, 0, columnCount - 1)) {
 				return
 			}
 			const col = getColumnAt(nextIndex)
@@ -224,12 +404,42 @@ export function useNavigation({
 				return selectCell({ rowIndex: coords.rowIndex, colIndex: nextIndex })
 			}
 		}
-	}
 
-	useEffect(() => {
-		gridRootRef?.addEventListener('keydown', onKeyDown)
-		return () => gridRootRef?.removeEventListener('keydown', onKeyDown)
-	}, [data, coords, gridRootRef, suppressNavigation, rowsCount, columnsCount])
+		if (column.id === ROW_SELECTION_HEADER_ID) {
+			return
+		}
+
+		//Shift and ctrl disable if its the single key
+		if (event.shiftKey || event.ctrlKey || event.altKey) {
+			return
+		}
+		/** @todo Create a blacklist of keys **/
+		if (event.key === 'CapsLock' || event.key === 'Insert') {
+			return
+		}
+
+		if (column.type === ColumnCellType.Numeric) {
+			const regex = /^[0-9]+$/
+			if (regex.test(event.key)) {
+				event.preventDefault()
+				return beginEditing({
+					coords,
+					defaultKey: event.key,
+					targetElement: target,
+				})
+			}
+		}
+
+		if (!column.type) {
+			//Any key makes it to open and send the key pressed
+			event.preventDefault()
+			return beginEditing({
+				coords,
+				defaultKey: event.key,
+				targetElement: target,
+			})
+		}
+	}
 
 	const selectCell = useCallback(
 		({ colIndex, rowIndex }: NavigationCoords) => {
@@ -243,8 +453,23 @@ export function useNavigation({
 			}
 
 			//Validate boundaries
-			if (isIndexOutOfBoundaries(colIndex, 0, columnsCount - 1) || isIndexOutOfBoundaries(rowIndex, 0, rowsCount - 1)) {
+			if (
+				isIndexOutOfBoundaries(colIndex, 0, columnCount - 1) ||
+				isIndexOutOfBoundaries(rowIndex, 0, rows.length - 1)
+			) {
 				return
+			}
+
+			const column = getColumnAt(colIndex)
+			if (!column) {
+				return console.warn('Column not found ')
+			}
+
+			const delayEditingOpen = column.delayEditorOpen
+			//Cleanup
+			if (delayEditorDebounce.current) {
+				delayEditorDebounce.current.cancel()
+				delayEditorDebounce.current = null
 			}
 
 			/**
@@ -256,10 +481,23 @@ export function useNavigation({
 			 * via a callback this hook will receive
 			 * @todo Also we need to receive a function that allow us to get a cell element with the given coordinates
 			 */
-
+			if (delayEditingOpen) {
+				delayEditorDebounce.current = debounce(() => {
+					delayEditorDebounce.current = null
+					const target = document.getElementById(`cell-${rowIndex}-${colIndex}`)
+					if (!target) {
+						return console.error('Cell not found on DEBOUNCE')
+					}
+					beginEditing({
+						coords: { rowIndex, colIndex },
+						targetElement: target,
+					})
+				}, delayEditingOpen)
+				delayEditorDebounce.current()
+			}
 			setCoords({ colIndex, rowIndex })
 		},
-		[suppressNavigation, coords, rowsCount, columnsCount],
+		[suppressNavigation, coords, rows, columnCount, getColumnAt, beginEditing],
 	)
 
 	const isNavigationDisabledAt = (rowIndex: number, colIndex: number) => {
@@ -288,6 +526,21 @@ export function useNavigation({
 		},
 		[suppressNavigation, coords],
 	)
+
+	useEffect(() => {
+		document.addEventListener('keydown', onKeyDown)
+		return () => document.removeEventListener('keydown', onKeyDown)
+	}, [
+		coords,
+		data,
+		getColumnAt,
+		columnCount,
+		suppressNavigation,
+		beginEditing,
+		stopEditing,
+		onCellChange,
+		editorState,
+	])
 
 	return [coords, selectCell, onCellClick]
 }

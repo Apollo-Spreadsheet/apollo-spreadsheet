@@ -6,59 +6,59 @@ import { getMaxSum } from './utils/getMaxSum'
 const CellMeasureWrapper = React.memo(
 	({ rowSpan, colSpan, cellRenderer, rendererProps, style, ...props }: CellMeasureWrapperProps) => {
 		const initializeStyles = () => {
-			const defaultStyle: React.CSSProperties = {
-				transform: 'translate3d(0, 0, 0)',
-				alignItems: 'center',
-				overflow: 'hidden',
-				wordBreak: 'break-word',
-				textOverflow: 'ellipsis',
-				textAlign: 'center',
-			}
+																			const defaultStyle: React.CSSProperties = {
+																				transform: 'translate3d(0, 0, 0)',
+																				alignItems: 'center',
+																				overflow: 'hidden',
+																				wordBreak: 'break-word',
+																				textOverflow: 'ellipsis',
+																				textAlign: 'center',
+																			}
+																			const { rowIndex, cache } = props
+																			if (!rowSpan && !colSpan) {
+																				return style
+																					? ({ ...style, ...defaultStyle } as React.CSSProperties)
+																					: defaultStyle
+																			}
 
-			//Ensure it is 1 by default in case we have none
-			if (!rowSpan) {
-				rowSpan = 1
-			}
-			if (!colSpan) {
-				colSpan = 1
-			}
+																			const rowGenerator = row =>
+																				cache.rowHeight({ index: rowIndex + row })
 
-			const { rowIndex, cache } = props
+																			const rowSpanStyle = !rowSpan
+																				? {}
+																				: {
+																						/** @todo Missing an edge case of the last row to cover or even if its not the last
+																						 * it is not evaluating when it has only a child or too and it expands twice the size leaving a big empty space
+																						 */
+																						height: getMaxSum(rowGenerator, rowSpan),
+																				  }
 
-			if (rowSpan === 1 && colSpan === 1) {
-				return style ? ({ ...style, ...defaultStyle } as React.CSSProperties) : defaultStyle
-			}
+																			//Fetch all column widths and sum into a unique value
+																			const buildSpanColumnWidth = (spanSize: number) => {
+																				let value = 0
+																				const lastIndex = props.columnIndex + spanSize
+																				for (let i = props.columnIndex; i < lastIndex; i++) {
+																					value += rendererProps.getColumnWidth({ index: i })
+																				}
+																				return value
+																			}
 
-			const rowGenerator = row => cache.rowHeight({ index: rowIndex + row })
-			//Retrieve dynamically to calculate colSpan if needed
-			const columnWidth = rendererProps.getColumnWidth({ index: props.columnIndex })
+																			const colSpanStyle = !colSpan
+																				? {}
+																				: {
+																						width: buildSpanColumnWidth(colSpan),
+																				  }
 
-			const rowSpanStyle =
-				rowSpan === 1
-					? {}
-					: {
-							/** @todo Missing an edge case of the last row to cover or even if its not the last
-							 * it is not evaluating when it has only a child or too and it expands twice the size leaving a big empty space
-							 */
-							height: getMaxSum(rowGenerator, rowSpan),
-					  }
-			const colSpanStyle =
-				colSpan === 1
-					? {}
-					: {
-							width: columnWidth * colSpan,
-					  }
+																			const _style: React.CSSProperties = {
+																				...style,
+																				...defaultStyle,
+																				...rowSpanStyle,
+																				...colSpanStyle,
+																				zIndex: 1,
+																			}
 
-			const _style: React.CSSProperties = {
-				...style,
-				...defaultStyle,
-				...rowSpanStyle,
-				...colSpanStyle,
-				zIndex: 1,
-			}
-
-			return _style
-		}
+																			return _style
+																		}
 
 		const spanningStyle = initializeStyles()
 		return (

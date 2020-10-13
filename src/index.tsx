@@ -1,21 +1,37 @@
-import React, { forwardRef, useCallback, useMemo, useRef } from 'react'
+import React, {
+	forwardRef,
+	useCallback,
+	useEffect,
+	useImperativeHandle,
+	useMemo,
+	useRef,
+	useState,
+} from 'react'
 import { AutoSizer, ColumnSizer } from 'react-virtualized'
-import HorizontalScrollHandler from './core/HorizontalScrollHandler'
-import GridWrapper from './core/GridWrapper'
+import HorizontalScroll from './horizontalScroll/HorizontalScroll'
+import GridWrapper from './gridWrapper/GridWrapper'
 import { makeStyles } from '@material-ui/core/styles'
 import ColumnGrid from './columnGrid/ColumnGrid'
-import { useNavigation } from './navigation/useNavigation'
-import { GridData, GridRow } from './types/row.interface'
+import { KeyDownEventParams, useNavigation } from './navigation/useNavigation'
 import { StretchMode } from './types/stretch-mode.enum'
-import { FixedColumnWidthRecord } from './columnGrid/types/fixed-column-width-record'
-import { createFixedWidthMapping } from './columnGrid/utils/createFixedWidthMapping'
-import { Column } from './columnGrid/types/header.type'
+import { GridWrapperCommonProps } from './gridWrapper/gridWrapperProps'
+import { ScrollHandlerRef } from './horizontalScroll/horizontalScrollProps'
+import { useMergeCells } from './mergeCells/useMergeCells'
+import { NavigationCoords } from './navigation/types/navigation-coords.type'
+import { FixedColumnWidthRecord, useHeaders } from './columnGrid/useHeaders'
 import shallowDiffers from './helpers/shallowDiffers'
-import { insertDummyCells } from './core/utils/insertDummyCells'
-import { GridWrapperCommonProps } from './core/gridWrapperProps'
-import { ScrollHandlerRef } from './core/horizontalScrollHandlerProps'
+import { createFixedWidthMapping } from './columnGrid/utils/createFixedWidthMapping'
+import { Header } from './columnGrid/types/header.type'
+import { useData } from './data/useData'
+import { ROW_SELECTION_HEADER_ID, useRowSelection } from './rowSelection/useRowSelection'
+import { IconButton, Tooltip } from '@material-ui/core'
+import DeleteIcon from '@material-ui/icons/Delete'
+import { SelectionProps } from './rowSelection/selectionProps'
+import { useEditorManager } from './editorManager/useEditorManager'
+import { createPortal } from 'react-dom'
+import { orderBy } from 'lodash'
 
-const CONTAINER_SCROLL_WIDTH = 5
+export const CONTAINER_SCROLL_WIDTH = 5
 /** @todo Make it 15 or 10 to be a little bit wider **/
 const useStyles = makeStyles(() => ({
 	root: {
@@ -63,8 +79,8 @@ const useStyles = makeStyles(() => ({
 	},
 }))
 
-interface Props extends GridWrapperCommonProps {
-	data: GridData
+interface Props<TRow = any> extends GridWrapperCommonProps {
+	rows: TRow[]
 	/** @default 50 **/
 	minRowHeight?: number
 	/** @default 50 **/
@@ -74,80 +90,175 @@ interface Props extends GridWrapperCommonProps {
 	fixedColumnCount: number
 	/** @default StretchMode.None  */
 	stretchMode?: StretchMode
+	onKeyDown?: (params: KeyDownEventParams) => void
+	selection?: SelectionProps<TRow>
+	/**
+	 * @todo Maybe accept a function to indicate if a column can or not be sortable
+	 * @default true **/
+	disableSort?: boolean
 }
 
 interface ApolloSpreadSheetRef {
-	recompute: () => void
-	forceUpdate: () => void
+	selectedCell: NavigationCoords
+	rowCount: number
+	columnCount: number
 }
 
 export const ApolloSpreadSheet = forwardRef(
-	(props: Props, componentRef: React.Ref<ApolloSpreadSheetRef>) => {
+	;(props: Props, componentRef: React.Ref<ApolloSpreadSheetRef>) => {
 		const classes = useStyles()
-		const columnCount = useMemo(() => {
-			return props.data.length ? props.data[0].length : 0
-		}, [props.data])
 
 		const gridContainerRef = useRef<HTMLDivElement | null>(null)
 		const minColumnWidth = props.minColumnWidth ?? 60
-		const rows: Array<GridRow> = useMemo(() => {
-			return insertDummyCells(props.data)
-		}, [props.data])
 		const scrollHandlerRef = useRef<ScrollHandlerRef | null>(null)
-
-		/**
-		 * Stores the main headers only, nested headers are not required in here
-		 * because this is used as an utility
-		 * @todo Improve support for nested headers receiving in a new prop like mergedData
-		 */
-		const mainHeaders: Column[] = useMemo(() => {
-			if (Array.isArray(props.headers[0])) {
-				return props.headers[0] as Column[]
-			}
-			return props.headers as Column[]
-		}, [props.headers])
-
-		/**
-		 * Returns a given column at the provided index if exists
-		 * @param index
-		 * @param line  This represents the row but by default we fetch only from the first, this is in order to support nested headers
-		 */
-		const getColumnAt = useCallback(
-			(index: number, line = 0) => {
-				return props.headers[line]?.[index]
-			},
-			[props.headers],
-		)
-
-		const [coords, selectCell, onCellClick] = useNavigation({
-			defaultCoords: props.defaultCoords ?? { rowIndex: 0, colIndex: 0 },
-			/** @todo Dont pass the data but a callback so it can read the row/cell from */
-			data: rows,
-			gridRootRef: gridContainerRef.current,
-			columnsCount: columnCount,
-			rowsCount: rows.length,
-			suppressNavigation: props.suppressNavigation ?? false,
-			getColumnAt,
-		})
-
-		const fixedColumnWidths = useRef<{ totalSize: number; mapping: FixedColumnWidthRecord }>({
+		const fixedColumnWidths = useRef<FixedColumnWidthRecord>({
 			totalSize: 0,
 			mapping: {},
 		})
 		const latestContainerWidth = useRef(0)
-		const latestColumns = useRef<Column[]>([])
+		const latestColumns = useRef<Header[]>([])
+		const [sort, setSort] = useState<{
+			field: string
+			order: 'asc' | 'desc'
+		} | null>(null)
+
+		const rows = useMemo(() => {
+			if (sort) {
+				return orderBy(props.rows, [sort.field], [sort.order])
+			}
+			return props.rows
+		}, [sort, props.rows])
+
+		const rowCount = rows.length
+
+		useEffect(() => {
+			gridContainerRef.current?.focus()
+		})
+		const headers = useMemo(() => {
+			if (!props.selection) {
+				return props.headers
+			}
+
+			//Bind our selection header
+			const newHeaders = [...props.headers]
+			newHeaders.push({
+				colSpan: 1,
+				id: ROW_SELECTION_HEADER_ID,
+				title: '',
+				renderer: () => {
+					return (
+						<Tooltip placement={'top'} title={'Click to delete the selected rows'}>
+							<IconButton onClick={props.selection?.onHeaderIconClick}>
+								<DeleteIcon />
+							</IconButton>
+						</Tooltip>
+					)
+				},
+				disableNavigation: true,
+				accessor: ROW_SELECTION_HEADER_ID,
+				width: '2%',
+			})
+			return newHeaders
+		}, [props.headers, props.selection])
+
+		const { headersData, getColumnAt, dynamicColumnCount } = useHeaders({
+			headers,
+			nestedHeaders: props.nestedHeaders,
+			minColumnWidth,
+		})
+
+		const { isRowSelected, selectRow, getSelectedRows } = useRowSelection({
+			rows,
+			selection: props.selection,
+		})
+
+		const {
+			mergeData,
+			getMergedPath,
+			getSpanProperties,
+			isMerged,
+			mergedPositions,
+		} = useMergeCells({
+			data: props.mergeCells,
+			rowCount: rows.length,
+			columnCount: headers.length,
+		})
+
+		const { data } = useData({
+			rows,
+			headers,
+			mergeCells: mergeData,
+			mergedPositions,
+			selection: props.selection,
+			isRowSelected,
+			selectRow,
+		})
+
+		const { editorNode, editorState, beginEditing, stopEditing } = useEditorManager({
+			rows,
+			getColumnAt,
+			onCellChange: props.onCellChange,
+		})
+
+		const [coords, selectCell, onCellClick] = useNavigation({
+			defaultCoords: props.defaultCoords ?? {
+				rowIndex: 0,
+				colIndex: 0,
+			},
+			data,
+			rows,
+			columnCount: headers.length,
+			suppressNavigation: props.suppressNavigation ?? false,
+			getColumnAt,
+			onCellChange: props.onCellChange,
+			beginEditing,
+			stopEditing,
+			editorState,
+		})
+
+		//Public api from plugin to extensible hooks or external ref
+		const api: ApolloSpreadSheetRef = useMemo(() => {
+			return {
+				rowCount,
+				columnCount: headers.length,
+				selectedCell: coords,
+			}
+		}, [coords, rowCount, headers.length])
+
+		useImperativeHandle(componentRef, () => api)
+
+		const getTotalColumnWidth = useCallback(
+			getColumnWidth => {
+				let value = 0
+				for (let i = 0; i < headers.length; i++) {
+					value += getColumnWidthHelper(getColumnWidth)({ index: i })
+				}
+				return value - CONTAINER_SCROLL_WIDTH
+			},
+			[headers.length],
+		)
+
+		/**
+		 * Helper that facades with getColumnWidth function provided by react-virtualize and either returns
+		 * the fixed width from our mapping or fetches directly from react-virtualize
+		 * @param getColumnWidth
+		 */
+		//https://github.com/bvaughn/react-virtualized/issues/698
+		const getColumnWidthHelper = getColumnWidth => ({ index }: { index: number }) => {
+			return fixedColumnWidths.current.mapping[index] ?? getColumnWidth({ index })
+		}
 
 		const buildColumnTotalWidth = (containerWidth: number) => {
 			//Cached value
 			if (
-				!shallowDiffers(mainHeaders, latestColumns.current) &&
+				!shallowDiffers(headers, latestColumns.current) &&
 				latestContainerWidth.current === containerWidth
 			) {
 				return containerWidth - fixedColumnWidths.current.totalSize - CONTAINER_SCROLL_WIDTH
 			}
 
 			const { mapping, totalSize } = createFixedWidthMapping(
-				mainHeaders,
+				headers,
 				containerWidth,
 				minColumnWidth,
 				props.stretchMode ?? StretchMode.None,
@@ -161,8 +272,8 @@ export const ApolloSpreadSheet = forwardRef(
 			}
 
 			//Store if it has changed
-			if (shallowDiffers(mainHeaders, latestColumns.current)) {
-				latestColumns.current = mainHeaders as Column[]
+			if (shallowDiffers(headers, latestColumns.current)) {
+				latestColumns.current = headers
 			}
 			if (latestContainerWidth.current !== containerWidth) {
 				latestContainerWidth.current = containerWidth
@@ -175,43 +286,37 @@ export const ApolloSpreadSheet = forwardRef(
 			)
 		}
 
-		/**
-		 * @todo Also we need to support nested headers which means which i'm not sure its okay
-		 * @param getColumnWidth
-		 */
-		//https://github.com/bvaughn/react-virtualized/issues/698
-		const getColumnWidthHelper = getColumnWidth => ({ index }: { index: number }) => {
-			return fixedColumnWidths.current.mapping[index] ?? getColumnWidth({ index })
+		function onSortClick(field: string) {
+			if (field === sort?.field) {
+				const nextSort = sort?.order === 'asc' ? 'desc' : 'asc'
+				if (nextSort === 'asc') {
+					setSort(null)
+				} else {
+					setSort({
+						field,
+						order: nextSort,
+					})
+				}
+			} else {
+				setSort({
+					field,
+					order: 'asc',
+				})
+			}
 		}
 
-		//Stores the amount of columns that we want to calculate using the remaining width of the grid
-		const calculatingColumnCount = useMemo(() => {
-			return columnCount - mainHeaders.filter(e => e.width).length
-		}, [columnCount, mainHeaders])
-
-		const getTotalColumnWidth = useCallback(
-			getColumnWidth => {
-				let value = 0
-				for (let i = 0; i < columnCount; i++) {
-					value += getColumnWidthHelper(getColumnWidth)({ index: i })
-				}
-				return value - CONTAINER_SCROLL_WIDTH
-			},
-			[mainHeaders],
-		)
-
-		const renderGridsWrapper = (width: number) => {
+		const renderGridsWrapper = (containerWidth: number) => {
 			return (
 				<>
 					<ColumnSizer
 						columnMinWidth={minColumnWidth}
-						columnCount={calculatingColumnCount}
-						width={buildColumnTotalWidth(width)}
+						columnCount={dynamicColumnCount}
+						width={buildColumnTotalWidth(containerWidth)}
 					>
 						{({ registerChild, getColumnWidth }) => (
-							<HorizontalScrollHandler
+							<HorizontalScroll
 								scrollContainer={gridContainerRef.current}
-								width={width - CONTAINER_SCROLL_WIDTH}
+								width={containerWidth - CONTAINER_SCROLL_WIDTH}
 								totalColumnWidth={getTotalColumnWidth(getColumnWidth)}
 								stretchMode={props.stretchMode ?? StretchMode.None}
 								ref={scrollHandlerRef}
@@ -219,9 +324,10 @@ export const ApolloSpreadSheet = forwardRef(
 								{({ scrollTop, scrollLeft, isScrolling, gridRef, headerRef, height }) => (
 									<>
 										<ColumnGrid
-											headers={props.headers}
+											data={headersData}
+											headers={headers}
 											className={classes.headerContainer}
-											width={width + fixedColumnWidths.current.totalSize}
+											width={containerWidth + fixedColumnWidths.current.totalSize}
 											defaultColumnWidth={minColumnWidth}
 											getColumnWidth={getColumnWidthHelper(getColumnWidth)}
 											ref={headerRef}
@@ -232,26 +338,34 @@ export const ApolloSpreadSheet = forwardRef(
 											theme={props.theme}
 											coords={coords}
 											stretchMode={props.stretchMode}
+											nestedHeaders={props.nestedHeaders}
+											overscanColumnCount={props.overscanColumnCount}
+											overscanRowCount={props.overscanRowCount}
+											onSortClick={onSortClick}
+											sort={sort}
 										/>
 										<GridWrapper
 											rows={rows}
+											data={data}
+											overscanColumnCount={props.overscanColumnCount}
+											overscanRowCount={props.overscanRowCount}
 											className={classes.bodyContainer}
 											scrollTop={scrollTop}
 											registerChild={registerChild}
 											defaultColumnWidth={minColumnWidth}
-											width={width + fixedColumnWidths.current.totalSize}
+											width={containerWidth + fixedColumnWidths.current.totalSize}
 											getColumnWidth={getColumnWidthHelper(getColumnWidth)}
 											minRowHeight={props.minRowHeight ?? 50}
 											ref={gridRef}
 											scrollLeft={scrollLeft}
 											isScrolling={isScrolling}
 											height={height}
-											columnCount={columnCount}
+											columnCount={headers.length}
 											coords={coords}
 											selectCell={selectCell}
 											onCellClick={onCellClick}
 											/** Public API **/
-											headers={props.headers}
+											headers={headers}
 											onGridReady={props.onGridReady}
 											defaultCoords={props.defaultCoords}
 											suppressNavigation={props.suppressNavigation}
@@ -259,10 +373,15 @@ export const ApolloSpreadSheet = forwardRef(
 											gridContainerRef={gridContainerRef.current}
 											onCellChange={props.onCellChange}
 											theme={props.theme}
+											mergeCells={mergeData}
+											/** @todo Improve in the future to read directly from the hook and avoid this **/
+											editorState={editorState}
+											beginEditing={beginEditing}
+											stopEditing={stopEditing}
 										/>
 									</>
 								)}
-							</HorizontalScrollHandler>
+							</HorizontalScroll>
 						)}
 					</ColumnSizer>
 				</>
@@ -272,6 +391,7 @@ export const ApolloSpreadSheet = forwardRef(
 		return (
 			<div id="grid-container" className={classes.root} ref={gridContainerRef}>
 				<AutoSizer disableHeight>{({ width }) => renderGridsWrapper(width)}</AutoSizer>
+				{editorNode && createPortal(editorNode, gridContainerRef.current ?? document.body)}
 			</div>
 		)
 	},
