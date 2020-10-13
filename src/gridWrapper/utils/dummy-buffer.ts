@@ -110,7 +110,7 @@ export class DummyBuffer {
 					totalDummies: item.parent.rowSpan - 1,
 					index: item.parent.rowSpan - 1 - item.remainingRows,
 					dummyFor: 'rowSpan',
-					rowSpan: 1,,
+					rowSpan: 1,
 				}),
 			)
 

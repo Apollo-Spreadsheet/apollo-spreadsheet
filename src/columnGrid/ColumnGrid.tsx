@@ -55,9 +55,9 @@ export const ColumnGrid = React.memo(
 			}
 
 			return order === 'asc' ? (
-				<ArrowUpwardIcon style={{ fontSize: '10px' }} dis'flex''flex'} />
+				<ArrowUpwardIcon style={{ fontSize: '10px' }} display={'flex'} />
 			) : (
-				<ArrowDownwardIcon style={{ fontSize: '10px''flex'splay={'flex'} />
+				<ArrowDownwardIcon style={{ fontSize: '10px'}} display={'flex'}/>
 			)
 		}
 
@@ -111,13 +111,14 @@ export const ColumnGrid = React.memo(
 							onClick={() =>
 								cell.dummy || cell.id === ROW_SELECTION_HEADER_ID
 									? undefined
-									: props.onSortClick(cell.'flex'or)
+									: props.onSortClick(cell.accessor)
 							}
-							s'center'								display: 'flex',
-	'center'extAlign: 'center',
-		'center'stifyContent: 'center',
-								alignItems: 'center',
-							}}
+						style={{
+							textAlign: 'center',
+							display: 'flex',
+							alignItems: 'center',
+							justifyContent: 'center'
+					}}
 						>
 							{children}
 							{/** @todo Its temporary, create a better sort component if sort is enabled on plugin and also sort goes to the n **/}

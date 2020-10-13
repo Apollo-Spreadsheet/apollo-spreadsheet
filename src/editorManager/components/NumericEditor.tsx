@@ -35,7 +35,7 @@ export const NumericEditor = forwardRef(
 			componentRef,
 			() => ({
 				getValue: () => {
-					return editingVal'' === "" ? 0 : parseFloat(editingValue)
+					return editingValue === "" ? 0 : parseFloat(editingValue)
 				},
 			}),
 			[editingValue],
