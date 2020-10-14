@@ -3,8 +3,7 @@ import { CellMeasurer } from 'react-virtualized'
 import { CellMeasureWrapperProps } from './cellMeasureWrapperProps'
 import { getMaxSum } from './utils/getMaxSum'
 
-const CellMeasureWrapper = React.memo(
-	({ rowSpan, colSpan, cellRenderer, rendererProps, style, ...props }: CellMeasureWrapperProps) => {
+function CellMeasureWrapper ({ rowSpan, colSpan, cellRenderer, rendererProps, style, ...props }: CellMeasureWrapperProps) {
 		const initializeStyles = () => {
 			const defaultStyle: React.CSSProperties = {
 				transform: 'translate3d(0, 0, 0)',
@@ -58,6 +57,9 @@ const CellMeasureWrapper = React.memo(
 		}
 
 		const spanningStyle = initializeStyles()
+		if (isNaN(Number(spanningStyle.width))){
+			console.error("WIDTH NAN AT SPANNING STYLE")
+		}
 		return (
 			<CellMeasurer {...props}>
 				{({ registerChild }) =>
@@ -69,7 +71,6 @@ const CellMeasureWrapper = React.memo(
 				}
 			</CellMeasurer>
 		)
-	},
-)
+}
 
 export default CellMeasureWrapper

@@ -55,12 +55,6 @@ const GridWrapper = forwardRef((props: GridWrapperProps, componentRef: React.Ref
 		[props.headers],
 	)
 
-	// const { editorState, beginEditing, stopEditing } = useEditorManager({
-	// 	rows: props.rows,
-	// 	getColumnAt,
-	// 	onCellChange: props.onCellChange,
-	// })
-	const [focused, setFocused] = useState(true)
 
 	const gridApi = () => {
 		return {
@@ -94,43 +88,32 @@ const GridWrapper = forwardRef((props: GridWrapperProps, componentRef: React.Ref
 		gridRef.current?.recomputeGridSize()
 	}, [props.data])
 
-	const onCellDoubleClick = useCallback(
+	const onCellDoubleClick =
 		({ event, cell, columnIndex, rowIndex }: CellEventParams<React.MouseEvent<HTMLDivElement>>) => {
 			event.preventDefault()
 			if (cell.dummy) {
 				return
 			}
-			if (!focused) {
-				setFocused(true)
-			}
 
 			props.beginEditing({
 				coords: { rowIndex, colIndex: columnIndex },
-				targetElement: event.target as Element,
+				targetElement: event.target as HTMLElement,
 			})
-		},
-		[props.rows, props.editorState, focused, props.headers, props.beginEditing],
-	)
+		}
 
-	const onCellClick = useCallback(
+	const onCellClick =
 		({ event, cell, rowIndex, columnIndex }: CellEventParams<React.MouseEvent<HTMLDivElement>>) => {
 			if (cell?.dummy) {
 				return
 			}
-			if (!focused) {
-				setFocused(true)
-			}
-			props.onCellClick({
-				rowIndex,
-				colIndex: columnIndex,
-				event,
-			})
-		},
-		[focused, props.onCellClick],
-	)
 
-	const renderCell = useCallback(
-		({ style, cell, ref, rowIndex, columnIndex }) => {
+			props.selectCell({
+				rowIndex,
+				colIndex: columnIndex
+			})
+		}
+
+	function renderCell ({ style, cell, ref, rowIndex, columnIndex }) {
 			const isSelected = rowIndex === props.coords.rowIndex && columnIndex === props.coords.colIndex
 			const navigationDisabled = props.headers[0][columnIndex]?.disableNavigation
 			//Dummy zIndex is 0 and a spanned cell has 5 but a normal cell has 1
@@ -201,9 +184,7 @@ const GridWrapper = forwardRef((props: GridWrapperProps, componentRef: React.Ref
 					{cell.value}
 				</div>
 			)
-		},
-		[props.coords, props.theme, props.headers, props.width, onCellClick, onCellDoubleClick],
-	)
+		}
 
 	const cellRenderer = useCallback(
 		({ rowIndex, columnIndex, key, parent, style, ...otherArgs }: GridCellProps) => {
@@ -240,14 +221,14 @@ const GridWrapper = forwardRef((props: GridWrapperProps, componentRef: React.Ref
 				/>
 			) : null
 		},
-		[props.coords, props.theme, props.width, props.data],
+		[props.coords, props.theme, props.width, props.data, props.selectCell],
 	)
 
 	const onRefMount = useCallback(
 		instance => {
 			//Pass down for react-virtualized under-layer
 			if (instance) {
-				props.registerChild(instance)
+				props.registerChild?.(instance)
 			}
 
 			//Expose if needed
@@ -259,15 +240,6 @@ const GridWrapper = forwardRef((props: GridWrapperProps, componentRef: React.Ref
 		[props.onGridReady, props.registerChild, (componentRef as any).current],
 	)
 
-	const onClickAway = useCallback(() => {
-		if (props.outsideClickDeselects && focused) {
-			setFocused(false)
-			props.selectCell({
-				rowIndex: -1,
-				colIndex: -1,
-			})
-		}
-	}, [props.outsideClickDeselects, focused])
 
 	const onSectionRendered = useCallback(
 		(params: SectionRenderedParams) => {
@@ -291,7 +263,6 @@ const GridWrapper = forwardRef((props: GridWrapperProps, componentRef: React.Ref
 	)
 
 	return (
-		<ClickAwayListener onClickAway={onClickAway}>
 			<Grid
 				{...props}
 				ref={onRefMount}
@@ -303,10 +274,14 @@ const GridWrapper = forwardRef((props: GridWrapperProps, componentRef: React.Ref
 				overscanRowCount={props.overscanRowCount ?? 2}
 				overscanColumnCount={props.overscanColumnCount ?? 2}
 				columnWidth={props.getColumnWidth}
-				autoHeight
 				onSectionRendered={onSectionRendered}
+				scrollToRow={props.coords.rowIndex}
+				scrollToColumn={props.coords.colIndex}
+				scrollToAlignment={props.scrollToAlignment}
+				// onScroll={params => {
+				// 	console.warn(params)
+				// }}
 			/>
-		</ClickAwayListener>
 	)
 })
 

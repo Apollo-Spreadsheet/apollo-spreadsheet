@@ -24,7 +24,6 @@ export interface ScrollHandlerRef {
 export type ScrollHandlerChildrenFn = (props: ScrollHandlerChildrenProps) => void
 
 export interface HorizontalScrollProps {
-	stretchMode: StretchMode
 	//The total of columns width sum considering fixed widths already
 	totalColumnWidth: number
 	//Container width (actual size)

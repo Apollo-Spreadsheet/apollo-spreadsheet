@@ -52,10 +52,11 @@ const useStyles = makeStyles(() => ({
  * Component responsible for handling the horizontal scroll using a fake scroll technique
  * and sticking on the bottom if necessary
  * Only handles the scrollLeft because react-virtualized handles scrollTop for us
+ * @todo Requires a major refactor, check git issue
  */
 const HorizontalScroll = forwardRef(
 	(
-		{ children, scrollContainer, width, totalColumnWidth, stretchMode }: HorizontalScrollProps,
+		{ children, scrollContainer, width, totalColumnWidth }: HorizontalScrollProps,
 		componentRef: React.Ref<ScrollHandlerRef>,
 	) => {
 		const scrollChildRef = useRef<HTMLDivElement | null>(null)
@@ -134,67 +135,75 @@ const HorizontalScroll = forwardRef(
 
 		// Checks the stretch mode and also the total column width vs actual container width
 		const displayHorizontalScroll = useMemo(() => {
-			return stretchMode === StretchMode.None && totalColumnWidth > width
-		}, [width, totalColumnWidth, stretchMode])
+			return totalColumnWidth > width
+		}, [width, totalColumnWidth])
 
-		return (
-			<>
-				<WindowScroller scrollElement={scrollContainer || window} onResize={onResize}>
-					{({ height, isScrolling, scrollTop, registerChild }) => (
-						<div
-							ref={ref => {
-								scrollChildRef.current = ref
-								registerChild(ref)
-							}}
-						>
-							{children({
-								height,
-								isScrolling: isScrolling || scrolling,
-								scrollTop,
-								scrollLeft,
-								headerRef,
-								gridRef,
-							})}
-							{displayHorizontalScroll && (
-								<div
-									id="fake-scroller"
-									className={classes.root}
-									style={{
-										width,
-										position: stickyScroller ? 'sticky' : 'relative',
-										bottom: stickyScroller ? '0px' : 'unset',
-									}}
-									onScroll={e => {
-										handleScroll({ scrollLeft: e.target['scrollLeft'] })
-									}}
-									ref={fakeScrollerRef}
-								>
-									<div
-										id="fake-scroller-content"
-										className={classes.scrollContent}
-										style={{ width: totalColumnWidth }}
-									/>
-								</div>
-							)}
-						</div>
-					)}
-				</WindowScroller>
-				{displayHorizontalScroll &&
-					createPortal(
-						// added to prevent the lag issue between header and body scroll
-						<canvas
-							style={{
-								position: 'absolute',
-								top: 0,
-								width: '100%',
-								height: '100%',
-								pointerEvents: 'none',
-							}}
-						/>,
-						document.body,
-					)}
-			</>
-		)
+		return children({
+			height: 400,
+			isScrolling: false,
+			scrollTop: 0,
+			scrollLeft: 0,
+			headerRef,
+			gridRef,
+		})
+		// return (
+		// 	<>
+		// 		<WindowScroller scrollElement={scrollContainer || window} onResize={onResize}>
+		// 			{({ height, isScrolling, scrollTop, registerChild }) => (
+		// 				<div
+		// 					ref={ref => {
+		// 						scrollChildRef.current = ref
+		// 						registerChild(ref)
+		// 					}}
+		// 				>
+		// 					{children({
+		// 						height,
+		// 						isScrolling: isScrolling || scrolling,
+		// 						scrollTop,
+		// 						scrollLeft,
+		// 						headerRef,
+		// 						gridRef,
+		// 					})}
+		// 					{displayHorizontalScroll && (
+		// 						<div
+		// 							id="fake-scroller"
+		// 							className={classes.root}
+		// 							style={{
+		// 								width,
+		// 								position: stickyScroller ? 'sticky' : 'relative',
+		// 								bottom: stickyScroller ? '0px' : 'unset',
+		// 							}}
+		// 							onScroll={e => {
+		// 								handleScroll({ scrollLeft: e.target['scrollLeft'] })
+		// 							}}
+		// 							ref={fakeScrollerRef}
+		// 						>
+		// 							<div
+		// 								id="fake-scroller-content"
+		// 								className={classes.scrollContent}
+		// 								style={{ width: totalColumnWidth }}
+		// 							/>
+		// 						</div>
+		// 					)}
+		// 				</div>
+		// 			)}
+		// 		</WindowScroller>
+		// 		{displayHorizontalScroll &&
+		// 			createPortal(
+		// 				// added to prevent the lag issue between header and body scroll
+		// 				<canvas
+		// 					style={{
+		// 						position: 'absolute',
+		// 						top: 0,
+		// 						width: '100%',
+		// 						height: '100%',
+		// 						pointerEvents: 'none',
+		// 					}}
+		// 				/>,
+		// 				document.body,
+		// 			)}
+		// 	</>
+		// )
 	},
 )
 

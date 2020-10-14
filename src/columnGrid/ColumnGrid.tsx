@@ -43,11 +43,11 @@ export const ColumnGrid = React.memo(
 		}))
 		const gridRef = useRef<Grid | null>(null)
 
-		// clear cache and recompute when data changes
+		// clear cache and recompute when data changes OR when the container width changes
 		useEffect(() => {
-			cache?.clearAll()
+			cache.clearAll()
 			gridRef.current?.recomputeGridSize()
-		}, [props.data])
+		}, [props.data, props.width])
 
 		function getSortIndicatorComponent(order: string | undefined) {
 			if (!order) {
@@ -68,7 +68,7 @@ export const ColumnGrid = React.memo(
 				const children = renderer ? (
 					(renderer(cell) as any)
 				) : cell.tooltip ? (
-					<Tooltip title={title} arrow placement={'top'} {...cell.tooltipProps}>
+					<Tooltip title={title} placement={'top'} {...cell.tooltipProps}>
 						<span>{title}</span>
 					</Tooltip>
 				) : (
@@ -89,6 +89,7 @@ export const ColumnGrid = React.memo(
 				) {
 					headerClassName = clsx(headerClassName, props.theme?.currentColumnClass)
 				}
+
 
 				return (
 					<div
@@ -149,10 +150,15 @@ export const ColumnGrid = React.memo(
 					userSelect: 'none',
 				}
 
+
 				const rendererProps: MeasurerRendererProps = {
 					...args,
 					cell,
 					getColumnWidth: props.getColumnWidth,
+				}
+
+				if (isNaN(Number(style.width))){
+					console.error("WIDTH NAN AT CELL MEASURER WRAPPER STYLE")
 				}
 				return (
 					<CellMeasurer
@@ -198,6 +204,7 @@ export const ColumnGrid = React.memo(
 				overscanColumnCount={props.overscanColumnCount ?? 2}
 				width={props.width}
 				columnWidth={props.getColumnWidth}
+				height={100} //Its going to be ignored due to autoHeight
 				autoHeight
 			/>
 		)

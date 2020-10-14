@@ -14,9 +14,8 @@ export interface ColumnGridProps {
 	getColumnWidth: ({ index }: { index: number }) => number
 
 	width: number
-	scrollLeft: number
-	isScrolling: boolean
-	height: number
+	// scrollLeft: number
+	// isScrolling: boolean
 	theme?: GridTheme
 	coords: NavigationCoords
 	/** @default StretchMode.None  */

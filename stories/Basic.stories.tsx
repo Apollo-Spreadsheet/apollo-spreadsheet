@@ -12,6 +12,7 @@ import { CellChangeParams } from '../src/editorManager/useEditorManager'
 import { getTopUseCase } from './dataUseCases'
 import { getSimpleData } from './generateData'
 import { orderBy } from 'lodash'
+import { Alignment } from 'react-virtualized'
 
 const LargeDataSetTable = () => {
 	const { headerData, data } = getSimpleData(50, 50)
@@ -27,7 +28,6 @@ const LargeDataSetTable = () => {
 	)
 }
 
-const { headerData: topHeaders, data: topDefaultData } = getTopUseCase()
 const useTopStyles = makeStyles(() => ({
 	currentColumnClass: {
 		color: '#225890',
@@ -78,14 +78,17 @@ const useTopStyles = makeStyles(() => ({
 		width: '10px',
 	},
 }))
+
+const { headerData: topHeaders, data: topDefaultData } = getTopUseCase()
 const MainTable = () => {
+	const classes = useTopStyles()
 	const [headers, setHeaders] = useState(topHeaders)
 	const [data, setData] = useState(topDefaultData)
 	const [outsideClickDeselects, setOutsideClickDeselect] = useState(true)
-	const classes = useTopStyles()
 	const gridApi = useRef<GridApi | null>(null)
 	const [darkTheme, setDarkTheme] = useState(false)
 	const [selectionEnabled, setSelectionEnabled] = useState(true)
+	const [scrollAlignment, setScrollAlignment] = useState<Alignment>('auto')
 
 	const mergeCellsData = useMemo(() => {
 		return createMergeCellsData(data, headers)
@@ -209,6 +212,20 @@ const MainTable = () => {
 	}, [])
 
 	const apiRef = useRef<any>(null)
+
+	function handleScrollAlignmentChange(e) {
+		setScrollAlignment(e.target.value)
+	}
+
+	function onHeaderIconClick() {
+		const selectedRows = apiRef.current?.getSelectedRows() ?? []
+		if (selectedRows.length === 0){
+			return
+		}
+		console.warn(apiRef.current?.getSelectedRows())
+		setData(data.filter(e => !selectedRows.some(id => id === e.taskId)))
+	}
+
 	return (
 		<>
 			<Button variant="contained" color={'primary'} onClick={createRowOnBottom}>
@@ -226,6 +243,20 @@ const MainTable = () => {
 				onChange={e => setSelectionEnabled((e?.target as any).checked)}
 			/>
 			Toggle rowSelection hook
+			<FormControl style={{ minWidth: 120 }}>
+				<InputLabel id="demo-simple-select-label">Scroll Alignment</InputLabel>
+				<Select
+					labelId="demo-simple-select-label"
+					id="demo-simple-select"
+					value={scrollAlignment}
+					onChange={handleScrollAlignmentChange}
+				>
+					<MenuItem value={'auto'}>Auto (Default)</MenuItem>
+					<MenuItem value={'center'}>Center</MenuItem>
+					<MenuItem value={'start'}>Start</MenuItem>
+					<MenuItem value={'end'}>End</MenuItem>
+				</Select>
+			</FormControl>
 			<ApolloSpreadSheet
 				ref={ref => {
 					apiRef.current = ref
@@ -248,11 +279,13 @@ const MainTable = () => {
 				// 		createRow(coords)
 				// 	}
 				// }}
+				scrollToAlignment={scrollAlignment}
 				selection={
 					selectionEnabled
 						? {
 								key: 'taskId',
 								checkboxClass: classes.checkBox,
+								onHeaderIconClick
 						  }
 						: undefined
 				}

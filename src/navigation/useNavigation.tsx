@@ -29,6 +29,7 @@ interface Props<TRow = unknown> {
 	stopEditing: (params?: StopEditingParams) => void
 	onCellChange?: (params: CellChangeParams) => void
 	editorState: IEditorState | null
+	selectRow: (id: string | TRow) => void
 }
 
 export type SelectCellFn = (params: NavigationCoords) => void
@@ -48,7 +49,8 @@ export function useNavigation({
 	beginEditing,
 	onCellChange,
 	editorState,
-}: Props): [NavigationCoords, SelectCellFn, OnCellClick] {
+	                              selectRow
+}: Props): [NavigationCoords, SelectCellFn] {
 	const [coords, setCoords] = useState<NavigationCoords>(defaultCoords)
 	const isMergedCell = (row: any, colIndex: number) => {
 		const cell = row[colIndex]
@@ -405,7 +407,12 @@ export function useNavigation({
 			}
 		}
 
+
 		if (column.id === ROW_SELECTION_HEADER_ID) {
+			//Enable only checkbox via enter
+			if (event.key === 'Enter'){
+				return selectRow(row)
+			}
 			return
 		}
 
@@ -443,6 +450,10 @@ export function useNavigation({
 
 	const selectCell = useCallback(
 		({ colIndex, rowIndex }: NavigationCoords) => {
+			if (colIndex === -1 && rowIndex === -1){
+				console.warn("WIPE")
+				setCoords({ colIndex, rowIndex})
+			}
 			if (suppressNavigation) {
 				return console.error('suppressNavigation is enabled')
 			}
@@ -463,6 +474,14 @@ export function useNavigation({
 			const column = getColumnAt(colIndex)
 			if (!column) {
 				return console.warn('Column not found ')
+			}
+
+			const isDisabled = isFunctionType(column.disableNavigation)
+				? column.disableNavigation({ rowIndex, colIndex })
+				: column.disableNavigation
+
+			if (isDisabled){
+				return
 			}
 
 			const delayEditingOpen = column.delayEditorOpen
@@ -500,33 +519,6 @@ export function useNavigation({
 		[suppressNavigation, coords, rows, columnCount, getColumnAt, beginEditing],
 	)
 
-	const isNavigationDisabledAt = (rowIndex: number, colIndex: number) => {
-		const column = getColumnAt(colIndex)
-		if (!column) {
-			console.error('Column not found at ' + colIndex)
-			return false
-		}
-
-		return isFunctionType(column.disableNavigation)
-			? column.disableNavigation({ rowIndex, colIndex })
-			: column.disableNavigation
-	}
-	const onCellClick = useCallback(
-		({ rowIndex, colIndex, event }: ICellClickProps) => {
-			event.preventDefault()
-			if (suppressNavigation) {
-				return console.error('No navigation')
-			}
-
-			if (isNavigationDisabledAt(rowIndex, colIndex)) {
-				return
-			}
-
-			selectCell({ colIndex, rowIndex })
-		},
-		[suppressNavigation, coords],
-	)
-
 	useEffect(() => {
 		document.addEventListener('keydown', onKeyDown)
 		return () => document.removeEventListener('keydown', onKeyDown)
@@ -540,7 +532,8 @@ export function useNavigation({
 		stopEditing,
 		onCellChange,
 		editorState,
+		selectRow,
 	])
 
-	return [coords, selectCell, onCellClick]
+	return [coords, selectCell]
 }

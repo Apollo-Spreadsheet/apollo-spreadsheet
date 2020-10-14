@@ -24,7 +24,7 @@ export interface IEditorState {
 	rowIndex: number
 	colIndex: number
 	initialValue: React.ReactText
-	targetElement: Element
+	targetElement: HTMLElement
 	validatorHook?: (value: unknown) => boolean
 	/**
 	 * Useful to prevent navigation interception on second arms
@@ -46,7 +46,7 @@ export interface EditorManagerProps<TRow = unknown> {
 
 export interface BeginEditingParams {
 	coords: NavigationCoords
-	targetElement: Element
+	targetElement: HTMLElement
 	defaultKey?: string
 }
 
@@ -64,6 +64,7 @@ export function useEditorManager<TRow>({ getColumnAt, rows, onCellChange }: Edit
 	const state = useRef<IEditorState | null>(null)
 	const [editorNode, setEditorNode] = useState<JSX.Element | null>(null)
 	const [scheduleMove, setScheduleMove] = useState<string | null>(null)
+
 
 	//Effect used to perform the move (keyPress) after editor closes
 	useEffect(() => {

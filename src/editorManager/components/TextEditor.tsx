@@ -13,6 +13,7 @@ import { NavigationKey } from '../enums/navigation-key.enum'
 import { isCaretAtEndPosition } from '../utils/isCaretAtEndPosition'
 import { EditorProps } from '../editorProps'
 import { makeStyles } from '@material-ui/core/styles'
+import { addListener, removeListener } from 'resize-detector'
 
 const useStyles = makeStyles(() => ({
 	input: {
@@ -32,6 +33,19 @@ export const TextEditor = forwardRef(
 	({ value, stopEditing, anchorRef, maxLength, validatorHook }: EditorProps, componentRef) => {
 		const classes = useStyles()
 		const [editingValue, setEditingValue] = useState(String(value))
+
+		function onAnchorResize() {
+			stopEditing()
+		}
+
+		//Watch for DOM Changes on the target anchor and close editor because Popover does not change
+		useEffect(() => {
+			addListener(anchorRef, onAnchorResize)
+			return () => {
+				removeListener(anchorRef, onAnchorResize)
+			}
+		}, [])
+
 		useImperativeHandle(
 			componentRef,
 			() => ({

@@ -1,7 +1,7 @@
 import React, {
 	CSSProperties,
 	forwardRef,
-	useCallback,
+	useCallback, useEffect,
 	useImperativeHandle,
 	useMemo,
 	useState,
@@ -9,6 +9,7 @@ import React, {
 import { EditorProps } from '../editorProps'
 import { Popover, TextareaAutosize, TextField } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles'
+import { addListener, removeListener } from 'resize-detector'
 
 const useStyles = makeStyles(() => ({
 	input: {
@@ -31,6 +32,19 @@ export const NumericEditor = forwardRef(
 		const [editingValue, setEditingValue] = useState<string>(
 			isNaN(Number(value)) ? '0' : String(value),
 		)
+
+		function onAnchorResize() {
+			stopEditing()
+		}
+
+		//Watch for DOM Changes on the target anchor and close editor because Popover does not change
+		useEffect(() => {
+			addListener(anchorRef, onAnchorResize)
+			return () => {
+				removeListener(anchorRef, onAnchorResize)
+			}
+		}, [])
+
 		useImperativeHandle(
 			componentRef,
 			() => ({

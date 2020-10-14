@@ -2,6 +2,7 @@ import React from 'react'
 import { TooltipProps } from '@material-ui/core'
 import { NavigationCoords } from '../../navigation/types/navigation-coords.type'
 import { EditorRef } from '../../editorManager/useEditorManager'
+import { PopperProps } from '@material-ui/core/Popper/Popper'
 
 export interface CellRendererProps<TRow = unknown> {
 	row: TRow
@@ -44,6 +45,7 @@ export interface Header<Key = string> {
 		open?: boolean
 		/** @default top **/
 		placement?: TooltipProps['placement']
+		PopperProps?: Partial<PopperProps>
 	}
 	/** @default 500 **/
 	maxLength?: number

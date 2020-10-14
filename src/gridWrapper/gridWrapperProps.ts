@@ -13,6 +13,7 @@ import {
 	IEditorState,
 	StopEditingParams,
 } from '../editorManager/useEditorManager'
+import { Alignment } from 'react-virtualized'
 
 export interface CellEventParams<T = unknown> {
 	rowIndex: number
@@ -47,6 +48,12 @@ export interface GridWrapperCommonProps {
 	 */
 	overscanColumnCount?: number
 	onCellChange?: (params: CellChangeParams) => void
+	/**
+	 * Controls scroll-to-cell behavior of the Grid.
+	 * The default ("auto") scrolls the least amount possible to ensure that the specified cell is fully visible.
+	 * Use "start" to align cells to the top/left of the Grid and "end" to align bottom/right.
+	 */
+	scrollToAlignment?: Alignment;
 }
 
 export interface GridWrapperProps<TRow = any> extends GridWrapperCommonProps {
@@ -54,18 +61,16 @@ export interface GridWrapperProps<TRow = any> extends GridWrapperCommonProps {
 	minRowHeight: number
 	defaultColumnWidth: number
 	width: number
-	scrollLeft: number
-	scrollTop: number
-	isScrolling: boolean
+//	scrollLeft: number
+	//scrollTop: number
+//	isScrolling: boolean
 	height: number
-	registerChild: RegisterChildFn
+	registerChild?: RegisterChildFn
 	rows: TRow[]
-	gridContainerRef: HTMLDivElement | null
 	coords: NavigationCoords
 	data: GridCell[][]
 	columnCount: number
 	selectCell: SelectCellFn
-	onCellClick: (params: NavigationCoords & { event: React.MouseEvent<HTMLDivElement> }) => void
 	getColumnWidth: ({ index }: { index: number }) => number
 	editorState: IEditorState | null
 	beginEditing: (params: BeginEditingParams) => void

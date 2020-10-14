@@ -5,7 +5,7 @@ import { StopEditingParams } from './useEditorManager'
 export interface EditorProps {
 	value: string
 	stopEditing: (params?: StopEditingParams) => void
-	anchorRef: Element
+	anchorRef: HTMLElement
 	cellStyle?: CSSProperties
 	maxLength: number
 	validatorHook?: (value: unknown) => boolean

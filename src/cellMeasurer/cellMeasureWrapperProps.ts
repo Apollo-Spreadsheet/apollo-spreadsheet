@@ -1,13 +1,12 @@
 import React from 'react'
-import { RegisterChildFn } from '../core/interfaces/registerChildFn'
-import { GetColumnWidthFn } from '../core/interfaces/getColumnWidthFn'
 import { CellMeasurerCache } from 'react-virtualized'
-import { GridCell } from '../types/row.interface'
 import { MeasuredCellParent } from 'react-virtualized/dist/es/CellMeasurer'
+import { GetColumnWidthFn } from '../gridWrapper/interfaces/getColumnWidthFn'
+import { GridCell } from '../gridWrapper/interfaces/gridCell'
 
 interface CellMeasureRendererProps {
-	style: React.CSSProperties
-	ref?: RegisterChildFn
+	// style: React.CSSProperties
+	// ref?: RegisterChildFn
 }
 
 export interface MeasurerRendererProps {
@@ -18,7 +17,9 @@ export interface MeasurerRendererProps {
 	getColumnWidth: GetColumnWidthFn
 }
 
-export type CellMeasureRenderer = (props: CellMeasureRendererProps) => any
+export interface CellMeasureRenderer {
+	(props: any): unknown
+}
 
 export interface CellMeasureWrapperProps {
 	rowSpan?: number

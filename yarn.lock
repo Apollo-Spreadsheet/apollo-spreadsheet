@@ -3507,6 +3507,11 @@
     text-table "^0.2.0"
     webpack-log "^1.1.2"
 
+"@xobotyi/scrollbar-width@^1.9.5":
+  version "1.9.5"
+  resolved "https://registry.yarnpkg.com/@xobotyi/scrollbar-width/-/scrollbar-width-1.9.5.tgz#80224a6919272f405b87913ca13b92929bdf3c4d"
+  integrity sha512-N8tkAACJx2ww8vFMneJmaAgmjAG1tnVBZJRLRcx061tmsLRZHSEZSLuGWnwPtunsSLvSqXQ2wfp7Mgqg1I+2dQ==
+
 "@xtuc/ieee754@^1.2.0":
   version "1.2.0"
   resolved "https://registry.yarnpkg.com/@xtuc/ieee754/-/ieee754-1.2.0.tgz#eef014a3145ae477a1cbc00cd1e552336dceb790"
@@ -13292,6 +13297,11 @@ requires-port@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/requires-port/-/requires-port-1.0.0.tgz#925d2601d39ac485e091cf0da5c6e694dc3dcaff"
   integrity sha1-kl0mAdOaxIXgkc8NpcbmlNw9yv8=
+
+resize-detector@^0.2.2:
+  version "0.2.2"
+  resolved "https://registry.yarnpkg.com/resize-detector/-/resize-detector-0.2.2.tgz#b207e72912bef0bda9fb825fe894ed9686ca965e"
+  integrity sha512-X07ADfFqXoyfbx4/PSzr7EBF9e/RwrcS9UoPBMbau11agg5uad39ysMmXFCu0o5C3hhKbs0X/cSl85OwPIpZLQ==
 
 resize-observer-polyfill@^1.5.1:
   version "1.5.1"

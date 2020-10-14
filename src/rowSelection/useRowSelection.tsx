@@ -33,14 +33,15 @@ export function useRowSelection<TRow = any>({ rows, selection }: Props<TRow>) {
 	)
 
 	const selectRow = useCallback(
-		(id: string) => {
+		(idOrRow: string | TRow) => {
 			//Ensure selection is enabled
 			if (!selection) {
 				return
 			}
 
+			const _id = typeof idOrRow === 'string' ? idOrRow : idOrRow[selection.key]
 			//Find the target row in order to determinate whether we can select or not
-			const targetRow = rows.find(e => String(e[selection?.key]) === id)
+			const targetRow = rows.find(e => String(e[selection.key]) === _id)
 			if (!targetRow) {
 				return
 			}
@@ -50,10 +51,10 @@ export function useRowSelection<TRow = any>({ rows, selection }: Props<TRow>) {
 			}
 
 			//Toggle effect
-			if (!isRowSelected(id)) {
-				setSelectedIds([...selectedIds, id])
+			if (!isRowSelected(_id)) {
+				setSelectedIds([...selectedIds, _id])
 			} else {
-				setSelectedIds(selectedIds.filter(e => e !== id))
+				setSelectedIds(selectedIds.filter(e => e !== _id))
 			}
 		},
 		[selectedIds, isRowSelected, selection, rows],
