@@ -110,8 +110,7 @@ const MainTable = () => {
 		cellClass: classes.rowClass,
 	}
 
-	const onCellChange = useCallback(
-		(changes: CellChangeParams) => {
+	function onCellChange (changes: CellChangeParams) {
 			const newData = [...data]
 			const column = headers[changes.coords.colIndex]
 			newData[changes.coords.rowIndex] = {
@@ -119,11 +118,9 @@ const MainTable = () => {
 				[column.accessor]: changes.newValue,
 			}
 			setData(newData)
-		},
-		[data, headers],
-	)
+	}
 
-	const createRow = (coords: NavigationCoords) => {
+	function createRow(coords: NavigationCoords) {
 		const mergedCellInfo = mergeCellsData.find(
 			e => e.rowIndex === coords.rowIndex && e.colIndex === coords.colIndex,
 		)
@@ -169,7 +166,7 @@ const MainTable = () => {
 	const createRowOnBottom = () => {
 		const updatedData = [...data]
 		const newRow: any = {
-			taskId: Math.random(),
+			taskId: "task-" + Math.random().toString(),
 			taskContent: 'Task ' + updatedData.length + 1,
 			deliverableId: '5f7dcb38a805c1001777933d',
 			deliverableBody: '',
@@ -207,9 +204,9 @@ const MainTable = () => {
 	// 	return () => document.removeEventListener('keydown', onKeyDown)
 	// }, [])
 
-	const onGridReady = useCallback(api => {
+	function onGridReady(api){
 		gridApi.current = api
-	}, [])
+	}
 
 	const apiRef = useRef<any>(null)
 
@@ -222,7 +219,6 @@ const MainTable = () => {
 		if (selectedRows.length === 0){
 			return
 		}
-		console.warn(apiRef.current?.getSelectedRows())
 		setData(data.filter(e => !selectedRows.some(id => id === e.taskId)))
 	}
 

@@ -162,6 +162,8 @@ export const GridContainer = React.memo(
 									</>
 								)
 							}
+
+							/** @todo Not working yet, requires a major refactor on Horizontal scroll **/
 							return (
 								<HorizontalScroll
 									scrollContainer={gridContainerRef.current}

@@ -38,12 +38,11 @@ export function useRowSelection<TRow = any>({ rows, selection }: Props<TRow>) {
 			if (!selection) {
 				return
 			}
-
-			const _id = typeof idOrRow === 'string' ? idOrRow : idOrRow[selection.key]
+			const _id = typeof idOrRow !== 'object' ? idOrRow : idOrRow[selection.key]
 			//Find the target row in order to determinate whether we can select or not
-			const targetRow = rows.find(e => String(e[selection.key]) === _id)
+			const targetRow = rows.find(e => String(e[selection.key]) === String(_id))
 			if (!targetRow) {
-				return
+				return console.warn(`Row not found with the given key ${selection.key} on param: ${idOrRow} and extracted the id: ${_id}`)
 			}
 			//If we do have the middleware and it returns false, just block
 			if (selection.canSelect && !selection.canSelect(targetRow)) {
@@ -52,12 +51,12 @@ export function useRowSelection<TRow = any>({ rows, selection }: Props<TRow>) {
 
 			//Toggle effect
 			if (!isRowSelected(_id)) {
-				setSelectedIds([...selectedIds, _id])
+				setSelectedIds(prev => [...prev, _id])
 			} else {
-				setSelectedIds(selectedIds.filter(e => e !== _id))
+				setSelectedIds(prev => prev.filter(e => e !== _id))
 			}
 		},
-		[selectedIds, isRowSelected, selection, rows],
+		[isRowSelected, selection, rows],
 	)
 
 	const getSelectedRows = useCallback(() => {
@@ -65,7 +64,7 @@ export function useRowSelection<TRow = any>({ rows, selection }: Props<TRow>) {
 			return []
 		}
 		return rows
-			.filter(e => selectedIds.some(id => id === String(e[selection.key])))
+			.filter(e => selectedIds.some(id => String(id) === String(e[selection.key])))
 			.map(e => String(e[selection.key]))
 	}, [rows, selectedIds, selection])
 
