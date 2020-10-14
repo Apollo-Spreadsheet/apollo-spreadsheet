@@ -29,5 +29,5 @@ export interface HorizontalScrollProps {
 	//Container width (actual size)
 	width: number
 	scrollContainer: Element | null
-	children: ScrollHandlerChildrenFn
+	children: any
 }

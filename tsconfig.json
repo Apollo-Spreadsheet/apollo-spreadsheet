@@ -12,10 +12,10 @@
     "importHelpers": true,
     "strictNullChecks": true,
     "allowSyntheticDefaultImports": true,
-    "baseUrl": ".",
-    "rootDir": "src",
-    "outDir": "dist"
+    "baseUrl": "src",
+    "rootDir": ".",
+    "outDir": "dist",
+    "noEmit": true
   },
-  "exclude": ["node_modules", "dist"],
-  "include": ["src/**/*"]
+  "exclude": ["node_modules", "dist"]
 }
