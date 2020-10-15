@@ -15,6 +15,8 @@ interface Props<TRow> {
  */
 export function useRowSelection<TRow = any>({ rows, selection }: Props<TRow>) {
 	const [selectedIds, setSelectedIds] = useState<string[]>([])
+
+	
 	//Detect if a row exists in selected but not in rows
 	useEffect(() => {
 		if (!selection) {

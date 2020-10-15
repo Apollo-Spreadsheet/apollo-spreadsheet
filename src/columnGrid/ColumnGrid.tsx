@@ -16,9 +16,23 @@ import Tooltip from '@material-ui/core/Tooltip'
 import ArrowUpwardIcon from '@material-ui/icons/ArrowUpward'
 import ArrowDownwardIcon from '@material-ui/icons/ArrowDownward'
 import { ROW_SELECTION_HEADER_ID } from '../rowSelection/useRowSelection'
+import { makeStyles } from "@material-ui/core/styles";
 
+const useStyles = makeStyles(() => ({
+	headerContainer: {
+		outline: 'none',
+		position: 'sticky !important' as any,
+		top: 0,
+		zIndex: 1,
+		'scrollbar-width': 'none',
+		'&::-webkit-scrollbar': {
+			display: 'none',
+		},
+	}
+}))
 export const ColumnGrid = React.memo(
 	forwardRef((props: ColumnGridProps, componentRef) => {
+		const classes = useStyles()
 		const cache = useRef(
 			new CellMeasurerCache({
 				defaultWidth: props.defaultColumnWidth,
@@ -32,6 +46,7 @@ export const ColumnGrid = React.memo(
 				minWidth: props.defaultColumnWidth,
 			}),
 		).current
+		const recomputingTimeout = useRef<NodeJS.Timeout | undefined>(undefined)
 
 		useImperativeHandle(componentRef, () => ({
 			recomputeGridSize: () => {
@@ -44,9 +59,24 @@ export const ColumnGrid = React.memo(
 		const gridRef = useRef<Grid | null>(null)
 
 		// clear cache and recompute when data changes OR when the container width changes
-		useEffect(() => {
+		function recomputeSizes(){
 			cache.clearAll()
 			gridRef.current?.recomputeGridSize()
+		}
+
+		function recomputingCleanup() {
+			if (recomputingTimeout.current){
+				clearTimeout(recomputingTimeout.current)
+			}
+		}
+
+		// clear cache and recompute when data changes
+		useEffect(() => {
+			if (recomputingTimeout.current){
+				clearTimeout(recomputingTimeout.current)
+			}
+			recomputingTimeout.current = setTimeout(recomputeSizes, 200)
+			return recomputingCleanup
 		}, [props.data, props.width])
 
 		function getSortIndicatorComponent(order: string | undefined) {
@@ -194,6 +224,7 @@ export const ColumnGrid = React.memo(
 		return (
 			<Grid
 				{...props}
+				className={classes.headerContainer}
 				ref={onRefMount}
 				cellRenderer={cellMeasurerWrapperRenderer}
 				deferredMeasurementCache={cache}

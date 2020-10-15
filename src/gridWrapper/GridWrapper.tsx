@@ -4,23 +4,21 @@ import React, {
 	useEffect,
 	useImperativeHandle,
 	useRef,
-	useState,
 } from 'react'
 import { CellMeasurerCache, Grid, SectionRenderedParams } from 'react-virtualized'
 import CellMeasurer from '../cellMeasurer/CellMeasureWrapper'
 import { GridApi } from '../types/grid-api.type'
 import { NavigationCoords } from '../navigation/types/navigation-coords.type'
-import { createPortal } from 'react-dom'
-import { ClickAwayListener } from '@material-ui/core'
 import clsx from 'clsx'
 import { GridCellProps } from 'react-virtualized/dist/es/Grid'
-import { useEditorManager } from '../editorManager/useEditorManager'
 import { MeasurerRendererProps } from '../cellMeasurer/cellMeasureWrapperProps'
 import { CellEventParams, GridWrapperProps } from './gridWrapperProps'
-import { GridCell } from './interfaces/gridCell'
 import { makeStyles } from '@material-ui/core/styles'
 
 const useStyles = makeStyles(() => ({
+	bodyContainer: {
+		outline: 'none',
+	},
 	cellDefaultStyle: {
 		'&:focus': {
 			outline: 0,
@@ -42,6 +40,7 @@ const GridWrapper = forwardRef((props: GridWrapperProps, componentRef: React.Ref
 
 	const classes = useStyles()
 	const gridRef = useRef<Grid | null>(null)
+	const recomputingTimeout = useRef<NodeJS.Timeout | undefined>(undefined)
 
 	/**
 	 * Returns a given column at the provided index if exists
@@ -82,10 +81,24 @@ const GridWrapper = forwardRef((props: GridWrapperProps, componentRef: React.Ref
 		[props.data, getColumnAt, gridRef.current],
 	)
 
-	// clear cache and recompute when data changes
-	useEffect(() => {
+	function recomputeSizes(){
 		cache.clearAll()
 		gridRef.current?.recomputeGridSize()
+	}
+
+	function recomputingCleanup() {
+		if (recomputingTimeout.current){
+			clearTimeout(recomputingTimeout.current)
+		}
+	}
+
+	// clear cache and recompute when data changes
+	useEffect(() => {
+		if (recomputingTimeout.current){
+			clearTimeout(recomputingTimeout.current)
+		}
+		recomputingTimeout.current = setTimeout(recomputeSizes, 200)
+		return recomputingCleanup
 	}, [props.data, props.width, props.height])
 
 	const onCellDoubleClick =
@@ -94,7 +107,7 @@ const GridWrapper = forwardRef((props: GridWrapperProps, componentRef: React.Ref
 			if (cell.dummy) {
 				return
 			}
-
+			props.restoreGridFocus()
 			props.beginEditing({
 				coords: { rowIndex, colIndex: columnIndex },
 				targetElement: event.target as HTMLElement,
@@ -107,6 +120,7 @@ const GridWrapper = forwardRef((props: GridWrapperProps, componentRef: React.Ref
 				return
 			}
 
+			props.restoreGridFocus()
 			props.selectCell({
 				rowIndex,
 				colIndex: columnIndex
@@ -265,6 +279,7 @@ const GridWrapper = forwardRef((props: GridWrapperProps, componentRef: React.Ref
 	return (
 			<Grid
 				{...props}
+				className={classes.bodyContainer}
 				ref={onRefMount}
 				cellRenderer={cellRenderer}
 				deferredMeasurementCache={cache}

@@ -10,6 +10,7 @@ import { EditorProps } from '../editorProps'
 import { Popover, TextareaAutosize, TextField } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles'
 import { addListener, removeListener } from 'resize-detector'
+import { handleEditorKeydown } from "../utils/handleEditorKeydown";
 
 const useStyles = makeStyles(() => ({
 	input: {
@@ -79,6 +80,19 @@ export const NumericEditor = forwardRef(
 			ref.selectionEnd = editingValue.toString().length
 		}, [])
 
+		function onEditorPortalClose(event: unknown, reason:'backdropClick' | 'escapeKeyDown') {
+			//Only allow to cancel if its invalid
+			if (!isValidValue) {
+				return stopEditing({ save: false })
+			}
+
+			if (reason === 'backdropClick') {
+				return stopEditing({ save: true })
+			}
+
+			stopEditing({ save: false })
+		}
+
 		const anchorStyle = anchorRef['style'] as CSSProperties
 		return (
 			<Popover
@@ -87,17 +101,7 @@ export const NumericEditor = forwardRef(
 				open
 				elevation={0}
 				TransitionProps={{ timeout: 0 }}
-				onClose={(event, reason) => {
-					//Only allow to cancel if its invalid
-					if (!isValidValue) {
-						return stopEditing({ save: false })
-					}
-
-					if (reason === 'backdropClick') {
-						return stopEditing({ save: true })
-					}
-					stopEditing({ save: false })
-				}}
+				onClose={onEditorPortalClose}
 				marginThreshold={10}
 				disableRestoreFocus
 				PaperProps={{
@@ -122,6 +126,7 @@ export const NumericEditor = forwardRef(
 						ref={onTextAreaResizeMount}
 						inputMode={'decimal'}
 						onKeyPress={onKeyPress}
+						onKeyDown={e => handleEditorKeydown(e, stopEditing)}
 						onChange={e => {
 							setEditingValue(e.target['value'].replace(',', '.'))
 						}}

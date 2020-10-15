@@ -24,37 +24,10 @@ import { SelectionProps } from './rowSelection/selectionProps'
 import { useEditorManager } from './editorManager/useEditorManager'
 import { createPortal } from 'react-dom'
 import { orderBy } from 'lodash'
-import { GridContainer } from './gridContainer/GridContainer'
+import { GridContainer, GridContainerCommonProps } from './gridContainer/GridContainer'
 
-/** @todo Make it 15 or 10 to be a little bit wider **/
-const useStyles = makeStyles(() => ({
-	headerContainer: {
-		outline: 'none',
-		// position: "-webkit-sticky !important" as any,
-		position: 'sticky !important' as any,
-		top: 0,
-		zIndex: 1,
-		'scrollbar-width': 'none',
-		'&::-webkit-scrollbar': {
-			display: 'none',
-		},
-	},
-	apolloRoot: {
-		height: '100%',
-		width: '100%',
-		flex: 1,
-		display: 'flex'
-	},
-	bodyContainer: {
-		outline: 'none',
-		// 'scrollbar-width': 'none',
-		// '&::-webkit-scrollbar': {
-		// 	display: 'none',
-		// },
-	},
-}))
-
-interface Props<TRow = any> extends GridWrapperCommonProps {
+interface Props<TRow = any> extends GridWrapperCommonProps, GridContainerCommonProps {
+	className?: string
 	rows: TRow[]
 	/** @default 50 **/
 	minRowHeight?: number
@@ -71,6 +44,7 @@ interface Props<TRow = any> extends GridWrapperCommonProps {
 	 * @todo Maybe accept a function to indicate if a column can or not be sortable
 	 * @default true **/
 	disableSort?: boolean
+	onCreateRow?: (coords: NavigationCoords) => void
 }
 
 interface ApolloSpreadSheetRef {
@@ -81,10 +55,16 @@ interface ApolloSpreadSheetRef {
 
 export const ApolloSpreadSheet = forwardRef(
 	(props: Props, componentRef: React.Ref<ApolloSpreadSheetRef>) => {
-		const classes = useStyles()
 		const minColumnWidth = props.minColumnWidth ?? 60
-		const [focused, setFocused] = useState(true)
-		const rootRef = useRef<HTMLDivElement | null>(null)
+		const [gridFocused, setGridFocused] = useState(true)
+
+		const restoreGridFocus = useCallback(() => {
+			if (gridFocused) {
+				return
+			}
+			setGridFocused(true)
+		}, [gridFocused])
+
 		const [sort, setSort] = useState<{
 			field: string
 			order: 'asc' | 'desc'
@@ -172,13 +152,14 @@ export const ApolloSpreadSheet = forwardRef(
 			data,
 			rows,
 			columnCount: headers.length,
-			suppressNavigation: props.suppressNavigation ?? false,
+			suppressControls: props.suppressNavigation || !gridFocused,
 			getColumnAt,
 			onCellChange: props.onCellChange,
 			beginEditing,
 			stopEditing,
 			editorState,
 			selectRow,
+			onCreateRow: props.onCreateRow,
 		})
 
 		//Public api from plugin to extensible hooks or external ref
@@ -187,9 +168,10 @@ export const ApolloSpreadSheet = forwardRef(
 				rowCount,
 				columnCount: headers.length,
 				selectedCell: coords,
-				getSelectedRows: getSelectedRows
+				getSelectedRows: getSelectedRows,
+				selectCell,
 			}
-		}, [coords, rowCount, headers.length, getSelectedRows])
+		}, [coords, rowCount, headers.length, getSelectedRows, selectCell])
 
 		useImperativeHandle(componentRef, () => api)
 
@@ -212,59 +194,34 @@ export const ApolloSpreadSheet = forwardRef(
 			}
 		}
 
-		const handleDocumentClick = (e) => {
-			console.error('On click')
-			console.log(e.target)
-			console.log(rootRef.current)
-
-			if (rootRef.current?.contains(e.target) && !focused) {
-				console.error("FOCUS YEA")
-				setFocused(true)
-			} else {
-				if (!focused){
-					return
-				}
-				console.warn("OUTSIDE")
-				setFocused(false)
+		const onClickAway = useCallback(() => {
+			if (!gridFocused) {
+				return
+			}
+			if (props.outsideClickDeselects) {
+				setGridFocused(false)
 				selectCell({
 					rowIndex: -1,
 					colIndex: -1,
 				})
 			}
-		}
-		console.log({ focused, coords })
-		/** @todo Need to review this part **/
-		// useEffect(() => {
-		// 	document.addEventListener('click', handleDocumentClick)
-		// 	return () => {
-		// 		document.removeEventListener('click', handleDocumentClick)
-		// 	}
-		// }, [focused, props.outsideClickDeselects, selectCell])
-
-		// const onClickAway = useCallback(() => {
-		// 	if (props.outsideClickDeselects && focused) {
-		// 		setFocused(false)
-		// 		selectCell({
-		// 			rowIndex: -1,
-		// 			colIndex: -1,
-		// 		})
-		// 	}
-		// }, [props.outsideClickDeselects, focused])
+		}, [props.outsideClickDeselects, selectCell, gridFocused])
 
 		return (
-				<div className={classes.apolloRoot} ref={rootRef}>
-					<GridContainer
-						headers={headers}
-						minColumnWidth={minColumnWidth}
-						dynamicColumnCount={dynamicColumnCount}
-						stretchMode={props.stretchMode ?? StretchMode.All}
-					>
-						{({ getColumnWidth, width, columnGridRef, height, mainGridRef, registerChild }) => (
-							<>
+			<>
+				<GridContainer
+					headers={headers}
+					minColumnWidth={minColumnWidth}
+					dynamicColumnCount={dynamicColumnCount}
+					stretchMode={props.stretchMode ?? StretchMode.All}
+					containerClassName={props.containerClassName}
+				>
+					{({ getColumnWidth, width, columnGridRef, height, mainGridRef, registerChild }) => (
+						<ClickAwayListener onClickAway={onClickAway}>
+							<div id="apollo-grids" className={props.className}>
 								<ColumnGrid
 									data={headersData}
 									headers={headers}
-									className={classes.headerContainer}
 									width={width}
 									defaultColumnWidth={minColumnWidth}
 									getColumnWidth={getColumnWidth}
@@ -286,7 +243,6 @@ export const ApolloSpreadSheet = forwardRef(
 									data={data}
 									overscanColumnCount={props.overscanColumnCount}
 									overscanRowCount={props.overscanRowCount}
-									className={classes.bodyContainer}
 									registerChild={registerChild}
 									defaultColumnWidth={minColumnWidth}
 									width={width}
@@ -313,12 +269,14 @@ export const ApolloSpreadSheet = forwardRef(
 									beginEditing={beginEditing}
 									stopEditing={stopEditing}
 									scrollToAlignment={props.scrollToAlignment}
+									restoreGridFocus={restoreGridFocus}
 								/>
-							</>
-						)}
-					</GridContainer>
-					{editorNode && createPortal(editorNode, document.body)}
-				</div>
+							</div>
+						</ClickAwayListener>
+					)}
+				</GridContainer>
+				{editorNode && createPortal(editorNode, document.body)}
+			</>
 		)
 	},
 )

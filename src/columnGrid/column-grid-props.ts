@@ -7,7 +7,6 @@ export interface ColumnGridProps {
 	data: Array<Header[]>
 	headers: Header[]
 	nestedHeaders?: Array<NestedHeader[]>
-	className?: string
 	minRowHeight: number
 
 	defaultColumnWidth: number

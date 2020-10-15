@@ -96,17 +96,12 @@ export function useEditorManager<TRow>({ getColumnAt, rows, onCellChange }: Edit
 				if (value === undefined) {
 					return stopEditing({ save: false })
 				}
-				/** @todo Review this carefully **/
-				//Close the editor to prevent any conflict with the editing value
-				// if (value != editorState.editor.initialValue) {
-				// 	console.warn("CLOSING EDITOR TO PREVENT CONFLICT")
-				// 	stopEditing()
-				// }
 			} else {
 				stopEditing({ save: false })
 			}
 		}
 	}, [rows, getColumnAt, editorNode])
+
 
 	/**
 	 * Closes the existing editor without saving anything
@@ -125,13 +120,28 @@ export function useEditorManager<TRow>({ getColumnAt, rows, onCellChange }: Edit
 					return setEditorNode(null)
 				}
 				const isValid = editorState.validatorHook?.(newValue) ?? true
+				console.log({ isValid })
 				if (!isValid) {
 					editorRef.current = null
 					state.current = null
 					return setEditorNode(null)
 				}
 
+				console.log({
+					newValue,
+					editorStateInitial: editorState.initialValue,
+					isDiff: newValue != editorState.initialValue
+				})
 				if (newValue != editorState.initialValue) {
+					console.warn("onCellChangeInvoking")
+					console.log({
+						coords: {
+							rowIndex: editorState.rowIndex,
+							colIndex: editorState.colIndex,
+						},
+						previousValue: editorState.initialValue,
+						newValue,
+					})
 					onCellChange?.({
 						coords: {
 							rowIndex: editorState.rowIndex,
@@ -147,8 +157,6 @@ export function useEditorManager<TRow>({ getColumnAt, rows, onCellChange }: Edit
 			state.current = null
 			setEditorNode(null)
 			if (params?.keyPress) {
-				console.warn('Key pressed to navigate to')
-				console.log(params?.keyPress)
 				setScheduleMove(params?.keyPress)
 			}
 		},
@@ -242,13 +250,15 @@ export function useEditorManager<TRow>({ getColumnAt, rows, onCellChange }: Edit
 				)
 			}
 
-			const value = (row as any)[column.accessor]
+			const value = (row as TRow)[column.accessor]
 				? defaultKey
-					? (row as any)[column.accessor] + defaultKey
-					: (row as any)[column.accessor]
+					? (row as TRow)[column.accessor] + defaultKey
+					: (row as TRow)[column.accessor]
 				: defaultKey
 				? defaultKey
 				: ''
+
+			const initialValue = (row as TRow)[column.accessor] ?? ''
 
 			const editorProps: EditorProps = {
 				anchorRef: targetElement,
@@ -263,7 +273,7 @@ export function useEditorManager<TRow>({ getColumnAt, rows, onCellChange }: Edit
 				node: editor,
 				rowIndex: coords.rowIndex,
 				colIndex: coords.colIndex,
-				initialValue: value,
+				initialValue,
 				targetElement,
 				validatorHook: column.validatorHook,
 				isPopup: column.editor !== undefined || column.type === ColumnCellType.Calendar,

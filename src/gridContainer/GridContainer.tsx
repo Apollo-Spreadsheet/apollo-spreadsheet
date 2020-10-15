@@ -10,6 +10,7 @@ import { Header } from '../columnGrid/types/header.type'
 import { RegisterChildFn } from '../gridWrapper/interfaces/registerChildFn'
 import { makeStyles } from '@material-ui/core/styles'
 import shallowDiffers from '../helpers/shallowDiffers'
+import clsx from "clsx"
 
 const useStyles = makeStyles(() => ({
 	root: {
@@ -17,25 +18,6 @@ const useStyles = makeStyles(() => ({
 		width: '100%',
 		// overflowY: 'hidden',
 		// overflowX: 'hidden',
-		/** @todo Margin remove **/
-		margin: 15,
-		// '&:hover': {
-		// 	overflowY: 'auto',
-		// },
-		// '&::-webkit-scrollbar-track': {
-		// 	borderRadius: '10px',
-		// 	opacity: 0.5,
-		// 	'-webkit-box-shadow': 'inset 0 0 6px rgba(0,0,0,.3)',
-		// },
-		// '&::-webkit-scrollbar': {
-		// 	width: `${CONTAINER_SCROLL_WIDTH}px`,
-		// 	opacity: 0.5,
-		// },
-		// '&::-webkit-scrollbar-thumb': {
-		// 	borderRadius: '10px',
-		// 	opacity: 0.5,
-		// 	'-webkit-box-shadow': 'inset 0 0 6px rgba(0,0,0,.3)',
-		// },
 	},
 }))
 
@@ -48,7 +30,13 @@ export interface GridContainerChildrenProps {
 	mainGridRef: React.MutableRefObject<any>
 }
 
-interface Props {
+export interface GridContainerCommonProps {
+	height?: number
+	width?: number
+	containerClassName?: string
+}
+
+interface Props extends GridContainerCommonProps {
 	headers: Header[]
 	minColumnWidth: number
 	dynamicColumnCount: number
@@ -57,7 +45,16 @@ interface Props {
 }
 
 export const GridContainer = React.memo(
-	({ minColumnWidth, dynamicColumnCount, stretchMode, headers, children }: Props) => {
+	({
+		minColumnWidth,
+		dynamicColumnCount,
+		stretchMode,
+		headers,
+		children,
+		width,
+		height,
+		 containerClassName
+	}: Props) => {
 		const scrollbarSize = scrollbarWidth() ?? 0
 		const classes = useStyles()
 		const [state, setState] = useState({})
@@ -107,7 +104,6 @@ export const GridContainer = React.memo(
 				!shallowDiffers(headers, lastHeaders.current) &&
 				lastContainerWidth.current === containerWidth
 			) {
-
 				return remainingWidth.current
 			}
 
@@ -139,62 +135,77 @@ export const GridContainer = React.memo(
 			return width
 		}
 
-		function render(containerWidth: number, containerHeight = 400) {
+		function render(containerWidth: number, containerHeight = 500) {
 			const remainingWidth = buildColumnTotalWidth(containerWidth)
 			console.log({ containerWidth, containerHeight })
-				return (
-					<ColumnSizer
-						columnMinWidth={minColumnWidth}
-						columnCount={dynamicColumnCount}
-						width={remainingWidth}
-					>
-						{({ registerChild, getColumnWidth, adjustedWidth }) => {
-							const normalizedAdjustedWidth = isNaN(adjustedWidth) ? 0 : adjustedWidth
-							if (stretchMode !== StretchMode.None) {
-								return (
-									<>
-										{children({
-											width: normalizedAdjustedWidth + fixedColumnWidths.current.totalSize + scrollbarSize,
-											height: containerHeight,
-											getColumnWidth: getColumnWidthHelper(),
-											mainGridRef,
-											columnGridRef,
-											registerChild,
-										})}
-									</>
-								)
-							}
-
-							/** @todo Not working yet, requires a major refactor on Horizontal scroll **/
+			return (
+				<ColumnSizer
+					columnMinWidth={minColumnWidth}
+					columnCount={dynamicColumnCount}
+					width={remainingWidth}
+				>
+					{({ registerChild, getColumnWidth, adjustedWidth }) => {
+						const normalizedAdjustedWidth = isNaN(adjustedWidth) ? 0 : adjustedWidth
+						if (stretchMode !== StretchMode.None) {
 							return (
-								<HorizontalScroll
-									scrollContainer={gridContainerRef.current}
-									width={containerWidth}
-									totalColumnWidth={getTotalColumnWidth(getColumnWidth)}
-									ref={scrollHandlerRef}
-								>
-									{({ scrollTop, scrollLeft, isScrolling, gridRef, headerRef, height }) =>
-										children({
-											width: normalizedAdjustedWidth + fixedColumnWidths.current.totalSize + scrollbarSize,
-											height: containerHeight,
-											getColumnWidth: getColumnWidthHelper(),
-											mainGridRef,
-											columnGridRef,
-											registerChild,
-										})
-									}
-								</HorizontalScroll>
+								<>
+									{children({
+										width:
+											normalizedAdjustedWidth + fixedColumnWidths.current.totalSize + scrollbarSize,
+										height: containerHeight,
+										getColumnWidth: getColumnWidthHelper(),
+										mainGridRef,
+										columnGridRef,
+										registerChild,
+									})}
+								</>
 							)
-						}}
-					</ColumnSizer>
-				)
+						}
 
+						/** @todo Not working yet, requires a major refactor on Horizontal scroll **/
+						return (
+							<HorizontalScroll
+								scrollContainer={gridContainerRef.current}
+								width={containerWidth}
+								totalColumnWidth={getTotalColumnWidth(getColumnWidth)}
+								ref={scrollHandlerRef}
+							>
+								{({ scrollTop, scrollLeft, isScrolling, gridRef, headerRef, height }) =>
+									children({
+										width:
+											normalizedAdjustedWidth + fixedColumnWidths.current.totalSize + scrollbarSize,
+										height: containerHeight,
+										getColumnWidth: getColumnWidthHelper(),
+										mainGridRef,
+										columnGridRef,
+										registerChild,
+									})
+								}
+							</HorizontalScroll>
+						)
+					}}
+				</ColumnSizer>
+			)
+		}
+
+		//In case of specified width and height, allow the control to the developer
+		if (height && width){
+			return (
+				<div id="grid-container" ref={gridContainerRef} className={clsx(classes.root, containerClassName)} style={{ width, height, position: 'relative' }}>
+					{render(width, height)}
+				</div>
+			)
 		}
 
 		return (
-				<div id="grid-container" className={classes.root} ref={gridContainerRef}>
-					<AutoSizer disableHeight={true} defaultHeight={800}>{({ width, height }) => render(width, height)}</AutoSizer>
-				</div>
+			<div id="grid-container" className={clsx(classes.root, containerClassName)} ref={gridContainerRef}>
+				<AutoSizer
+					disableWidth={width !== undefined}
+					disableHeight={height !== undefined}
+				>
+					{({ width, height }) => render(width, height)}
+				</AutoSizer>
+			</div>
 		)
 	},
 )

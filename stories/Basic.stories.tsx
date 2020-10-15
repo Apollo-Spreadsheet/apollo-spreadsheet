@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { storiesOf } from '@storybook/react'
 import { ApolloSpreadSheet } from '../src'
-import { Box, Button, Checkbox, FormControl, InputLabel, MenuItem, Select } from "@material-ui/core";
+import { Box, Button, Checkbox, FormControl, InputLabel, MenuItem, Select } from '@material-ui/core'
 import { GridApi } from '../src/types/grid-api.type'
 import { GridTheme } from '../src/types/grid-theme'
 import { makeStyles } from '@material-ui/core/styles'
@@ -29,6 +29,9 @@ const LargeDataSetTable = () => {
 }
 
 const useTopStyles = makeStyles(() => ({
+	root: {
+		margin: 10,
+	},
 	currentColumnClass: {
 		color: '#225890',
 	},
@@ -85,7 +88,6 @@ const MainTable = () => {
 	const [headers, setHeaders] = useState(topHeaders)
 	const [data, setData] = useState(topDefaultData)
 	const [outsideClickDeselects, setOutsideClickDeselect] = useState(true)
-	const gridApi = useRef<GridApi | null>(null)
 	const [darkTheme, setDarkTheme] = useState(false)
 	const [selectionEnabled, setSelectionEnabled] = useState(true)
 	const [scrollAlignment, setScrollAlignment] = useState<Alignment>('auto')
@@ -110,15 +112,18 @@ const MainTable = () => {
 		cellClass: classes.rowClass,
 	}
 
-	function onCellChange (changes: CellChangeParams) {
-			const newData = [...data]
-			const column = headers[changes.coords.colIndex]
-			newData[changes.coords.rowIndex] = {
-				...newData[changes.coords.rowIndex],
-				[column.accessor]: changes.newValue,
-			}
-			setData(newData)
+	function onCellChange(changes: CellChangeParams) {
+		const newData = [...data]
+		const column = headers[changes.coords.colIndex]
+		newData[changes.coords.rowIndex] = {
+			...newData[changes.coords.rowIndex],
+			[column.accessor]: changes.newValue,
+		}
+		setData(newData)
 	}
+
+	// const delayedCellPosition = useRef<NavigationCoords | null>(null)
+	const [delayedPosition, setDelayedPosition] = useState<NavigationCoords | null>(null)
 
 	function createRow(coords: NavigationCoords) {
 		const mergedCellInfo = mergeCellsData.find(
@@ -128,23 +133,22 @@ const MainTable = () => {
 		if (mergedCellInfo) {
 			//need to be the original row + the rowspan + 1 because we want the next line (row starts at 0 and we want the next line but since rowspan adds one extra value we only add 1 instead of 2 )
 			newOrder = coords.rowIndex + mergedCellInfo.rowSpan + 1
+		} else {
+			//add plus 2 because row starts at 0 and we want the next line
+			newOrder = coords.rowIndex + 2
 		}
-		//add plus 2 because row starts at 0 and we want the next line
-		newOrder = coords.rowIndex + 2
 
-		const previousRow = data[newOrder - 1]
-		console.log({ previousRow })
-		console.error('Creating on newOrder = ' + newOrder)
+		const parentRow = data[coords.rowIndex]
 		const updatedData = [...data]
 		const newRow: any = {
-			taskId: Math.random(),
-			taskContent: 'Enter Task ' + newOrder,
-			deliverableId: previousRow.deliverableId,
-			deliverableBody: previousRow.deliverableBody,
-			activityId: previousRow.activityId,
-			activityBody: previousRow.activityBody,
-			wpId: previousRow.wpId,
-			wpBody: previousRow.wpBody,
+			taskId: 'new-task' + Math.random().toString(),
+			taskContent: 'New task from enter',
+			deliverableId: parentRow ? parentRow.deliverableId : 'new-del-' + Math.random().toString(),
+			deliverableBody: parentRow ? parentRow.deliverableBody : 'New DEL',
+			activityId: parentRow ? parentRow.activityId : 'new-act-' + Math.random().toString(),
+			activityBody: parentRow ? parentRow.activityBody : 'New ACT',
+			wpId: parentRow ? parentRow.wpId : 'new-wp-' + Math.random().toString(),
+			wpBody: parentRow ? parentRow.wpBody : 'New WP',
 			lok: 1,
 			order: newOrder,
 			startDate: '2020-10-07',
@@ -159,21 +163,39 @@ const MainTable = () => {
 			allocated: [],
 			extraCells: [],
 		}
-		updatedData.push(newRow)
-		setData(updatedData)
+
+		updatedData.splice(newOrder - 1, 0, newRow)
+		const sortedRows = orderBy(updatedData, ['order'], ['asc'])
+
+		let sortOrder = 1
+		for (const row of sortedRows) {
+			row.order = sortOrder
+			sortOrder++
+		}
+		setData(sortedRows)
+		setDelayedPosition({ rowIndex: newOrder - 1, colIndex: coords.colIndex })
 	}
+
+	//Update the schedule position after we create a new row (DEMO)
+	useEffect(() => {
+		if (!delayedPosition){
+			return
+		}
+		apiRef.current?.selectCell(delayedPosition)
+		setDelayedPosition(null)
+	}, [delayedPosition])
 
 	const createRowOnBottom = () => {
 		const updatedData = [...data]
 		const newRow: any = {
-			taskId: "task-" + Math.random().toString(),
+			taskId: 'task-' + Math.random().toString(),
 			taskContent: 'Task ' + updatedData.length + 1,
-			deliverableId: '5f7dcb38a805c1001777933d',
-			deliverableBody: '',
-			activityId: '5f7dcb38a805c1001777933f',
-			activityBody: '',
-			wpId: '5f7dcb38a805c1001777933e',
-			wpBody: '',
+			deliverableId: 'del-' + Math.random().toString(),
+			deliverableBody: 'New Del',
+			activityId: 'act-' + Math.random().toString(),
+			activityBody: 'New Act',
+			wpId: 'wp-' + Math.random().toString(),
+			wpBody: 'New WP',
 			lok: 1,
 			order: updatedData.length + 1,
 			startDate: '2020-10-07',
@@ -192,21 +214,6 @@ const MainTable = () => {
 		setData(updatedData)
 	}
 
-	const onKeyDown = e => {
-		if (e.key === 'Enter') {
-			e.preventDefault()
-			createRow(apiRef.current?.selectedCell)
-		}
-	}
-
-	// useEffect(() => {
-	// 	document.addEventListener('keydown', onKeyDown)
-	// 	return () => document.removeEventListener('keydown', onKeyDown)
-	// }, [])
-
-	function onGridReady(api){
-		gridApi.current = api
-	}
 
 	const apiRef = useRef<any>(null)
 
@@ -216,14 +223,14 @@ const MainTable = () => {
 
 	function onHeaderIconClick() {
 		const selectedRows = apiRef.current?.getSelectedRows() ?? []
-		if (selectedRows.length === 0){
+		if (selectedRows.length === 0) {
 			return
 		}
 		setData(data.filter(e => !selectedRows.some(id => id === e.taskId)))
 	}
 
 	return (
-		<Box height={"90vh"} width={"100%"} style={{ overflow: 'hidden'}}>
+		<Box height={'800px'} width={'99%'}>
 			<Button variant="contained" color={'primary'} onClick={createRowOnBottom}>
 				Create row on bottom
 			</Button>
@@ -254,6 +261,7 @@ const MainTable = () => {
 				</Select>
 			</FormControl>
 			<ApolloSpreadSheet
+				className={classes.root}
 				ref={ref => {
 					apiRef.current = ref
 				}}
@@ -262,26 +270,19 @@ const MainTable = () => {
 				fixedColumnCount={2}
 				onCellChange={onCellChange}
 				outsideClickDeselects={outsideClickDeselects}
-				onGridReady={onGridReady}
 				theme={darkTheme ? topDarkGridTheme : topLightGridTheme}
 				minRowHeight={25}
 				minColumnWidth={10}
 				stretchMode={StretchMode.All}
 				mergeCells={mergeCellsData}
-				// onKeyDown={e => {
-				// 	if (e.key === 'Enter') {
-				// 		e.preventDefault()
-				// 		const coords = apiRef.current?.selectedCell as any
-				// 		createRow(coords)
-				// 	}
-				// }}
 				scrollToAlignment={scrollAlignment}
+				onCreateRow={createRow}
 				selection={
 					selectionEnabled
 						? {
 								key: 'taskId',
 								checkboxClass: classes.checkBox,
-								onHeaderIconClick
+								onHeaderIconClick,
 						  }
 						: undefined
 				}

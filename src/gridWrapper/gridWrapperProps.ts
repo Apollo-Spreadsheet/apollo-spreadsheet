@@ -57,7 +57,6 @@ export interface GridWrapperCommonProps {
 }
 
 export interface GridWrapperProps<TRow = any> extends GridWrapperCommonProps {
-	className: string
 	minRowHeight: number
 	defaultColumnWidth: number
 	width: number
@@ -75,4 +74,5 @@ export interface GridWrapperProps<TRow = any> extends GridWrapperCommonProps {
 	editorState: IEditorState | null
 	beginEditing: (params: BeginEditingParams) => void
 	stopEditing: (params?: StopEditingParams) => void
+	restoreGridFocus: () => void
 }
