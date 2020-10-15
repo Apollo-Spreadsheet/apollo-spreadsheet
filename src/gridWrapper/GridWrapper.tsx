@@ -97,7 +97,7 @@ const GridWrapper = forwardRef((props: GridWrapperProps, componentRef: React.Ref
 		if (recomputingTimeout.current){
 			clearTimeout(recomputingTimeout.current)
 		}
-		recomputingTimeout.current = setTimeout(recomputeSizes, 200)
+		recomputingTimeout.current = setTimeout(recomputeSizes, 100)
 		return recomputingCleanup
 	}, [props.data, props.width, props.height])
 
@@ -115,7 +115,7 @@ const GridWrapper = forwardRef((props: GridWrapperProps, componentRef: React.Ref
 		}
 
 	const onCellClick =
-		({ event, cell, rowIndex, columnIndex }: CellEventParams<React.MouseEvent<HTMLDivElement>>) => {
+		({ cell, rowIndex, columnIndex }: CellEventParams<React.MouseEvent<HTMLDivElement>>) => {
 			if (cell?.dummy) {
 				return
 			}

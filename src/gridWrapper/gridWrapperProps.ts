@@ -22,6 +22,10 @@ export interface CellEventParams<T = unknown> {
 	event: T
 }
 
+export interface DisableSortFilterParam {
+	(column: Header): boolean
+}
+
 export interface GridWrapperCommonProps {
 	headers: Header[]
 	nestedHeaders?: Array<NestedHeader[]>

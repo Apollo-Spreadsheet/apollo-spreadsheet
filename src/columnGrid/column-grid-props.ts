@@ -1,10 +1,16 @@
 import { StretchMode } from '../types/stretch-mode.enum'
-import { Header, NestedHeader } from './types/header.type'
+import { GridHeader, Header, NestedHeader } from "./types/header.type";
 import { GridTheme } from '../types/grid-theme'
 import { NavigationCoords } from '../navigation/types/navigation-coords.type'
+import { DisableSortFilterParam } from "../gridWrapper/gridWrapperProps"
 
 export interface ColumnGridProps {
-	data: Array<Header[]>
+	/**
+	 * Indicates if the sort is disabled globally or on a specific column
+	 * @default true **/
+	disableSort?: boolean | DisableSortFilterParam
+
+	data: Array<GridHeader[]>
 	headers: Header[]
 	nestedHeaders?: Array<NestedHeader[]>
 	minRowHeight: number

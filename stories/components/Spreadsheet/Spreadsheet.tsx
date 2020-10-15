@@ -1,34 +1,17 @@
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { storiesOf } from '@storybook/react'
-import { ApolloSpreadSheet } from '../src'
-import { Box, Button, Checkbox, FormControl, InputLabel, MenuItem, Select } from '@material-ui/core'
-import { GridApi } from '../src/types/grid-api.type'
-import { GridTheme } from '../src/types/grid-theme'
-import { makeStyles } from '@material-ui/core/styles'
-import { StretchMode } from '../src/types/stretch-mode.enum'
-import { NavigationCoords } from '../src/navigation/types/navigation-coords.type'
-import { createMergeCellsData } from './createMergedCells'
-import { CellChangeParams } from '../src/editorManager/useEditorManager'
-import { getTopUseCase } from './dataUseCases'
-import { getSimpleData } from './generateData'
-import { orderBy } from 'lodash'
+import React, { useEffect, useMemo, useRef, useState } from 'react'
 import { Alignment } from 'react-virtualized'
+import { createMergeCellsData } from './createMergedCells'
+import { GridTheme } from '../../../src/types/grid-theme'
+import { CellChangeParams } from '../../../src/editorManager/useEditorManager'
+import { NavigationCoords } from '../../../src/navigation/types/navigation-coords.type'
+import { orderBy } from 'lodash'
+import { Box, Button, Checkbox, FormControl, InputLabel, MenuItem, Select } from '@material-ui/core'
+import { ApolloSpreadSheet } from '../../../src'
+import { StretchMode } from '../../../src/types/stretch-mode.enum'
+import { getTopUseCase } from './dataUseCases'
+import { makeStyles } from '@material-ui/core/styles'
 
-const LargeDataSetTable = () => {
-	const { headerData, data } = getSimpleData(50, 50)
-
-	return (
-		<ApolloSpreadSheet
-			headers={headerData}
-			rows={data}
-			fixedColumnCount={2}
-			onCellChange={console.log}
-			minColumnWidth={120}
-		/>
-	)
-}
-
-const useTopStyles = makeStyles(() => ({
+const useStyles = makeStyles(() => ({
 	root: {
 		margin: 10,
 	},
@@ -83,8 +66,8 @@ const useTopStyles = makeStyles(() => ({
 }))
 
 const { headerData: topHeaders, data: topDefaultData } = getTopUseCase()
-const MainTable = () => {
-	const classes = useTopStyles()
+export function Spreadsheet() {
+	const classes = useStyles()
 	const [headers, setHeaders] = useState(topHeaders)
 	const [data, setData] = useState(topDefaultData)
 	const [outsideClickDeselects, setOutsideClickDeselect] = useState(true)
@@ -178,7 +161,7 @@ const MainTable = () => {
 
 	//Update the schedule position after we create a new row (DEMO)
 	useEffect(() => {
-		if (!delayedPosition){
+		if (!delayedPosition) {
 			return
 		}
 		apiRef.current?.selectCell(delayedPosition)
@@ -213,7 +196,6 @@ const MainTable = () => {
 		updatedData.push(newRow)
 		setData(updatedData)
 	}
-
 
 	const apiRef = useRef<any>(null)
 
@@ -290,6 +272,3 @@ const MainTable = () => {
 		</Box>
 	)
 }
-storiesOf('VirtualizedTable (DEMOS)', module)
-	// .add('Large data set', () => <LargeDataSetTable />)
-	.add('Main table', () => <MainTable />)

@@ -8,11 +8,10 @@ import React, {
 	useState,
 } from 'react'
 import GridWrapper from './gridWrapper/GridWrapper'
-import { makeStyles } from '@material-ui/core/styles'
 import ColumnGrid from './columnGrid/ColumnGrid'
 import { KeyDownEventParams, useNavigation } from './navigation/useNavigation'
 import { StretchMode } from './types/stretch-mode.enum'
-import { GridWrapperCommonProps } from './gridWrapper/gridWrapperProps'
+import { DisableSortFilterParam, GridWrapperCommonProps } from "./gridWrapper/gridWrapperProps"
 import { useMergeCells } from './mergeCells/useMergeCells'
 import { NavigationCoords } from './navigation/types/navigation-coords.type'
 import { useHeaders } from './columnGrid/useHeaders'
@@ -40,11 +39,11 @@ interface Props<TRow = any> extends GridWrapperCommonProps, GridContainerCommonP
 	stretchMode?: StretchMode
 	onKeyDown?: (params: KeyDownEventParams) => void
 	selection?: SelectionProps<TRow>
-	/**
-	 * @todo Maybe accept a function to indicate if a column can or not be sortable
-	 * @default true **/
-	disableSort?: boolean
 	onCreateRow?: (coords: NavigationCoords) => void
+	/**
+	 * Indicates if the sort is disabled globally or on a specific column
+	 * @default true **/
+	disableSort?: boolean | DisableSortFilterParam
 }
 
 interface ApolloSpreadSheetRef {
@@ -237,6 +236,7 @@ export const ApolloSpreadSheet = forwardRef(
 									overscanRowCount={props.overscanRowCount}
 									onSortClick={onSortClick}
 									sort={sort}
+									disableSort={props.disableSort}
 								/>
 								<GridWrapper
 									rows={rows}

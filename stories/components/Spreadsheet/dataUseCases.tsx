@@ -1,7 +1,7 @@
-import { getSimpleData } from './generateData'
+import { getSimpleData } from '../LargeDataGrid/generateData'
 import React from 'react'
 import PeopleIcon from '@material-ui/icons/People'
-import { ColumnCellType, Header } from '../src/columnGrid/types/header.type'
+import { ColumnCellType, Header } from '../../../src/columnGrid/types/header.type'
 
 export const getTopUseCase = () => {
 	const headerData: Header[] = [

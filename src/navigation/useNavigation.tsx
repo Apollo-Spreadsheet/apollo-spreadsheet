@@ -75,6 +75,14 @@ export function useNavigation({
 		return false
 	}
 
+	//Clear the selection if the grid has no rows (Still prototype)
+	// useEffect(() => {
+	// 	if (rows.length === 0 && coords.colIndex !== -1 && coords.rowIndex !== -1){
+	// 		console.error("No rows")
+	// 		selectCell({ rowIndex: -1, colIndex: - 1})
+	// 	}
+	// }, [rows, coords])
+
 	//Cancels the debounce if the editor is prematurely open
 	useEffect(() => {
 		if (editorState && delayEditorDebounce.current) {

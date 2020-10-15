@@ -1,6 +1,6 @@
 import faker from 'faker'
 import { GridRow } from '../types/row.interface'
-import { Header, NestedHeader } from '../src/columnGrid/types/header.type'
+import { Header, NestedHeader } from '../../../src/columnGrid/types/header.type'
 
 export const getSimpleData = (rows: number, columns: number) => {
 	const headerData: Header[] = []

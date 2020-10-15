@@ -16,8 +16,6 @@ const useStyles = makeStyles(() => ({
 	root: {
 		height: '100%',
 		width: '100%',
-		// overflowY: 'hidden',
-		// overflowX: 'hidden',
 	},
 }))
 
@@ -57,7 +55,6 @@ export const GridContainer = React.memo(
 	}: Props) => {
 		const scrollbarSize = scrollbarWidth() ?? 0
 		const classes = useStyles()
-		const [state, setState] = useState({})
 		const gridContainerRef = useRef<HTMLDivElement | null>(null)
 		const mainGridRef = useRef<any | null>(null)
 		const columnGridRef = useRef<any | null>(null)
@@ -75,7 +72,6 @@ export const GridContainer = React.memo(
 		 * the fixed width from our mapping or fetches directly from react-virtualize
 		 * @param getColumnWidth
 		 */
-		//https://github.com/bvaughn/react-virtualized/issues/698
 		const getColumnWidthHelper = (getColumnWidth?: ({ index }: { index: number }) => number) => ({
 			index,
 		}: {
@@ -137,7 +133,6 @@ export const GridContainer = React.memo(
 
 		function render(containerWidth: number, containerHeight = 500) {
 			const remainingWidth = buildColumnTotalWidth(containerWidth)
-			console.log({ containerWidth, containerHeight })
 			return (
 				<ColumnSizer
 					columnMinWidth={minColumnWidth}

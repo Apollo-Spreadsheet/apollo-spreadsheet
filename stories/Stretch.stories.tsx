@@ -1,4 +1,4 @@
-import { getSimpleData } from './generateData'
+import { getSimpleData } from './components/LargeDataGrid/generateData'
 import { ApolloSpreadSheet } from '../src'
 import React from 'react'
 import { storiesOf } from '@storybook/react'

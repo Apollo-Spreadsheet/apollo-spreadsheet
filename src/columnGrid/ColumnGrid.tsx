@@ -8,7 +8,7 @@ import React, {
 } from 'react'
 import { Grid, CellMeasurerCache } from 'react-virtualized'
 import CellMeasurer from '../cellMeasurer/CellMeasureWrapper'
-import { Header } from './types/header.type'
+import { GridHeader, Header } from './types/header.type'
 import clsx from 'clsx'
 import { ColumnGridProps } from './column-grid-props'
 import { MeasurerRendererProps } from '../cellMeasurer/cellMeasureWrapperProps'
@@ -16,8 +16,11 @@ import Tooltip from '@material-ui/core/Tooltip'
 import ArrowUpwardIcon from '@material-ui/icons/ArrowUpward'
 import ArrowDownwardIcon from '@material-ui/icons/ArrowDownward'
 import { ROW_SELECTION_HEADER_ID } from '../rowSelection/useRowSelection'
-import { makeStyles } from "@material-ui/core/styles";
+import { makeStyles } from '@material-ui/core/styles'
+import { isFunctionType } from '../helpers/isFunction'
+import flattenDeep from 'lodash/flattenDeep'
 
+type SortDisabled = boolean
 const useStyles = makeStyles(() => ({
 	headerContainer: {
 		outline: 'none',
@@ -28,6 +31,17 @@ const useStyles = makeStyles(() => ({
 		'&::-webkit-scrollbar': {
 			display: 'none',
 		},
+	},
+	contentSpan: {
+		textAlign: 'center',
+		display: 'flex',
+		alignItems: 'center',
+		justifyContent: 'center',
+		width: '100%',
+		height: '100%',
+	},
+	sort: {
+		marginLeft: '10px'
 	}
 }))
 export const ColumnGrid = React.memo(
@@ -47,6 +61,29 @@ export const ColumnGrid = React.memo(
 			}),
 		).current
 		const recomputingTimeout = useRef<NodeJS.Timeout | undefined>(undefined)
+		const gridRef = useRef<Grid | null>(null)
+
+		//Stores the headers sort configuration (whether they have sort disabled or not)
+		const headersSortDisabledMap = useMemo(() => {
+			const mapping: { [colId: string]: SortDisabled } = {}
+			const flattenData = flattenDeep(props.data)
+			for (const cell of flattenData) {
+				if (typeof props.disableSort === 'boolean' && props.disableSort) {
+					mapping[cell.id] = true
+				} else {
+					if (cell.isNested || cell.id === ROW_SELECTION_HEADER_ID || cell.dummy) {
+						mapping[cell.id] = true
+					} else {
+						if (isFunctionType(props.disableSort)) {
+							mapping[cell.id] = props.disableSort(cell)
+						} else {
+							mapping[cell.id] = false
+						}
+					}
+				}
+			}
+			return mapping
+		}, [props.data, props.disableSort])
 
 		useImperativeHandle(componentRef, () => ({
 			recomputeGridSize: () => {
@@ -56,26 +93,25 @@ export const ColumnGrid = React.memo(
 				gridRef.current?.forceUpdate()
 			},
 		}))
-		const gridRef = useRef<Grid | null>(null)
 
 		// clear cache and recompute when data changes OR when the container width changes
-		function recomputeSizes(){
+		function recomputeSizes() {
 			cache.clearAll()
 			gridRef.current?.recomputeGridSize()
 		}
 
 		function recomputingCleanup() {
-			if (recomputingTimeout.current){
+			if (recomputingTimeout.current) {
 				clearTimeout(recomputingTimeout.current)
 			}
 		}
 
 		// clear cache and recompute when data changes
 		useEffect(() => {
-			if (recomputingTimeout.current){
+			if (recomputingTimeout.current) {
 				clearTimeout(recomputingTimeout.current)
 			}
-			recomputingTimeout.current = setTimeout(recomputeSizes, 200)
+			recomputingTimeout.current = setTimeout(recomputeSizes, 100)
 			return recomputingCleanup
 		}, [props.data, props.width])
 
@@ -87,83 +123,69 @@ export const ColumnGrid = React.memo(
 			return order === 'asc' ? (
 				<ArrowUpwardIcon style={{ fontSize: '10px' }} display={'flex'} />
 			) : (
-				<ArrowDownwardIcon style={{ fontSize: '10px'}} display={'flex'}/>
+				<ArrowDownwardIcon style={{ fontSize: '10px' }} display={'flex'} />
 			)
 		}
 
-		const headerRendererWrapper = useCallback(
-			({ style, cell, ref, columnIndex, rowIndex }) => {
-				const { title, renderer } = cell as Header
-				/** @todo Cache cell renderer result because if may have not changed so no need to invoke again **/
-				const children = renderer ? (
-					(renderer(cell) as any)
-				) : cell.tooltip ? (
-					<Tooltip title={title} placement={'top'} {...cell.tooltipProps}>
-						<span>{title}</span>
-					</Tooltip>
-				) : (
-					title
-				)
+		const headerRendererWrapper = ({ style, cell, ref, columnIndex, rowIndex }) => {
+			const { title, renderer } = cell as GridHeader
+			/** @todo Cache cell renderer result because if may have not changed so no need to invoke again **/
+			const children = renderer ? (
+				(renderer(cell) as any)
+			) : cell.tooltip ? (
+				<Tooltip title={title} placement={'top'} {...cell.tooltipProps}>
+					<span>{title}</span>
+				</Tooltip>
+			) : (
+				title
+			)
 
-				let headerClassName = !cell.dummy
-					? cell.isNested
-						? clsx(props.theme?.headerClass, props.theme?.nestedHeaderClass, cell.className)
-						: clsx(props.theme?.headerClass, cell.className)
-					: undefined
-				//If the cell is selected we set the column as selected too
-				if (
-					!cell.dummy &&
-					props.coords.colIndex === columnIndex &&
-					!cell['isNested'] &&
-					rowIndex === 0
-				) {
-					headerClassName = clsx(headerClassName, props.theme?.currentColumnClass)
-				}
+			const isSortDisabled = headersSortDisabledMap[cell.id] ?? true //in case its not found, we set to true
 
+			const sortComponent = isSortDisabled || cell.accessor !== props.sort?.field? null : (
+				<div className={classes.sort}>
+					{getSortIndicatorComponent(props.sort?.order)}
+				</div>
+			)
 
-				return (
-					<div
-						ref={ref}
-						className={headerClassName}
-						style={{
-							display: 'flex',
-							justifyContent: 'center',
-							padding: '5px',
-							boxSizing: 'border-box',
-							background: '#efefef',
-							border: '1px solid #ccc',
-							cursor: 'default',
-							...style,
-							zIndex: cell.colSpan && cell['isNested'] && !cell.dummy ? 999 : cell.dummy ? 0 : 1,
-						}}
-					>
-						{/** @todo If grid sort is not enabled, we just render the {children} **/}
-						<span
-							onClick={() =>
-								cell.dummy || cell.id === ROW_SELECTION_HEADER_ID
-									? undefined
-									: props.onSortClick(cell.accessor)
-							}
-						style={{
-							textAlign: 'center',
-							display: 'flex',
-							alignItems: 'center',
-							justifyContent: 'center'
+			let headerClassName = !cell.dummy
+				? cell.isNested
+					? clsx(props.theme?.headerClass, props.theme?.nestedHeaderClass, cell.className)
+					: clsx(props.theme?.headerClass, cell.className)
+				: undefined
+			//If the cell is selected we set the column as selected too
+			if (
+				!cell.dummy &&
+				props.coords.colIndex === columnIndex &&
+				!cell['isNested'] &&
+				rowIndex === 0
+			) {
+				headerClassName = clsx(headerClassName, props.theme?.currentColumnClass)
+			}
+
+			return (
+				<div
+					ref={ref}
+					className={headerClassName}
+					style={{
+						display: 'flex',
+						justifyContent: 'center',
+						padding: '5px',
+						boxSizing: 'border-box',
+						background: '#efefef',
+						border: '1px solid #ccc',
+						cursor: 'default',
+						...style,
+						zIndex: cell.colSpan && cell['isNested'] && !cell.dummy ? 999 : cell.dummy ? 0 : 1,
 					}}
-						>
-							{children}
-							{/** @todo Its temporary, create a better sort component if sort is enabled on plugin and also sort goes to the n **/}
-							<div style={{ marginLeft: '10px' }}>
-								{cell.accessor === props.sort?.field
-									? getSortIndicatorComponent(props.sort?.order)
-									: null}
-							</div>
-						</span>
-					</div>
-				)
-			},
-			[props.coords, props.theme, props.width, props.sort],
-		)
+				>
+					<span onClick={isSortDisabled ? undefined : () => props.onSortClick(cell.accessor)} className={classes.contentSpan}>
+						{children}
+						{sortComponent}
+					</span>
+				</div>
+			)
+		}
 
 		const cellMeasurerWrapperRenderer = useCallback(
 			args => {
@@ -180,16 +202,12 @@ export const ColumnGrid = React.memo(
 					userSelect: 'none',
 				}
 
-
 				const rendererProps: MeasurerRendererProps = {
 					...args,
 					cell,
 					getColumnWidth: props.getColumnWidth,
 				}
 
-				if (isNaN(Number(style.width))){
-					console.error("WIDTH NAN AT CELL MEASURER WRAPPER STYLE")
-				}
 				return (
 					<CellMeasurer
 						cache={cache}
@@ -206,7 +224,15 @@ export const ColumnGrid = React.memo(
 					/>
 				)
 			},
-			[props.data, props.theme, props.coords, props.width, props.sort],
+			[
+				props.data,
+				props.theme,
+				props.coords,
+				props.width,
+				headersSortDisabledMap,
+				props.disableSort,
+				props.sort
+			],
 		)
 
 		const rowCount = useMemo(() => {

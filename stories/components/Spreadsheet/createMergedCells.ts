@@ -1,5 +1,5 @@
-import { Header } from 'src/columnGrid/types/header.type'
-import { MergeCell } from '../src/mergeCells/interfaces/merge-cell'
+import { Header } from 'columnGrid/types/header.type'
+import { MergeCell } from '../../../src/mergeCells/interfaces/merge-cell'
 
 export const createMergeCellsData = (rows: any[], headers: Header[]) => {
 	if (rows === undefined || rows.length === 0) {
