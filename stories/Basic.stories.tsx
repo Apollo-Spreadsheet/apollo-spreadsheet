@@ -230,7 +230,7 @@ const MainTable = () => {
 	}
 
 	return (
-		<Box height={'800px'} width={'99%'}>
+		<Box height={'400px'} width={'99%'}>
 			<Button variant="contained" color={'primary'} onClick={createRowOnBottom}>
 				Create row on bottom
 			</Button>
