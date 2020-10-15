@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { storiesOf } from '@storybook/react'
 import { ApolloSpreadSheet } from '../src'
-import { Button, Checkbox, FormControl, InputLabel, MenuItem, Select } from '@material-ui/core'
+import { Box, Button, Checkbox, FormControl, InputLabel, MenuItem, Select } from "@material-ui/core";
 import { GridApi } from '../src/types/grid-api.type'
 import { GridTheme } from '../src/types/grid-theme'
 import { makeStyles } from '@material-ui/core/styles'
@@ -223,7 +223,7 @@ const MainTable = () => {
 	}
 
 	return (
-		<>
+		<Box height={"90vh"} width={"100%"} style={{ overflow: 'hidden'}}>
 			<Button variant="contained" color={'primary'} onClick={createRowOnBottom}>
 				Create row on bottom
 			</Button>
@@ -286,7 +286,7 @@ const MainTable = () => {
 						: undefined
 				}
 			/>
-		</>
+		</Box>
 	)
 }
 storiesOf('VirtualizedTable (DEMOS)', module)

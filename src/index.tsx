@@ -39,6 +39,12 @@ const useStyles = makeStyles(() => ({
 			display: 'none',
 		},
 	},
+	apolloRoot: {
+		height: '100%',
+		width: '100%',
+		flex: 1,
+		display: 'flex'
+	},
 	bodyContainer: {
 		outline: 'none',
 		// 'scrollbar-width': 'none',
@@ -246,7 +252,7 @@ export const ApolloSpreadSheet = forwardRef(
 		// }, [props.outsideClickDeselects, focused])
 
 		return (
-				<div id="apollo-spreadhsheet" ref={rootRef} style={{ height: '100%', width: '100%'}}>
+				<div className={classes.apolloRoot} ref={rootRef}>
 					<GridContainer
 						headers={headers}
 						minColumnWidth={minColumnWidth}

@@ -86,7 +86,7 @@ const GridWrapper = forwardRef((props: GridWrapperProps, componentRef: React.Ref
 	useEffect(() => {
 		cache.clearAll()
 		gridRef.current?.recomputeGridSize()
-	}, [props.data])
+	}, [props.data, props.width, props.height])
 
 	const onCellDoubleClick =
 		({ event, cell, columnIndex, rowIndex }: CellEventParams<React.MouseEvent<HTMLDivElement>>) => {

@@ -13,7 +13,8 @@ import shallowDiffers from '../helpers/shallowDiffers'
 
 const useStyles = makeStyles(() => ({
 	root: {
-		// height: '100%',
+		height: '100%',
+		width: '100%',
 		// overflowY: 'hidden',
 		// overflowX: 'hidden',
 		/** @todo Margin remove **/
@@ -140,6 +141,7 @@ export const GridContainer = React.memo(
 
 		function render(containerWidth: number, containerHeight = 400) {
 			const remainingWidth = buildColumnTotalWidth(containerWidth)
+			console.log({ containerWidth, containerHeight })
 				return (
 					<ColumnSizer
 						columnMinWidth={minColumnWidth}
@@ -190,9 +192,9 @@ export const GridContainer = React.memo(
 		}
 
 		return (
-			<div id="grid-container" className={classes.root} ref={gridContainerRef}>
-				<AutoSizer disableHeight>{({ width }) => render(width)}</AutoSizer>
-			</div>
+				<div id="grid-container" className={classes.root} ref={gridContainerRef}>
+					<AutoSizer disableHeight={true} defaultHeight={800}>{({ width, height }) => render(width, height)}</AutoSizer>
+				</div>
 		)
 	},
 )
