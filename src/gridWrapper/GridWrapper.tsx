@@ -1,14 +1,23 @@
-import React, { forwardRef, useCallback, useEffect, useImperativeHandle, useMemo, useRef } from "react";
-import { CellMeasurerCache, Grid, SectionRenderedParams } from "react-virtualized";
-import CellMeasurer from "../cellMeasurer/CellMeasureWrapper";
-import { GridApi } from "../types/grid-api.type";
-import { NavigationCoords } from "../navigation/types/navigation-coords.type";
-import clsx from "clsx";
-import { GridCellProps } from "react-virtualized/dist/es/Grid";
-import { MeasurerRendererProps } from "../cellMeasurer/cellMeasureWrapperProps";
-import { CellEventParams, GridWrapperProps } from "./gridWrapperProps";
-import { makeStyles } from "@material-ui/core/styles";
-import { StretchMode } from "../types/stretch-mode.enum"
+import React, {
+	forwardRef,
+	useCallback,
+	useEffect,
+	useImperativeHandle,
+	useMemo,
+	useRef,
+} from 'react'
+import { CellMeasurerCache, Grid, SectionRenderedParams } from 'react-virtualized'
+import CellMeasurer from '../cellMeasurer/CellMeasureWrapper'
+import { GridApi } from '../types/grid-api.type'
+import { NavigationCoords } from '../navigation/types/navigation-coords.type'
+import clsx from 'clsx'
+import { GridCellProps } from 'react-virtualized/dist/es/Grid'
+import { MeasurerRendererProps } from '../cellMeasurer/cellMeasureWrapperProps'
+import { CellEventParams, GridWrapperProps } from './gridWrapperProps'
+import { makeStyles } from '@material-ui/core/styles'
+import { StretchMode } from '../types/stretch-mode.enum'
+import { createMergedPositions, MergePosition } from '../mergeCells/createMergedPositions'
+import { MergeCell } from "../mergeCells/interfaces/merge-cell";
 
 const useStyles = makeStyles(() => ({
 	bodyContainer: {
@@ -21,8 +30,8 @@ const useStyles = makeStyles(() => ({
 		},
 	},
 	suppressHorizontalOverflow: {
-		overflowX: 'hidden'
-	}
+		overflowX: 'hidden',
+	},
 }))
 
 const GridWrapper = forwardRef((props: GridWrapperProps, componentRef: React.Ref<GridApi>) => {
@@ -132,62 +141,98 @@ const GridWrapper = forwardRef((props: GridWrapperProps, componentRef: React.Ref
 	}
 
 	const activeMergePath = useMemo(() => {
-		const activeRowIndexes = new Set<number>()
-		if (!props.mergeCells || props.mergeCells.length === 0 || !props.mergedPositions ||props.mergedPositions.length === 0) {
+		const activeRowIndexes: number[] = []
+		if (
+			!props.mergeCells ||
+			props.mergeCells.length === 0 ||
+			!props.mergedPositions ||
+			props.mergedPositions.length === 0
+		) {
 			//We can directly look on the rows
-			activeRowIndexes.add(props.coords.rowIndex)
+			activeRowIndexes.push(props.coords.rowIndex)
 			return activeRowIndexes
 		}
+
 		//Find if the rowIndex and col are a parent merger otherwise they are merged
 		//If its a parent we can create the path easily
 		//Otherwise we need go from the child up to the parent
 		const mergeInfo = props.mergeCells.find(e => e.rowIndex === props.coords.rowIndex)
-		if (mergeInfo){
-			activeRowIndexes.add(mergeInfo.rowIndex)
+		if (mergeInfo) {
+			activeRowIndexes.push(mergeInfo.rowIndex)
 			return activeRowIndexes
-		}
-		else {
-			console.warn("Child..")
+		} else {
 			const mergedPosition = props.mergedPositions.find(e => e.row === props.coords.rowIndex)
-			if (mergedPosition){
-				console.warn("Its a merged position")
-				console.log(mergedPosition)
-				console.log(props.mergedPositions)
+			if (mergedPosition) {
+				const rowMergeGroups: { [rowIndex: number]: number[] } = []
+				for (const e of props.mergeCells) {
+					const entry: number[] = []
+					const ranges = {
+						rowStart: e.rowIndex + 1,
+						rowEnd: e.rowIndex + Math.max(0, e.rowSpan - 1),
+						colStart: e.colIndex,
+						colEnd: e.colIndex + Math.max(0, e.colSpan - 1),
+					}
+
+					for (let i = ranges.rowStart; i <= ranges.rowEnd; i++) {
+						entry.push(i)
+					}
+					rowMergeGroups[e.rowIndex] = entry
+				}
+
+				//Check if the target row exists in any group
+				for (const [parentRow, childs] of Object.entries(rowMergeGroups)) {
+					const isIncluded = childs.includes(props.coords.rowIndex)
+					if (isIncluded) {
+						activeRowIndexes.push(Number(parentRow))
+						activeRowIndexes.push(props.coords.rowIndex)
+						break
+					}
+				}
+				return activeRowIndexes
+			} else {
+				activeRowIndexes.push(props.coords.rowIndex)
 			}
-			else {
-				activeRowIndexes.add(props.coords.rowIndex)
-			}
-			// const startRowIndex = mergeInfo.rowIndex
-			// const endRowIndex = startRowIndex + Math.max(0, mergeInfo.rowSpan - 1)
-			// const startColIndex = mergeInfo.colIndex
-			// const endColIndex = startColIndex +Math.max(0, mergeInfo.colSpan - 1)
-			// console.log({
-			// 	startRowIndex,
-			// 	endRowIndex,
-			// 	startColIndex,
-			// 	endColIndex
-			// })
-			// for (let i = startRowIndex; i <= endRowIndex; i++) {
-			// 	activeRowIndexes.add(i)
-			// }
 		}
 
-		console.log(activeRowIndexes)
 		return activeRowIndexes
 	}, [props.coords, props.mergeCells, props.mergedPositions])
 
-	console.error(activeMergePath.entries())
+
+	function isActiveRow({ rowIndex, colIndex }: NavigationCoords) {
+		if (activeMergePath[0] === rowIndex && activeMergePath.length === 1) {
+			return true
+		}
+
+		//We have the parent and the merged
+		if (activeMergePath.length > 1) {
+			if (rowIndex === activeMergePath[0]){
+				const mergeInfo = Object.values(props.mergeCells ?? [] as MergeCell[])
+				const columnWithMerge = mergeInfo.reduce((acc, e) => {
+						if (!acc.some(index => index === e.colIndex)){
+							acc.push(e.colIndex)
+						}
+						return acc
+				}, [] as number[])
+				return columnWithMerge.includes(colIndex)
+			}
+
+			//Second index means the current row with the highlight
+			if (rowIndex === activeMergePath[1]){
+				return true
+			}
+		}
+
+		return false
+	}
 
 	function renderCell({ style, cell, ref, rowIndex, columnIndex }) {
 		const isSelected = rowIndex === props.coords.rowIndex && columnIndex === props.coords.colIndex
 		const navigationDisabled = props.headers[0][columnIndex]?.disableNavigation
 		//Dummy zIndex is 0 and a spanned cell has 5 but a normal cell has 1
 		const zIndex = (cell.rowSpan || cell.colSpan) && !cell.dummy ? 5 : cell.dummy ? 0 : 1
-		/**
-		 * @todo Not considering well merged cells, i need to look up by merged too
-		 */
-		// const isRowSelected = rowIndex === props.coords.rowIndex
-		const isRowSelected = activeMergePath.has(rowIndex)
+
+		const isRowSelected = isActiveRow({ rowIndex, colIndex: columnIndex })
+
 		if (isSelected) {
 			style.border = '1px solid blue'
 		} else {

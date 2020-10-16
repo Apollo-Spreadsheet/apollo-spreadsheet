@@ -57,9 +57,6 @@ function CellMeasureWrapper ({ rowSpan, colSpan, cellRenderer, rendererProps, st
 		}
 
 		const spanningStyle = initializeStyles()
-		if (isNaN(Number(spanningStyle.width))){
-			console.error("WIDTH NAN AT SPANNING STYLE")
-		}
 		return (
 			<CellMeasurer {...props}>
 				{({ registerChild }) =>
