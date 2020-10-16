@@ -174,6 +174,7 @@ export function VPD() {
 				fixedColumnCount={2}
 				minColumnWidth={30}
 				disableSort={disableSort}
+				overscanRowCount={20}
 				nestedHeaders={[
 					[
 						{
