@@ -141,16 +141,14 @@ const GridWrapper = forwardRef((props: GridWrapperProps, componentRef: React.Ref
 	}
 
 	const activeMergePath = useMemo(() => {
-		const activeRowIndexes: number[] = []
+		//If there is no merging then we use the active directly
 		if (
 			!props.mergeCells ||
 			props.mergeCells.length === 0 ||
 			!props.mergedPositions ||
 			props.mergedPositions.length === 0
 		) {
-			//We can directly look on the rows
-			activeRowIndexes.push(props.coords.rowIndex)
-			return activeRowIndexes
+			return [props.coords.rowIndex]
 		}
 
 		//Find if the rowIndex and col are a parent merger otherwise they are merged
@@ -158,14 +156,14 @@ const GridWrapper = forwardRef((props: GridWrapperProps, componentRef: React.Ref
 		//Otherwise we need go from the child up to the parent
 		const mergeInfo = props.mergeCells.find(e => e.rowIndex === props.coords.rowIndex)
 		if (mergeInfo) {
-			activeRowIndexes.push(mergeInfo.rowIndex)
-			return activeRowIndexes
+			return [mergeInfo.rowIndex]
 		} else {
 			const mergedPosition = props.mergedPositions.find(e => e.row === props.coords.rowIndex)
+			//In case the given row is merged, build the path
 			if (mergedPosition) {
 				const rowMergeGroups: { [rowIndex: number]: number[] } = []
 				for (const e of props.mergeCells) {
-					const entry: number[] = []
+					const childs: number[] = []
 					const ranges = {
 						rowStart: e.rowIndex + 1,
 						rowEnd: e.rowIndex + Math.max(0, e.rowSpan - 1),
@@ -174,30 +172,36 @@ const GridWrapper = forwardRef((props: GridWrapperProps, componentRef: React.Ref
 					}
 
 					for (let i = ranges.rowStart; i <= ranges.rowEnd; i++) {
-						entry.push(i)
+						childs.push(i)
 					}
-					rowMergeGroups[e.rowIndex] = entry
+					rowMergeGroups[e.rowIndex] = childs
 				}
+
+				//First position is the parent OR the active if its the parent and the second is the child aka current
+				const activeRowPath: number[] = []
 
 				//Check if the target row exists in any group
 				for (const [parentRow, childs] of Object.entries(rowMergeGroups)) {
 					const isIncluded = childs.includes(props.coords.rowIndex)
 					if (isIncluded) {
-						activeRowIndexes.push(Number(parentRow))
-						activeRowIndexes.push(props.coords.rowIndex)
+						activeRowPath.push(Number(parentRow))
+						activeRowPath.push(props.coords.rowIndex)
 						break
 					}
 				}
-				return activeRowIndexes
+				return activeRowPath
 			} else {
-				activeRowIndexes.push(props.coords.rowIndex)
+				return [props.coords.rowIndex]
 			}
 		}
-
-		return activeRowIndexes
 	}, [props.coords, props.mergeCells, props.mergedPositions])
 
 
+	/**
+	 * Checks if the given coordinates can use the currentClassName
+	 * @param rowIndex
+	 * @param colIndex
+	 */
 	function isActiveRow({ rowIndex, colIndex }: NavigationCoords) {
 		if (activeMergePath[0] === rowIndex && activeMergePath.length === 1) {
 			return true
@@ -247,8 +251,6 @@ const GridWrapper = forwardRef((props: GridWrapperProps, componentRef: React.Ref
 		 * e.:g
 		 * dummy 1 has a rowspan of total 3 but none of its parent are visible, so dummy 3 assume the children value and highlight
 		 * of the parent because there is none visible
-		 * @todo Check if creating a lifecycle cell mount/unmount helps
-		 * @todo The children renderer has to be controlled via header accessor and cell renderer if its present
 		 * */
 		let cellClassName = clsx(classes.cellDefaultStyle, props.theme?.cellClass)
 		if (isRowSelected && !cell.dummy && props.theme?.currentRowClass) {
@@ -269,7 +271,6 @@ const GridWrapper = forwardRef((props: GridWrapperProps, componentRef: React.Ref
 					...style,
 					display: 'flex',
 					justifyContent: cell?.dummy ? 'top' : 'center',
-					padding: '5px',
 					boxSizing: 'border-box',
 					zIndex,
 				}}
