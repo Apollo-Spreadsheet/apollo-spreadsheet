@@ -42,8 +42,8 @@ const useStyles = makeStyles(() => ({
 		height: '100%',
 	},
 	sort: {
-		marginLeft: '10px'
-	}
+		marginLeft: '10px',
+	},
 }))
 export const ColumnGrid = React.memo(
 	forwardRef((props: ColumnGridProps, componentRef) => {
@@ -143,11 +143,10 @@ export const ColumnGrid = React.memo(
 
 			const isSortDisabled = headersSortDisabledMap[cell.id] ?? true //in case its not found, we set to true
 
-			const sortComponent = isSortDisabled || cell.accessor !== props.sort?.field? null : (
-				<div className={classes.sort}>
-					{getSortIndicatorComponent(props.sort?.order)}
-				</div>
-			)
+			const sortComponent =
+				isSortDisabled || cell.accessor !== props.sort?.field ? null : (
+					<div className={classes.sort}>{getSortIndicatorComponent(props.sort?.order)}</div>
+				)
 
 			let headerClassName = !cell.dummy
 				? cell.isNested
@@ -171,7 +170,6 @@ export const ColumnGrid = React.memo(
 					style={{
 						display: 'flex',
 						justifyContent: 'center',
-						// padding: '5px',
 						boxSizing: 'border-box',
 						background: '#efefef',
 						border: '1px solid #ccc',
@@ -180,7 +178,10 @@ export const ColumnGrid = React.memo(
 						zIndex: cell.colSpan && cell['isNested'] && !cell.dummy ? 999 : cell.dummy ? 0 : 1,
 					}}
 				>
-					<span onClick={isSortDisabled ? undefined : () => props.onSortClick(cell.accessor)} className={classes.contentSpan}>
+					<span
+						onClick={isSortDisabled ? undefined : () => props.onSortClick(cell.accessor)}
+						className={classes.contentSpan}
+					>
 						{children}
 						{sortComponent}
 					</span>
@@ -232,7 +233,7 @@ export const ColumnGrid = React.memo(
 				props.width,
 				headersSortDisabledMap,
 				props.disableSort,
-				props.sort
+				props.sort,
 			],
 		)
 
