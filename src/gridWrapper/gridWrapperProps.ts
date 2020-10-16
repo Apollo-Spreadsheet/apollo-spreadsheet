@@ -14,6 +14,8 @@ import {
 	StopEditingParams,
 } from '../editorManager/useEditorManager'
 import { Alignment } from 'react-virtualized'
+import { MergePosition } from "../mergeCells/createMergedPositions";
+import { StretchMode } from "../types/stretch-mode.enum";
 
 export interface CellEventParams<T = unknown> {
 	rowIndex: number
@@ -39,6 +41,8 @@ export interface GridWrapperCommonProps {
 	onGridReady?: (gridRef: GridApi) => void
 	theme?: GridTheme
 	mergeCells?: MergeCell[]
+	mergedPositions?: MergePosition[]
+	stretchMode: StretchMode
 	/**
 	 * Overscan count buffer for react-virtualized
 	 * @description Keep in mind a lower value
@@ -64,7 +68,8 @@ export interface GridWrapperProps<TRow = any> extends GridWrapperCommonProps {
 	minRowHeight: number
 	defaultColumnWidth: number
 	width: number
-//	scrollLeft: number
+	scrollLeft: number
+	onScroll: (args: any) => any
 	//scrollTop: number
 //	isScrolling: boolean
 	height: number

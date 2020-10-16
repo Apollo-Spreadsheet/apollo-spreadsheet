@@ -27,6 +27,7 @@ const useStyles = makeStyles(() => ({
 		position: 'sticky !important' as any,
 		top: 0,
 		zIndex: 1,
+		// overflow: 'hidden',
 		'scrollbar-width': 'none',
 		'&::-webkit-scrollbar': {
 			display: 'none',
@@ -263,6 +264,7 @@ export const ColumnGrid = React.memo(
 				columnWidth={props.getColumnWidth}
 				height={100} //Its going to be ignored due to autoHeight
 				autoHeight
+				scrollLeft={props.scrollLeft}
 			/>
 		)
 	}),

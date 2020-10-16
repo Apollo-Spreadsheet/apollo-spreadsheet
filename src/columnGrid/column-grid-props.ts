@@ -19,7 +19,7 @@ export interface ColumnGridProps {
 	getColumnWidth: ({ index }: { index: number }) => number
 
 	width: number
-	// scrollLeft: number
+	scrollLeft: number
 	// isScrolling: boolean
 	theme?: GridTheme
 	coords: NavigationCoords

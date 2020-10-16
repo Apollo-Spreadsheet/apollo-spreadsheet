@@ -112,7 +112,7 @@ export function Table() {
         fixedColumnCount={2}
         onCellChange={onCellChange}
         onCreateRow={onCreateRowClick}
-        minColumnWidth={30  }
+        minColumnWidth={30}
         selection={{
           key: 'id',
           onHeaderIconClick,

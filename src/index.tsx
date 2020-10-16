@@ -1,29 +1,22 @@
-import React, {
-	forwardRef,
-	useCallback,
-	useEffect,
-	useImperativeHandle,
-	useMemo,
-	useRef,
-	useState,
-} from 'react'
-import GridWrapper from './gridWrapper/GridWrapper'
-import ColumnGrid from './columnGrid/ColumnGrid'
-import { KeyDownEventParams, useNavigation } from './navigation/useNavigation'
-import { StretchMode } from './types/stretch-mode.enum'
-import { DisableSortFilterParam, GridWrapperCommonProps } from "./gridWrapper/gridWrapperProps"
-import { useMergeCells } from './mergeCells/useMergeCells'
-import { NavigationCoords } from './navigation/types/navigation-coords.type'
-import { useHeaders } from './columnGrid/useHeaders'
-import { useData } from './data/useData'
-import { ROW_SELECTION_HEADER_ID, useRowSelection } from './rowSelection/useRowSelection'
-import { ClickAwayListener, IconButton, Tooltip } from '@material-ui/core'
-import DeleteIcon from '@material-ui/icons/Delete'
-import { SelectionProps } from './rowSelection/selectionProps'
-import { useEditorManager } from './editorManager/useEditorManager'
-import { createPortal } from 'react-dom'
-import { orderBy } from 'lodash'
-import { GridContainer, GridContainerCommonProps } from './gridContainer/GridContainer'
+import React, { forwardRef, useCallback, useImperativeHandle, useMemo, useState } from "react";
+import GridWrapper from "./gridWrapper/GridWrapper";
+import ColumnGrid from "./columnGrid/ColumnGrid";
+import { KeyDownEventParams, useNavigation } from "./navigation/useNavigation";
+import { StretchMode } from "./types/stretch-mode.enum";
+import { DisableSortFilterParam, GridWrapperCommonProps } from "./gridWrapper/gridWrapperProps";
+import { useMergeCells } from "./mergeCells/useMergeCells";
+import { NavigationCoords } from "./navigation/types/navigation-coords.type";
+import { useHeaders } from "./columnGrid/useHeaders";
+import { useData } from "./data/useData";
+import { ROW_SELECTION_HEADER_ID, useRowSelection } from "./rowSelection/useRowSelection";
+import { ClickAwayListener, IconButton, Tooltip } from "@material-ui/core";
+import DeleteIcon from "@material-ui/icons/Delete";
+import { SelectionProps } from "./rowSelection/selectionProps";
+import { useEditorManager } from "./editorManager/useEditorManager";
+import { createPortal } from "react-dom";
+import { orderBy } from "lodash";
+import { GridContainer, GridContainerCommonProps } from "./gridContainer/GridContainer";
+import { ScrollSync } from "react-virtualized";
 
 interface Props<TRow = any> extends GridWrapperCommonProps, GridContainerCommonProps {
 	className?: string
@@ -217,61 +210,68 @@ export const ApolloSpreadSheet = forwardRef(
 				>
 					{({ getColumnWidth, width, columnGridRef, height, mainGridRef, registerChild }) => (
 						<ClickAwayListener onClickAway={onClickAway}>
-							<div id="apollo-grids" className={props.className}>
-								<ColumnGrid
-									data={headersData}
-									headers={headers}
-									width={width}
-									defaultColumnWidth={minColumnWidth}
-									getColumnWidth={getColumnWidth}
-									ref={columnGridRef}
-									minRowHeight={props.minColumnHeight ?? 50}
-									// scrollLeft={scrollLeft}
-									// isScrolling={isScrolling}
-									theme={props.theme}
-									coords={coords}
-									stretchMode={props.stretchMode}
-									nestedHeaders={props.nestedHeaders}
-									overscanColumnCount={props.overscanColumnCount}
-									overscanRowCount={props.overscanRowCount}
-									onSortClick={onSortClick}
-									sort={sort}
-									disableSort={props.disableSort}
-								/>
-								<GridWrapper
-									rows={rows}
-									data={data}
-									overscanColumnCount={props.overscanColumnCount}
-									overscanRowCount={props.overscanRowCount}
-									registerChild={registerChild}
-									defaultColumnWidth={minColumnWidth}
-									width={width}
-									getColumnWidth={getColumnWidth}
-									minRowHeight={props.minRowHeight ?? 50}
-									ref={mainGridRef}
-									//		scrollLeft={scrollLeft}
-									//		isScrolling={isScrolling}
-									height={height}
-									columnCount={headers.length}
-									coords={coords}
-									selectCell={selectCell}
-									/** Public API **/
-									headers={headers}
-									onGridReady={props.onGridReady}
-									defaultCoords={props.defaultCoords}
-									suppressNavigation={props.suppressNavigation}
-									outsideClickDeselects={props.outsideClickDeselects}
-									onCellChange={props.onCellChange}
-									theme={props.theme}
-									mergeCells={mergeData}
-									/** @todo Improve in the future to read directly from the hook and avoid this **/
-									editorState={editorState}
-									beginEditing={beginEditing}
-									stopEditing={stopEditing}
-									scrollToAlignment={props.scrollToAlignment}
-									restoreGridFocus={restoreGridFocus}
-								/>
-							</div>
+								<ScrollSync>
+									{({ scrollLeft, onScroll }) => (
+										<div id="apollo-grids" className={props.className}>
+										<ColumnGrid
+											data={headersData}
+											headers={headers}
+											width={width}
+											defaultColumnWidth={minColumnWidth}
+											getColumnWidth={getColumnWidth}
+											ref={columnGridRef}
+											minRowHeight={props.minColumnHeight ?? 50}
+											scrollLeft={scrollLeft}
+											// isScrolling={isScrolling}
+											theme={props.theme}
+											coords={coords}
+											stretchMode={props.stretchMode}
+											nestedHeaders={props.nestedHeaders}
+											overscanColumnCount={props.overscanColumnCount}
+											overscanRowCount={props.overscanRowCount}
+											onSortClick={onSortClick}
+											sort={sort}
+											disableSort={props.disableSort}
+										/>
+										<GridWrapper
+											rows={rows}
+											data={data}
+											overscanColumnCount={props.overscanColumnCount}
+											overscanRowCount={props.overscanRowCount}
+											registerChild={registerChild}
+											defaultColumnWidth={minColumnWidth}
+											width={width}
+											getColumnWidth={getColumnWidth}
+											minRowHeight={props.minRowHeight ?? 50}
+											ref={mainGridRef}
+												scrollLeft={scrollLeft}
+											onScroll={onScroll}
+											//		isScrolling={isScrolling}
+											height={height}
+											columnCount={headers.length}
+											coords={coords}
+											selectCell={selectCell}
+											/** Public API **/
+											headers={headers}
+											onGridReady={props.onGridReady}
+											defaultCoords={props.defaultCoords}
+											suppressNavigation={props.suppressNavigation}
+											outsideClickDeselects={props.outsideClickDeselects}
+											onCellChange={props.onCellChange}
+											theme={props.theme}
+											mergeCells={mergeData}
+											mergedPositions={mergedPositions}
+											stretchMode={props.stretchMode ?? StretchMode.All}
+											/** @todo Improve in the future to read directly from the hook and avoid this **/
+											editorState={editorState}
+											beginEditing={beginEditing}
+											stopEditing={stopEditing}
+											scrollToAlignment={props.scrollToAlignment}
+											restoreGridFocus={restoreGridFocus}
+										/>
+										</div>
+									)}
+								</ScrollSync>
 						</ClickAwayListener>
 					)}
 				</GridContainer>
