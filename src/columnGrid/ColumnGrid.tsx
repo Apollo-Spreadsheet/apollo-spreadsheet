@@ -171,7 +171,7 @@ export const ColumnGrid = React.memo(
 					style={{
 						display: 'flex',
 						justifyContent: 'center',
-						padding: '5px',
+						// padding: '5px',
 						boxSizing: 'border-box',
 						background: '#efefef',
 						border: '1px solid #ccc',
