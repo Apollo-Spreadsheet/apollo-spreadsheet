@@ -22,6 +22,14 @@ import flattenDeep from 'lodash/flattenDeep'
 
 type SortDisabled = boolean
 const useStyles = makeStyles(() => ({
+	defaultHeader: {
+		display: 'flex',
+		justifyContent: 'center',
+		boxSizing: 'border-box',
+		background: '#efefef',
+		cursor: 'default',
+		border: '1px solid #ccc'
+	},
 	headerContainer: {
 		outline: 'none',
 		position: 'sticky !important' as any,
@@ -150,8 +158,8 @@ export const ColumnGrid = React.memo(
 
 			let headerClassName = !cell.dummy
 				? cell.isNested
-					? clsx(props.theme?.headerClass, props.theme?.nestedHeaderClass, cell.className)
-					: clsx(props.theme?.headerClass, cell.className)
+					? clsx(classes.defaultHeader, props.theme?.headerClass, props.theme?.nestedHeaderClass, cell.className)
+					: clsx(classes.defaultHeader, props.theme?.headerClass, cell.className)
 				: undefined
 			//If the cell is selected we set the column as selected too
 			if (
@@ -168,12 +176,6 @@ export const ColumnGrid = React.memo(
 					ref={ref}
 					className={headerClassName}
 					style={{
-						display: 'flex',
-						justifyContent: 'center',
-						boxSizing: 'border-box',
-						background: '#efefef',
-						border: '1px solid #ccc',
-						cursor: 'default',
 						...style,
 						zIndex: cell.colSpan && cell['isNested'] && !cell.dummy ? 999 : cell.dummy ? 0 : 1,
 					}}

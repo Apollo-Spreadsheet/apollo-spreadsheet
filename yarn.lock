@@ -2871,6 +2871,11 @@
     "@types/cheerio" "*"
     "@types/react" "*"
 
+"@types/faker@^5.1.2":
+  version "5.1.2"
+  resolved "https://registry.yarnpkg.com/@types/faker/-/faker-5.1.2.tgz#3d5a97d5648502d7fb1eeb2809ca105edcd0d59b"
+  integrity sha512-a3FADSHjjinczCwr7tTejoMZzbSS5vi70VCyns4C1idxJrDSRGZCQG0s27YppXLcoWrBOkwBbBsZ9vDRDpQK7A==
+
 "@types/fined@*":
   version "1.1.2"
   resolved "https://registry.yarnpkg.com/@types/fined/-/fined-1.1.2.tgz#05d2b9f93d144855c97c18c9675f424ed01400c4"

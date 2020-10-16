@@ -24,6 +24,8 @@ const useStyles = makeStyles(() => ({
 		outline: 'none',
 	},
 	cellDefaultStyle: {
+		display: 'flex',
+		boxSizing: 'border-box',
 		'&:focus': {
 			outline: 0,
 			border: 0,
@@ -232,6 +234,7 @@ const GridWrapper = forwardRef((props: GridWrapperProps, componentRef: React.Ref
 	function renderCell({ style, cell, ref, rowIndex, columnIndex }) {
 		const isSelected = rowIndex === props.coords.rowIndex && columnIndex === props.coords.colIndex
 		const navigationDisabled = props.headers[0][columnIndex]?.disableNavigation
+		const column = props.headers[columnIndex]
 		//Dummy zIndex is 0 and a spanned cell has 5 but a normal cell has 1
 		const zIndex = (cell.rowSpan || cell.colSpan) && !cell.dummy ? 5 : cell.dummy ? 0 : 1
 
@@ -252,7 +255,7 @@ const GridWrapper = forwardRef((props: GridWrapperProps, componentRef: React.Ref
 		 * dummy 1 has a rowspan of total 3 but none of its parent are visible, so dummy 3 assume the children value and highlight
 		 * of the parent because there is none visible
 		 * */
-		let cellClassName = clsx(classes.cellDefaultStyle, props.theme?.cellClass)
+		let cellClassName = clsx(classes.cellDefaultStyle, props.theme?.cellClass, column.cellClassName)
 		if (isRowSelected && !cell.dummy && props.theme?.currentRowClass) {
 			cellClassName = clsx(cellClassName, props.theme?.currentRowClass)
 		}
@@ -269,9 +272,7 @@ const GridWrapper = forwardRef((props: GridWrapperProps, componentRef: React.Ref
 				className={cellClassName}
 				style={{
 					...style,
-					display: 'flex',
 					justifyContent: cell?.dummy ? 'top' : 'center',
-					boxSizing: 'border-box',
 					zIndex,
 				}}
 				// tabIndex={1}
@@ -333,7 +334,7 @@ const GridWrapper = forwardRef((props: GridWrapperProps, componentRef: React.Ref
 				/>
 			) : null
 		},
-		[props.coords, props.theme, props.width, props.data, props.selectCell, activeMergePath],
+		[props.coords, props.theme, props.width, props.data, props.selectCell, activeMergePath, props.headers],
 	)
 
 	const onRefMount = useCallback(

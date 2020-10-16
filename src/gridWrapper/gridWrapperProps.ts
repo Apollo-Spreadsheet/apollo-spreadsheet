@@ -42,7 +42,6 @@ export interface GridWrapperCommonProps {
 	theme?: GridTheme
 	mergeCells?: MergeCell[]
 	mergedPositions?: MergePosition[]
-	stretchMode: StretchMode
 	/**
 	 * Overscan count buffer for react-virtualized
 	 * @description Keep in mind a lower value
@@ -70,8 +69,6 @@ export interface GridWrapperProps<TRow = any> extends GridWrapperCommonProps {
 	width: number
 	scrollLeft: number
 	onScroll: (args: any) => any
-	//scrollTop: number
-//	isScrolling: boolean
 	height: number
 	registerChild?: RegisterChildFn
 	rows: TRow[]
@@ -84,4 +81,5 @@ export interface GridWrapperProps<TRow = any> extends GridWrapperCommonProps {
 	beginEditing: (params: BeginEditingParams) => void
 	stopEditing: (params?: StopEditingParams) => void
 	restoreGridFocus: () => void
+	stretchMode: StretchMode
 }

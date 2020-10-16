@@ -51,6 +51,7 @@ export interface Header<Key = string> {
 	maxLength?: number
 	width?: React.ReactText
 	className?: string
+	cellClassName?: string
 	readOnly?: boolean | IsReadOnlyCallback
 	/** @todo Types **/
 	disableNavigation?: boolean | Function /** @todo Types **/

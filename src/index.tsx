@@ -1,22 +1,22 @@
-import React, { forwardRef, useCallback, useImperativeHandle, useMemo, useState } from "react";
-import GridWrapper from "./gridWrapper/GridWrapper";
-import ColumnGrid from "./columnGrid/ColumnGrid";
-import { KeyDownEventParams, useNavigation } from "./navigation/useNavigation";
-import { StretchMode } from "./types/stretch-mode.enum";
-import { DisableSortFilterParam, GridWrapperCommonProps } from "./gridWrapper/gridWrapperProps";
-import { useMergeCells } from "./mergeCells/useMergeCells";
-import { NavigationCoords } from "./navigation/types/navigation-coords.type";
-import { useHeaders } from "./columnGrid/useHeaders";
-import { useData } from "./data/useData";
-import { ROW_SELECTION_HEADER_ID, useRowSelection } from "./rowSelection/useRowSelection";
-import { ClickAwayListener, IconButton, Tooltip } from "@material-ui/core";
-import DeleteIcon from "@material-ui/icons/Delete";
-import { SelectionProps } from "./rowSelection/selectionProps";
-import { useEditorManager } from "./editorManager/useEditorManager";
-import { createPortal } from "react-dom";
-import { orderBy } from "lodash";
-import { GridContainer, GridContainerCommonProps } from "./gridContainer/GridContainer";
-import { ScrollSync } from "react-virtualized";
+import React, { forwardRef, useCallback, useImperativeHandle, useMemo, useState } from "react"
+import GridWrapper from "./gridWrapper/GridWrapper"
+import ColumnGrid from "./columnGrid/ColumnGrid"
+import { KeyDownEventParams, useNavigation } from "./navigation/useNavigation"
+import { StretchMode } from "./types/stretch-mode.enum"
+import { DisableSortFilterParam, GridWrapperCommonProps } from "./gridWrapper/gridWrapperProps"
+import { useMergeCells } from "./mergeCells/useMergeCells"
+import { NavigationCoords } from "./navigation/types/navigation-coords.type"
+import { useHeaders } from "./columnGrid/useHeaders"
+import { useData } from "./data/useData"
+import { ROW_SELECTION_HEADER_ID, useRowSelection } from "./rowSelection/useRowSelection"
+import { ClickAwayListener, IconButton, Tooltip } from "@material-ui/core"
+import DeleteIcon from "@material-ui/icons/Delete"
+import { SelectionProps } from "./rowSelection/selectionProps"
+import { useEditorManager } from "./editorManager/useEditorManager"
+import { createPortal } from "react-dom"
+import { orderBy } from "lodash"
+import { GridContainer, GridContainerCommonProps } from "./gridContainer/GridContainer"
+import { ScrollSync } from "react-virtualized"
 
 interface Props<TRow = any> extends GridWrapperCommonProps, GridContainerCommonProps {
 	className?: string
