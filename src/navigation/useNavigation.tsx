@@ -23,6 +23,8 @@ import dayjs from 'dayjs'
 import { ROW_SELECTION_HEADER_ID } from '../rowSelection/useRowSelection'
 import { debounce, DebouncedFunc } from 'lodash'
 import { NavigationKey } from '../editorManager/enums/navigation-key.enum'
+import { MergeCell } from '../mergeCells/interfaces/merge-cell'
+import { MergePosition } from '../mergeCells/createMergedPositions'
 
 interface Props<TRow = unknown> {
 	defaultCoords: NavigationCoords
@@ -37,6 +39,10 @@ interface Props<TRow = unknown> {
 	editorState: IEditorState | null
 	selectRow: (id: string | TRow) => void
 	onCreateRow?: (coords: NavigationCoords) => void
+	getSpanProperties: (coords: NavigationCoords) => MergeCell | undefined
+	isMerged: (coords: NavigationCoords) => boolean
+	mergedPositions: MergePosition[]
+	getMergedPath: (rowIndex: number) => number[]
 }
 
 export type SelectCellFn = (params: NavigationCoords) => void
@@ -55,33 +61,16 @@ export function useNavigation({
 	stopEditing,
 	beginEditing,
 	onCellChange,
+	isMerged,
+	getSpanProperties,
 	editorState,
 	selectRow,
-	                              onCreateRow
+	onCreateRow,
+	mergedPositions,
+	getMergedPath,
 }: Props): [NavigationCoords, SelectCellFn] {
 	const [coords, setCoords] = useState<NavigationCoords>(defaultCoords)
 	const delayEditorDebounce = useRef<DebouncedFunc<any> | null>(null)
-
-	const isMergedCell = (row: any, colIndex: number) => {
-		const cell = row[colIndex]
-		if (!cell) {
-			console.warn('Cell not found in row ', row, colIndex)
-			return false
-		}
-		if (cell.rowSpan > 1 || cell.first || cell.parentRow) {
-			return true
-		}
-
-		return false
-	}
-
-	//Clear the selection if the grid has no rows (Still prototype)
-	// useEffect(() => {
-	// 	if (rows.length === 0 && coords.colIndex !== -1 && coords.rowIndex !== -1){
-	// 		console.error("No rows")
-	// 		selectCell({ rowIndex: -1, colIndex: - 1})
-	// 	}
-	// }, [rows, coords])
 
 	//Cancels the debounce if the editor is prematurely open
 	useEffect(() => {
@@ -96,65 +85,6 @@ export function useNavigation({
 			delayEditorDebounce.current?.cancel()
 		}
 	}, [])
-
-	/**
-	 * @todo Not working, needs to be created in a different way
-	 * @param id
-	 */
-	const findCellById = (id: string) => {
-		let result: {
-			cell: GridCell | null
-			rowIndex: number
-			cellIndex: number
-		} = { cell: null, rowIndex: -1, cellIndex: -1 }
-		data.map((row, rowIndex) => {
-			row.forEach((cell, cellIndex) => {
-				if (cell['id'] === id && !cell['dummy']) {
-					result = { cell, rowIndex, cellIndex }
-					return
-				}
-			})
-		})
-
-		return result
-	}
-
-	/** @todo Refactor all of this, dont use ids and use indexes instead for lookups **/
-	const findMergedCellParent = (row: any, colIndex: number) => {
-		// console.log("Checking for row");
-		// console.log({ row, data, colIndex });
-
-		const targetCell = row[colIndex]
-		// console.log({ targetCell });
-		if (!targetCell) {
-			console.warn('Column does not exist in row -> ', row, colIndex)
-			return
-		}
-		//If it is the first cell (main parent) we can directly bypass parent lookup
-		if (targetCell.first && !targetCell.dummy) {
-			const result = findCellById(targetCell.id)
-			if (result) {
-				return result
-			}
-		}
-
-		//Check if we have parent and find its index
-		if (targetCell.parentRow) {
-			const result = findCellById(targetCell.parentRow.id)
-			if (result) {
-				return result
-			}
-		}
-
-		//Fallback in case it has more than 1 span and also id defined
-		if (targetCell.rowSpan > 1 && targetCell.id) {
-			const result = findCellById(targetCell.id)
-			if (result) {
-				return { rowIndex: result.rowIndex, cell: result.cell }
-			}
-		}
-		return null
-	}
 
 	function getDefaultValueFromValue(value: unknown) {
 		if (Array.isArray(value)) {
@@ -267,109 +197,118 @@ export function useNavigation({
 		}
 	}
 
+	/** @todo Might need to consider colSpan **/
 	function handleArrowNavigationControls(event: KeyboardEvent) {
-		/**
-		 * @todo Consider non navigate cells and find the next navigable cell (considering merged cell) and also the direction
-		 * we want to find (if its the next column or previous, next row or previous)
-		 */
 		if (event.key === 'ArrowDown') {
 			event.preventDefault()
-			//Ensure we are not out of boundaries yet
-			if (isIndexOutOfBoundaries(coords.rowIndex + 1, 0, rows.length - 1)) {
+			let nextRowIndex = coords.rowIndex + 1
+
+			//If we have span we need to skip that to the next
+			const currentCellSpan = getSpanProperties(coords)
+			if (currentCellSpan) {
+				nextRowIndex = coords.rowIndex + currentCellSpan.rowSpan
+			}
+
+			//Ensure we are not out of boundaries
+			if (isIndexOutOfBoundaries(nextRowIndex, 0, rows.length - 1)) {
 				return
 			}
 
-			const cell = data[coords.rowIndex]?.[coords.colIndex]
-			//If cell is merged we sum the rowSpan on the current
-			if (isMergedCell(data[coords.rowIndex], coords.colIndex)) {
-				if (!cell.rowSpan) {
-					console.error('Merged cell rowspan not found')
-					return
-				}
-				const next = coords.rowIndex + cell.rowSpan
-				return selectCell({ rowIndex: next, colIndex: coords.colIndex })
-			}
-
 			return selectCell({
-				rowIndex: coords.rowIndex + 1,
+				rowIndex: nextRowIndex,
 				colIndex: coords.colIndex,
 			})
 		}
 
 		if (event.key === 'ArrowUp') {
 			event.preventDefault()
-			const nextIndex = coords.rowIndex - 1
+			let nextRowIndex = coords.rowIndex - 1
 
-			if (nextIndex < 0) {
+			//If we have span we need to skip that to the next
+			const isNextMerged = isMerged({ rowIndex: nextRowIndex, colIndex: coords.colIndex })
+			if (isNextMerged) {
+				const path = getMergedPath(nextRowIndex)
+				if (path.length !== 2) {
+					return console.warn(
+						`[Navigation] Merge group path not correct, returned ${path.length} positions instead of 2. Please review`,
+					)
+				}
+				//Means we have the parent, parent comes in the first position always
+				nextRowIndex = path[0]
+			}
+
+			//Ensure we are not out of boundaries
+			if (nextRowIndex < 0) {
 				return
 			}
 
-			//Check the previous row and if one of them has row span. If so we jump into the first
-			const cell = data[nextIndex]
-			if (cell) {
-				//If its merged we need to jump into its parent otherwise its just the previous index
-				if (isMergedCell(data[nextIndex], coords.colIndex)) {
-					const res = findMergedCellParent(data[nextIndex], coords.colIndex)
-					if (res) {
-						return selectCell({
-							rowIndex: res.rowIndex,
-							colIndex: coords.colIndex,
-						})
-					}
-					return console.error('The result was not defined, please check if row/col exists')
-				} else {
-					return selectCell({ rowIndex: nextIndex, colIndex: coords.colIndex })
-				}
-			}
 			return selectCell({
-				rowIndex: coords.rowIndex - 1,
+				rowIndex: nextRowIndex,
 				colIndex: coords.colIndex,
 			})
 		}
 
 		if (event.key === 'ArrowRight' || (event.key === 'Tab' && !event.shiftKey)) {
 			event.preventDefault()
-			let nextIndex = coords.colIndex + 1
-			if (isIndexOutOfBoundaries(nextIndex, 0, columnCount - 1)) {
+			let nextColIndex = coords.colIndex + 1
+
+			if (isIndexOutOfBoundaries(nextColIndex, 0, columnCount - 1)) {
 				return
 			}
+
 			//Is navigable?
-			const col = getColumnAt(nextIndex)
+			const col = getColumnAt(nextColIndex)
 			if (!col) {
-				return console.error('Column not found at' + nextIndex)
+				return console.error('Column not found at' + nextColIndex)
 			}
 
 			if (col.disableNavigation) {
-				nextIndex = findNextNavigableColumnIndex(coords.colIndex, 'right')
+				nextColIndex = findNextNavigableColumnIndex(coords.colIndex, 'right')
 			}
 
-			return selectCell({ rowIndex: coords.rowIndex, colIndex: nextIndex })
+			if (isMerged({ rowIndex: coords.rowIndex, colIndex: nextColIndex })){
+				const path = getMergedPath(coords.rowIndex)
+				if (path.length === 2){
+					return selectCell({
+						rowIndex: path[0],
+						colIndex: nextColIndex
+					})
+				} else {
+					return console.warn(`[Navigation] Merge group path not correct, returned ${path.length} positions instead of 2. Please review`,)
+				}
+			}
+
+			return selectCell({ rowIndex: coords.rowIndex, colIndex: nextColIndex })
 		}
 
 		if (event.key === 'ArrowLeft' || (event.key === 'Tab' && event.shiftKey)) {
 			event.preventDefault()
-			let nextIndex = coords.colIndex - 1
-			if (isIndexOutOfBoundaries(nextIndex, 0, columnCount - 1)) {
+			let nextColIndex = coords.colIndex - 1
+			if (isIndexOutOfBoundaries(nextColIndex, 0, columnCount - 1)) {
 				return
 			}
-			const col = getColumnAt(nextIndex)
+			const col = getColumnAt(nextColIndex)
 			if (!col) {
-				return console.error('Column not found at ' + nextIndex)
+				return console.error('Column not found at ' + nextColIndex)
 			}
 
 			if (col.disableNavigation) {
-				nextIndex = findNextNavigableColumnIndex(coords.colIndex, 'left')
+				nextColIndex = findNextNavigableColumnIndex(coords.colIndex, 'left')
 			}
 
-			if (isMergedCell(data[coords.rowIndex], nextIndex)) {
-				const res = findMergedCellParent(data[coords.rowIndex], nextIndex)
-				if (res) {
-					return selectCell({ rowIndex: res.rowIndex, colIndex: nextIndex })
+			if (isMerged({ rowIndex: coords.rowIndex, colIndex: nextColIndex })){
+				const path = getMergedPath(coords.rowIndex)
+				if (path.length === 2){
+					return selectCell({
+						rowIndex: path[0],
+						colIndex: nextColIndex
+					})
+				} else {
+					return console.warn(`[Navigation] Merge group path not correct, returned ${path.length} positions instead of 2. Please review`,)
 				}
-				return console.error('The result was not defined, please check if row/col exists')
-			} else {
-				return selectCell({ rowIndex: coords.rowIndex, colIndex: nextIndex })
 			}
+
+			return selectCell({ rowIndex: coords.rowIndex, colIndex: nextColIndex })
 		}
 	}
 
@@ -382,7 +321,7 @@ export function useNavigation({
 
 	const onKeyDown = (event: KeyboardEvent) => {
 		//Ensure we can proceed navigation under this two main conditions
-		if (suppressControls || (editorState?.isPopup)) {
+		if (suppressControls || editorState?.isPopup) {
 			return
 		}
 
@@ -400,7 +339,7 @@ export function useNavigation({
 
 		//Travel like excel rules for non-editing
 		if (!editorState) {
-			if (event.key === 'F2'){
+			if (event.key === 'F2') {
 				event.preventDefault()
 				return beginEditing({
 					coords,
@@ -408,7 +347,7 @@ export function useNavigation({
 				})
 			}
 
-			if (event.key === 'Enter' && onCreateRow){
+			if (event.key === 'Enter' && onCreateRow) {
 				event.preventDefault()
 				onCreateRow(coords)
 			}
@@ -470,7 +409,12 @@ export function useNavigation({
 		}
 
 		//If its any printable char, we allow to open editing
-		if (!column.type && isPrintableChar(event.keyCode) && !isMetaKey(event.keyCode) && !editorState) {
+		if (
+			!column.type &&
+			isPrintableChar(event.keyCode) &&
+			!isMetaKey(event.keyCode) &&
+			!editorState
+		) {
 			//Any key makes it to open and send the key pressed
 			event.preventDefault()
 			return beginEditing({
@@ -521,15 +465,6 @@ export function useNavigation({
 				delayEditorDebounce.current = null
 			}
 
-			/**
-			 * @todo Before we setCoords we need to sure scroll is visible and we can achive that
-			 * by first checking if we have a scrollPresence (virtualize exposes that i think) and if the scrollTop Or left depending
-			 * on the direction we are going, if they are centered horizontal/vertical with the middle of the target element
-			 * We get the middle which is element height / 2 and add the middle into the start so we know exactly the middle point
-			 * If the scroll is already in that range of height start to end of the element we do nothing, else we propagate it
-			 * via a callback this hook will receive
-			 * @todo Also we need to receive a function that allow us to get a cell element with the given coordinates
-			 */
 			if (delayEditingOpen) {
 				delayEditorDebounce.current = debounce(() => {
 					delayEditorDebounce.current = null

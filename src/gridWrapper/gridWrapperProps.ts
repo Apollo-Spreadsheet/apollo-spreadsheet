@@ -82,4 +82,5 @@ export interface GridWrapperProps<TRow = any> extends GridWrapperCommonProps {
 	stopEditing: (params?: StopEditingParams) => void
 	restoreGridFocus: () => void
 	stretchMode: StretchMode
+	getMergedPath: (rowIndex: number) => number[]
 }

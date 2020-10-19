@@ -123,8 +123,8 @@ export const ApolloSpreadSheet = forwardRef(
 		const { data } = useData({
 			rows,
 			headers,
-			mergeCells: mergeData,
-			mergedPositions,
+			getSpanProperties,
+			isMerged,
 			selection: props.selection,
 			isRowSelected,
 			selectRow,
@@ -152,6 +152,10 @@ export const ApolloSpreadSheet = forwardRef(
 			editorState,
 			selectRow,
 			onCreateRow: props.onCreateRow,
+			isMerged,
+			getSpanProperties,
+			mergedPositions,
+			getMergedPath
 		})
 
 		//Public api from plugin to extensible hooks or external ref
@@ -268,6 +272,7 @@ export const ApolloSpreadSheet = forwardRef(
 											stopEditing={stopEditing}
 											scrollToAlignment={props.scrollToAlignment}
 											restoreGridFocus={restoreGridFocus}
+											getMergedPath={getMergedPath}
 										/>
 										</div>
 									)}

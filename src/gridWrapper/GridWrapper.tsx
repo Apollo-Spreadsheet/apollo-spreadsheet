@@ -161,37 +161,9 @@ const GridWrapper = forwardRef((props: GridWrapperProps, componentRef: React.Ref
 			return [mergeInfo.rowIndex]
 		} else {
 			const mergedPosition = props.mergedPositions.find(e => e.row === props.coords.rowIndex)
-			//In case the given row is merged, build the path
+			//In case the given row is merged, build the path with all existing merge cells
 			if (mergedPosition) {
-				const rowMergeGroups: { [rowIndex: number]: number[] } = []
-				for (const e of props.mergeCells) {
-					const childs: number[] = []
-					const ranges = {
-						rowStart: e.rowIndex + 1,
-						rowEnd: e.rowIndex + Math.max(0, e.rowSpan - 1),
-						colStart: e.colIndex,
-						colEnd: e.colIndex + Math.max(0, e.colSpan - 1),
-					}
-
-					for (let i = ranges.rowStart; i <= ranges.rowEnd; i++) {
-						childs.push(i)
-					}
-					rowMergeGroups[e.rowIndex] = childs
-				}
-
-				//First position is the parent OR the active if its the parent and the second is the child aka current
-				const activeRowPath: number[] = []
-
-				//Check if the target row exists in any group
-				for (const [parentRow, childs] of Object.entries(rowMergeGroups)) {
-					const isIncluded = childs.includes(props.coords.rowIndex)
-					if (isIncluded) {
-						activeRowPath.push(Number(parentRow))
-						activeRowPath.push(props.coords.rowIndex)
-						break
-					}
-				}
-				return activeRowPath
+				return props.getMergedPath(props.coords.rowIndex)
 			} else {
 				return [props.coords.rowIndex]
 			}
