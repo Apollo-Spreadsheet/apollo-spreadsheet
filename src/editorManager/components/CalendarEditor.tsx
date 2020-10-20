@@ -4,7 +4,6 @@ import { Popper } from '@material-ui/core'
 import ReactDatePicker from 'react-datepicker'
 import dayjs from 'dayjs'
 import { makeStyles } from '@material-ui/core/styles'
-import 'react-datepicker/dist/react-datepicker.css'
 
 const useStyles = makeStyles(theme => ({
 	root: {

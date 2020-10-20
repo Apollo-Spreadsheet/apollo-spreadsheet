@@ -57,6 +57,8 @@ export interface Header<Key = string> {
 	disableNavigation?: boolean | Function /** @todo Types **/
 	/**
 	 * Cell value type for this column (the values are formatted accordingly)
+	 * NOTE: If you attempt to use the calendar editor you must `import 'react-datepicker/dist/react-datepicker.css'` on your application
+	 * This does not come by default due to SSR frameworks such as Next.js, in order to support them we have to rely on the integration
 	 * @default   Text and editor TextAreaEditor
 	 */
 	type?: ColumnCellType

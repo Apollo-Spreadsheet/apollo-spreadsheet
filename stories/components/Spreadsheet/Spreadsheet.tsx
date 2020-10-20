@@ -11,6 +11,7 @@ import { StretchMode } from '../../../src/types/stretch-mode.enum'
 import { getTopUseCase } from './dataUseCases'
 import { makeStyles } from '@material-ui/core/styles'
 import { useApiRef } from "../../../src/api/useApiRef"
+import 'react-datepicker/dist/react-datepicker.css'
 
 const useStyles = makeStyles(() => ({
 	root: {
