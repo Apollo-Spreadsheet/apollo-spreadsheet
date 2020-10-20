@@ -78,7 +78,7 @@ export function useEditorManager<TRow>({
 	//Detect if row/column has changed or has been deleted (compares with the active editing info)
 	useEffect(() => {
 		if (editorNode && state.current) {
-			const target = rows[state.current.rowIndex] as TRow
+			const target = apiRef.current.getRows()[state.current.rowIndex] as TRow
 			const column = getColumnAt(state.current.colIndex)
 			if (target && column) {
 				const value = target[column.accessor]
@@ -91,7 +91,7 @@ export function useEditorManager<TRow>({
 				stopEditing({ save: false })
 			}
 		}
-	}, [rows, getColumnAt, editorNode])
+	}, [apiRef, getColumnAt, editorNode])
 
 	/**
 	 * Closes the existing editor without saving anything
@@ -218,7 +218,7 @@ export function useEditorManager<TRow>({
 				return
 			}
 
-			const row = rows[coords.rowIndex]
+			const row = apiRef.current.getRows()[coords.rowIndex]
 			if (!row) {
 				return console.warn(
 					`Row not found at ${coords.rowIndex}, therefore we can't start editing at column: ${column.id}`,
@@ -256,7 +256,7 @@ export function useEditorManager<TRow>({
 			setEditorNode(editor)
 			apiRef.current.dispatchEvent(CELL_BEGIN_EDITING, coords)
 		},
-		[getColumnAt, editorNode, rows, stopEditing],
+		[getColumnAt, editorNode, stopEditing],
 	)
 
 	function getEditorState() {

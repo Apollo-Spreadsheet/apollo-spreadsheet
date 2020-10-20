@@ -142,7 +142,7 @@ export const ColumnGrid = React.memo(
 			const children = renderer ? (
 				(renderer(cell) as any)
 			) : cell.tooltip ? (
-				<Tooltip title={title} placement={'top'} {...cell.tooltipProps}>
+				<Tooltip title={cell.tooltip} placement={'top'} {...cell.tooltipProps}>
 					<span>{title}</span>
 				</Tooltip>
 			) : (

@@ -45,13 +45,6 @@ const useStyles = makeStyles(() => ({
 		border: '1px solid white',
 		backgroundColor: '#E6EFED',
 		fontSize: '13px',
-		/** @todo This section will be used for cell flashing effect when undo/redo
-		 * but we need a setTimeout with equal time of the tranistion to remove the class
-		 * **/
-		// transition: "background-color 1s linear",
-		// "&:hover": {
-		//   backgroundColor: "red",
-		// },
 	},
 	rowClassDark: {
 		border: '1px solid white',

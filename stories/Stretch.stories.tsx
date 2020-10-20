@@ -11,7 +11,6 @@ const ExampleTable = ({ headerData, data, stretchMode }) => {
 		<ApolloSpreadSheet
 			headers={headerData}
 			rows={data}
-			fixedColumnCount={2}
 			minColumnWidth={120}
 			stretchMode={stretchMode}
 		/>
