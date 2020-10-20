@@ -34,7 +34,6 @@ interface Props<TRow = unknown> {
 	defaultCoords: NavigationCoords
 	data: GridCell[][]
 	columnCount: number
-	rows: TRow[]
 	suppressControls: boolean
 	getColumnAt: GetColumnAt
 	onCellChange?: (params: CellChangeParams) => void
@@ -52,7 +51,6 @@ export interface KeyDownEventParams {
 export function useNavigation({
 	data,
 	columnCount,
-	rows,
 	defaultCoords,
 	suppressControls,
 	getColumnAt,
@@ -208,7 +206,7 @@ export function useNavigation({
 			}
 
 			//Ensure we are not out of boundaries
-			if (isIndexOutOfBoundaries(nextRowIndex, 0, rows.length - 1)) {
+			if (isIndexOutOfBoundaries(nextRowIndex, 0, apiRef.current.getRowsCount() - 1)) {
 				return
 			}
 
@@ -221,7 +219,6 @@ export function useNavigation({
 		if (event.key === 'ArrowUp') {
 			event.preventDefault()
 			let nextRowIndex = coords.rowIndex - 1
-
 			//If we have span we need to skip that to the next
 			const isNextMerged = apiRef.current.isMerged({ rowIndex: nextRowIndex, colIndex: coords.colIndex })
 			if (isNextMerged) {
@@ -337,7 +334,7 @@ export function useNavigation({
 			//Validate boundaries
 			if (
 				isIndexOutOfBoundaries(colIndex, 0, columnCount - 1) ||
-				isIndexOutOfBoundaries(rowIndex, 0, rows.length - 1)
+				isIndexOutOfBoundaries(rowIndex, 0, apiRef.current.getRowsCount() - 1)
 			) {
 				return
 			}
@@ -382,7 +379,7 @@ export function useNavigation({
 			coordsRef.current = { colIndex, rowIndex }
 			setCoords({ colIndex, rowIndex })
 		},
-		[coords, rows, columnCount, getColumnAt, apiRef],
+		[coords, columnCount, getColumnAt, apiRef],
 	)
 
 	const onKeyDown = useCallback(
@@ -432,7 +429,7 @@ export function useNavigation({
 				return handleArrowNavigationControls(event)
 			}
 
-			const row = rows[coords.rowIndex]
+			const row = apiRef.current.getRows()[coords.rowIndex]
 			if (!row) {
 				return console.warn('Row index')
 			}

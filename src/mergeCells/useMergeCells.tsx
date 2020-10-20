@@ -1,9 +1,9 @@
-import React, { useCallback, useEffect, useMemo } from 'react'
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { NavigationCoords } from '../navigation/types/navigation-coords.type'
 import { validateMergeData } from './validateMergeData'
 import { MergeCell } from './interfaces/merge-cell'
-import { createMergedPositions } from './createMergedPositions'
-import { createMergedGroups } from "./createMergedGroups"
+import { createMergedPositions, MergePosition } from "./createMergedPositions";
+import { createMergedGroups, MergeGroup } from "./createMergedGroups";
 import { useApiExtends } from "../api/useApiExtends"
 import { ApiRef } from "../api/types/apiRef"
 
@@ -21,28 +21,22 @@ export interface MergedCellsHookProps {
  * @param data
  */
 export function useMergeCells({ data, rowCount, columnCount, apiRef, initialised }: MergedCellsHookProps) {
-	const { mergeData, mergedPositions, mergeGroups } = useMemo(() => {
-		if (!data) {
-			return {
-				mergeData: [],
-				mergedPositions: [],
-				mergeGroups: {}
-			}
+	const mergedPositions = useRef<MergePosition[]>([])
+	const mergeGroups = useRef<MergeGroup>({})
+	const mergeData = useRef<MergeCell[]>([])
+	useEffect(() => {
+		if (!data){
+			return
 		}
-		//Dispatches an error when a bad merge is found
-		const validatedData = validateMergeData(data, rowCount, columnCount)
-		const mergedPositions = createMergedPositions(validatedData)
-		const mergeGroups = createMergedGroups(validatedData)
-		return {
-			mergeData: validatedData,
-			mergedPositions,
-			mergeGroups
-		}
-	}, [data])
+		mergeData.current = validateMergeData(data, rowCount, columnCount)
+		mergeGroups.current = createMergedGroups(data)
+		mergedPositions.current = createMergedPositions(data)
+	}, [data, rowCount, columnCount])
+
 
 	const isMerged = useCallback(({ rowIndex, colIndex}: NavigationCoords) => {
-		return mergedPositions?.some(e => e.row === rowIndex && e.col === colIndex)
-	}, [mergedPositions])
+		return mergedPositions.current.some(e => e.row === rowIndex && e.col === colIndex)
+	}, [])
 
 
 	/**
@@ -54,7 +48,7 @@ export function useMergeCells({ data, rowCount, columnCount, apiRef, initialised
 		const activeRowPath: number[] = []
 
 		//Check if the target row exists in any group
-		for (const [parentRow, childIndices] of Object.entries(mergeGroups)) {
+		for (const [parentRow, childIndices] of Object.entries(mergeGroups.current)) {
 			const isIncluded = childIndices.includes(rowIndex)
 			if (isIncluded) {
 				activeRowPath.push(Number(parentRow))
@@ -63,7 +57,7 @@ export function useMergeCells({ data, rowCount, columnCount, apiRef, initialised
 			}
 		}
 		return activeRowPath
-	}, [mergeGroups])
+	}, [])
 
 	/**
 	 * Returns the col/row span of the given colIndex/rowIndex
@@ -71,13 +65,13 @@ export function useMergeCells({ data, rowCount, columnCount, apiRef, initialised
 	 */
 	const getSpanProperties = useCallback(
 		(coords: NavigationCoords) => {
-			return mergeData.find(e => e.rowIndex === coords.rowIndex && e.colIndex === coords.colIndex)
+			return mergeData.current.find(e => e.rowIndex === coords.rowIndex && e.colIndex === coords.colIndex)
 		},
-		[mergeData],
+		[],
 	)
 
-	const getMergedData = useCallback(() => mergeData, [mergeData])
-	const getMergedGroups = useCallback(() => mergeGroups, [mergeGroups])
+	const getMergedData = useCallback(() => mergeData.current, [])
+	const getMergedGroups = useCallback(() => mergeGroups.current, [])
 
 	useApiExtends(apiRef, {
 		getSpanProperties,
@@ -86,12 +80,4 @@ export function useMergeCells({ data, rowCount, columnCount, apiRef, initialised
 		getMergedData,
 		getMergedGroups
 	}, 'MergeCellsAPI')
-
-	return {
-		mergeData,
-		isMerged,
-		getMergedPath,
-		getSpanProperties,
-		mergedPositions,
-	}
 }

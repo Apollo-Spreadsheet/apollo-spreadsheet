@@ -123,24 +123,13 @@ export const ApolloSpreadSheet = forwardRef(
 		}, [props.headers, props.selection])
 
 		useEvents(rootContainerRef, apiRef)
-		useRowSelection({
-			selection: props.selection,
-			apiRef,
-			initialised,
-		})
 
-		const { isMerged, getSpanProperties } = useMergeCells({
+		useMergeCells({
 			data: props.mergeCells,
 			rowCount: rows.length,
 			columnCount: headers.length,
 			apiRef,
 			initialised,
-		})
-
-		const { headersData, getColumnAt, dynamicColumnCount } = useHeaders({
-			headers,
-			nestedHeaders: props.nestedHeaders,
-			minColumnWidth,
 		})
 
 		const data = useData({
@@ -149,9 +138,21 @@ export const ApolloSpreadSheet = forwardRef(
 			selection: props.selection,
 			apiRef,
 			initialised,
-			isMerged,
-			getSpanProperties
 		})
+
+		useRowSelection({
+			selection: props.selection,
+			apiRef,
+			initialised,
+		})
+
+
+		const { headersData, getColumnAt, dynamicColumnCount } = useHeaders({
+			headers,
+			nestedHeaders: props.nestedHeaders,
+			minColumnWidth,
+		})
+
 
 		const editorNode = useEditorManager({
 			rows,
@@ -167,7 +168,6 @@ export const ApolloSpreadSheet = forwardRef(
 				colIndex: 0,
 			},
 			data,
-			rows,
 			columnCount: headers.length,
 			suppressControls: props.suppressNavigation || !gridFocused,
 			getColumnAt,
@@ -177,6 +177,7 @@ export const ApolloSpreadSheet = forwardRef(
 			initialised,
 		})
 
+		/** @todo Extract to useSort hook **/
 		function onSortClick(field: string) {
 			if (field === sort?.field) {
 				const nextSort = sort?.order === 'asc' ? 'desc' : 'asc'
