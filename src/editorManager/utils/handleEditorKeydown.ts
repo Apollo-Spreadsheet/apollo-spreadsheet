@@ -14,27 +14,27 @@ export function handleEditorKeydown(e: React.KeyboardEvent<unknown>, stopEditing
     const cursorEnd = e.target['selectionEnd']
     if (e.key === 'Tab') {
       e.preventDefault()
-      stopEditing({ save: true, keyPress: NavigationKey.Tab })
+      stopEditing({ save: true })
     }
 
     if (e.key === 'ArrowDown') {
       e.preventDefault()
-      stopEditing({ save: true, keyPress: NavigationKey.ArrowDown })
+      stopEditing({ save: true })
     }
 
     if (e.key === 'ArrowUp') {
       e.preventDefault()
-      stopEditing({ save: true, keyPress: NavigationKey.ArrowUp })
+      stopEditing({ save: true})
     }
 
     if (e.key === 'ArrowLeft' && cursorStart === 0) {
       e.preventDefault()
-      stopEditing({ save: true, keyPress: NavigationKey[e.key] })
+      stopEditing({ save: true})
     }
 
     if (e.key === 'ArrowRight' && isCaretAtEndPosition(cursorEnd, e.target['value'].length)) {
       e.preventDefault()
-      stopEditing({ save: true, keyPress: NavigationKey[e.key] })
+      stopEditing({ save: true })
     }
   }
 }
