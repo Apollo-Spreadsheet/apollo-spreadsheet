@@ -1,5 +1,5 @@
 import { StretchMode } from '../types/stretch-mode.enum'
-import { GridHeader, Header, NestedHeader } from "./types/header.type";
+import { GridHeader, Header, NestedHeader } from "./types/header.type"
 import { GridTheme } from '../types/grid-theme'
 import { NavigationCoords } from '../navigation/types/navigation-coords.type'
 import { DisableSortFilterParam } from "../gridWrapper/gridWrapperProps"

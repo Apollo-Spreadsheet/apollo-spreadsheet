@@ -12,7 +12,7 @@ import { useApiExtends } from '../api/useApiExtends'
 import { useApiEventHandler } from '../api/useApiEventHandler'
 import { ROW_SELECTION_CHANGE } from '../api/eventConstants'
 import { MergeCellsApi } from '../api/types/mergeCellsApi'
-import { createData } from "./createData";
+import { createData } from "./createData"
 
 interface Props<Row> {
 	rows: Row[]

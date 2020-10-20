@@ -14,9 +14,9 @@ import {
 	StopEditingParams,
 } from '../editorManager/useEditorManager'
 import { Alignment } from 'react-virtualized'
-import { MergePosition } from "../mergeCells/createMergedPositions";
-import { StretchMode } from "../types/stretch-mode.enum";
-import { ApiRef } from "../api/types/apiRef";
+import { MergePosition } from "../mergeCells/createMergedPositions"
+import { StretchMode } from "../types/stretch-mode.enum"
+import { ApiRef } from "../api/types/apiRef"
 
 export interface CellEventParams<T = unknown> {
 	rowIndex: number

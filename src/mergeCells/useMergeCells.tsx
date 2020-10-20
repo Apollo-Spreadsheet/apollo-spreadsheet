@@ -1,9 +1,9 @@
-import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import { NavigationCoords } from '../navigation/types/navigation-coords.type'
 import { validateMergeData } from './validateMergeData'
 import { MergeCell } from './interfaces/merge-cell'
-import { createMergedPositions, MergePosition } from "./createMergedPositions";
-import { createMergedGroups, MergeGroup } from "./createMergedGroups";
+import { createMergedPositions, MergePosition } from "./createMergedPositions"
+import { createMergedGroups, MergeGroup } from "./createMergedGroups"
 import { useApiExtends } from "../api/useApiExtends"
 import { ApiRef } from "../api/types/apiRef"
 

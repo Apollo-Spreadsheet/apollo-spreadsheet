@@ -11,7 +11,7 @@ import { isFunctionType } from '../helpers/isFunction'
 import { NavigationKey } from './enums/navigation-key.enum'
 import { useApiExtends } from '../api/useApiExtends'
 import { ApiRef } from '../api/types/apiRef'
-import { CELL_BEGIN_EDITING, CELL_STOP_EDITING } from "../api/eventConstants";
+import { CELL_BEGIN_EDITING, CELL_STOP_EDITING } from "../api/eventConstants"
 
 export interface StopEditingParams {
 	/** @default true **/

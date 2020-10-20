@@ -1,4 +1,4 @@
-import { MergeCell } from "./interfaces/merge-cell";
+import { MergeCell } from "./interfaces/merge-cell"
 
 export interface MergeGroup {
   [rowIndex: number]: number[]
