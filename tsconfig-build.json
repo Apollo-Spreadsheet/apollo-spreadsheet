@@ -1,4 +1,9 @@
 {
   "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "noEmit": false,
+    "removeComments": false,
+    "declaration": true,
+  },
   "exclude": ["node_modules", "dist", "**/*.spec.ts", "**/*.spec.tsx", "stories", "cypress", ".storybook"]
 }
