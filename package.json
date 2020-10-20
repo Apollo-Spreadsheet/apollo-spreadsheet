@@ -118,8 +118,12 @@
     "component",
     "library",
     "react",
-    "atomic design",
-    "ui",
-    "user interface"
+    "material-ui",
+    "mui",
+    "excel",
+    "table",
+    "grid",
+    "spreadsheet",
+    "virtualized"
   ]
 }
