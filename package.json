@@ -1,7 +1,8 @@
 {
   "name": "apollo-spreadsheet",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "description": "React excel like fast grid plugin",
   "bugs": "https://github.com/underfisk/apollo-spreadsheet/issues",
   "license": "MIT",
@@ -20,7 +21,8 @@
     "build": "yarn build-storybook -o ./out",
     "prettier": "pretty-quick --staged ",
     "test": "jest",
-    "bundle-check": "bundlesize"
+    "bundle-check": "bundlesize",
+    "deploy": "np"
   },
   "peerDependencies": {
     "react": ">= 16.13.1",
@@ -85,6 +87,7 @@
     "jest-cli": "^24.8.0",
     "jest-styled-components": "^6.2.0",
     "jsdom": "^15.1.1",
+    "np": "^6.5.0",
     "plop": "^2.5.3",
     "pre-commit": "^1.2.2",
     "prettier": "^1.16.4",
