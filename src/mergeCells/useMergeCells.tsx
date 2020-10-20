@@ -3,12 +3,16 @@ import { NavigationCoords } from '../navigation/types/navigation-coords.type'
 import { validateMergeData } from './validateMergeData'
 import { MergeCell } from './interfaces/merge-cell'
 import { createMergedPositions } from './createMergedPositions'
-import { createMergedGroups } from "./createMergedGroups";
+import { createMergedGroups } from "./createMergedGroups"
+import { useApiExtends } from "../api/useApiExtends"
+import { ApiRef } from "../api/types/apiRef"
 
-export interface MergedCellsHookData {
+export interface MergedCellsHookProps {
 	data?: MergeCell[]
 	rowCount: number
 	columnCount: number
+	apiRef: ApiRef
+	initialised: boolean
 }
 
 /**
@@ -16,7 +20,7 @@ export interface MergedCellsHookData {
  * return util functions
  * @param data
  */
-export function useMergeCells({ data, rowCount, columnCount }: MergedCellsHookData) {
+export function useMergeCells({ data, rowCount, columnCount, apiRef, initialised }: MergedCellsHookProps) {
 	const { mergeData, mergedPositions, mergeGroups } = useMemo(() => {
 		if (!data) {
 			return {
@@ -36,21 +40,10 @@ export function useMergeCells({ data, rowCount, columnCount }: MergedCellsHookDa
 		}
 	}, [data])
 
-	/**
-	 * Checks whether the given coordinates are within a merge or they are a merge
-	 */
 	const isMerged = useCallback(({ rowIndex, colIndex}: NavigationCoords) => {
 		return mergedPositions?.some(e => e.row === rowIndex && e.col === colIndex)
 	}, [mergedPositions])
 
-
-	const isHorizontallyMerged = () => {
-		return false
-	}
-
-	const isVerticallyMerged = () => {
-		return false
-	}
 
 	/**
 	 * Returns the whole path including all the children and the head as the parent
@@ -70,7 +63,6 @@ export function useMergeCells({ data, rowCount, columnCount }: MergedCellsHookDa
 			}
 		}
 		return activeRowPath
-		return []
 	}, [mergeGroups])
 
 	/**
@@ -83,6 +75,17 @@ export function useMergeCells({ data, rowCount, columnCount }: MergedCellsHookDa
 		},
 		[mergeData],
 	)
+
+	const getMergedData = useCallback(() => mergeData, [mergeData])
+	const getMergedGroups = useCallback(() => mergeGroups, [mergeGroups])
+
+	useApiExtends(apiRef, {
+		getSpanProperties,
+		isMerged,
+		getMergedPath,
+		getMergedData,
+		getMergedGroups
+	}, 'MergeCellsAPI')
 
 	return {
 		mergeData,

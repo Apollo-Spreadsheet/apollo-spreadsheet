@@ -25,6 +25,10 @@ import { debounce, DebouncedFunc } from 'lodash'
 import { NavigationKey } from '../editorManager/enums/navigation-key.enum'
 import { MergeCell } from '../mergeCells/interfaces/merge-cell'
 import { MergePosition } from '../mergeCells/createMergedPositions'
+import { ApiRef } from '../api/types/apiRef'
+import { useApiEventHandler } from '../api/useApiEventHandler'
+import { CELL_BEGIN_EDITING, CELL_CLICK, CELL_DOUBLE_CLICK } from '../api/eventConstants'
+import { useApiExtends } from "../api/useApiExtends"
 
 interface Props<TRow = unknown> {
 	defaultCoords: NavigationCoords
@@ -33,16 +37,10 @@ interface Props<TRow = unknown> {
 	rows: TRow[]
 	suppressControls: boolean
 	getColumnAt: GetColumnAt
-	beginEditing: (params: BeginEditingParams) => void
-	stopEditing: (params?: StopEditingParams) => void
 	onCellChange?: (params: CellChangeParams) => void
-	editorState: IEditorState | null
-	selectRow: (id: string | TRow) => void
 	onCreateRow?: (coords: NavigationCoords) => void
-	getSpanProperties: (coords: NavigationCoords) => MergeCell | undefined
-	isMerged: (coords: NavigationCoords) => boolean
-	mergedPositions: MergePosition[]
-	getMergedPath: (rowIndex: number) => number[]
+	apiRef: ApiRef
+	initialised: boolean
 }
 
 export type SelectCellFn = (params: NavigationCoords) => void
@@ -58,26 +56,26 @@ export function useNavigation({
 	defaultCoords,
 	suppressControls,
 	getColumnAt,
-	stopEditing,
-	beginEditing,
 	onCellChange,
-	isMerged,
-	getSpanProperties,
-	editorState,
-	selectRow,
 	onCreateRow,
-	mergedPositions,
-	getMergedPath,
+	apiRef,
+	initialised,
 }: Props): [NavigationCoords, SelectCellFn] {
+	const coordsRef = useRef<NavigationCoords>(defaultCoords)
 	const [coords, setCoords] = useState<NavigationCoords>(defaultCoords)
 	const delayEditorDebounce = useRef<DebouncedFunc<any> | null>(null)
 
+	const onCellBeginEditing = useCallback(
+		() => {
+			if (delayEditorDebounce.current) {
+				delayEditorDebounce.current.cancel()
+			}
+		},
+		[apiRef],
+	)
+
 	//Cancels the debounce if the editor is prematurely open
-	useEffect(() => {
-		if (editorState && delayEditorDebounce.current) {
-			delayEditorDebounce.current.cancel()
-		}
-	}, [editorState])
+	useApiEventHandler(apiRef, CELL_BEGIN_EDITING, onCellBeginEditing)
 
 	//Cleanup the debounce on unmount
 	useEffect(() => {
@@ -162,12 +160,12 @@ export function useNavigation({
 	function handleEditorOpenControls(event: KeyboardEvent) {
 		if (event.key === 'Escape') {
 			event.preventDefault()
-			return stopEditing()
+			return apiRef.current.stopEditing()
 		}
 
 		if (event.key === 'Enter') {
 			event.preventDefault()
-			return stopEditing()
+			return apiRef.current.stopEditing()
 		}
 	}
 
@@ -204,7 +202,7 @@ export function useNavigation({
 			let nextRowIndex = coords.rowIndex + 1
 
 			//If we have span we need to skip that to the next
-			const currentCellSpan = getSpanProperties(coords)
+			const currentCellSpan = apiRef.current.getSpanProperties(coords)
 			if (currentCellSpan) {
 				nextRowIndex = coords.rowIndex + currentCellSpan.rowSpan
 			}
@@ -225,9 +223,9 @@ export function useNavigation({
 			let nextRowIndex = coords.rowIndex - 1
 
 			//If we have span we need to skip that to the next
-			const isNextMerged = isMerged({ rowIndex: nextRowIndex, colIndex: coords.colIndex })
+			const isNextMerged = apiRef.current.isMerged({ rowIndex: nextRowIndex, colIndex: coords.colIndex })
 			if (isNextMerged) {
-				const path = getMergedPath(nextRowIndex)
+				const path = apiRef.current.getMergedPath(nextRowIndex)
 				if (path.length !== 2) {
 					return console.warn(
 						`[Navigation] Merge group path not correct, returned ${path.length} positions instead of 2. Please review`,
@@ -266,15 +264,17 @@ export function useNavigation({
 				nextColIndex = findNextNavigableColumnIndex(coords.colIndex, 'right')
 			}
 
-			if (isMerged({ rowIndex: coords.rowIndex, colIndex: nextColIndex })){
-				const path = getMergedPath(coords.rowIndex)
-				if (path.length === 2){
+			if (apiRef.current.isMerged({ rowIndex: coords.rowIndex, colIndex: nextColIndex })) {
+				const path = apiRef.current.getMergedPath(coords.rowIndex)
+				if (path.length === 2) {
 					return selectCell({
 						rowIndex: path[0],
-						colIndex: nextColIndex
+						colIndex: nextColIndex,
 					})
 				} else {
-					return console.warn(`[Navigation] Merge group path not correct, returned ${path.length} positions instead of 2. Please review`,)
+					return console.warn(
+						`[Navigation] Merge group path not correct, returned ${path.length} positions instead of 2. Please review`,
+					)
 				}
 			}
 
@@ -296,15 +296,17 @@ export function useNavigation({
 				nextColIndex = findNextNavigableColumnIndex(coords.colIndex, 'left')
 			}
 
-			if (isMerged({ rowIndex: coords.rowIndex, colIndex: nextColIndex })){
-				const path = getMergedPath(coords.rowIndex)
-				if (path.length === 2){
+			if (apiRef.current.isMerged({ rowIndex: coords.rowIndex, colIndex: nextColIndex })) {
+				const path = apiRef.current.getMergedPath(coords.rowIndex)
+				if (path.length === 2) {
 					return selectCell({
 						rowIndex: path[0],
-						colIndex: nextColIndex
+						colIndex: nextColIndex,
 					})
 				} else {
-					return console.warn(`[Navigation] Merge group path not correct, returned ${path.length} positions instead of 2. Please review`,)
+					return console.warn(
+						`[Navigation] Merge group path not correct, returned ${path.length} positions instead of 2. Please review`,
+					)
 				}
 			}
 
@@ -315,113 +317,7 @@ export function useNavigation({
 	function handleSelectionHeaderControls(event: KeyboardEvent, row: unknown) {
 		//Enable only checkbox via enter
 		if (event.key === 'Enter') {
-			return selectRow(row)
-		}
-	}
-
-	const onKeyDown = (event: KeyboardEvent) => {
-		//Ensure we can proceed navigation under this two main conditions
-		if (suppressControls || editorState?.isPopup) {
-			return
-		}
-
-		const isCtrlPressed = (event.ctrlKey || event.metaKey) && !event.altKey
-		//Common strategy - Must be on top level, its priority over normal navigation
-		if (editorState && (event.key === 'Enter' || event.key === 'Escape')) {
-			return handleEditorOpenControls(event)
-		}
-
-		/** @todo We need a better lookup and safe to prevent double grid collapse by probably fetching from parent ref **/
-		const target = document.getElementById(`cell-${coords.rowIndex}-${coords.colIndex}`)
-		if (!target) {
-			return console.error('Cell not found')
-		}
-
-		//Travel like excel rules for non-editing
-		if (!editorState) {
-			if (event.key === 'F2') {
-				event.preventDefault()
-				return beginEditing({
-					coords,
-					targetElement: target,
-				})
-			}
-
-			if (event.key === 'Enter' && onCreateRow) {
-				event.preventDefault()
-				onCreateRow(coords)
-			}
-		}
-
-		//Check if its a navigation key
-		if (NavigationKey[event.key] !== undefined && !editorState) {
-			return handleArrowNavigationControls(event)
-		}
-
-		const column = getColumnAt(coords.colIndex)
-		if (!column) {
-			return console.warn('Column not found')
-		}
-
-		const row = rows[coords.rowIndex]
-		if (!row) {
-			return console.warn('Row index')
-		}
-		const currentValue = (row as any)[column.accessor]
-
-		//Handle specific keyboard handlers
-		if (column.id === ROW_SELECTION_HEADER_ID) {
-			return handleSelectionHeaderControls(event, row)
-		}
-
-		if (isCtrlPressed && !editorState) {
-			return handleControlOrMetaPressedControls(event, column, currentValue)
-		}
-
-		//Handle cell deleting
-		if ((event.key === 'Backspace' || event.key === 'Delete') && !editorState) {
-			if (column.disableBackspace) {
-				return
-			}
-			event.preventDefault()
-			const newValue = getDefaultValueFromValue(currentValue)
-			if (currentValue === newValue) {
-				return
-			}
-			return onCellChange?.({
-				newValue,
-				previousValue: currentValue,
-				coords,
-			})
-		}
-
-		//If its numeric key and we are in numeric column, open with this key by default
-		if (column.type === ColumnCellType.Numeric && !editorState) {
-			const regex = /^[0-9]+$/
-			if (regex.test(event.key)) {
-				event.preventDefault()
-				return beginEditing({
-					coords,
-					defaultKey: event.key,
-					targetElement: target,
-				})
-			}
-		}
-
-		//If its any printable char, we allow to open editing
-		if (
-			!column.type &&
-			isPrintableChar(event.keyCode) &&
-			!isMetaKey(event.keyCode) &&
-			!editorState
-		) {
-			//Any key makes it to open and send the key pressed
-			event.preventDefault()
-			return beginEditing({
-				coords,
-				defaultKey: event.key,
-				targetElement: target,
-			})
+			return apiRef.current.selectRow(row)
 		}
 	}
 
@@ -429,7 +325,8 @@ export function useNavigation({
 		({ colIndex, rowIndex }: NavigationCoords) => {
 			//Coordinates when the grid is clicked away
 			if (colIndex === -1 && rowIndex === -1) {
-				setCoords({ colIndex, rowIndex })
+				coordsRef.current = { colIndex, rowIndex }
+				return setCoords({ colIndex, rowIndex })
 			}
 
 			//Equal selection comparison
@@ -468,37 +365,167 @@ export function useNavigation({
 			if (delayEditingOpen) {
 				delayEditorDebounce.current = debounce(() => {
 					delayEditorDebounce.current = null
-					const target = document.getElementById(`cell-${rowIndex}-${colIndex}`)
+					const target = apiRef.current.rootElementRef?.current?.querySelector(
+						`[aria-colIndex='${colIndex}'][data-rowIndex='${rowIndex}'][role='cell']`,
+					)
 					if (!target) {
-						return console.error('Cell not found on DEBOUNCE')
+						return console.error('Cell dom element not found on delayEditingOpen debounce')
 					}
-					beginEditing({
+
+					apiRef.current.beginEditing({
 						coords: { rowIndex, colIndex },
 						targetElement: target,
 					})
 				}, delayEditingOpen)
 				delayEditorDebounce.current()
 			}
+			coordsRef.current = { colIndex, rowIndex }
 			setCoords({ colIndex, rowIndex })
 		},
-		[coords, rows, columnCount, getColumnAt, beginEditing],
+		[coords, rows, columnCount, getColumnAt, apiRef],
 	)
 
-	useEffect(() => {
-		document.addEventListener('keydown', onKeyDown)
-		return () => document.removeEventListener('keydown', onKeyDown)
-	}, [
-		coords,
-		data,
-		getColumnAt,
-		columnCount,
-		suppressControls,
-		beginEditing,
-		stopEditing,
-		onCellChange,
-		editorState,
-		selectRow,
-	])
+	const onKeyDown = useCallback(
+		(event: KeyboardEvent) => {
+			const editorState = apiRef.current.getEditorState()
+			//Ensure we can proceed navigation under this core conditions
+			if (!initialised || suppressControls || editorState?.isPopup) {
+				return
+			}
 
+			const isCtrlPressed = (event.ctrlKey || event.metaKey) && !event.altKey
+			//Common strategy - Must be on top level, its priority over normal navigation
+			if (editorState && (event.key === 'Enter' || event.key === 'Escape')) {
+				return handleEditorOpenControls(event)
+			}
+
+			const cellElement = apiRef.current.rootElementRef?.current?.querySelector(
+				`[aria-colIndex='${coords.colIndex}'][data-rowIndex='${coords.rowIndex}'][role='cell']`,
+			)
+			if (!cellElement) {
+				return console.error('Cell DOM element not found')
+			}
+
+			const column = getColumnAt(coords.colIndex)
+			if (!column) {
+				return console.warn('Column not found')
+			}
+
+			//Travel like excel rules for non-editing
+			if (!editorState) {
+				if (event.key === 'F2') {
+					event.preventDefault()
+					return apiRef.current.beginEditing({
+						coords,
+						targetElement: cellElement,
+					})
+				}
+
+				if (event.key === 'Enter' && onCreateRow && column.id !== ROW_SELECTION_HEADER_ID) {
+					event.preventDefault()
+					onCreateRow(coords)
+				}
+			}
+
+			//Check if its a navigation key
+			if (NavigationKey[event.key] !== undefined && !editorState) {
+				return handleArrowNavigationControls(event)
+			}
+
+			const row = rows[coords.rowIndex]
+			if (!row) {
+				return console.warn('Row index')
+			}
+			const currentValue = (row as any)[column.accessor]
+
+			//Handle specific keyboard handlers
+			if (column.id === ROW_SELECTION_HEADER_ID) {
+				return handleSelectionHeaderControls(event, row)
+			}
+
+			if (isCtrlPressed && !editorState) {
+				return handleControlOrMetaPressedControls(event, column, currentValue)
+			}
+
+			//Handle cell deleting
+			if ((event.key === 'Backspace' || event.key === 'Delete') && !editorState) {
+				if (column.disableBackspace) {
+					return
+				}
+				event.preventDefault()
+				const newValue = getDefaultValueFromValue(currentValue)
+				if (currentValue === newValue) {
+					return
+				}
+				return onCellChange?.({
+					newValue,
+					previousValue: currentValue,
+					coords,
+				})
+			}
+
+			//If its numeric key and we are in numeric column, open with this key by default
+			if (column.type === ColumnCellType.Numeric && !editorState) {
+				const regex = /^[0-9]+$/
+				if (regex.test(event.key)) {
+					event.preventDefault()
+					return apiRef.current.beginEditing({
+						coords,
+						defaultKey: event.key,
+						targetElement: cellElement,
+					})
+				}
+			}
+
+			//If its any printable char, we allow to open editing
+			if (
+				!column.type &&
+				isPrintableChar(event.keyCode) &&
+				!isMetaKey(event.keyCode) &&
+				!editorState
+			) {
+				//Any key makes it to open and send the key pressed
+				event.preventDefault()
+				return apiRef.current.beginEditing({
+					coords,
+					defaultKey: event.key,
+					targetElement: cellElement,
+				})
+			}
+		},
+		[coords, data, getColumnAt, columnCount, suppressControls, onCellChange, initialised, apiRef],
+	)
+
+	const onCellClick = useCallback(
+		({ event, colIndex, rowIndex }: { event: MouseEvent; colIndex: number; rowIndex: number }) => {
+			event.preventDefault()
+			selectCell({ rowIndex, colIndex })
+		},
+		[apiRef, selectCell],
+	)
+
+	const onCellDoubleClick = useCallback(
+		({ event, colIndex, rowIndex }: { event: MouseEvent; colIndex: number; rowIndex: number }) => {
+			event.preventDefault()
+			//Compare if the cell is equal to whats selected otherwise select it first
+			if (colIndex !== coords.colIndex && rowIndex !== coords.rowIndex) {
+				selectCell({ rowIndex, colIndex })
+			}
+			apiRef.current.beginEditing({
+				coords: { colIndex, rowIndex },
+				targetElement: event.target as Element,
+			})
+		},
+		[apiRef, selectCell, coords],
+	)
+
+	const getSelectedCoords = useCallback(() => coordsRef.current, [])
+	useApiEventHandler(apiRef, 'keydown', onKeyDown)
+	useApiEventHandler(apiRef, CELL_CLICK, onCellClick)
+	useApiEventHandler(apiRef, CELL_DOUBLE_CLICK, onCellDoubleClick)
+	useApiExtends(apiRef, {
+		getSelectedCoords,
+		selectCell
+	}, 'NavigationApi')
 	return [coords, selectCell]
 }

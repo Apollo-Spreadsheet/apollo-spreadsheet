@@ -5,10 +5,11 @@ import ReactDatePicker from 'react-datepicker'
 import dayjs from 'dayjs'
 import { makeStyles } from '@material-ui/core/styles'
 import 'react-datepicker/dist/react-datepicker.css'
-import { NavigationKey } from '../enums/navigation-key.enum'
 
-/** @todo Inject via theme configuration **/
 const useStyles = makeStyles(theme => ({
+	root: {
+		zIndex: 999
+	},
 	calendarContainer: {
 		border: 'none',
 		color: theme.palette.type === 'dark' ? '#fff' : '#4d4d4d',
@@ -120,7 +121,7 @@ export const CalendarEditor = forwardRef(
 		}, [state])
 
 		return (
-			<Popper open id={'apollo-calendar'} anchorEl={anchorRef} placement={'right-start'}>
+			<Popper open id={'apollo-calendar'} anchorEl={anchorRef} placement={'right-start'} className={classes.root}>
 				<ReactDatePicker
 					id={'apollo-calendar'}
 					autoFocus

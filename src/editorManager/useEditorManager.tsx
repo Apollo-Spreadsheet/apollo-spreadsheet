@@ -9,6 +9,9 @@ import { EditorProps } from './editorProps'
 import { CalendarEditor } from './components/CalendarEditor'
 import { isFunctionType } from '../helpers/isFunction'
 import { NavigationKey } from './enums/navigation-key.enum'
+import { useApiExtends } from '../api/useApiExtends'
+import { ApiRef } from '../api/types/apiRef'
+import { CELL_BEGIN_EDITING, CELL_STOP_EDITING } from "../api/eventConstants";
 
 export interface StopEditingParams {
 	/** @default true **/
@@ -16,7 +19,7 @@ export interface StopEditingParams {
 	/**
 	 * If provided it will perform this key action afterwards
 	 */
-	keyPress?: NavigationKey
+	//keyPress?: NavigationKey
 }
 
 export interface IEditorState {
@@ -24,7 +27,7 @@ export interface IEditorState {
 	rowIndex: number
 	colIndex: number
 	initialValue: React.ReactText
-	targetElement: HTMLElement
+	targetElement: Element
 	validatorHook?: (value: unknown) => boolean
 	/**
 	 * Useful to prevent navigation interception on second arms
@@ -42,11 +45,13 @@ export interface EditorManagerProps<TRow = unknown> {
 	rows: TRow[]
 	getColumnAt: GetColumnAt
 	onCellChange?: (params: CellChangeParams) => void
+	apiRef: ApiRef
+	initialised: boolean
 }
 
 export interface BeginEditingParams {
 	coords: NavigationCoords
-	targetElement: HTMLElement
+	targetElement: Element
 	defaultKey?: string
 }
 
@@ -59,30 +64,16 @@ export interface EditorRef<T = unknown> {
  * This hook controls the editing states, interacts with useNavigation hook and also manages the commit/cancel cycle of
  * an editor
  */
-export function useEditorManager<TRow>({ getColumnAt, rows, onCellChange }: EditorManagerProps) {
+export function useEditorManager<TRow>({
+	getColumnAt,
+	rows,
+	onCellChange,
+	apiRef,
+	initialised,
+}: EditorManagerProps) {
 	const editorRef = useRef<EditorRef | null>()
 	const state = useRef<IEditorState | null>(null)
 	const [editorNode, setEditorNode] = useState<JSX.Element | null>(null)
-	const [scheduleMove, setScheduleMove] = useState<string | null>(null)
-
-
-	//Effect used to perform the move (keyPress) after editor closes
-	useEffect(() => {
-		if (!scheduleMove) {
-			return
-		}
-		const timer = setTimeout(() => {
-			document.dispatchEvent(
-				new KeyboardEvent('keydown', {
-					key: scheduleMove,
-				}) as any,
-			)
-			setScheduleMove(null)
-		}, 10) //need to encapsulate with a little delay otherwise it won't batch process it
-
-		//Ensure we cleanup the timer
-		return () => clearTimeout(timer)
-	}, [scheduleMove])
 
 	//Detect if row/column has changed or has been deleted (compares with the active editing info)
 	useEffect(() => {
@@ -102,7 +93,6 @@ export function useEditorManager<TRow>({ getColumnAt, rows, onCellChange }: Edit
 		}
 	}, [rows, getColumnAt, editorNode])
 
-
 	/**
 	 * Closes the existing editor without saving anything
 	 */
@@ -117,12 +107,14 @@ export function useEditorManager<TRow>({ getColumnAt, rows, onCellChange }: Edit
 				if (newValue === undefined) {
 					state.current = null
 					editorRef.current = null
+					apiRef.current.dispatchEvent(CELL_STOP_EDITING, { colIndex: editorState.colIndex, rowIndex: editorState.rowIndex })
 					return setEditorNode(null)
 				}
 				const isValid = editorState.validatorHook?.(newValue) ?? true
 				if (!isValid) {
 					editorRef.current = null
 					state.current = null
+					apiRef.current.dispatchEvent(CELL_STOP_EDITING, { colIndex: editorState.colIndex, rowIndex: editorState.rowIndex })
 					return setEditorNode(null)
 				}
 
@@ -140,10 +132,8 @@ export function useEditorManager<TRow>({ getColumnAt, rows, onCellChange }: Edit
 
 			editorRef.current = null
 			state.current = null
+			apiRef.current.dispatchEvent(CELL_STOP_EDITING, { colIndex: editorState.colIndex, rowIndex: editorState.rowIndex })
 			setEditorNode(null)
-			if (params?.keyPress) {
-				setScheduleMove(params?.keyPress)
-			}
 		},
 		[editorNode],
 	)
@@ -264,9 +254,23 @@ export function useEditorManager<TRow>({ getColumnAt, rows, onCellChange }: Edit
 				isPopup: column.editor !== undefined || column.type === ColumnCellType.Calendar,
 			}
 			setEditorNode(editor)
+			apiRef.current.dispatchEvent(CELL_BEGIN_EDITING, coords)
 		},
 		[getColumnAt, editorNode, rows, stopEditing],
 	)
 
-	return { editorNode, editorState: state.current, beginEditing, stopEditing }
+	function getEditorState() {
+		return state.current
+	}
+
+	useApiExtends(
+		apiRef,
+		{
+			beginEditing,
+			stopEditing,
+			getEditorState,
+		},
+		'EditorManagerApi',
+	)
+	return editorNode
 }

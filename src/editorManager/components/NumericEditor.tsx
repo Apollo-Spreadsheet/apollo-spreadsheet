@@ -10,7 +10,7 @@ import { EditorProps } from '../editorProps'
 import { Popover, TextareaAutosize, TextField } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles'
 import { addListener, removeListener } from 'resize-detector'
-import { handleEditorKeydown } from "../utils/handleEditorKeydown";
+import { handleEditorKeydown } from "../utils/handleEditorKeydown"
 
 const useStyles = makeStyles(() => ({
 	input: {
@@ -40,9 +40,9 @@ export const NumericEditor = forwardRef(
 
 		//Watch for DOM Changes on the target anchor and close editor because Popover does not change
 		useEffect(() => {
-			addListener(anchorRef, onAnchorResize)
+			addListener(anchorRef as any, onAnchorResize)
 			return () => {
-				removeListener(anchorRef, onAnchorResize)
+				removeListener(anchorRef as any, onAnchorResize)
 			}
 		}, [])
 

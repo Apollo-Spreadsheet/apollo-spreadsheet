@@ -174,7 +174,11 @@ export const ColumnGrid = React.memo(
 			return (
 				<div
 					ref={ref}
+					role={"columnheader"}
 					className={headerClassName}
+					aria-colindex={columnIndex}
+					data-rowindex={rowIndex}
+					data-dummy={cell.dummy}
 					style={{
 						...style,
 						zIndex: cell.colSpan && cell['isNested'] && !cell.dummy ? 999 : cell.dummy ? 0 : 1,

@@ -17,7 +17,7 @@ import { CellEventParams, GridWrapperProps } from './gridWrapperProps'
 import { makeStyles } from '@material-ui/core/styles'
 import { StretchMode } from '../types/stretch-mode.enum'
 import { createMergedPositions, MergePosition } from '../mergeCells/createMergedPositions'
-import { MergeCell } from "../mergeCells/interfaces/merge-cell";
+import { MergeCell } from '../mergeCells/interfaces/merge-cell'
 
 const useStyles = makeStyles(() => ({
 	bodyContainer: {
@@ -36,7 +36,7 @@ const useStyles = makeStyles(() => ({
 	},
 }))
 
-const GridWrapper = forwardRef((props: GridWrapperProps, componentRef: React.Ref<GridApi>) => {
+const GridWrapper = forwardRef((props: GridWrapperProps, componentRef: React.Ref<any>) => {
 	const cache = useRef(
 		new CellMeasurerCache({
 			defaultWidth: props.defaultColumnWidth,
@@ -63,29 +63,17 @@ const GridWrapper = forwardRef((props: GridWrapperProps, componentRef: React.Ref
 		[props.headers],
 	)
 
-	const gridApi = () => {
-		return {
+
+	useImperativeHandle(
+		componentRef,
+		() => ({
 			recomputeGridSize: () => {
 				gridRef.current?.recomputeGridSize()
 			},
 			forceUpdate: () => {
 				gridRef.current?.forceUpdate()
-			},
-			getRowsCount: () => props.data.length,
-			getRowAt: getColumnAt,
-			getCellAt: ({ rowIndex, colIndex }: NavigationCoords) => {
-				return props.data[rowIndex]?.[colIndex]
-			},
-			getColumnAt,
-			selectedCell: (_cellCoords: NavigationCoords) => props.selectCell(_cellCoords),
-		} as GridApi
-	}
-
-	useImperativeHandle(
-		componentRef,
-		() => {
-			return gridApi()
-		},
+			}
+		}),
 		[props.data, getColumnAt, gridRef.current],
 	)
 
@@ -109,38 +97,6 @@ const GridWrapper = forwardRef((props: GridWrapperProps, componentRef: React.Ref
 		return recomputingCleanup
 	}, [props.data, props.width, props.height])
 
-	const onCellDoubleClick = ({
-		event,
-		cell,
-		columnIndex,
-		rowIndex,
-	}: CellEventParams<React.MouseEvent<HTMLDivElement>>) => {
-		event.preventDefault()
-		if (cell.dummy) {
-			return
-		}
-		props.restoreGridFocus()
-		props.beginEditing({
-			coords: { rowIndex, colIndex: columnIndex },
-			targetElement: event.target as HTMLElement,
-		})
-	}
-
-	const onCellClick = ({
-		cell,
-		rowIndex,
-		columnIndex,
-	}: CellEventParams<React.MouseEvent<HTMLDivElement>>) => {
-		if (cell?.dummy) {
-			return
-		}
-
-		props.restoreGridFocus()
-		props.selectCell({
-			rowIndex,
-			colIndex: columnIndex,
-		})
-	}
 
 	const activeMergePath = useMemo(() => {
 		//If there is no merging then we use the active directly
@@ -163,13 +119,12 @@ const GridWrapper = forwardRef((props: GridWrapperProps, componentRef: React.Ref
 			const mergedPosition = props.mergedPositions.find(e => e.row === props.coords.rowIndex)
 			//In case the given row is merged, build the path with all existing merge cells
 			if (mergedPosition) {
-				return props.getMergedPath(props.coords.rowIndex)
+				return props.apiRef.current.getMergedPath(props.coords.rowIndex)
 			} else {
 				return [props.coords.rowIndex]
 			}
 		}
-	}, [props.coords, props.mergeCells, props.mergedPositions])
-
+	}, [props.coords, props.mergeCells, props.mergedPositions, props.apiRef])
 
 	/**
 	 * Checks if the given coordinates can use the currentClassName
@@ -183,19 +138,19 @@ const GridWrapper = forwardRef((props: GridWrapperProps, componentRef: React.Ref
 
 		//We have the parent and the merged
 		if (activeMergePath.length > 1) {
-			if (rowIndex === activeMergePath[0]){
-				const mergeInfo = Object.values(props.mergeCells ?? [] as MergeCell[])
+			if (rowIndex === activeMergePath[0]) {
+				const mergeInfo = Object.values(props.mergeCells ?? ([] as MergeCell[]))
 				const columnWithMerge = mergeInfo.reduce((acc, e) => {
-						if (!acc.some(index => index === e.colIndex)){
-							acc.push(e.colIndex)
-						}
-						return acc
+					if (!acc.some(index => index === e.colIndex)) {
+						acc.push(e.colIndex)
+					}
+					return acc
 				}, [] as number[])
 				return columnWithMerge.includes(colIndex)
 			}
 
 			//Second index means the current row with the highlight
-			if (rowIndex === activeMergePath[1]){
+			if (rowIndex === activeMergePath[1]) {
 				return true
 			}
 		}
@@ -213,10 +168,18 @@ const GridWrapper = forwardRef((props: GridWrapperProps, componentRef: React.Ref
 		const isRowSelected = isActiveRow({ rowIndex, colIndex: columnIndex })
 
 		if (isSelected) {
+			style.borderLeft = '0px'
+			style.borderRight = '0px'
+			style.borderTop = '0px'
+			style.borderBottom = '0px'
 			style.border = '1px solid blue'
 		} else {
 			//Bind default border
 			if (!props.theme || (!props.theme.cellClass && !cell.dummy)) {
+				style.borderLeft = '0px'
+				style.borderRight = '0px'
+				style.borderTop = '0px'
+				style.borderBottom = '0px'
 				style.border = '1px solid rgb(204, 204, 204)'
 			}
 		}
@@ -240,7 +203,11 @@ const GridWrapper = forwardRef((props: GridWrapperProps, componentRef: React.Ref
 
 		return (
 			<div
-				id={`cell-${rowIndex}-${columnIndex}`}
+				role={'cell'}
+				aria-colindex={columnIndex}
+				data-rowindex={rowIndex}
+				data-accessor={column.accessor}
+				data-dummy={cell.dummy}
 				className={cellClassName}
 				style={{
 					...style,
@@ -248,22 +215,6 @@ const GridWrapper = forwardRef((props: GridWrapperProps, componentRef: React.Ref
 					zIndex,
 				}}
 				// tabIndex={1}
-				onClick={event =>
-					onCellClick({
-						event,
-						cell,
-						rowIndex,
-						columnIndex,
-					})
-				}
-				onDoubleClick={event =>
-					onCellDoubleClick({
-						event,
-						cell,
-						rowIndex,
-						columnIndex,
-					})
-				}
 				ref={ref}
 			>
 				{cell.value}
@@ -306,7 +257,15 @@ const GridWrapper = forwardRef((props: GridWrapperProps, componentRef: React.Ref
 				/>
 			) : null
 		},
-		[props.coords, props.theme, props.width, props.data, props.selectCell, activeMergePath, props.headers],
+		[
+			props.coords,
+			props.theme,
+			props.width,
+			props.data,
+			props.apiRef,
+			activeMergePath,
+			props.headers,
+		],
 	)
 
 	const onRefMount = useCallback(
@@ -327,23 +286,24 @@ const GridWrapper = forwardRef((props: GridWrapperProps, componentRef: React.Ref
 
 	const onSectionRendered = useCallback(
 		(params: SectionRenderedParams) => {
+			const editorState = props.apiRef.current.getEditorState()
 			/** @todo Store in a ref the visible rows/columns **/
 			// Check if the editing coords are within the visible range
-			if (props.editorState) {
+			if (editorState) {
 				if (
-					props.editorState.rowIndex < params.rowStartIndex ||
-					props.editorState.rowIndex > params.rowStopIndex
+					editorState.rowIndex < params.rowStartIndex ||
+					editorState.rowIndex > params.rowStopIndex
 				) {
-					props.stopEditing({ save: false })
+					props.apiRef.current.stopEditing({ save: false })
 				} else if (
-					props.editorState.colIndex < params.columnStartIndex ||
-					props.editorState.colIndex > params.columnStopIndex
+					editorState.colIndex < params.columnStartIndex ||
+					editorState.colIndex > params.columnStopIndex
 				) {
-					props.stopEditing({ save: false })
+					props.apiRef.current.stopEditing({ save: false })
 				}
 			}
 		},
-		[props.editorState],
+		[props.apiRef],
 	)
 
 	return (
@@ -366,9 +326,6 @@ const GridWrapper = forwardRef((props: GridWrapperProps, componentRef: React.Ref
 			scrollToAlignment={props.scrollToAlignment}
 			onScroll={props.onScroll}
 			scrollLeft={props.scrollLeft}
-			// onScroll={params => {
-			// 	console.warn(params)
-			// }}
 		/>
 	)
 })

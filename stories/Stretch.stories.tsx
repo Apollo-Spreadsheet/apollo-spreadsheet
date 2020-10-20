@@ -12,7 +12,6 @@ const ExampleTable = ({ headerData, data, stretchMode }) => {
 			headers={headerData}
 			rows={data}
 			fixedColumnCount={2}
-			onCellChange={console.log}
 			minColumnWidth={120}
 			stretchMode={stretchMode}
 		/>

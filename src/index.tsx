@@ -1,22 +1,43 @@
-import React, { forwardRef, useCallback, useImperativeHandle, useMemo, useState } from "react"
-import GridWrapper from "./gridWrapper/GridWrapper"
-import ColumnGrid from "./columnGrid/ColumnGrid"
-import { KeyDownEventParams, useNavigation } from "./navigation/useNavigation"
-import { StretchMode } from "./types/stretch-mode.enum"
-import { DisableSortFilterParam, GridWrapperCommonProps } from "./gridWrapper/gridWrapperProps"
-import { useMergeCells } from "./mergeCells/useMergeCells"
-import { NavigationCoords } from "./navigation/types/navigation-coords.type"
-import { useHeaders } from "./columnGrid/useHeaders"
-import { useData } from "./data/useData"
-import { ROW_SELECTION_HEADER_ID, useRowSelection } from "./rowSelection/useRowSelection"
-import { ClickAwayListener, IconButton, Tooltip } from "@material-ui/core"
-import DeleteIcon from "@material-ui/icons/Delete"
-import { SelectionProps } from "./rowSelection/selectionProps"
-import { useEditorManager } from "./editorManager/useEditorManager"
-import { createPortal } from "react-dom"
-import { orderBy } from "lodash"
-import { GridContainer, GridContainerCommonProps } from "./gridContainer/GridContainer"
-import { ScrollSync } from "react-virtualized"
+import React, {
+	forwardRef,
+	useCallback,
+	useImperativeHandle,
+	useMemo,
+	useRef,
+	useState,
+} from 'react'
+import GridWrapper from './gridWrapper/GridWrapper'
+import ColumnGrid from './columnGrid/ColumnGrid'
+import { KeyDownEventParams, useNavigation } from './navigation/useNavigation'
+import { StretchMode } from './types/stretch-mode.enum'
+import { DisableSortFilterParam, GridWrapperCommonProps } from './gridWrapper/gridWrapperProps'
+import { useMergeCells } from './mergeCells/useMergeCells'
+import { NavigationCoords } from './navigation/types/navigation-coords.type'
+import { useHeaders } from './columnGrid/useHeaders'
+import { useData } from './data/useData'
+import { ROW_SELECTION_HEADER_ID, useRowSelection } from './rowSelection/useRowSelection'
+import { ClickAwayListener, IconButton, Tooltip, useForkRef } from '@material-ui/core'
+import DeleteIcon from '@material-ui/icons/Delete'
+import { SelectionProps } from './rowSelection/selectionProps'
+import { useEditorManager } from './editorManager/useEditorManager'
+import { createPortal } from 'react-dom'
+import { orderBy } from 'lodash'
+import { GridContainer, GridContainerCommonProps } from './gridContainer/GridContainer'
+import { ScrollSync } from 'react-virtualized'
+import { useApiRef } from './api/useApiRef'
+import { ApiRef } from './api/types/apiRef'
+import { useApiFactory } from './api/useApiFactory'
+import { makeStyles } from '@material-ui/core/styles'
+import { useEvents } from './events/useEvents'
+import { useApiEventHandler } from './api/useApiEventHandler'
+import { CELL_CLICK, CELL_DOUBLE_CLICK } from './api/eventConstants'
+
+const useStyles = makeStyles(() => ({
+	root: {
+		height: '100%',
+		width: '100%',
+	},
+}))
 
 interface Props<TRow = any> extends GridWrapperCommonProps, GridContainerCommonProps {
 	className?: string
@@ -37,25 +58,31 @@ interface Props<TRow = any> extends GridWrapperCommonProps, GridContainerCommonP
 	 * Indicates if the sort is disabled globally or on a specific column
 	 * @default true **/
 	disableSort?: boolean | DisableSortFilterParam
-}
-
-interface ApolloSpreadSheetRef {
-	selectedCell: NavigationCoords
-	rowCount: number
-	columnCount: number
+	/**
+	 * Providing a custom ApiRef will override internal ref by allowing the exposure of grid methods
+	 */
+	apiRef?: ApiRef
 }
 
 export const ApolloSpreadSheet = forwardRef(
-	(props: Props, componentRef: React.Ref<ApolloSpreadSheetRef>) => {
+	(props: Props, componentRef: React.Ref<HTMLDivElement>) => {
+		const classes = useStyles()
 		const minColumnWidth = props.minColumnWidth ?? 60
 		const [gridFocused, setGridFocused] = useState(true)
-
-		const restoreGridFocus = useCallback(() => {
-			if (gridFocused) {
-				return
-			}
-			setGridFocused(true)
-		}, [gridFocused])
+		const defaultApiRef = useApiRef()
+		const apiRef = React.useMemo(() => (!props.apiRef ? defaultApiRef : props.apiRef), [
+			props.apiRef,
+			defaultApiRef,
+		])
+		const rootContainerRef = useRef<HTMLDivElement>(null)
+		const forkedRef = useForkRef(rootContainerRef, componentRef)
+		const initialised = useApiFactory(rootContainerRef, apiRef)
+		// console.log({
+		// 	initialised,
+		// 	forkedRef,
+		//
+		// 	apiRef: apiRef.current,
+		// })
 
 		const [sort, setSort] = useState<{
 			field: string
@@ -68,8 +95,6 @@ export const ApolloSpreadSheet = forwardRef(
 			}
 			return props.rows
 		}, [sort, props.rows])
-
-		const rowCount = rows.length
 
 		const headers = useMemo(() => {
 			if (!props.selection) {
@@ -97,43 +122,43 @@ export const ApolloSpreadSheet = forwardRef(
 			return newHeaders
 		}, [props.headers, props.selection])
 
+		useEvents(rootContainerRef, apiRef)
+		useRowSelection({
+			selection: props.selection,
+			apiRef,
+			initialised,
+		})
+
+		const { isMerged, getSpanProperties } = useMergeCells({
+			data: props.mergeCells,
+			rowCount: rows.length,
+			columnCount: headers.length,
+			apiRef,
+			initialised,
+		})
+
 		const { headersData, getColumnAt, dynamicColumnCount } = useHeaders({
 			headers,
 			nestedHeaders: props.nestedHeaders,
 			minColumnWidth,
 		})
 
-		const { isRowSelected, selectRow, getSelectedRows } = useRowSelection({
-			rows,
-			selection: props.selection,
-		})
-
-		const {
-			mergeData,
-			getMergedPath,
-			getSpanProperties,
-			isMerged,
-			mergedPositions,
-		} = useMergeCells({
-			data: props.mergeCells,
-			rowCount: rows.length,
-			columnCount: headers.length,
-		})
-
-		const { data } = useData({
+		const data = useData({
 			rows,
 			headers,
-			getSpanProperties,
-			isMerged,
 			selection: props.selection,
-			isRowSelected,
-			selectRow,
+			apiRef,
+			initialised,
+			isMerged,
+			getSpanProperties
 		})
 
-		const { editorNode, editorState, beginEditing, stopEditing } = useEditorManager({
+		const editorNode = useEditorManager({
 			rows,
 			getColumnAt,
 			onCellChange: props.onCellChange,
+			apiRef,
+			initialised,
 		})
 
 		const [coords, selectCell] = useNavigation({
@@ -147,29 +172,10 @@ export const ApolloSpreadSheet = forwardRef(
 			suppressControls: props.suppressNavigation || !gridFocused,
 			getColumnAt,
 			onCellChange: props.onCellChange,
-			beginEditing,
-			stopEditing,
-			editorState,
-			selectRow,
 			onCreateRow: props.onCreateRow,
-			isMerged,
-			getSpanProperties,
-			mergedPositions,
-			getMergedPath
+			apiRef,
+			initialised,
 		})
-
-		//Public api from plugin to extensible hooks or external ref
-		const api: ApolloSpreadSheetRef = useMemo(() => {
-			return {
-				rowCount,
-				columnCount: headers.length,
-				selectedCell: coords,
-				getSelectedRows: getSelectedRows,
-				selectCell,
-			}
-		}, [coords, rowCount, headers.length, getSelectedRows, selectCell])
-
-		useImperativeHandle(componentRef, () => api)
 
 		function onSortClick(field: string) {
 			if (field === sort?.field) {
@@ -203,20 +209,30 @@ export const ApolloSpreadSheet = forwardRef(
 			}
 		}, [props.outsideClickDeselects, selectCell, gridFocused])
 
+		//Detect if any element is clicked again to enable focus
+		const onCellMouseHandler = useCallback(() => {
+			if (!gridFocused) {
+				setGridFocused(true)
+			}
+		}, [gridFocused])
+
+		useApiEventHandler(apiRef, CELL_CLICK, onCellMouseHandler)
+		useApiEventHandler(apiRef, CELL_DOUBLE_CLICK, onCellMouseHandler)
+
 		return (
-			<>
-				<GridContainer
-					headers={headers}
-					minColumnWidth={minColumnWidth}
-					dynamicColumnCount={dynamicColumnCount}
-					stretchMode={props.stretchMode ?? StretchMode.All}
-					containerClassName={props.containerClassName}
-				>
-					{({ getColumnWidth, width, columnGridRef, height, mainGridRef, registerChild }) => (
-						<ClickAwayListener onClickAway={onClickAway}>
-								<ScrollSync>
-									{({ scrollLeft, onScroll }) => (
-										<div id="apollo-grids" className={props.className}>
+			<ClickAwayListener onClickAway={onClickAway}>
+				<div ref={forkedRef} className={classes.root}>
+					<GridContainer
+						headers={headers}
+						minColumnWidth={minColumnWidth}
+						dynamicColumnCount={dynamicColumnCount}
+						stretchMode={props.stretchMode ?? StretchMode.All}
+						containerClassName={props.containerClassName}
+					>
+						{({ getColumnWidth, width, columnGridRef, height, mainGridRef, registerChild }) => (
+							<ScrollSync>
+								{({ scrollLeft, onScroll }) => (
+									<div id="apollo-grids" className={props.className}>
 										<ColumnGrid
 											data={headersData}
 											headers={headers}
@@ -248,14 +264,12 @@ export const ApolloSpreadSheet = forwardRef(
 											getColumnWidth={getColumnWidth}
 											minRowHeight={props.minRowHeight ?? 50}
 											ref={mainGridRef}
-												scrollLeft={scrollLeft}
+											scrollLeft={scrollLeft}
 											onScroll={onScroll}
 											//		isScrolling={isScrolling}
 											height={height}
 											columnCount={headers.length}
 											coords={coords}
-											selectCell={selectCell}
-											/** Public API **/
 											headers={headers}
 											onGridReady={props.onGridReady}
 											defaultCoords={props.defaultCoords}
@@ -263,25 +277,18 @@ export const ApolloSpreadSheet = forwardRef(
 											outsideClickDeselects={props.outsideClickDeselects}
 											onCellChange={props.onCellChange}
 											theme={props.theme}
-											mergeCells={mergeData}
-											mergedPositions={mergedPositions}
 											stretchMode={props.stretchMode ?? StretchMode.All}
-											/** @todo Improve in the future to read directly from the hook and avoid this **/
-											editorState={editorState}
-											beginEditing={beginEditing}
-											stopEditing={stopEditing}
+											apiRef={apiRef}
 											scrollToAlignment={props.scrollToAlignment}
-											restoreGridFocus={restoreGridFocus}
-											getMergedPath={getMergedPath}
 										/>
-										</div>
-									)}
-								</ScrollSync>
-						</ClickAwayListener>
-					)}
-				</GridContainer>
-				{editorNode && createPortal(editorNode, document.body)}
-			</>
+									</div>
+								)}
+							</ScrollSync>
+						)}
+					</GridContainer>
+					{editorNode && createPortal(editorNode, document.body)}
+				</div>
+			</ClickAwayListener>
 		)
 	},
 )

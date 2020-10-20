@@ -10,6 +10,7 @@ import { ApolloSpreadSheet } from '../../../src'
 import { StretchMode } from '../../../src/types/stretch-mode.enum'
 import { getTopUseCase } from './dataUseCases'
 import { makeStyles } from '@material-ui/core/styles'
+import { useApiRef } from "../../../src/api/useApiRef"
 
 const useStyles = makeStyles(() => ({
 	root: {
@@ -74,6 +75,7 @@ export function Spreadsheet() {
 	const [darkTheme, setDarkTheme] = useState(false)
 	const [selectionEnabled, setSelectionEnabled] = useState(true)
 	const [scrollAlignment, setScrollAlignment] = useState<Alignment>('auto')
+	const apiRef = useApiRef()
 
 	const mergeCellsData = useMemo(() => {
 		return createMergeCellsData(data, headers)
@@ -105,7 +107,6 @@ export function Spreadsheet() {
 		setData(newData)
 	}
 
-	// const delayedCellPosition = useRef<NavigationCoords | null>(null)
 	const [delayedPosition, setDelayedPosition] = useState<NavigationCoords | null>(null)
 
 	function createRow(coords: NavigationCoords) {
@@ -156,7 +157,9 @@ export function Spreadsheet() {
 			sortOrder++
 		}
 		setData(sortedRows)
-		setDelayedPosition({ rowIndex: newOrder - 1, colIndex: coords.colIndex })
+		if (!parentRow){
+			setDelayedPosition({ rowIndex: newOrder - 1, colIndex: coords.colIndex })
+		}
 	}
 
 	//Update the schedule position after we create a new row (DEMO)
@@ -164,7 +167,7 @@ export function Spreadsheet() {
 		if (!delayedPosition) {
 			return
 		}
-		apiRef.current?.selectCell(delayedPosition)
+		apiRef.current.selectCell(delayedPosition)
 		setDelayedPosition(null)
 	}, [delayedPosition])
 
@@ -196,8 +199,6 @@ export function Spreadsheet() {
 		updatedData.push(newRow)
 		setData(updatedData)
 	}
-
-	const apiRef = useRef<any>(null)
 
 	function handleScrollAlignmentChange(e) {
 		setScrollAlignment(e.target.value)
@@ -244,9 +245,7 @@ export function Spreadsheet() {
 			</FormControl>
 			<ApolloSpreadSheet
 				className={classes.root}
-				ref={ref => {
-					apiRef.current = ref
-				}}
+				apiRef={apiRef}
 				headers={headers}
 				rows={data}
 				fixedColumnCount={2}

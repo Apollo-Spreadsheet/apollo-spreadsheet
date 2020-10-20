@@ -1,11 +1,15 @@
-import React, { useCallback, useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useRef, useState } from 'react'
 import { SelectionProps } from './selectionProps'
+import { ApiRef } from '../api/types/apiRef'
+import { useApiExtends } from '../api/useApiExtends'
+import { ROW_SELECTION_CHANGE } from '../api/eventConstants'
 
 export const ROW_SELECTION_HEADER_ID = '__selection__'
 
 interface Props<TRow> {
-	rows: TRow[]
 	selection?: SelectionProps<TRow>
+	apiRef: ApiRef
+	initialised: boolean
 }
 
 /**
@@ -13,26 +17,21 @@ interface Props<TRow> {
  * @param rows
  * @param selection
  */
-export function useRowSelection<TRow = any>({ rows, selection }: Props<TRow>) {
-	const [selectedIds, setSelectedIds] = useState<string[]>([])
+export function useRowSelection<TRow = any>({ selection, apiRef, initialised }: Props<TRow>) {
+	const selectedIds = useRef<string[]>([])
 
-	
 	//Detect if a row exists in selected but not in rows
 	useEffect(() => {
 		if (!selection) {
 			//Ensure cleanup because selection might have been disabled
-			if (selectedIds.length > 0) {
-				setSelectedIds([])
-			}
+			selectedIds.current = []
+			apiRef.current.dispatchEvent(ROW_SELECTION_CHANGE)
 		}
-	}, [rows, selection, selectedIds])
+	}, [apiRef, selection, selectedIds])
 
-	const isRowSelected = useCallback(
-		(id: string) => {
-			return selectedIds.some(e => e === id)
-		},
-		[selectedIds],
-	)
+	const isRowSelected = useCallback((id: string) => {
+		return selectedIds.current.some(e => e === id)
+	}, [])
 
 	const selectRow = useCallback(
 		(idOrRow: string | TRow) => {
@@ -42,9 +41,13 @@ export function useRowSelection<TRow = any>({ rows, selection }: Props<TRow>) {
 			}
 			const _id = typeof idOrRow !== 'object' ? idOrRow : idOrRow[selection.key]
 			//Find the target row in order to determinate whether we can select or not
-			const targetRow = rows.find(e => String(e[selection.key]) === String(_id))
+			const targetRow: any = apiRef.current
+				.getRows()
+				.find((e: any) => String(e[selection.key]) === String(_id))
 			if (!targetRow) {
-				return console.warn(`Row not found with the given key ${selection.key} on param: ${idOrRow} and extracted the id: ${_id}`)
+				return console.warn(
+					`Row not found with the given key ${selection.key} on param: ${idOrRow} and extracted the id: ${_id}`,
+				)
 			}
 			//If we do have the middleware and it returns false, just block
 			if (selection.canSelect && !selection.canSelect(targetRow)) {
@@ -53,22 +56,35 @@ export function useRowSelection<TRow = any>({ rows, selection }: Props<TRow>) {
 
 			//Toggle effect
 			if (!isRowSelected(_id)) {
-				setSelectedIds(prev => [...prev, _id])
+				selectedIds.current = [...selectedIds.current, _id]
 			} else {
-				setSelectedIds(prev => prev.filter(e => e !== _id))
+				selectedIds.current = [...selectedIds.current.filter(e => e !== _id)]
 			}
+
+			apiRef.current.dispatchEvent(ROW_SELECTION_CHANGE)
 		},
-		[isRowSelected, selection, rows],
+		[isRowSelected, selection, apiRef],
 	)
 
 	const getSelectedRows = useCallback(() => {
 		if (!selection) {
 			return []
 		}
-		return rows
-			.filter(e => selectedIds.some(id => String(id) === String(e[selection.key])))
-			.map(e => String(e[selection.key]))
-	}, [rows, selectedIds, selection])
+		return apiRef.current
+			.getRows()
+			.filter((e: any) => selectedIds.current.some(id => String(id) === String(e[selection.key])))
+			.map((e: any) => String(e[selection.key]))
+	}, [apiRef, selection])
+
+	useApiExtends(
+		apiRef,
+		{
+			isRowSelected,
+			selectRow,
+			getSelectedRows,
+		},
+		'RowSelectionApi',
+	)
 
 	return {
 		isRowSelected,

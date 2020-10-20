@@ -16,6 +16,7 @@ import {
 import { Alignment } from 'react-virtualized'
 import { MergePosition } from "../mergeCells/createMergedPositions";
 import { StretchMode } from "../types/stretch-mode.enum";
+import { ApiRef } from "../api/types/apiRef";
 
 export interface CellEventParams<T = unknown> {
 	rowIndex: number
@@ -75,12 +76,7 @@ export interface GridWrapperProps<TRow = any> extends GridWrapperCommonProps {
 	coords: NavigationCoords
 	data: GridCell[][]
 	columnCount: number
-	selectCell: SelectCellFn
 	getColumnWidth: ({ index }: { index: number }) => number
-	editorState: IEditorState | null
-	beginEditing: (params: BeginEditingParams) => void
-	stopEditing: (params?: StopEditingParams) => void
-	restoreGridFocus: () => void
+	apiRef: ApiRef
 	stretchMode: StretchMode
-	getMergedPath: (rowIndex: number) => number[]
 }

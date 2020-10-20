@@ -4,6 +4,7 @@ import { Header } from '../../../src/columnGrid/types/header.type'
 import { AddCircle } from '@material-ui/icons'
 import { Box, IconButton } from "@material-ui/core"
 import { CellChangeParams } from '../../../src/editorManager/useEditorManager'
+import { useApiRef } from "../../../src/api/useApiRef";
 
 interface DemoRow {
 	id: string
@@ -24,9 +25,9 @@ const defaultRow: DemoRow = {
 }
 export function Table() {
 	const [rows, setRows] = useState<DemoRow[]>([defaultRow])
-	const api = useRef<any>(null)
+	const apiRef = useApiRef()
 	const onHeaderIconClick = () => {
-		const selectedRows = api.current?.getSelectedRows() ?? []
+		const selectedRows = apiRef.current?.getSelectedRows() ?? []
 		if (selectedRows.length === 0) {
 			return
 		}
@@ -102,11 +103,7 @@ export function Table() {
 	return (
 	  <Box width={"98%"} height={"400px"} style={{ margin: 10 }}>
       <ApolloSpreadSheet
-        ref={ref => {
-          if (ref) {
-            api.current = ref
-          }
-        }}
+        apiRef={apiRef}
         headers={headers}
         rows={rows}
         fixedColumnCount={2}

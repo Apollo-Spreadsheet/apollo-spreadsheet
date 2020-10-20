@@ -1,6 +1,6 @@
 import React from 'react'
 import { renderHook, act } from '@testing-library/react-hooks'
-import { MergedCellsHookData, useMergeCells } from '../useMergeCells'
+import { MergedCellsHookProps, useMergeCells } from '../useMergeCells'
 import { MergePosition } from '../createMergedPositions'
 import { MERGED_NEGATIVE_VALUES } from '../validationErrorMessages'
 
@@ -15,7 +15,7 @@ describe('useMergeCells hook', () => {
 	})
 
 	it('should mount without any data', () => {
-		const props: MergedCellsHookData = {
+		const props: MergedCellsHookProps = {
 			data: [],
 			columnCount: 0,
 			rowCount: 0,
@@ -26,7 +26,7 @@ describe('useMergeCells hook', () => {
 	})
 
 	it('should mount with data', () => {
-		const props: MergedCellsHookData = {
+		const props: MergedCellsHookProps = {
 			data: [{
 				rowIndex: 0,
 				colIndex: 0,
@@ -46,7 +46,7 @@ describe('useMergeCells hook', () => {
 	})
 
 	it('should dispatch console.error and ignore negative positions', () => {
-		const props: MergedCellsHookData = {
+		const props: MergedCellsHookProps = {
 			data: [{
 				rowIndex: 0,
 				colIndex: 0,
@@ -73,7 +73,7 @@ describe('useMergeCells hook', () => {
 	})
 
 	it('should fetch correctly the span properties', () => {
-		const props: MergedCellsHookData = {
+		const props: MergedCellsHookProps = {
 			data: [{
 				rowIndex: 0,
 				colIndex: 0,
@@ -89,7 +89,7 @@ describe('useMergeCells hook', () => {
 	})
 
 	it('should not find any span properties for non existing coordinates', () => {
-		const props: MergedCellsHookData = {
+		const props: MergedCellsHookProps = {
 			data: [{
 				rowIndex: 0,
 				colIndex: 0,

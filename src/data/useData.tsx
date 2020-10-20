@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react'
+import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import { Header } from '../columnGrid/types/header.type'
 import { MergeCell } from '../mergeCells/interfaces/merge-cell'
 import { Checkbox } from '@material-ui/core'
@@ -7,15 +7,20 @@ import { GridCell } from '../gridWrapper/interfaces/gridCell'
 import { insertDummyCells } from '../gridWrapper/utils/insertDummyCells'
 import { formatCellValue } from './formatCellValue'
 import { NavigationCoords } from '../navigation/types/navigation-coords.type'
+import { ApiRef } from '../api/types/apiRef'
+import { useApiExtends } from '../api/useApiExtends'
+import { useApiEventHandler } from '../api/useApiEventHandler'
+import { ROW_SELECTION_CHANGE } from '../api/eventConstants'
+import { MergeCellsApi } from '../api/types/mergeCellsApi'
 
 interface Props<Row> {
 	rows: Row[]
 	headers: Header[]
-	getSpanProperties: (coords: NavigationCoords) => MergeCell | undefined
-	isMerged: (coords: NavigationCoords) => boolean
-	isRowSelected: (rowId: string) => boolean
-	selectRow: (rowId: string) => void
 	selection?: SelectionProps<Row>
+	isMerged: MergeCellsApi['isMerged']
+	getSpanProperties: MergeCellsApi['getSpanProperties']
+	apiRef: ApiRef
+	initialised: boolean
 }
 
 /**
@@ -24,13 +29,18 @@ interface Props<Row> {
 export function useData<Row = any>({
 	rows,
 	headers,
-	getSpanProperties,
-	isMerged,
-	isRowSelected,
-	selectRow,
 	selection,
+	initialised,
+	apiRef,
+	isMerged,
+	getSpanProperties,
 }: Props<Row>) {
-	const data = useMemo(() => {
+	function buildData() {
+		//Ensure the grid api is initialized first
+		if (!initialised) {
+			return
+		}
+
 		const cellsList = rows.reduce((list, row, rowIndex) => {
 			const cells = headers.reduce((_cells, header, colIndex) => {
 				const isDummy = isMerged({ rowIndex, colIndex })
@@ -55,14 +65,14 @@ export function useData<Row = any>({
 			if (selection) {
 				const isSelectable = selection.canSelect ? selection.canSelect(row) : true
 				if (isSelectable) {
-					const selected = isRowSelected(row[selection.key])
+					const selected = apiRef.current.isRowSelected(row[selection.key])
 					//Bind the rowSelection
 					cells[cells.length - 1] = {
 						value: (
 							<Checkbox
 								className={selection.checkboxClass}
 								checked={selected}
-								onClick={() => selectRow(row[selection.key])}
+								onClick={() => apiRef.current.selectRow(row[selection.key])}
 							/>
 						),
 					}
@@ -74,7 +84,37 @@ export function useData<Row = any>({
 		}, [] as GridCell[][])
 
 		return insertDummyCells(cellsList) as GridCell[][]
-	}, [rows, headers, getSpanProperties, isRowSelected, selectRow, selection, isMerged])
+	}
 
-	return { data }
+	const [data, setData] = useState<GridCell[][]>([])
+
+	useEffect(() => {
+		const updatedData = buildData()
+		if (!updatedData) {
+			return
+		}
+		setData(updatedData)
+	}, [rows, headers, apiRef, selection, initialised])
+
+	const onRowSelectionChange = useCallback(() => {
+		const updatedData = buildData()
+		if (!updatedData) {
+			return console.log('No data returned')
+		}
+		setData(updatedData)
+	}, [apiRef, initialised])
+
+	const getRows = useCallback(() => rows, [rows])
+	const getRowsCount = useCallback(() => rows.length, [rows])
+
+	useApiExtends(
+		apiRef,
+		{
+			getRows,
+			getRowsCount,
+		},
+		'Rows/Data API',
+	)
+	useApiEventHandler(apiRef, ROW_SELECTION_CHANGE, onRowSelectionChange)
+	return data
 }
