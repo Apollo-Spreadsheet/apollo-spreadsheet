@@ -2,7 +2,9 @@
 [![Netlify Status](https://api.netlify.com/api/v1/badges/84196b54-deff-4e95-9e2b-c70f75415faf/deploy-status)](https://app.netlify.com/sites/xenodochial-brahmagupta-15bc2b/deploys)
 
 ## Installation 
-Cooming soon after the release date, will be published to NPM
+`npm i apollo-spreadsheet`
+OR
+`yarn add apollo-spreadsheet`
 
 ## Motivation
 I have been dealing with large data sets views in the past two years, the most common "need" was a tabular plugin that offer a mix of excel and table.
