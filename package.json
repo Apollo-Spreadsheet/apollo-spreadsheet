@@ -23,7 +23,8 @@
     "test": "echo \\\"Test broken requires refactor\\\" ",
     "test-broken": "jest",
     "bundle-check": "bundlesize",
-    "deploy": "yarn run tsc && np"
+    "clean": "rm -rf dist",
+    "deploy": "yarn run clean && yarn run tsc && np"
   },
   "peerDependencies": {
     "react": ">= 16.13.1",

@@ -3,7 +3,9 @@
   "compilerOptions": {
     "noEmit": false,
     "removeComments": false,
-    "declaration": true
+    "declaration": true,
+    "rootDir": "./src",
+    "baseUrl": "."
   },
-  "exclude": ["node_modules", "dist", "**/*.spec.ts", "**/*.spec.tsx", "stories", "cypress", ".storybook"]
+  "exclude": ["node_modules", "dist", "**/*.spec.ts", "**/*.spec.tsx", "stories", "cypress", ".storybook", "jest.config.js", "setupTests.ts"]
 }
