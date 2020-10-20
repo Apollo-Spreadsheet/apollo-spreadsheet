@@ -1,6 +1,4 @@
 import React from 'react'
-import { GridApi } from '../types/grid-api.type'
-import { StretchMode } from '../types/stretch-mode.enum'
 
 export interface HeaderGridRef {
 	forceUpdate: () => void
@@ -13,7 +11,7 @@ interface ScrollHandlerChildrenProps {
 	scrollTop: number
 	scrollLeft: number
 	headerRef: React.MutableRefObject<HeaderGridRef | null>
-	gridRef: React.MutableRefObject<GridApi | null>
+	gridRef: React.MutableRefObject<any | null>
 }
 
 export interface ScrollHandlerRef {

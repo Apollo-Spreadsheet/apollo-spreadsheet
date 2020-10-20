@@ -5,9 +5,7 @@ import {
 	isMetaKey,
 	isPrintableChar,
 } from './navigation.utils'
-import { ICellClickProps } from './types/cell-click-props.type'
 import { NavigationCoords } from './types/navigation-coords.type'
-import { OnCellClick } from './types/cell-click-event.type'
 import { isFunctionType } from '../helpers/isFunction'
 import { GetColumnAt } from '../columnGrid/useHeaders'
 import { GridCell } from '../gridWrapper/interfaces/gridCell'

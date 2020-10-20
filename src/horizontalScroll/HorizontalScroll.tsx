@@ -7,12 +7,8 @@ import React, {
 	forwardRef,
 	useMemo,
 } from 'react'
-import { createPortal } from 'react-dom'
-import { Grid, WindowScroller } from 'react-virtualized'
 import { debounce } from 'lodash'
 import { makeStyles } from '@material-ui/core/styles'
-import { StretchMode } from '../types/stretch-mode.enum'
-import { GridApi } from '../types/grid-api.type'
 import { HorizontalScrollProps, ScrollHandlerRef, HeaderGridRef } from './horizontalScrollProps'
 
 //Time to wait before set non scrolling state
@@ -61,7 +57,7 @@ const HorizontalScroll = forwardRef(
 	) => {
 		const scrollChildRef = useRef<HTMLDivElement | null>(null)
 		const headerRef = useRef<HeaderGridRef | null>(null)
-		const gridRef = useRef<GridApi | null>(null)
+		const gridRef = useRef<any | null>(null)
 		const fakeScrollerRef = useRef<HTMLDivElement | null>(null)
 		const [stickyScroller, setStickyScroller] = useState(true)
 		const [scrollLeft, setScrollLeft] = useState(0)

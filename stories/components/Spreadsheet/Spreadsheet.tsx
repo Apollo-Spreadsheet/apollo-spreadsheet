@@ -248,7 +248,6 @@ export function Spreadsheet() {
 				apiRef={apiRef}
 				headers={headers}
 				rows={data}
-				fixedColumnCount={2}
 				onCellChange={onCellChange}
 				outsideClickDeselects={outsideClickDeselects}
 				theme={darkTheme ? topDarkGridTheme : topLightGridTheme}

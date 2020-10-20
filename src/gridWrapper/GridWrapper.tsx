@@ -8,15 +8,12 @@ import React, {
 } from 'react'
 import { CellMeasurerCache, Grid, SectionRenderedParams } from 'react-virtualized'
 import CellMeasurer from '../cellMeasurer/CellMeasureWrapper'
-import { GridApi } from '../types/grid-api.type'
 import { NavigationCoords } from '../navigation/types/navigation-coords.type'
 import clsx from 'clsx'
 import { GridCellProps } from 'react-virtualized/dist/es/Grid'
 import { MeasurerRendererProps } from '../cellMeasurer/cellMeasureWrapperProps'
-import { CellEventParams, GridWrapperProps } from './gridWrapperProps'
+import {  GridWrapperProps } from './gridWrapperProps'
 import { makeStyles } from '@material-ui/core/styles'
-import { StretchMode } from '../types/stretch-mode.enum'
-import { createMergedPositions, MergePosition } from '../mergeCells/createMergedPositions'
 import { MergeCell } from '../mergeCells/interfaces/merge-cell'
 
 const useStyles = makeStyles(() => ({
@@ -275,13 +272,9 @@ const GridWrapper = forwardRef((props: GridWrapperProps, componentRef: React.Ref
 				props.registerChild?.(instance)
 			}
 
-			//Expose if needed
-			if (props.onGridReady && (componentRef as any).current) {
-				props.onGridReady((componentRef as any).current as GridApi)
-			}
 			gridRef.current = instance
 		},
-		[props.onGridReady, props.registerChild, (componentRef as any).current],
+		[props.registerChild, (componentRef as any).current],
 	)
 
 	const onSectionRendered = useCallback(

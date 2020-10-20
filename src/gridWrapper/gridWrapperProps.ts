@@ -1,29 +1,16 @@
 import { Header, NestedHeader } from '../columnGrid/types/header.type'
 import { NavigationCoords } from '../navigation/types/navigation-coords.type'
-import { GridApi } from '../types/grid-api.type'
 import { GridTheme } from '../types/grid-theme'
 import { RegisterChildFn } from './interfaces/registerChildFn'
-import { KeyDownEventParams, SelectCellFn } from '../navigation/useNavigation'
-import React from 'react'
 import { MergeCell } from '../mergeCells/interfaces/merge-cell'
 import { GridCell } from './interfaces/gridCell'
 import {
-	BeginEditingParams,
 	CellChangeParams,
-	IEditorState,
-	StopEditingParams,
 } from '../editorManager/useEditorManager'
 import { Alignment } from 'react-virtualized'
 import { MergePosition } from "../mergeCells/createMergedPositions"
 import { StretchMode } from "../types/stretch-mode.enum"
 import { ApiRef } from "../api/types/apiRef"
-
-export interface CellEventParams<T = unknown> {
-	rowIndex: number
-	columnIndex: number
-	cell: GridCell
-	event: T
-}
 
 export interface DisableSortFilterParam {
 	(column: Header): boolean
@@ -39,7 +26,6 @@ export interface GridWrapperCommonProps {
 	suppressNavigation?: boolean
 	/** @default false **/
 	outsideClickDeselects?: boolean
-	onGridReady?: (gridRef: GridApi) => void
 	theme?: GridTheme
 	mergeCells?: MergeCell[]
 	mergedPositions?: MergePosition[]

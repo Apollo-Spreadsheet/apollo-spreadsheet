@@ -171,7 +171,6 @@ export function VPD() {
 			<ApolloSpreadSheet
 				headers={headers}
 				rows={rows}
-				fixedColumnCount={2}
 				minColumnWidth={30}
 				disableSort={disableSort}
 				overscanRowCount={20}

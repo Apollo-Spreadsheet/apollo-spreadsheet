@@ -106,7 +106,6 @@ export function Table() {
         apiRef={apiRef}
         headers={headers}
         rows={rows}
-        fixedColumnCount={2}
         onCellChange={onCellChange}
         onCreateRow={onCreateRowClick}
         minColumnWidth={30}
