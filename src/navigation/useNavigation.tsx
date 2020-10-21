@@ -466,7 +466,7 @@ export function useNavigation({
 					event.preventDefault()
 					return apiRef.current.beginEditing({
 						coords,
-						defaultKey: event.key,
+						defaultKey: event.key !== 'Dead' ? event.key : undefined,
 						targetElement: cellElement,
 					})
 				}
@@ -483,7 +483,7 @@ export function useNavigation({
 				event.preventDefault()
 				return apiRef.current.beginEditing({
 					coords,
-					defaultKey: event.key,
+					defaultKey: event.key !== 'Dead' ? event.key : undefined,
 					targetElement: cellElement,
 				})
 			}
