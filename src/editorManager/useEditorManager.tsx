@@ -74,19 +74,12 @@ export function useEditorManager<TRow>({
 	const state = useRef<IEditorState | null>(null)
 	const [editorNode, setEditorNode] = useState<JSX.Element | null>(null)
 
-	//Detect if row/column has changed or has been deleted (compares with the active editing info)
+	//Detect if the active editing row/column has been deleted
 	useEffect(() => {
 		if (editorNode && state.current) {
 			const target = apiRef.current.getRowAt(state.current.rowIndex) as TRow
 			const column = getColumnAt(state.current.colIndex)
-			if (target && column) {
-				const value = target[column.accessor]
-				//If value does not exist, simply stopEditing
-				//This condition might happen if the accessor changes or the row doesn't contain anymore the accessor value
-				if (value === undefined) {
-					return stopEditing({ save: false })
-				}
-			} else {
+			if (!target || !column) {
 				stopEditing({ save: false })
 			}
 		}
@@ -192,6 +185,7 @@ export function useEditorManager<TRow>({
 	 */
 	const beginEditing = useCallback(
 		({ coords, targetElement, defaultKey }: BeginEditingParams) => {
+			console.log(`Begin editing invoked for coords: [${coords.rowIndex},${coords.colIndex}]`)
 			//Validate if is editing but in the same coords
 			if (
 				state.current?.rowIndex === coords.rowIndex &&
@@ -258,6 +252,7 @@ export function useEditorManager<TRow>({
 				validatorHook: column.validatorHook,
 				isPopup: column.editor !== undefined || column.type === ColumnCellType.Calendar,
 			}
+
 			setEditorNode(editor)
 			apiRef.current.dispatchEvent(CELL_BEGIN_EDITING, coords)
 		},

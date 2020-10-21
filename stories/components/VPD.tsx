@@ -1,5 +1,5 @@
 import React, { useRef, useState } from 'react'
-import ApolloSpreadSheet from '../../src'
+import { ApolloSpreadSheet } from '../../src'
 import { AddCircle } from '@material-ui/icons'
 import { Avatar, Box, IconButton, LinearProgress } from '@material-ui/core'
 import { Header } from '../../src/columnGrid/types/header.type'

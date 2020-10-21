@@ -1,5 +1,5 @@
 import React, { useRef, useState } from 'react'
-import ApolloSpreadSheet from '../../../src'
+import { ApolloSpreadSheet } from '../../../src'
 import { Header } from '../../../src/columnGrid/types/header.type'
 import { AddCircle } from '@material-ui/icons'
 import { Box, IconButton } from '@material-ui/core'
@@ -38,13 +38,15 @@ export function Table() {
 		return header.id === 'order'
 	}
 	const onCellChange = (params: CellChangeParams) => {
-		const updatedRows = [...rows]
-		const header = headers[params.coords.colIndex]
-		updatedRows[params.coords.rowIndex] = {
-			...updatedRows[params.coords.rowIndex],
-			[header?.accessor]: params.newValue,
-		}
-		setRows(updatedRows)
+		setRows(prev => {
+			const updatedRows = [...prev]
+			const header = headers[params.coords.colIndex]
+			updatedRows[params.coords.rowIndex] = {
+				...updatedRows[params.coords.rowIndex],
+				[header?.accessor]: params.newValue,
+			}
+			return updatedRows
+		})
 	}
 
 	const onCreateRowClick = () => {
@@ -109,6 +111,7 @@ export function Table() {
 				onCellChange={onCellChange}
 				onCreateRow={onCreateRowClick}
 				minColumnWidth={30}
+				minRowHeight={30}
 				selection={{
 					key: 'id',
 					onHeaderIconClick,

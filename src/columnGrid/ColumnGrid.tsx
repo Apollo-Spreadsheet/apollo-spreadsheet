@@ -180,7 +180,7 @@ export const ColumnGrid = React.memo(
 				<div
 					ref={ref}
 					role={"columnheader"}
-					className={ !cell.tooltip ? headerClassName : undefined}
+					className={headerClassName}
 					aria-colindex={columnIndex}
 					data-rowindex={rowIndex}
 					data-dummy={cell.dummy}
