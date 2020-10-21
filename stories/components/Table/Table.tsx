@@ -1,10 +1,10 @@
-import React, { useRef, useState } from 'react'
-import { ApolloSpreadSheet } from '../../../src'
-import { Header } from '../../../src/columnGrid/types/header.type'
-import { AddCircle } from '@material-ui/icons'
-import { Box, IconButton } from '@material-ui/core'
-import { CellChangeParams } from '../../../src/editorManager/useEditorManager'
-import { useApiRef } from '../../../src/api/useApiRef'
+import React, { useState } from "react";
+import { ApolloSpreadSheet, StretchMode } from "../../../src";
+import { Header } from "../../../src/columnGrid/types/header.type";
+import { AddCircle } from "@material-ui/icons";
+import { Box, IconButton } from "@material-ui/core";
+import { CellChangeParams } from "../../../src/editorManager/useEditorManager";
+import { useApiRef } from "../../../src/api/useApiRef";
 
 interface DemoRow {
 	id: string
@@ -98,7 +98,6 @@ export function Table() {
 			id: 'country',
 			title: 'Country',
 			accessor: 'country',
-			width: '20%',
 		},
 	]
 
@@ -112,6 +111,7 @@ export function Table() {
 				onCreateRow={onCreateRowClick}
 				minColumnWidth={30}
 				minRowHeight={30}
+				stretchMode={StretchMode.None}
 				selection={{
 					key: 'id',
 					onHeaderIconClick,

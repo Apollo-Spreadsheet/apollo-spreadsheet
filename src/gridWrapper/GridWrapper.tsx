@@ -15,6 +15,7 @@ import { MeasurerRendererProps } from '../cellMeasurer/cellMeasureWrapperProps'
 import {  GridWrapperProps } from './gridWrapperProps'
 import { makeStyles } from '@material-ui/core/styles'
 import { MergeCell } from '../mergeCells/interfaces/merge-cell'
+import { StretchMode } from "../types";
 
 const useStyles = makeStyles(() => ({
 	bodyContainer: {
@@ -303,8 +304,8 @@ const GridWrapper = forwardRef((props: GridWrapperProps, componentRef: React.Ref
 	return (
 		<Grid
 			{...props}
-			// className={props.stretchMode !== StretchMode.None ? clsx(classes.bodyContainer, classes.suppressHorizontalOverflow) : classes.bodyContainer}
-			className={classes.bodyContainer}
+			className={props.stretchMode !== StretchMode.None ? clsx(classes.bodyContainer, classes.suppressHorizontalOverflow) : classes.bodyContainer}
+			// className={classes.bodyContainer}
 			ref={onRefMount}
 			cellRenderer={cellRenderer}
 			deferredMeasurementCache={cache}

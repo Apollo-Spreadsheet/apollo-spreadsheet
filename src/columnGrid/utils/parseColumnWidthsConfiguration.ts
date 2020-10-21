@@ -40,10 +40,6 @@ export const parseColumnWidthsConfiguration = (value: number | string, container
 			throw new Error(`${parsedValue} value must be a number`)
 		}
 
-		//Ensure it does not overflow
-		if (parsedValue > containerWidth) {
-			return containerWidth
-		}
 		return parsedValue
 	}
 
@@ -52,9 +48,5 @@ export const parseColumnWidthsConfiguration = (value: number | string, container
 		throw new Error(`${value} must be a number, percentage or px`)
 	}
 
-	//Ensure it does not overflow
-	if (value > containerWidth) {
-		return containerWidth
-	}
 	return Number(value)
 }

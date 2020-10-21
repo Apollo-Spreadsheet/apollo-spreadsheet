@@ -218,9 +218,7 @@ export const ApolloSpreadSheet = forwardRef(
 						stretchMode={props.stretchMode ?? StretchMode.All}
 						containerClassName={props.containerClassName}
 					>
-						{({ getColumnWidth, width, columnGridRef, height, mainGridRef, registerChild }) => (
-							<ScrollSync>
-								{({ scrollLeft, onScroll }) => (
+						{({ scrollLeft, onScroll, getColumnWidth, width, columnGridRef, height, mainGridRef, registerChild }) => (
 									<div id="apollo-grids" className={props.className}>
 										<ColumnGrid
 											data={headersData}
@@ -231,7 +229,6 @@ export const ApolloSpreadSheet = forwardRef(
 											ref={columnGridRef}
 											minRowHeight={props.minColumnHeight ?? 50}
 											scrollLeft={scrollLeft}
-											// isScrolling={isScrolling}
 											coords={coords}
 											stretchMode={props.stretchMode}
 											nestedHeaders={props.nestedHeaders}
@@ -255,7 +252,6 @@ export const ApolloSpreadSheet = forwardRef(
 											ref={mainGridRef}
 											scrollLeft={scrollLeft}
 											onScroll={onScroll}
-											//		isScrolling={isScrolling}
 											height={height}
 											columnCount={headers.length}
 											coords={coords}
@@ -270,8 +266,6 @@ export const ApolloSpreadSheet = forwardRef(
 											highlightBorderColor={props.highlightBorderColor}
 										/>
 									</div>
-								)}
-							</ScrollSync>
 						)}
 					</GridContainer>
 					{editorNode && createPortal(editorNode, document.body)}

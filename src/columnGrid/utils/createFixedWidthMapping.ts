@@ -1,7 +1,7 @@
-import { parseColumnWidthsConfiguration } from './parseColumnWidthsConfiguration'
-import { FixedColumnWidthDictionary } from '../types/fixed-column-width-dictionary'
-import { Header } from '../types/header.type'
-import { StretchMode } from '../../types/stretch-mode.enum'
+import { parseColumnWidthsConfiguration } from "./parseColumnWidthsConfiguration";
+import { FixedColumnWidthDictionary } from "../types/fixed-column-width-dictionary";
+import { Header } from "../types/header.type";
+import { StretchMode } from "../../types/stretch-mode.enum";
 
 /**
  * Creates an object indexing the fixed column widths by its index as key for fast lookup on dynamic widths
@@ -21,11 +21,19 @@ export const createFixedWidthMapping = (
 		if (!e.width) {
 			return acc
 		}
+
 		const value = parseColumnWidthsConfiguration(e.width, containerWidth)
+		//console.log({ value })
 		//Avoid creating an entry because react-virtualized grid will use the minimum width
 		if (value < minColumnWidth) {
 			return acc
 		}
+
+		//Avoid overflow if we do have stretch mode
+		if (stretchMode !== StretchMode.None && value > containerWidth){
+			return acc
+		}
+
 		acc[i] = value
 		return acc
 	}, {} as FixedColumnWidthDictionary)

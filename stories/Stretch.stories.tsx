@@ -1,59 +1,66 @@
-import { getSimpleData } from './components/LargeDataGrid/generateData'
 import { ApolloSpreadSheet } from '../src'
 import React from 'react'
 import { storiesOf } from '@storybook/react'
 import { StretchMode } from '../src/types/stretch-mode.enum'
 import { Header } from '../src/columnGrid/types/header.type'
 import { createColumnMock } from '../src/columnGrid/__mocks__/column-mock'
+import faker from 'faker'
 
-const ExampleTable = ({ headerData, data, stretchMode }) => {
+const ExampleTable = ({ headerData, stretchMode }) => {
+	const rows = new Array(20).fill(true).map(() => ({
+		id: faker.random.number(),
+		name: faker.name.findName(),
+		country: faker.address.country(),
+	}))
+	console.log(rows)
 	return (
-		<ApolloSpreadSheet
-			headers={headerData}
-			rows={data}
-			minColumnWidth={120}
-			stretchMode={stretchMode}
-		/>
+		<div style={{ height: '500px', width: '100%', overflowY: 'hidden', flex: 1, display: 'flex'}}>
+			<ApolloSpreadSheet
+				headers={headerData}
+				rows={rows}
+				minColumnWidth={120}
+				stretchMode={stretchMode}
+			/>
+		</div>
 	)
 }
 
 storiesOf('Stretch Modes', module)
 	.add('None (with remaining width left and no scroll)', () => {
-		const { data } = getSimpleData(10, 3)
 		const headers: Header[] = [
-			createColumnMock({ width: '20%', title: 'First' }),
-			createColumnMock({ width: '20%', title: 'Second' }),
-			createColumnMock({ width: '50%', title: 'Third' }),
+			createColumnMock({ width: '20%', title: 'Id', accessor: 'id' }),
+			createColumnMock({ width: '20%', title: 'Name', accessor: 'name' }),
+			createColumnMock({ width: '50%', title: 'Country', accessor: 'country' }),
 		]
-		return <ExampleTable headerData={[headers]} data={data} stretchMode={StretchMode.None} />
+		return <ExampleTable headerData={headers} stretchMode={StretchMode.None} />
 	})
 	.add('None (fixed widths with scroll)', () => {
 		const headers: Header[] = [
-			createColumnMock({ width: 140, title: 'First' }),
-			createColumnMock({ width: 140, title: 'Second' }),
+			createColumnMock({ width: 140, title: 'Id', accessor: 'id' }),
+			createColumnMock({ width: 140, title: 'Name', accessor: 'name' })
 		]
-		const { data } = getSimpleData(5, 2)
-		return <ExampleTable headerData={[headers]} data={data} stretchMode={StretchMode.None} />
+		return <ExampleTable headerData={headers} stretchMode={StretchMode.None} />
 	})
 	.add('None (default with scroll)', () => {
-		const { headerData, data } = getSimpleData(10, 50)
-		return <ExampleTable headerData={headerData} data={data} stretchMode={StretchMode.None} />
+		const headers: Header[] = [
+			createColumnMock({ width: 140, title: 'Id', accessor: 'id' }),
+			createColumnMock({ width: 140, title: 'Name', accessor: 'name' })
+		]
+		return <ExampleTable headerData={headers} stretchMode={StretchMode.None} />
 	})
 	.add('All', () => {
 		const headers: Header[] = [
-			createColumnMock({ width: '20%', title: 'First' }),
-			createColumnMock({ width: '30%', title: 'Second' }),
-			createColumnMock({ width: '10%', title: 'Remain' }),
+			createColumnMock({ width: '20%', title: 'Id', accessor: 'id' }),
+			createColumnMock({ width: '30%', title: 'Name', accessor: 'name' }),
+			createColumnMock({ width: '10%', title: 'Country', accessor: 'country' }),
 		]
-		const { data } = getSimpleData(4, 3)
-		return <ExampleTable headerData={[headers]} data={data} stretchMode={StretchMode.All} />
+		return <ExampleTable headerData={headers}  stretchMode={StretchMode.All} />
 	})
 	.add('Last', () => {
-		const { data } = getSimpleData(10, 3)
 		const headers: Header[] = [
-			createColumnMock({ width: '20%', title: 'First' }),
-			createColumnMock({ width: '30%', title: 'Second' }),
-			createColumnMock({ width: 200, title: 'Adjusted one' }),
+			createColumnMock({ width: '20%', title: 'Id', accessor: 'id' }),
+			createColumnMock({ width: '30%', title: 'Name', accessor: 'name' }),
+			createColumnMock({ title: 'Country', accessor: 'country' }),
 		]
-		return <ExampleTable headerData={[headers]} data={data} stretchMode={StretchMode.Last} />
+		return <ExampleTable headerData={headers}  stretchMode={StretchMode.Last} />
 	})

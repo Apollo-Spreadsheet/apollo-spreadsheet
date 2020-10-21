@@ -7,7 +7,7 @@ import { GridCell } from './interfaces/gridCell'
 import {
 	CellChangeParams,
 } from '../editorManager/useEditorManager'
-import { Alignment } from 'react-virtualized'
+import { Alignment, OnScrollParams } from "react-virtualized";
 import { MergePosition } from "../mergeCells/createMergedPositions"
 import { StretchMode } from "../types/stretch-mode.enum"
 import { ApiRef } from "../api/types/apiRef"
@@ -59,7 +59,7 @@ export interface GridWrapperProps<TRow = any> extends GridWrapperCommonProps {
 	defaultColumnWidth: number
 	width: number
 	scrollLeft: number
-	onScroll: (args: any) => any
+	onScroll?: (params: OnScrollParams) => any
 	height: number
 	registerChild?: RegisterChildFn
 	rows: TRow[]

@@ -55,6 +55,9 @@ const useStyles = makeStyles(() => ({
 	sort: {
 		marginLeft: '10px',
 	},
+	disableScroll: {
+		overflow: 'hidden'
+	}
 }))
 export const ColumnGrid = React.memo(
 	forwardRef((props: ColumnGridProps, componentRef) => {
@@ -263,7 +266,8 @@ export const ColumnGrid = React.memo(
 		return (
 			<Grid
 				{...props}
-				className={classes.headerContainer}
+				className={clsx(classes.headerContainer, classes.disableScroll)}
+				// className={classes.headerContainer}
 				ref={onRefMount}
 				cellRenderer={cellMeasurerWrapperRenderer}
 				deferredMeasurementCache={cache}

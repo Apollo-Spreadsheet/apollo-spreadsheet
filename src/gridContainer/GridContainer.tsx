@@ -1,16 +1,14 @@
 import React, { useCallback, useRef, useState } from 'react'
 import { StretchMode } from '../types/stretch-mode.enum'
 import { scrollbarWidth } from '@xobotyi/scrollbar-width'
-import { AutoSizer, ColumnSizer } from 'react-virtualized'
-import HorizontalScroll from '../horizontalScroll/HorizontalScroll'
+import { AutoSizer, ColumnSizer, OnScrollParams, ScrollSync } from 'react-virtualized'
 import { createFixedWidthMapping } from '../columnGrid/utils/createFixedWidthMapping'
 import { FixedColumnWidthRecord } from '../columnGrid/useHeaders'
-import { ScrollHandlerRef } from '../horizontalScroll/horizontalScrollProps'
 import { Header } from '../columnGrid/types/header.type'
 import { RegisterChildFn } from '../gridWrapper/interfaces/registerChildFn'
 import { makeStyles } from '@material-ui/core/styles'
 import shallowDiffers from '../helpers/shallowDiffers'
-import clsx from "clsx"
+import clsx from 'clsx'
 
 const useStyles = makeStyles(() => ({
 	root: {
@@ -26,6 +24,8 @@ export interface GridContainerChildrenProps {
 	registerChild?: RegisterChildFn
 	columnGridRef: React.MutableRefObject<any>
 	mainGridRef: React.MutableRefObject<any>
+	scrollLeft: number
+	onScroll?: (params: OnScrollParams) => any
 }
 
 export interface GridContainerCommonProps {
@@ -51,14 +51,13 @@ export const GridContainer = React.memo(
 		children,
 		width,
 		height,
-		 containerClassName
+		containerClassName,
 	}: Props) => {
 		const scrollbarSize = scrollbarWidth() ?? 0
 		const classes = useStyles()
 		const gridContainerRef = useRef<HTMLDivElement | null>(null)
 		const mainGridRef = useRef<any | null>(null)
 		const columnGridRef = useRef<any | null>(null)
-		const scrollHandlerRef = useRef<ScrollHandlerRef | null>(null)
 		const fixedColumnWidths = useRef<FixedColumnWidthRecord>({
 			totalSize: 0,
 			mapping: {},
@@ -77,10 +76,14 @@ export const GridContainer = React.memo(
 		}: {
 			index: number
 		}) => {
+			let value = minColumnWidth
+			//If we have no column width accessor than it means we only use fixed widths
 			if (!getColumnWidth) {
-				return fixedColumnWidths.current.mapping[index] ?? minColumnWidth
+				value = fixedColumnWidths.current.mapping[index]
+			} else {
+				value = fixedColumnWidths.current.mapping[index] ?? getColumnWidth({ index })
 			}
-			return fixedColumnWidths.current.mapping[index] ?? getColumnWidth({ index })
+			return isNaN(value) ? minColumnWidth : value
 		}
 
 		const getTotalColumnWidth = useCallback(
@@ -103,7 +106,6 @@ export const GridContainer = React.memo(
 				return remainingWidth.current
 			}
 
-			//console.warn('Building..')
 			const { mapping, totalSize } = createFixedWidthMapping(
 				headers,
 				containerWidth,
@@ -145,38 +147,40 @@ export const GridContainer = React.memo(
 							return (
 								<>
 									{children({
+										//width: containerWidth,
 										width:
 											normalizedAdjustedWidth + fixedColumnWidths.current.totalSize + scrollbarSize,
 										height: containerHeight,
-										getColumnWidth: getColumnWidthHelper(),
+										getColumnWidth: getColumnWidthHelper(getColumnWidth),
 										mainGridRef,
 										columnGridRef,
 										registerChild,
+										scrollLeft: 0,
 									})}
 								</>
 							)
 						}
 
-						/** @todo Not working yet, requires a major refactor on Horizontal scroll **/
 						return (
-							<HorizontalScroll
-								scrollContainer={gridContainerRef.current}
-								width={containerWidth}
-								totalColumnWidth={getTotalColumnWidth(getColumnWidth)}
-								ref={scrollHandlerRef}
-							>
-								{({ scrollTop, scrollLeft, isScrolling, gridRef, headerRef, height }) =>
-									children({
-										width:
-											normalizedAdjustedWidth + fixedColumnWidths.current.totalSize + scrollbarSize,
-										height: containerHeight,
-										getColumnWidth: getColumnWidthHelper(),
-										mainGridRef,
-										columnGridRef,
-										registerChild,
-									})
-								}
-							</HorizontalScroll>
+							<ScrollSync>
+								{({ onScroll, scrollLeft }) => (
+									<>
+										{children({
+											width:
+												normalizedAdjustedWidth +
+												fixedColumnWidths.current.totalSize +
+												scrollbarSize,
+											height: containerHeight,
+											getColumnWidth: getColumnWidthHelper(getColumnWidth),
+											scrollLeft,
+											onScroll,
+											registerChild,
+											columnGridRef,
+											mainGridRef,
+										})}
+									</>
+								)}
+							</ScrollSync>
 						)
 					}}
 				</ColumnSizer>
@@ -184,20 +188,26 @@ export const GridContainer = React.memo(
 		}
 
 		//In case of specified width and height, allow the control to the developer
-		if (height && width){
+		if (height && width) {
 			return (
-				<div id="grid-container" ref={gridContainerRef} className={clsx(classes.root, containerClassName)} style={{ width, height, position: 'relative' }}>
+				<div
+					id="grid-container"
+					ref={gridContainerRef}
+					className={clsx(classes.root, containerClassName)}
+					style={{ width, height, position: 'relative' }}
+				>
 					{render(width, height)}
 				</div>
 			)
 		}
 
 		return (
-			<div id="grid-container" className={clsx(classes.root, containerClassName)} ref={gridContainerRef}>
-				<AutoSizer
-					disableWidth={width !== undefined}
-					disableHeight={height !== undefined}
-				>
+			<div
+				id="grid-container"
+				className={clsx(classes.root, containerClassName)}
+				ref={gridContainerRef}
+			>
+				<AutoSizer disableWidth={width !== undefined} disableHeight={height !== undefined} defaultHeight={height} defaultWidth={width}>
 					{({ width, height }) => render(width, height)}
 				</AutoSizer>
 			</div>
