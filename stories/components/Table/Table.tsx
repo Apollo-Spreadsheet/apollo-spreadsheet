@@ -111,7 +111,7 @@ export function Table() {
 				onCreateRow={onCreateRowClick}
 				minColumnWidth={30}
 				minRowHeight={30}
-				stretchMode={StretchMode.None}
+				stretchMode={StretchMode.All}
 				selection={{
 					key: 'id',
 					onHeaderIconClick,
