@@ -1,9 +1,10 @@
 import React, { forwardRef, useEffect, useImperativeHandle, useRef, useState } from 'react'
 import { EditorProps } from '../editorProps'
 import { Popper } from '@material-ui/core'
-import ReactDatePicker from 'react-datepicker'
+import ReactDatePicker, { ReactDatePickerProps } from "react-datepicker";
 import dayjs from 'dayjs'
 import { makeStyles } from '@material-ui/core/styles'
+import clsx from "clsx";
 
 const useStyles = makeStyles(theme => ({
 	root: {
@@ -11,35 +12,11 @@ const useStyles = makeStyles(theme => ({
 	},
 	calendarContainer: {
 		border: 'none',
-		color: theme.palette.type === 'dark' ? '#fff' : '#4d4d4d',
-		backgroundColor: theme.palette.type === 'dark' ? '#121212' : '#fff',
-		'& .react-datepicker__header': {
-			backgroundColor: theme.palette.type === 'dark' ? '#121212' : '#fff',
-		},
-		'& .react-datepicker__current-month, .react-datepicker-time__header, .react-datepicker-year-header': {
-			color: theme.palette.type === 'dark' ? '#fff' : '#47956A',
-		},
-		'& .react-datepicker__day-name, .react-datepicker__day, .react-datepicker__time-name': {
-			color: theme.palette.type === 'dark' ? '#fff' : '#808080',
-			borderRadius: '20px',
-			'&:hover': {
-				transform: 'scale(1.07)',
-			},
-		},
-		'& .react-datepicker__day--disabled, .react-datepicker__month-text--disabled, .react-datepicker__quarter-text--disabled': {
-			color: theme.palette.type === 'dark' ? 'black' : '#ccc',
-			cursor: 'default',
-		},
-		'& .react-datepicker__day--selected ': {
-			backgroundColor: '#77C698',
-			color: '#fff',
-			borderRadius: '20px',
-		},
 	},
 }))
 
 export const CalendarEditor = forwardRef(
-	({ stopEditing, anchorRef, value }: EditorProps, componentRef) => {
+	({ stopEditing, anchorRef, value, additionalProps }: EditorProps, componentRef) => {
 		const classes = useStyles()
 		const [state, setState] = useState<{ value: dayjs.Dayjs; close: boolean }>({
 			value: dayjs(value),
@@ -120,8 +97,9 @@ export const CalendarEditor = forwardRef(
 		}, [state])
 
 		return (
-			<Popper open id={'apollo-calendar'} anchorEl={anchorRef} placement={'right-start'} className={classes.root}>
+			<Popper open id={'apollo-calendar'} anchorEl={anchorRef} placement={'right-start'} className={clsx(classes.root, additionalProps?.className)}>
 				<ReactDatePicker
+					{...additionalProps?.componentProps as ReactDatePickerProps}
 					id={'apollo-calendar'}
 					autoFocus
 					calendarClassName={classes.calendarContainer}
@@ -134,8 +112,6 @@ export const CalendarEditor = forwardRef(
 					}}
 					open
 					inline
-					/** @todo Provide a editorProps on the column that can help limiting or providing extra validations **/
-					// minDate={}
 					selected={state.value.toDate()}
 					dateFormat="yyyy/MM/dd"
 				/>

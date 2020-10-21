@@ -28,6 +28,10 @@ const useStyles = makeStyles(() => ({
 			border: 0,
 		},
 	},
+	disabledCell: {
+		cursor:'default', //no clickable action for this cell
+		pointerEvents: 'none' //no events for this cell
+	},
 	suppressHorizontalOverflow: {
 		overflowX: 'hidden',
 	},
@@ -161,18 +165,19 @@ const GridWrapper = forwardRef((props: GridWrapperProps, componentRef: React.Ref
 		const column = props.headers[columnIndex]
 		//Dummy zIndex is 0 and a spanned cell has 5 but a normal cell has 1
 		const zIndex = (cell.rowSpan || cell.colSpan) && !cell.dummy ? 5 : cell.dummy ? 0 : 1
-
 		const isRowSelected = isActiveRow({ rowIndex, colIndex: columnIndex })
+		const theme = props.apiRef.current.theme
 
 		if (isSelected) {
+			//Ensure there are no other borders
 			style.borderLeft = '0px'
 			style.borderRight = '0px'
 			style.borderTop = '0px'
 			style.borderBottom = '0px'
-			style.border = '1px solid blue'
+			style.border = props.highlightBorderColor ? `1px solid ${props.highlightBorderColor}` :'1px solid blue'
 		} else {
-			//Bind default border
-			if (!props.theme || (!props.theme.cellClass && !cell.dummy)) {
+			//Bind default border and clear other borders
+			if (!theme || (!theme.cellClass && !cell.dummy)) {
 				style.borderLeft = '0px'
 				style.borderRight = '0px'
 				style.borderTop = '0px'
@@ -187,15 +192,13 @@ const GridWrapper = forwardRef((props: GridWrapperProps, componentRef: React.Ref
 		 * dummy 1 has a rowspan of total 3 but none of its parent are visible, so dummy 3 assume the children value and highlight
 		 * of the parent because there is none visible
 		 * */
-		let cellClassName = clsx(classes.cellDefaultStyle, props.theme?.cellClass, column.cellClassName)
-		if (isRowSelected && !cell.dummy && props.theme?.currentRowClass) {
-			cellClassName = clsx(cellClassName, props.theme?.currentRowClass)
+		let cellClassName = clsx(classes.cellDefaultStyle, theme?.cellClass, column.cellClassName)
+		if (isRowSelected && !cell.dummy && theme?.currentRowClass) {
+			cellClassName = clsx(cellClassName, theme?.currentRowClass)
 		}
 
-		if (navigationDisabled && !cell.dummy && props.theme?.disabledCellClass) {
-			style.cursor = 'default' //no clickable action for this cell
-			style.pointerEvents = 'none' //no events for this cell
-			cellClassName = clsx(cellClassName, props.theme?.disabledCellClass)
+		if (navigationDisabled && !cell.dummy && theme?.disabledCellClass) {
+			cellClassName = clsx(cellClassName, classes.disabledCell, theme?.disabledCellClass)
 		}
 
 		return (
@@ -211,7 +214,6 @@ const GridWrapper = forwardRef((props: GridWrapperProps, componentRef: React.Ref
 					justifyContent: cell?.dummy ? 'top' : 'center',
 					zIndex,
 				}}
-				// tabIndex={1}
 				ref={ref}
 			>
 				{cell.value}
@@ -256,7 +258,6 @@ const GridWrapper = forwardRef((props: GridWrapperProps, componentRef: React.Ref
 		},
 		[
 			props.coords,
-			props.theme,
 			props.width,
 			props.data,
 			props.apiRef,

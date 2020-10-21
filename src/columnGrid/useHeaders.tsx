@@ -55,6 +55,20 @@ export function useHeaders({
 			)
 		}
 
+		//Validate % width to prevent overflow
+		const totalWidth = headers.reduce((acc, e) => {
+			if (e.width && typeof e.width === 'string' && e.width.includes('%')) {
+				return acc + parseFloat(e.width)
+			}
+			return acc
+		}, 0)
+
+		if (totalWidth > 100) {
+			throw new Error(
+				`Column widths cannot pass 100%, please review your configuration. Received ${totalWidth}% out of 100%`,
+			)
+		}
+
 		//Check and maybe validate if needed
 		const transformedHeaders = headers.map(
 			e =>

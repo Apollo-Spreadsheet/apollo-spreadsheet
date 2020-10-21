@@ -26,7 +26,6 @@ export interface GridWrapperCommonProps {
 	suppressNavigation?: boolean
 	/** @default false **/
 	outsideClickDeselects?: boolean
-	theme?: GridTheme
 	mergeCells?: MergeCell[]
 	mergedPositions?: MergePosition[]
 	/**
@@ -48,6 +47,11 @@ export interface GridWrapperCommonProps {
 	 * Use "start" to align cells to the top/left of the Grid and "end" to align bottom/right.
 	 */
 	scrollToAlignment?: Alignment;
+
+	/**
+	 * Border for highlighted cell
+	 */
+	highlightBorderColor?: string
 }
 
 export interface GridWrapperProps<TRow = any> extends GridWrapperCommonProps {

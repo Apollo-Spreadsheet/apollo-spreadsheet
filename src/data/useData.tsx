@@ -33,7 +33,6 @@ export function useData<Row = any>({
 	apiRef,
 }: Props<Row>) {
 	const rowsRef = useRef<Row[]>(rows)
-
 	const [data, setData] = useState<GridCell[][]>([])
 
 	useEffect(() => {
@@ -42,6 +41,7 @@ export function useData<Row = any>({
 			return
 		}
 		const updatedData = createData({
+			rows,
 			headers,
 			apiRef,
 			selection,
@@ -59,6 +59,7 @@ export function useData<Row = any>({
 			return
 		}
 		const updatedData = createData({
+			rows: apiRef.current.getRows(),
 			headers,
 			apiRef,
 			selection,
@@ -74,6 +75,7 @@ export function useData<Row = any>({
 		rowsRef.current = rows
 	}, [rows])
 
+	const getRowAt = useCallback((index: number) => rowsRef.current[index], [])
 	const getRows = useCallback(() => rowsRef.current, [])
 	const getRowsCount = useCallback(() => rowsRef.current.length, [rows])
 
@@ -82,6 +84,7 @@ export function useData<Row = any>({
 		{
 			getRows,
 			getRowsCount,
+			getRowAt
 		},
 		'Rows/Data API',
 	)

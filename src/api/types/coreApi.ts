@@ -1,10 +1,15 @@
 import { EventEmitter } from 'events'
 import React from 'react'
+import { GridTheme } from "../../types";
 
 /**
  * The core API interface that is available in the grid [[apiRef]].
  */
 export interface CoreApi extends EventEmitter {
+	/**
+	 * The grid theme that is used to extend the default styling
+	 */
+	theme?: GridTheme
 	/**
 	 * The react ref of the grid root container div element.
 	 */

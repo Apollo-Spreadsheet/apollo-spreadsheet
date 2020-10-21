@@ -427,7 +427,7 @@ export function useNavigation({
 				return handleArrowNavigationControls(event)
 			}
 
-			const row = apiRef.current.getRows()[coords.rowIndex]
+			const row = apiRef.current.getRowAt(coords.rowIndex)
 			if (!row) {
 				return console.warn('Row index')
 			}

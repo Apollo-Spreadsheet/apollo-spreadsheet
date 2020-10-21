@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react'
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Alignment } from 'react-virtualized'
 import { createMergeCellsData } from './createMergedCells'
 import { GridTheme } from '../../../src/types/grid-theme'
@@ -8,12 +8,12 @@ import { orderBy } from 'lodash'
 import { Box, Button, Checkbox, FormControl, InputLabel, MenuItem, Select } from '@material-ui/core'
 import { ApolloSpreadSheet } from '../../../src'
 import { StretchMode } from '../../../src/types/stretch-mode.enum'
-import { getTopUseCase } from './dataUseCases'
+import { useTopCase } from './dataUseCases'
 import { makeStyles } from '@material-ui/core/styles'
-import { useApiRef } from "../../../src/api/useApiRef"
+import { useApiRef } from '../../../src/api/useApiRef'
 import 'react-datepicker/dist/react-datepicker.css'
 
-const useStyles = makeStyles(() => ({
+const useStyles = makeStyles(theme => ({
 	root: {
 		margin: 10,
 	},
@@ -30,8 +30,8 @@ const useStyles = makeStyles(() => ({
 		color: 'blue',
 	},
 	headerClass: {
-		background: 'white !important' as any,
-		border: 'none !important' as any,
+		background: 'white',
+		border: 'none',
 		fontWeight: 700,
 		fontSize: '11px',
 	},
@@ -58,13 +58,38 @@ const useStyles = makeStyles(() => ({
 		height: '10px',
 		width: '10px',
 	},
+	calendarClass: {
+		color: theme.palette.type === 'dark' ? '#fff' : '#4d4d4d',
+		backgroundColor: theme.palette.type === 'dark' ? '#121212' : '#fff',
+		'& .react-datepicker__header': {
+			backgroundColor: theme.palette.type === 'dark' ? '#121212' : '#fff',
+		},
+		'& .react-datepicker__current-month, .react-datepicker-time__header, .react-datepicker-year-header': {
+			color: theme.palette.type === 'dark' ? '#fff' : '#47956A',
+		},
+		'& .react-datepicker__day-name, .react-datepicker__day, .react-datepicker__time-name': {
+			color: theme.palette.type === 'dark' ? '#fff' : '#808080',
+			borderRadius: '20px',
+			'&:hover': {
+				transform: 'scale(1.07)',
+			},
+		},
+		'& .react-datepicker__day--disabled, .react-datepicker__month-text--disabled, .react-datepicker__quarter-text--disabled': {
+			color: theme.palette.type === 'dark' ? 'black' : '#ccc',
+			cursor: 'default',
+		},
+		'& .react-datepicker__day--selected ': {
+			backgroundColor: '#77C698',
+			color: '#fff',
+			borderRadius: '20px',
+		},
+	},
 }))
 
-const { headerData: topHeaders, data: topDefaultData } = getTopUseCase()
 export function Spreadsheet() {
 	const classes = useStyles()
-	const [headers, setHeaders] = useState(topHeaders)
-	const [data, setData] = useState(topDefaultData)
+	const { headerData: headers, data: defaultData } = useTopCase(classes.calendarClass)
+	const [data, setData] = useState(defaultData)
 	const [outsideClickDeselects, setOutsideClickDeselect] = useState(true)
 	const [darkTheme, setDarkTheme] = useState(false)
 	const [selectionEnabled, setSelectionEnabled] = useState(true)
@@ -91,15 +116,17 @@ export function Spreadsheet() {
 		cellClass: classes.rowClass,
 	}
 
-	function onCellChange(changes: CellChangeParams) {
-		const newData = [...data]
-		const column = headers[changes.coords.colIndex]
-		newData[changes.coords.rowIndex] = {
-			...newData[changes.coords.rowIndex],
-			[column.accessor]: changes.newValue,
-		}
-		setData(newData)
-	}
+ 	const onCellChange = useCallback((changes: CellChangeParams) => {
+		setData(prev => {
+			const newData = [...prev]
+			const column = headers[changes.coords.colIndex]
+			newData[changes.coords.rowIndex] = {
+				...newData[changes.coords.rowIndex],
+				[column.accessor]: changes.newValue,
+			}
+			return newData
+		})
+	}, [data,headers])
 
 	const [delayedPosition, setDelayedPosition] = useState<NavigationCoords | null>(null)
 
@@ -151,7 +178,7 @@ export function Spreadsheet() {
 			sortOrder++
 		}
 		setData(sortedRows)
-		if (!parentRow){
+		if (!parentRow) {
 			setDelayedPosition({ rowIndex: newOrder - 1, colIndex: coords.colIndex })
 		}
 	}

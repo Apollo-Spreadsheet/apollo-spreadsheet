@@ -8,6 +8,7 @@ import React from 'react'
 import { ApiRef } from '../api/types/apiRef'
 
 interface CreateDataParams<TRow = any> {
+	rows: TRow[]
 	apiRef: ApiRef
 	headers: Header[]
 	selection?: SelectionProps<TRow>
@@ -17,8 +18,9 @@ export function createData({
 	headers,
 	selection,
 	apiRef,
+	rows
 }: CreateDataParams) {
-	const cellsList = apiRef.current.getRows().reduce((list: any[], row: any, rowIndex) => {
+	const cellsList = rows.reduce((list: any[], row: any, rowIndex) => {
 		const cells = headers.reduce((_cells, header, colIndex) => {
 			const isDummy = apiRef.current.isMerged({ rowIndex, colIndex })
 			if (isDummy) {

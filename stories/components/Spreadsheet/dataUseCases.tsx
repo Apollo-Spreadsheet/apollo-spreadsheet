@@ -3,7 +3,7 @@ import React from 'react'
 import PeopleIcon from '@material-ui/icons/People'
 import { ColumnCellType, Header } from '../../../src/columnGrid/types/header.type'
 
-export const getTopUseCase = () => {
+export function useTopCase (calendarClass?: string) {
 	const headerData: Header[] = [
 		{
 			id: 'deliverable',
@@ -89,6 +89,9 @@ export const getTopUseCase = () => {
 			width: '5%',
 			type: ColumnCellType.Calendar,
 			disableBackspace: true,
+			editorProps: {
+				className: calendarClass
+			}
 		},
 		{
 			id: 'endDate',
@@ -98,6 +101,9 @@ export const getTopUseCase = () => {
 			type: ColumnCellType.Calendar,
 			disableBackspace: true,
 			delayEditorOpen: 1000,
+			editorProps: {
+				className: calendarClass
+			}
 		},
 		{
 			id: 'taskControl',

@@ -1,8 +1,9 @@
-import React from 'react'
-import { TooltipProps } from '@material-ui/core'
+import React, { CSSProperties } from "react";
+import { InputBaseProps, TooltipProps } from "@material-ui/core";
 import { NavigationCoords } from '../../navigation/types/navigation-coords.type'
 import { EditorRef } from '../../editorManager/useEditorManager'
 import { PopperProps } from '@material-ui/core/Popper/Popper'
+import { ReactDatePickerProps } from "react-datepicker";
 
 export interface CellRendererProps<TRow = unknown> {
 	row: TRow
@@ -80,6 +81,14 @@ export interface Header<Key = string> {
 	 * @param event
 	 */
 	editorKeyboardHook?: (event: KeyboardEvent) => boolean
+	/**
+	 * Provides additional props to the active editor of this column
+	 */
+	editorProps?: {
+		className?: string
+		style?: CSSProperties
+		componentProps?: Partial<React.HTMLAttributes<HTMLInputElement>> | Partial<ReactDatePickerProps>
+	}
 	cellRenderer?: ICellRenderer
 	renderer?: IHeaderRenderer
 	colSpan?: number

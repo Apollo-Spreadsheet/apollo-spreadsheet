@@ -1,6 +1,6 @@
 export interface GridTheme {
 	/**
-	 * Styles the whole row where the cell is selected and also applies styling to the highligted cell
+	 * Styles the whole row where the cell is selected and also applies styling to the highlighted cell
 	 */
 	currentRowClass?: string
 	/**
@@ -11,4 +11,10 @@ export interface GridTheme {
 	nestedHeaderClass?: string
 	cellClass?: string
 	disabledCellClass?: string
+	/**
+	 * Styles to be applied in the root container of the active editor
+	 * Not every editor behaves the same and this will only work for default editor, if you wish
+	 * a more advanced configuration, use column/header `editorProps`
+	 */
+	editorClass?: string
 }

@@ -25,6 +25,9 @@ const useStyles = makeStyles(() => ({
 	defaultHeader: {
 		display: 'flex',
 		justifyContent: 'center',
+		alignItems: 'center',
+		height: '100%',
+		width: '100%',
 		boxSizing: 'border-box',
 		background: '#efefef',
 		cursor: 'default',
@@ -138,17 +141,7 @@ export const ColumnGrid = React.memo(
 
 		const headerRendererWrapper = ({ style, cell, ref, columnIndex, rowIndex }) => {
 			const { title, renderer } = cell as GridHeader
-			/** @todo Cache cell renderer result because if may have not changed so no need to invoke again **/
-			const children = renderer ? (
-				(renderer(cell) as any)
-			) : cell.tooltip ? (
-				<Tooltip title={cell.tooltip} placement={'top'} {...cell.tooltipProps}>
-					<span>{title}</span>
-				</Tooltip>
-			) : (
-				title
-			)
-
+			const theme = props.apiRef.current.theme
 			const isSortDisabled = headersSortDisabledMap[cell.id] ?? true //in case its not found, we set to true
 
 			const sortComponent =
@@ -158,9 +151,10 @@ export const ColumnGrid = React.memo(
 
 			let headerClassName = !cell.dummy
 				? cell.isNested
-					? clsx(classes.defaultHeader, props.theme?.headerClass, props.theme?.nestedHeaderClass, cell.className)
-					: clsx(classes.defaultHeader, props.theme?.headerClass, cell.className)
+					? clsx(classes.defaultHeader, theme?.headerClass, theme?.nestedHeaderClass, cell.className)
+					: clsx(classes.defaultHeader, theme?.headerClass, cell.className)
 				: undefined
+
 			//If the cell is selected we set the column as selected too
 			if (
 				!cell.dummy &&
@@ -168,14 +162,25 @@ export const ColumnGrid = React.memo(
 				!cell['isNested'] &&
 				rowIndex === 0
 			) {
-				headerClassName = clsx(headerClassName, props.theme?.currentColumnClass)
+				headerClassName = clsx(headerClassName, theme?.currentColumnClass)
 			}
+
+			/** @todo Cache cell renderer result because if may have not changed so no need to invoke again **/
+			const children = renderer ? (
+				(renderer(cell) as any)
+			) : cell.tooltip ? (
+				<Tooltip title={cell.tooltip} placement={'top'} {...cell.tooltipProps}>
+					<span className={headerClassName}>{title}</span>
+				</Tooltip>
+			) : (
+				title
+			)
 
 			return (
 				<div
 					ref={ref}
 					role={"columnheader"}
-					className={headerClassName}
+					className={ !cell.tooltip ? headerClassName : undefined}
 					aria-colindex={columnIndex}
 					data-rowindex={rowIndex}
 					data-dummy={cell.dummy}
@@ -234,7 +239,7 @@ export const ColumnGrid = React.memo(
 			},
 			[
 				props.data,
-				props.theme,
+				props.apiRef,
 				props.coords,
 				props.width,
 				headersSortDisabledMap,

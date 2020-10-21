@@ -12,6 +12,7 @@ import { NavigationKey } from './enums/navigation-key.enum'
 import { useApiExtends } from '../api/useApiExtends'
 import { ApiRef } from '../api/types/apiRef'
 import { CELL_BEGIN_EDITING, CELL_STOP_EDITING } from "../api/eventConstants"
+import clsx from "clsx";
 
 export interface StopEditingParams {
 	/** @default true **/
@@ -42,7 +43,6 @@ export interface CellChangeParams<ValueType = unknown> {
 }
 
 export interface EditorManagerProps<TRow = unknown> {
-	rows: TRow[]
 	getColumnAt: GetColumnAt
 	onCellChange?: (params: CellChangeParams) => void
 	apiRef: ApiRef
@@ -66,7 +66,6 @@ export interface EditorRef<T = unknown> {
  */
 export function useEditorManager<TRow>({
 	getColumnAt,
-	rows,
 	onCellChange,
 	apiRef,
 	initialised,
@@ -78,7 +77,7 @@ export function useEditorManager<TRow>({
 	//Detect if row/column has changed or has been deleted (compares with the active editing info)
 	useEffect(() => {
 		if (editorNode && state.current) {
-			const target = apiRef.current.getRows()[state.current.rowIndex] as TRow
+			const target = apiRef.current.getRowAt(state.current.rowIndex) as TRow
 			const column = getColumnAt(state.current.colIndex)
 			if (target && column) {
 				const value = target[column.accessor]
@@ -102,6 +101,7 @@ export function useEditorManager<TRow>({
 			if (!editorState) {
 				return
 			}
+
 			if ((params === undefined || params.save) && editorState) {
 				const newValue = editorRef.current?.getValue() ?? undefined
 				if (newValue === undefined) {
@@ -110,6 +110,7 @@ export function useEditorManager<TRow>({
 					apiRef.current.dispatchEvent(CELL_STOP_EDITING, { colIndex: editorState.colIndex, rowIndex: editorState.rowIndex })
 					return setEditorNode(null)
 				}
+
 				const isValid = editorState.validatorHook?.(newValue) ?? true
 				if (!isValid) {
 					editorRef.current = null
@@ -118,7 +119,7 @@ export function useEditorManager<TRow>({
 					return setEditorNode(null)
 				}
 
-				if (newValue != editorState.initialValue) {
+				if (newValue != editorState.initialValue){
 					onCellChange?.({
 						coords: {
 							rowIndex: editorState.rowIndex,
@@ -135,7 +136,7 @@ export function useEditorManager<TRow>({
 			apiRef.current.dispatchEvent(CELL_STOP_EDITING, { colIndex: editorState.colIndex, rowIndex: editorState.rowIndex })
 			setEditorNode(null)
 		},
-		[editorNode],
+		[editorNode, onCellChange, apiRef],
 	)
 
 	//Invoked when the editor mounts on DOM
@@ -218,7 +219,7 @@ export function useEditorManager<TRow>({
 				return
 			}
 
-			const row = apiRef.current.getRows()[coords.rowIndex]
+			const row = apiRef.current.getRowAt(coords.rowIndex)
 			if (!row) {
 				return console.warn(
 					`Row not found at ${coords.rowIndex}, therefore we can't start editing at column: ${column.id}`,
@@ -239,6 +240,10 @@ export function useEditorManager<TRow>({
 				anchorRef: targetElement,
 				value,
 				maxLength: column.maxLength ?? 500,
+				additionalProps: {
+					...column.editorProps,
+					className: clsx(apiRef.current.theme?.editorClass, column.editorProps?.className),
+				},
 				stopEditing,
 				validatorHook: column.validatorHook,
 			}
@@ -256,7 +261,7 @@ export function useEditorManager<TRow>({
 			setEditorNode(editor)
 			apiRef.current.dispatchEvent(CELL_BEGIN_EDITING, coords)
 		},
-		[getColumnAt, editorNode, stopEditing],
+		[getColumnAt, editorNode, stopEditing, apiRef],
 	)
 
 	function getEditorState() {

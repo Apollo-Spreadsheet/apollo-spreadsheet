@@ -1,6 +1,7 @@
-import React, { useCallback, useState } from "react"
+import React, { useCallback, useEffect, useState } from "react"
 import { useApiExtends } from './useApiExtends'
 import { ApiRef } from './types/apiRef'
+import { GridTheme } from "../types"
 
 /**
  * Initializes a new api instance
@@ -10,6 +11,7 @@ import { ApiRef } from './types/apiRef'
 export function useApiFactory(
 	gridRootRef: React.RefObject<HTMLDivElement>,
 	apiRef: ApiRef,
+	theme?: GridTheme
 ): boolean {
 	const [initialised, setInit] = useState(false)
 
@@ -33,10 +35,11 @@ export function useApiFactory(
 		[apiRef],
 	)
 
-	React.useEffect(() => {
+	useEffect(() => {
 		console.debug('Initializing grid api.')
 		apiRef.current.isInitialised = true
 		apiRef.current.rootElementRef = gridRootRef
+		apiRef.current.theme = theme
 
 		setInit(true)
 		const api = apiRef.current
@@ -45,7 +48,7 @@ export function useApiFactory(
 			console.debug('Clearing all events listeners')
 			api.removeAllListeners()
 		}
-	}, [gridRootRef, apiRef])
+	}, [gridRootRef, apiRef, theme])
 
 	useApiExtends(apiRef, { subscribeEvent, dispatchEvent: publishEvent }, 'CoreApi')
 

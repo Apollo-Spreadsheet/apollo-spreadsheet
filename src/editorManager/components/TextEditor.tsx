@@ -14,6 +14,7 @@ import { EditorProps } from '../editorProps'
 import { makeStyles } from '@material-ui/core/styles'
 import { addListener, removeListener } from 'resize-detector'
 import { handleEditorKeydown } from "../utils/handleEditorKeydown"
+import clsx from "clsx";
 
 const useStyles = makeStyles(() => ({
 	input: {
@@ -30,7 +31,7 @@ const useStyles = makeStyles(() => ({
 	},
 }))
 export const TextEditor = forwardRef(
-	({ value, stopEditing, anchorRef, maxLength, validatorHook }: EditorProps, componentRef) => {
+	({ value, stopEditing, anchorRef, maxLength, validatorHook, additionalProps }: EditorProps, componentRef) => {
 		const classes = useStyles()
 		const [editingValue, setEditingValue] = useState(String(value))
 
@@ -114,6 +115,7 @@ export const TextEditor = forwardRef(
 					}}
 				>
 					<TextareaAutosize
+						{...additionalProps?.componentProps as React.HTMLAttributes<any>}
 						id={'apollo-textarea'}
 						value={editingValue}
 						ref={onTextAreaResizeMount}
@@ -123,7 +125,8 @@ export const TextEditor = forwardRef(
 						aria-label="text apollo editor"
 						rowsMin={1}
 						maxLength={maxLength}
-						className={classes.input}
+						className={clsx(classes.input, additionalProps?.className)}
+						style={additionalProps?.style}
 					/>
 				</div>
 			</Popover>

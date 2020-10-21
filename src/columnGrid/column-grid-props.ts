@@ -3,13 +3,16 @@ import { GridHeader, Header, NestedHeader } from "./types/header.type"
 import { GridTheme } from '../types/grid-theme'
 import { NavigationCoords } from '../navigation/types/navigation-coords.type'
 import { DisableSortFilterParam } from "../gridWrapper/gridWrapperProps"
+import GridWrapper from "../gridWrapper/GridWrapper";
+import React from "react";
+import { ApiRef } from "../api/types";
 
 export interface ColumnGridProps {
 	/**
 	 * Indicates if the sort is disabled globally or on a specific column
 	 * @default true **/
 	disableSort?: boolean | DisableSortFilterParam
-
+	apiRef: ApiRef
 	data: Array<GridHeader[]>
 	headers: Header[]
 	nestedHeaders?: Array<NestedHeader[]>
@@ -21,7 +24,6 @@ export interface ColumnGridProps {
 	width: number
 	scrollLeft: number
 	// isScrolling: boolean
-	theme?: GridTheme
 	coords: NavigationCoords
 	/** @default StretchMode.None  */
 	stretchMode?: StretchMode
