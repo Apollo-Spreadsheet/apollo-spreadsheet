@@ -34,3 +34,6 @@ Apollo does not mutate date, relies on React updates, its built using Typescript
 ## Releases
 
 This plugin is under development, there are not yet any further release date
+
+## Warning
+`Do not use this in production, the api may suffer some changes and there might be a lot of incoming patch versions therefore you can watch the releases and stay tune for incoming majors`
