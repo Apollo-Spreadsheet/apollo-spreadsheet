@@ -112,12 +112,12 @@ export function useNavigation({
 		return nextIndex
 	}
 
-	const handleCellPaste = async (column: Header, currentValue: unknown) => {
+	const handleCellPaste = async (column: Header, row: any, currentValue: unknown) => {
 		try {
 			const text = await clipboardy.read()
 			if (column.validatorHook) {
 				if (column.validatorHook(text)) {
-					return onCellChange?.({ coords, previousValue: currentValue, newValue: text })
+					return onCellChange?.({ coords, previousValue: currentValue, newValue: text, column, row })
 				} else {
 					return
 				}
@@ -125,32 +125,32 @@ export function useNavigation({
 			//Fallback is the column type
 			if (column.type === ColumnCellType.Numeric) {
 				if (!isNaN(Number(text))) {
-					return onCellChange?.({ coords, previousValue: currentValue, newValue: text })
+					return onCellChange?.({ coords, previousValue: currentValue, newValue: text, column, row })
 				} else {
 					return
 				}
 			}
 			if (column.type === ColumnCellType.Calendar) {
 				if (dayjs(text, 'YYYY-MM-DD').format('YYYY-MM-DD') === text) {
-					return onCellChange?.({ coords, previousValue: currentValue, newValue: text })
+					return onCellChange?.({ coords, previousValue: currentValue, newValue: text, column, row })
 				} else {
 					return
 				}
 			}
 
-			return onCellChange?.({ coords, previousValue: currentValue, newValue: text })
+			return onCellChange?.({ coords, previousValue: currentValue, newValue: text, column, row })
 		} catch (ex) {
 			console.error(ex)
 		}
 	}
 
-	const handleCellCut = async (currentValue: unknown) => {
+	const handleCellCut = async (currentValue: unknown, column: Header, row: any) => {
 		await clipboardy.write(String(currentValue))
 		const newValue = getDefaultValueFromValue(currentValue)
 		if (currentValue === newValue) {
 			return
 		}
-		onCellChange?.({ coords, previousValue: currentValue, newValue })
+		onCellChange?.({ coords, previousValue: currentValue, newValue, column, row })
 	}
 
 	function handleEditorOpenControls(event: KeyboardEvent) {
@@ -167,15 +167,16 @@ export function useNavigation({
 
 	function handleControlOrMetaPressedControls(
 		event: KeyboardEvent,
-		header: Header,
+		column: Header,
+		row: any,
 		currentValue: unknown,
 	) {
 		if (event.key === 'x') {
 			event.preventDefault()
-			if (header.disableCellCut) {
+			if (column.disableCellCut) {
 				return
 			}
-			return handleCellCut(currentValue)
+			return handleCellCut(currentValue, column, row)
 		}
 		if (event.key === 'c') {
 			event.preventDefault()
@@ -184,10 +185,10 @@ export function useNavigation({
 
 		if (event.key === 'v') {
 			event.preventDefault()
-			if (header.disableCellPaste) {
+			if (column.disableCellPaste) {
 				return
 			}
-			return handleCellPaste(header, currentValue)
+			return handleCellPaste(column, row, currentValue)
 		}
 	}
 
@@ -401,7 +402,7 @@ export function useNavigation({
 				return console.error('Cell DOM element not found')
 			}
 
-			const column = getColumnAt(coords.colIndex)
+			const column = apiRef.current.getColumnAt(coords.colIndex)
 			if (!column) {
 				return console.warn('Column not found')
 			}
@@ -439,7 +440,7 @@ export function useNavigation({
 			}
 
 			if (isCtrlPressed && !editorState) {
-				return handleControlOrMetaPressedControls(event, column, currentValue)
+				return handleControlOrMetaPressedControls(event, column, row, currentValue)
 			}
 
 			//Handle cell deleting
@@ -452,10 +453,13 @@ export function useNavigation({
 				if (currentValue === newValue) {
 					return
 				}
+
 				return onCellChange?.({
 					newValue,
 					previousValue: currentValue,
 					coords,
+					row,
+					column
 				})
 			}
 
