@@ -18,5 +18,9 @@ export interface SelectionProps<TRow> {
 	 */
 	checkboxClass?: string
 
+	/**
+	 * @default 2%
+	 */
+	width?: React.ReactText
 	onHeaderIconClick?: () => void
 }

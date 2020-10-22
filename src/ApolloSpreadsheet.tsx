@@ -108,7 +108,7 @@ export const ApolloSpreadSheet = forwardRef(
 					)
 				},
 				accessor: ROW_SELECTION_HEADER_ID,
-				width: '2%',
+				width: props.selection?.width ?? '2%',
 			})
 			return newHeaders
 		}, [props.headers, props.selection])

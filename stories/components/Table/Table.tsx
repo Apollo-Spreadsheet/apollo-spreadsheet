@@ -5,6 +5,7 @@ import { AddCircle } from "@material-ui/icons";
 import { Box, IconButton } from "@material-ui/core";
 import { CellChangeParams } from "../../../src/editorManager/useEditorManager";
 import { useApiRef } from "../../../src/api/useApiRef";
+import faker from 'faker'
 
 interface DemoRow {
 	id: string
@@ -15,16 +16,18 @@ interface DemoRow {
 	order: number
 }
 
-const defaultRow: DemoRow = {
-	id: '',
-	name: '',
-	city: '',
-	country: '',
-	job: '',
-	order: 1,
+const generateRows = count => {
+	return new Array(count).fill(true).map((_, i) => ({
+		id: faker.random.number().toString(),
+		name: faker.name.findName(),
+		city: faker.address.city(),
+		country: faker.address.country(),
+		job: faker.company.bs(),
+		order: i + 1,
+	}))
 }
 export function Table() {
-	const [rows, setRows] = useState<DemoRow[]>([defaultRow])
+	const [rows, setRows] = useState<DemoRow[]>(generateRows(15))
 	const apiRef = useApiRef()
 	const onHeaderIconClick = () => {
 		const selectedRows = apiRef.current?.getSelectedRows() ?? []
@@ -117,14 +120,14 @@ export function Table() {
 					onHeaderIconClick,
 				}}
 				disableSort={disableSort}
-				nestedHeaders={[
-					[
-						{
-							title: 'Nested header example',
-							colSpan: 5,
-						},
-					],
-				]}
+				// nestedHeaders={[
+				// 	[
+				// 		{
+				// 			title: 'Nested header example',
+				// 			colSpan: 5,
+				// 		},
+				// 	],
+				// ]}
 			/>
 		</Box>
 	)

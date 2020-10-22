@@ -1,4 +1,5 @@
 import { percentageToPixels } from './percentageToPixels'
+import React from "react";
 
 /**
  * Converts the column widths from percentage or px down to pure number value (which is pixels in the end) for fixed column width configuration
@@ -6,7 +7,7 @@ import { percentageToPixels } from './percentageToPixels'
  * @param containerWidth
  * @param minColumnWidth
  */
-export const parseColumnWidthsConfiguration = (value: number | string, containerWidth: number) => {
+export const parseColumnWidthsConfiguration = (value: React.ReactText, containerWidth: number) => {
 	const isPercentage = typeof value === 'string' && value.includes('%')
 	const isPixels = typeof value === 'string' && value.includes('px')
 

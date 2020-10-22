@@ -22,16 +22,15 @@ export const createFixedWidthMapping = (
 			return acc
 		}
 
-		const value = parseColumnWidthsConfiguration(e.width, containerWidth)
-		//console.log({ value })
+		let value = parseColumnWidthsConfiguration(e.width, containerWidth)
 		//Avoid creating an entry because react-virtualized grid will use the minimum width
 		if (value < minColumnWidth) {
-			return acc
+			value = minColumnWidth
 		}
 
 		//Avoid overflow if we do have stretch mode
 		if (stretchMode !== StretchMode.None && value > containerWidth){
-			return acc
+			value = minColumnWidth
 		}
 
 		acc[i] = value

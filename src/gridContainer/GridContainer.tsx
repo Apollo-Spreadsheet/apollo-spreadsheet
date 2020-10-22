@@ -9,6 +9,7 @@ import { RegisterChildFn } from '../gridWrapper/interfaces/registerChildFn'
 import { makeStyles } from '@material-ui/core/styles'
 import shallowDiffers from '../helpers/shallowDiffers'
 import clsx from 'clsx'
+import { parseColumnWidthsConfiguration } from "../columnGrid/utils";
 
 const useStyles = makeStyles(() => ({
 	root: {
@@ -51,7 +52,7 @@ export const GridContainer = React.memo(
 		children,
 		width,
 		height,
-		containerClassName,
+		containerClassName
 	}: Props) => {
 		const scrollbarSize = scrollbarWidth() ?? 0
 		const classes = useStyles()
@@ -134,7 +135,7 @@ export const GridContainer = React.memo(
 		}
 
 		function render(containerWidth: number, containerHeight = 500) {
-			const remainingWidth = buildColumnTotalWidth(containerWidth)
+			const remainingWidth = buildColumnTotalWidth(containerWidth - scrollbarSize)
 			return (
 				<ColumnSizer
 					columnMinWidth={minColumnWidth}
@@ -144,12 +145,13 @@ export const GridContainer = React.memo(
 					{({ registerChild, getColumnWidth, adjustedWidth }) => {
 						const normalizedAdjustedWidth = isNaN(adjustedWidth) ? 0 : adjustedWidth
 						if (stretchMode !== StretchMode.None) {
+							// console.warn(normalizedAdjustedWidth + fixedColumnWidths.current.totalSize + scrollbarSize)
 							return (
 								<>
 									{children({
-										width: containerWidth,
-										// width:
-										// 	normalizedAdjustedWidth + fixedColumnWidths.current.totalSize + scrollbarSize,
+										// width: containerWidth,
+										width:
+											normalizedAdjustedWidth + fixedColumnWidths.current.totalSize + scrollbarSize,
 										height: containerHeight,
 										getColumnWidth: getColumnWidthHelper(getColumnWidth),
 										mainGridRef,
@@ -166,11 +168,11 @@ export const GridContainer = React.memo(
 								{({ onScroll, scrollLeft }) => (
 									<>
 										{children({
-											width: containerWidth,
-											// width:
-											// 	normalizedAdjustedWidth +
-											// 	fixedColumnWidths.current.totalSize +
-											// 	scrollbarSize,
+											// width: containerWidth,
+											width:
+												normalizedAdjustedWidth +
+												fixedColumnWidths.current.totalSize +
+												scrollbarSize,
 											height: containerHeight,
 											getColumnWidth: getColumnWidthHelper(getColumnWidth),
 											scrollLeft,
