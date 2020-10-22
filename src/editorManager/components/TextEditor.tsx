@@ -112,6 +112,8 @@ export const TextEditor = forwardRef(
 					style={{
 						width: anchorStyle.width,
 						minHeight: anchorStyle.height,
+						background: anchorStyle.background,
+						backgroundColor: anchorStyle.backgroundColor
 					}}
 				>
 					<TextareaAutosize
