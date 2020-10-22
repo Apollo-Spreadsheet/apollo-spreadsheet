@@ -9,7 +9,6 @@ import { RegisterChildFn } from '../gridWrapper/interfaces/registerChildFn'
 import { makeStyles } from '@material-ui/core/styles'
 import shallowDiffers from '../helpers/shallowDiffers'
 import clsx from 'clsx'
-import { parseColumnWidthsConfiguration } from "../columnGrid/utils";
 
 const useStyles = makeStyles(() => ({
 	root: {
@@ -146,12 +145,11 @@ export const GridContainer = React.memo(
 					{({ registerChild, getColumnWidth, adjustedWidth }) => {
 						const normalizedAdjustedWidth = isNaN(adjustedWidth) ? 0 : adjustedWidth
 						if (stretchMode !== StretchMode.None) {
-							console.info(`Container width is at ${containerWidth}px and height ${containerHeight}px. The adjusted width became ${normalizedAdjustedWidth}px resulting in ${normalizedAdjustedWidth + fixedColumnWidths.current.totalSize + scrollbarSize}px with scrollbar at ${scrollbarSize}px`)
+							console.info(`Container width is at ${containerWidth}px and height ${containerHeight}px.`)
 							return (
 								<>
 									{children({
-										width: containerWidth ,
-										//width: normalizedAdjustedWidth + fixedColumnWidths.current.totalSize - scrollbarSize,
+										width: containerWidth,
 										height: containerHeight,
 										getColumnWidth: getColumnWidthHelper(getColumnWidth),
 										mainGridRef,
