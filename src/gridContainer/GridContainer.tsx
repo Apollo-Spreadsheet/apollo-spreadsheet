@@ -134,7 +134,7 @@ export const GridContainer = React.memo(
 		}
 
 		function render(containerWidth: number, containerHeight = 500) {
-			const remainingWidth = buildColumnTotalWidth(containerWidth)
+			const remainingWidth = buildColumnTotalWidth(containerWidth - scrollbarSize)
 			console.info(fixedColumnWidths.current)
 			return (
 				<ColumnSizer

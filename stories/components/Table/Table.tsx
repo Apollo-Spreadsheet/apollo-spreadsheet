@@ -101,8 +101,14 @@ export function Table() {
 			id: 'country',
 			title: 'Country',
 			accessor: 'country',
-			width: '15%'
+			width: '35%'
 		},
+		{
+			id: 'org',
+			title: 'Organization',
+			accessor: 'org',
+			width: '20%'
+		}
 	]
 
 	return (
@@ -113,7 +119,7 @@ export function Table() {
 				rows={rows}
 				onCellChange={onCellChange}
 				onCreateRow={onCreateRowClick}
-				minColumnWidth={30}
+				minColumnWidth={10}
 				minRowHeight={30}
 				stretchMode={StretchMode.All}
 				selection={{

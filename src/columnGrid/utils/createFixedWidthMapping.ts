@@ -18,6 +18,12 @@ export const createFixedWidthMapping = (
 	scrollWidth: number,
 ) => {
 	const mapping = columns.reduce((acc, e, i) => {
+		//If there is no width or its negative, apply min column width
+		if (containerWidth <= 0){
+			acc[i] = minColumnWidth
+			return acc
+		}
+
 		if (!e.width) {
 			return acc
 		}
@@ -39,8 +45,11 @@ export const createFixedWidthMapping = (
 
 	const isAllColWidthsFilled = columns.filter(e => e.width).length === columns.length
 	let totalSize = Object.values(mapping).reduce((acc, e) => acc + e, 0)
+
+
 	//Loop over the new mapping and adjust
-	const remainingSize = Math.max(0, Math.max(0, containerWidth - scrollWidth) - totalSize)
+	const remainingSize = Math.max(0, Math.max(0, containerWidth) - totalSize)
+
 	//We might have a margin that some width is left
 	if (isAllColWidthsFilled && totalSize < containerWidth) {
 		//Add the remaining size into the last
