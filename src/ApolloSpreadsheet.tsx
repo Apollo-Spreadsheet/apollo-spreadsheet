@@ -115,6 +115,14 @@ export const ApolloSpreadSheet = forwardRef(
 
 		useEvents(rootContainerRef, apiRef)
 
+		const { headersData, getColumnAt, dynamicColumnCount } = useHeaders({
+			headers,
+			nestedHeaders: props.nestedHeaders,
+			minColumnWidth,
+			apiRef,
+			initialised
+		})
+
 		useMergeCells({
 			data: props.mergeCells,
 			rowCount: rows.length,
@@ -137,11 +145,6 @@ export const ApolloSpreadSheet = forwardRef(
 			initialised,
 		})
 
-		const { headersData, getColumnAt, dynamicColumnCount } = useHeaders({
-			headers,
-			nestedHeaders: props.nestedHeaders,
-			minColumnWidth,
-		})
 
 		const editorNode = useEditorManager({
 			getColumnAt,

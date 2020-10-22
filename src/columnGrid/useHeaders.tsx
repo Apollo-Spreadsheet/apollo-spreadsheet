@@ -3,6 +3,7 @@ import { Header, GridHeader, NestedHeader } from './types/header.type'
 import { FixedColumnWidthDictionary } from './types/fixed-column-width-dictionary'
 import { StretchMode } from '../types/stretch-mode.enum'
 import { insertDummyCells } from '../gridWrapper/utils/insertDummyCells'
+import { ApiRef, useApiExtends } from "../api";
 
 export interface FixedColumnWidthRecord {
 	totalSize: number
@@ -24,6 +25,8 @@ interface Props {
 	nestedHeaders?: Array<NestedHeader[]>
 	minColumnWidth: number
 	stretchMode?: StretchMode
+	apiRef: ApiRef
+	initialised: boolean
 }
 
 /**
@@ -40,8 +43,13 @@ export function useHeaders({
 	nestedHeaders,
 	minColumnWidth,
 	stretchMode,
+	apiRef,
+	initialised
 }: Props): HeadersState {
+	const headersRef = useRef<Header[]>(headers)
+
 	const headersData: GridHeader[][] = useMemo(() => {
+		headersRef.current = headers
 		//Detect duplicated
 		const duplicateColumns = headers.filter((column, i) => {
 			return headers.findIndex(d => d.id === column.id) !== i
@@ -119,12 +127,15 @@ export function useHeaders({
 	}, [headers])
 
 	const getColumnAt = useCallback(
-		(index: number, row = 0) => {
-			return headersData[row]?.[index]
+		(index: number) => {
+			return headersRef.current[index]
 		},
-		[headersData],
+		[],
 	)
 
+	useApiExtends(apiRef, {
+		getColumnAt
+	}, 'ColumnApi')
 	return {
 		headersData,
 		dynamicColumnCount,

@@ -40,6 +40,8 @@ export interface CellChangeParams<ValueType = unknown> {
 	coords: NavigationCoords
 	previousValue: ValueType
 	newValue: ValueType
+	row: unknown
+	column: Header
 }
 
 export interface EditorManagerProps<TRow = unknown> {
@@ -113,14 +115,26 @@ export function useEditorManager<TRow>({
 				}
 
 				if (newValue != editorState.initialValue){
-					onCellChange?.({
-						coords: {
-							rowIndex: editorState.rowIndex,
-							colIndex: editorState.colIndex,
-						},
-						previousValue: editorState.initialValue,
-						newValue,
-					})
+					const row = apiRef.current.getRowAt(editorState.rowIndex)
+					const column = apiRef.current.getColumnAt(editorState.colIndex)
+					if (!row){
+						console.warn(`Row not found at ${editorState.rowIndex} when attempting to invoke onCellChange`)
+					}
+					else if (!column){
+						console.warn(`Column not found at ${editorState.colIndex} when attempting to invoke onCellChange`)
+					}
+					else {
+						onCellChange?.({
+							coords: {
+								rowIndex: editorState.rowIndex,
+								colIndex: editorState.colIndex,
+							},
+							previousValue: editorState.initialValue,
+							newValue,
+							row,
+							column
+						})
+					}
 				}
 			}
 
