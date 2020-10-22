@@ -8,19 +8,14 @@ import NumericEditor from './components/NumericEditor'
 import { EditorProps } from './editorProps'
 import { CalendarEditor } from './components/CalendarEditor'
 import { isFunctionType } from '../helpers/isFunction'
-import { NavigationKey } from './enums/navigation-key.enum'
 import { useApiExtends } from '../api/useApiExtends'
 import { ApiRef } from '../api/types/apiRef'
 import { CELL_BEGIN_EDITING, CELL_STOP_EDITING } from "../api/eventConstants"
-import clsx from "clsx";
+import clsx from "clsx"
 
 export interface StopEditingParams {
 	/** @default true **/
 	save?: boolean
-	/**
-	 * If provided it will perform this key action afterwards
-	 */
-	//keyPress?: NavigationKey
 }
 
 export interface IEditorState {
@@ -36,17 +31,17 @@ export interface IEditorState {
 	isPopup: boolean
 }
 
-export interface CellChangeParams<ValueType = unknown> {
+export interface CellChangeParams<Row = unknown, ValueType = unknown> {
 	coords: NavigationCoords
 	previousValue: ValueType
 	newValue: ValueType
-	row: unknown
+	row: Row
 	column: Header
 }
 
 export interface EditorManagerProps<TRow = unknown> {
 	getColumnAt: GetColumnAt
-	onCellChange?: (params: CellChangeParams) => void
+	onCellChange?: (params: CellChangeParams<TRow>) => void
 	apiRef: ApiRef
 	initialised: boolean
 }

@@ -135,7 +135,6 @@ export const GridContainer = React.memo(
 
 		function render(containerWidth: number, containerHeight = 500) {
 			const remainingWidth = buildColumnTotalWidth(containerWidth - scrollbarSize)
-			console.info(fixedColumnWidths.current)
 			return (
 				<ColumnSizer
 					columnMinWidth={minColumnWidth}
@@ -145,7 +144,7 @@ export const GridContainer = React.memo(
 					{({ registerChild, getColumnWidth, adjustedWidth }) => {
 						const normalizedAdjustedWidth = isNaN(adjustedWidth) ? 0 : adjustedWidth
 						if (stretchMode !== StretchMode.None) {
-							console.info(`Container width is at ${containerWidth}px and height ${containerHeight}px.`)
+							// console.info(`Container width is at ${containerWidth}px and height ${containerHeight}px.`)
 							return (
 								<>
 									{children({

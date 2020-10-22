@@ -1,9 +1,9 @@
 import { EventEmitter } from 'events'
 import React from 'react'
-import { GridTheme } from "../../types";
+import { GridTheme } from "../../types"
 
 /**
- * The core API interface that is available in the grid [[apiRef]].
+ * The core API interface that is available in the grid.
  */
 export interface CoreApi extends EventEmitter {
 	/**

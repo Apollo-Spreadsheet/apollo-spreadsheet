@@ -53,7 +53,7 @@ const useStyles = makeStyles(() => ({
 		height: '100%',
 	},
 	sort: {
-		marginLeft: '10px',
+
 	},
 	disableScroll: {
 		overflow: 'hidden'
