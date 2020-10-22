@@ -150,9 +150,8 @@ export const GridContainer = React.memo(
 							return (
 								<>
 									{children({
-										// width: containerWidth,
-										width:
-											normalizedAdjustedWidth + fixedColumnWidths.current.totalSize + scrollbarSize,
+										width: containerWidth ,
+										//width: normalizedAdjustedWidth + fixedColumnWidths.current.totalSize - scrollbarSize,
 										height: containerHeight,
 										getColumnWidth: getColumnWidthHelper(getColumnWidth),
 										mainGridRef,

@@ -44,7 +44,7 @@ interface Props<TRow = any> extends GridWrapperCommonProps, GridContainerCommonP
 	minRowHeight?: number
 	/** @default 50 **/
 	minColumnHeight?: number
-	/** @default 50 **/
+	/** @default 30 **/
 	minColumnWidth?: number
 	/** @default StretchMode.None  */
 	stretchMode?: StretchMode
@@ -64,7 +64,7 @@ interface Props<TRow = any> extends GridWrapperCommonProps, GridContainerCommonP
 export const ApolloSpreadSheet = forwardRef(
 	(props: Props, componentRef: React.Ref<HTMLDivElement>) => {
 		const classes = useStyles()
-		const minColumnWidth = props.minColumnWidth ?? 60
+		const minColumnWidth = props.minColumnWidth ?? 30
 		const [gridFocused, setGridFocused] = useState(true)
 		const defaultApiRef = useApiRef()
 		const apiRef = React.useMemo(() => (!props.apiRef ? defaultApiRef : props.apiRef), [

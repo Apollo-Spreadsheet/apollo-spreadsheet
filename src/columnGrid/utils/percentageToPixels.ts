@@ -4,5 +4,5 @@
  * @param containerWidth
  */
 export const percentageToPixels = (value: number, containerWidth: number) => {
-	return (value * containerWidth) / 100 //TODO not sure if i use math.floor
+	return (value * containerWidth) / 100
 }

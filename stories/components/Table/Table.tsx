@@ -101,6 +101,7 @@ export function Table() {
 			id: 'country',
 			title: 'Country',
 			accessor: 'country',
+			width: '15%'
 		},
 	]
 
