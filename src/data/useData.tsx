@@ -78,13 +78,18 @@ export function useData<Row = any>({
 	const getRowAt = useCallback((index: number) => rowsRef.current[index], [])
 	const getRows = useCallback(() => rowsRef.current, [])
 	const getRowsCount = useCallback(() => rowsRef.current.length, [rows])
-
+	const getRowById = useCallback((id: string) => rowsRef.current.find((e: any) => String(e[selection?.key ?? ""]) === id), [])
+	const getRowsWithFilter = useCallback((predicate: (value: Row, index: number, array: Row[]) => unknown, thisArg?: any) => rowsRef.current.filter(predicate, thisArg) , [])
+	const getRowIndex = useCallback((id: string) => rowsRef.current.findIndex((e: any) => String(e[selection?.key ?? ""]) === id), [])
 	useApiExtends(
 		apiRef,
 		{
 			getRows,
 			getRowsCount,
-			getRowAt
+			getRowAt,
+			getRowById,
+			getRowsWithFilter,
+			getRowIndex
 		},
 		'Rows/Data API',
 	)

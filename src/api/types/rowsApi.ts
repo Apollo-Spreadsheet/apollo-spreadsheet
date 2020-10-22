@@ -17,4 +17,9 @@ export interface RowApi<TRow = unknown> {
 	 * Get the total number of rows in the grid.
 	 */
 	getRowsCount: () => number
+
+	getRowById: (id: string) => TRow | undefined
+	getRowIndex: (id: string) => number
+
+	getRowsWithFilter: (predicate: (value: TRow, index: number, array: TRow[]) => unknown, thisArg?: any) => TRow[]
 }

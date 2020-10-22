@@ -41,9 +41,7 @@ export function useRowSelection<TRow = any>({ selection, apiRef, initialised }: 
 			}
 			const _id = typeof idOrRow !== 'object' ? idOrRow : idOrRow[selection.key]
 			//Find the target row in order to determinate whether we can select or not
-			const targetRow: any = apiRef.current
-				.getRows()
-				.find((e: any) => String(e[selection.key]) === String(_id))
+			const targetRow: any = apiRef.current.getRowById(String(_id))
 			if (!targetRow) {
 				return console.warn(
 					`Row not found with the given key ${selection.key} on param: ${idOrRow} and extracted the id: ${_id}`,
@@ -53,6 +51,13 @@ export function useRowSelection<TRow = any>({ selection, apiRef, initialised }: 
 			if (selection.canSelect && !selection.canSelect(targetRow)) {
 				return
 			}
+
+			//Check if highlight is at the selecting id otherwise we need to force it
+			const rowIndex = apiRef.current.getRowIndex(String(_id))
+			apiRef.current.selectCell({
+				colIndex: apiRef.current.getColumnCount() - 1,
+				rowIndex
+			})
 
 			//Toggle effect
 			if (!isRowSelected(_id)) {
@@ -71,8 +76,7 @@ export function useRowSelection<TRow = any>({ selection, apiRef, initialised }: 
 			return []
 		}
 		return apiRef.current
-			.getRows()
-			.filter((e: any) => selectedIds.current.some(id => String(id) === String(e[selection.key])))
+			.getRowsWithFilter((e: any) => selectedIds.current.some(id => String(id) === String(e[selection.key])))
 			.map((e: any) => String(e[selection.key]))
 	}, [apiRef, selection])
 

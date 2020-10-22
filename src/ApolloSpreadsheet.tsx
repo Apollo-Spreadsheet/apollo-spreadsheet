@@ -98,6 +98,7 @@ export const ApolloSpreadSheet = forwardRef(
 				colSpan: 1,
 				id: ROW_SELECTION_HEADER_ID,
 				title: '',
+				className: props.selection?.className,
 				renderer: () => {
 					return (
 						<Tooltip placement={'top'} title={'Click to delete the selected rows'}>
@@ -139,20 +140,6 @@ export const ApolloSpreadSheet = forwardRef(
 			initialised,
 		})
 
-		useRowSelection({
-			selection: props.selection,
-			apiRef,
-			initialised,
-		})
-
-
-		const editorNode = useEditorManager({
-			getColumnAt,
-			onCellChange: props.onCellChange,
-			apiRef,
-			initialised,
-		})
-
 		const [coords, selectCell] = useNavigation({
 			defaultCoords: props.defaultCoords ?? {
 				rowIndex: 0,
@@ -167,6 +154,21 @@ export const ApolloSpreadSheet = forwardRef(
 			apiRef,
 			initialised,
 		})
+
+		useRowSelection({
+			selection: props.selection,
+			apiRef,
+			initialised,
+		})
+
+
+		const editorNode = useEditorManager({
+			getColumnAt,
+			onCellChange: props.onCellChange,
+			apiRef,
+			initialised,
+		})
+
 
 		/** @todo Extract to useSort hook **/
 		function onSortClick(field: string) {

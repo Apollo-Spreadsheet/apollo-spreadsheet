@@ -7,4 +7,5 @@ export interface ColumnApi {
    * @param index
    */
   getColumnAt: (index: number) => Header | undefined
+  getColumnCount: () => number
 }

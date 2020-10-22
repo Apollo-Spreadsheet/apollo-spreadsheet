@@ -64,6 +64,9 @@ export function Table() {
 				order: prev.length + 1,
 			},
 		])
+		const { colIndex } = apiRef.current.getSelectedCoords()
+		const rowCount = apiRef.current.getRowsCount()
+		apiRef.current.selectCell({colIndex, rowIndex: rowCount - 1 })
 	}
 
 	const headers: Header[] = [

@@ -16,6 +16,7 @@ import {  GridWrapperProps } from './gridWrapperProps'
 import { makeStyles } from '@material-ui/core/styles'
 import { MergeCell } from '../mergeCells/interfaces/merge-cell'
 import { StretchMode } from "../types";
+import { useApiRef } from "../api";
 
 const useStyles = makeStyles(() => ({
 	bodyContainer: {
@@ -82,6 +83,8 @@ const GridWrapper = forwardRef((props: GridWrapperProps, componentRef: React.Ref
 	function recomputeSizes() {
 		cache.clearAll()
 		gridRef.current?.recomputeGridSize()
+		//When the re-computation happens the scroll position is affected and gets reset
+		gridRef.current?.scrollToCell({ columnIndex: props.coords.colIndex, rowIndex: props.coords.rowIndex })
 	}
 
 	function recomputingCleanup() {

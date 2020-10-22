@@ -19,6 +19,11 @@ export interface SelectionProps<TRow> {
 	checkboxClass?: string
 
 	/**
+	 * Style for the column of selection
+	 */
+	className?: string
+
+	/**
 	 * @default 2%
 	 */
 	width?: React.ReactText

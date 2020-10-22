@@ -132,9 +132,13 @@ export function useHeaders({
 		},
 		[],
 	)
+	const getColumnCount = useCallback(() => {
+		return headersRef.current.length
+	}, [])
 
 	useApiExtends(apiRef, {
-		getColumnAt
+		getColumnAt,
+		getColumnCount
 	}, 'ColumnApi')
 	return {
 		headersData,
