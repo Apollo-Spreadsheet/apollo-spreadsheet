@@ -1,4 +1,5 @@
 export * from './ApolloSpreadsheet'
+export * from './ApolloSpreadsheetProps'
 export * from './api'
 export * from './columnGrid'
 export * from './data'

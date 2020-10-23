@@ -9,7 +9,7 @@ describe('useData hook', () => {
 	it('should mount without any data', () => {
 		const { result } = renderHook(() => useData({
 			rows: [],
-			headers: [],
+			columns: [],
 			selectRow: jest.fn(),
 			isRowSelected: jest.fn(),
 		}))
@@ -21,7 +21,7 @@ describe('useData hook', () => {
 		const rows = [{ id: 1 }]
 		const { result } = renderHook(() => useData({
 			rows,
-			headers: mockHeaders,
+			columns: mockHeaders,
 			selectRow: jest.fn(),
 			isRowSelected: jest.fn(),
 		}))
@@ -46,7 +46,7 @@ describe('useData hook', () => {
 			rows,
 			mergeCells,
 			mergedPositions,
-			headers: mockHeaders,
+			columns: mockHeaders,
 			selectRow: jest.fn(),
 			isRowSelected: jest.fn(),
 		}))
@@ -58,7 +58,7 @@ describe('useData hook', () => {
 		const rows = [{ id: 1, name: 'testName' }]
 		const { result } = renderHook(() => useData({
 			rows,
-			headers: mockHeaders,
+			columns: mockHeaders,
 			selectRow: jest.fn(),
 			isRowSelected: jest.fn(),
 			selection: { key: 'id' },

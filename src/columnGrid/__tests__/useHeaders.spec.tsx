@@ -18,12 +18,12 @@ describe('useHeaders hook', () => {
 
 	it('should mount without any data', () => {
 		const { result } = renderHook(() => useHeaders({
-			headers: [],
+			columns: [],
 			nestedHeaders: [],
 			minColumnWidth: 50,
 			stretchMode: StretchMode.All,
 		}))
-		expect(result.current.headersData).toEqual([[]])
+		expect(result.current.gridHeaders).toEqual([[]])
 		expect(result.current.dynamicColumnCount).toBe(0)
 	})
 
@@ -35,12 +35,12 @@ describe('useHeaders hook', () => {
 			colSpan: 0,
 		}))
 		const { result } = renderHook(() => useHeaders({
-			headers,
+			columns: headers,
 			nestedHeaders: [],
 			minColumnWidth: 50,
 			stretchMode: StretchMode.All,
 		}))
-		expect(result.current.headersData).toEqual([expectedHeadersData])
+		expect(result.current.gridHeaders).toEqual([expectedHeadersData])
 		expect(result.current.dynamicColumnCount).toBe(1)
 	})
 
@@ -51,7 +51,7 @@ describe('useHeaders hook', () => {
 		]
 		try {
 			renderHook(() => useHeaders({
-				headers,
+				columns: headers,
 				nestedHeaders: [],
 				minColumnWidth: 50,
 				stretchMode: StretchMode.All,
@@ -65,7 +65,7 @@ describe('useHeaders hook', () => {
 		const headers = [createColumnMock({ width: 200 })]
 		try {
 			renderHook(() => useHeaders({
-				headers,
+				columns: headers,
 				nestedHeaders: [[{
 					title: 'span 1',
 					colSpan: 4,
@@ -85,7 +85,7 @@ describe('useHeaders hook', () => {
 			width: 100,
 		})]
 		const { result } = renderHook(() => useHeaders({
-			headers,
+			columns: headers,
 			nestedHeaders: [[{
 				title: 'Test',
 				colSpan: 2,
@@ -94,7 +94,7 @@ describe('useHeaders hook', () => {
 			stretchMode: StretchMode.All,
 		}))
 
-		expect(result.current.headersData).toMatchSnapshot()
+		expect(result.current.gridHeaders).toMatchSnapshot()
 		expect(result.current.dynamicColumnCount).toBe(0)
 	})
 })

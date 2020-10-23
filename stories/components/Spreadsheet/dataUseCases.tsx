@@ -1,10 +1,10 @@
 import { getSimpleData } from '../LargeDataGrid/generateData'
 import React from 'react'
 import PeopleIcon from '@material-ui/icons/People'
-import { ColumnCellType, Header } from '../../../src/columnGrid/types/header.type'
+import { ColumnCellType, Column } from '../../../src/columnGrid/types/header.type'
 
-export function useTopCase (calendarClass?: string) {
-	const headerData: Header[] = [
+export function useTopCase(calendarClass?: string) {
+	const headerData: Column[] = [
 		{
 			id: 'deliverable',
 			title: 'Deliverable',
@@ -90,8 +90,8 @@ export function useTopCase (calendarClass?: string) {
 			type: ColumnCellType.Calendar,
 			disableBackspace: true,
 			editorProps: {
-				className: calendarClass
-			}
+				className: calendarClass,
+			},
 		},
 		{
 			id: 'endDate',
@@ -102,8 +102,8 @@ export function useTopCase (calendarClass?: string) {
 			disableBackspace: true,
 			delayEditorOpen: 1000,
 			editorProps: {
-				className: calendarClass
-			}
+				className: calendarClass,
+			},
 		},
 		{
 			id: 'taskControl',

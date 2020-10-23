@@ -1,11 +1,12 @@
-import React, { useState } from "react";
-import { ApolloSpreadSheet, StretchMode } from "../../../src";
-import { Header } from "../../../src/columnGrid/types/header.type";
-import { AddCircle } from "@material-ui/icons";
-import { Box, IconButton } from "@material-ui/core";
-import { CellChangeParams } from "../../../src/editorManager/useEditorManager";
-import { useApiRef } from "../../../src/api/useApiRef";
+import React, { useState } from 'react'
+import { ApolloSpreadSheet, StretchMode } from '../../../src'
+import { Column } from '../../../src/columnGrid/types/header.type'
+import { AddCircle } from '@material-ui/icons'
+import { Box, IconButton } from '@material-ui/core'
+import { CellChangeParams } from '../../../src/editorManager/useEditorManager'
+import { useApiRef } from '../../../src/api/useApiRef'
 import faker from 'faker'
+import { makeStyles } from '@material-ui/core/styles'
 
 interface DemoRow {
 	id: string
@@ -26,18 +27,27 @@ const generateRows = count => {
 		order: i + 1,
 	}))
 }
+const useStyles = makeStyles(() => ({
+	cell: {},
+	selectedCell: {
+		background: '#004daa',
+		color: 'white',
+	},
+}))
+
 export function Table() {
+	const classes = useStyles()
 	const [rows, setRows] = useState<DemoRow[]>(generateRows(15))
 	const apiRef = useApiRef()
 	const onHeaderIconClick = () => {
-		const selectedRows = apiRef.current?.getSelectedRows() ?? []
+		const selectedRows = apiRef.current?.getSelectedRowIds() ?? []
 		if (selectedRows.length === 0) {
 			return
 		}
 		setRows(rows.filter(e => !selectedRows.some(id => id === e.id)))
 	}
 
-	function disableSort(header: Header) {
+	function disableSort(header: Column) {
 		return header.id === 'order'
 	}
 	const onCellChange = (params: CellChangeParams) => {
@@ -66,10 +76,10 @@ export function Table() {
 		])
 		const { colIndex } = apiRef.current.getSelectedCoords()
 		const rowCount = apiRef.current.getRowsCount()
-		apiRef.current.selectCell({colIndex, rowIndex: rowCount - 1 })
+		apiRef.current.selectCell({ colIndex, rowIndex: rowCount - 1 })
 	}
 
-	const headers: Header[] = [
+	const headers: Column[] = [
 		{
 			id: 'order',
 			title: '',
@@ -104,21 +114,21 @@ export function Table() {
 			id: 'country',
 			title: 'Country',
 			accessor: 'country',
-			width: '35%'
+			width: '35%',
 		},
 		{
 			id: 'org',
 			title: 'Organization',
 			accessor: 'org',
-			width: '20%'
-		}
+			width: '20%',
+		},
 	]
 
 	return (
 		<Box width={'98%'} height={'400px'} style={{ margin: 10 }}>
 			<ApolloSpreadSheet
 				apiRef={apiRef}
-				headers={headers}
+				columns={headers}
 				rows={rows}
 				onCellChange={onCellChange}
 				onCreateRow={onCreateRowClick}
@@ -128,6 +138,7 @@ export function Table() {
 				selection={{
 					key: 'id',
 					onHeaderIconClick,
+					cellClassName: classes.selectedCell,
 				}}
 				disableSort={disableSort}
 				// nestedHeaders={[

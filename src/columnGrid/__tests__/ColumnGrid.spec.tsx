@@ -6,7 +6,7 @@ import { createColumnMock } from '../__mocks__/column-mock'
 
 describe('<ColumnGrid />', () => {
 	const props: ColumnGridProps = {
-		headers: [
+		columns: [
 			createColumnMock({ id: '1', width: 100, title: 'First' }),
 			createColumnMock({ id: '12', title: 'Second', tooltip: 'Test' }),
 		],

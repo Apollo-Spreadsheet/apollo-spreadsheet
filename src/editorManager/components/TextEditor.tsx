@@ -104,6 +104,7 @@ export const TextEditor = forwardRef(
 						zIndex: 10,
 						border: isValidValue ? anchorStyle.border : '1px solid red',
 						borderRadius: 0,
+						background: 'transparent'
 					},
 				}}
 			>
@@ -112,8 +113,6 @@ export const TextEditor = forwardRef(
 					style={{
 						width: anchorStyle.width,
 						minHeight: anchorStyle.height,
-						background: anchorStyle.background,
-						backgroundColor: anchorStyle.backgroundColor
 					}}
 				>
 					<TextareaAutosize
@@ -128,7 +127,11 @@ export const TextEditor = forwardRef(
 						rowsMin={1}
 						maxLength={maxLength}
 						className={clsx(classes.input, additionalProps?.className)}
-						style={additionalProps?.style}
+						style={{
+							minHeight: anchorStyle.height,
+							...additionalProps?.style,
+						}}
+
 					/>
 				</div>
 			</Popover>

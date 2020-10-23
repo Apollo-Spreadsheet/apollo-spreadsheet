@@ -1,10 +1,10 @@
-import React, { useCallback, useRef, useState } from 'react'
+import React, { useCallback, useRef } from 'react'
 import { StretchMode } from '../types/stretch-mode.enum'
 import { scrollbarWidth } from '@xobotyi/scrollbar-width'
 import { AutoSizer, ColumnSizer, OnScrollParams, ScrollSync } from 'react-virtualized'
 import { createFixedWidthMapping } from '../columnGrid/utils/createFixedWidthMapping'
 import { FixedColumnWidthRecord } from '../columnGrid/useHeaders'
-import { Header } from '../columnGrid/types/header.type'
+import { Column } from '../columnGrid/types/header.type'
 import { RegisterChildFn } from '../gridWrapper/interfaces/registerChildFn'
 import { makeStyles } from '@material-ui/core/styles'
 import shallowDiffers from '../helpers/shallowDiffers'
@@ -35,7 +35,7 @@ export interface GridContainerCommonProps {
 }
 
 interface Props extends GridContainerCommonProps {
-	headers: Header[]
+	headers: Column[]
 	minColumnWidth: number
 	dynamicColumnCount: number
 	stretchMode: StretchMode
@@ -51,7 +51,7 @@ export const GridContainer = React.memo(
 		children,
 		width,
 		height,
-		containerClassName
+		containerClassName,
 	}: Props) => {
 		const scrollbarSize = scrollbarWidth() ?? 0
 		const classes = useStyles()
@@ -64,7 +64,7 @@ export const GridContainer = React.memo(
 		})
 		const lastContainerWidth = useRef(0)
 		const remainingWidth = useRef(0)
-		const lastHeaders = useRef<Header[]>([])
+		const lastHeaders = useRef<Column[]>([])
 
 		/**
 		 * Helper that facades with getColumnWidth function provided by react-virtualize and either returns
@@ -134,17 +134,17 @@ export const GridContainer = React.memo(
 		}
 
 		function render(containerWidth: number, containerHeight = 500) {
-			const remainingWidth = buildColumnTotalWidth(containerWidth - scrollbarSize)
+			const normalizedContainerWidth =
+				stretchMode !== StretchMode.None ? containerWidth - scrollbarSize : containerWidth
+			const remainingWidth = buildColumnTotalWidth(normalizedContainerWidth)
 			return (
 				<ColumnSizer
 					columnMinWidth={minColumnWidth}
 					columnCount={dynamicColumnCount}
 					width={remainingWidth}
 				>
-					{({ registerChild, getColumnWidth, adjustedWidth }) => {
-						const normalizedAdjustedWidth = isNaN(adjustedWidth) ? 0 : adjustedWidth
+					{({ registerChild, getColumnWidth }) => {
 						if (stretchMode !== StretchMode.None) {
-							// console.info(`Container width is at ${containerWidth}px and height ${containerHeight}px.`)
 							return (
 								<>
 									{children({
@@ -165,10 +165,7 @@ export const GridContainer = React.memo(
 								{({ onScroll, scrollLeft }) => (
 									<>
 										{children({
-											width:
-												normalizedAdjustedWidth +
-												fixedColumnWidths.current.totalSize +
-												scrollbarSize,
+											width: getTotalColumnWidth(getColumnWidth) + scrollbarSize,
 											height: containerHeight,
 											getColumnWidth: getColumnWidthHelper(getColumnWidth),
 											scrollLeft,
@@ -206,7 +203,12 @@ export const GridContainer = React.memo(
 				className={clsx(classes.root, containerClassName)}
 				ref={gridContainerRef}
 			>
-				<AutoSizer disableWidth={width !== undefined} disableHeight={height !== undefined} defaultHeight={height} defaultWidth={width}>
+				<AutoSizer
+					disableWidth={width !== undefined}
+					disableHeight={height !== undefined}
+					defaultHeight={height}
+					defaultWidth={width}
+				>
 					{({ width, height }) => render(width, height)}
 				</AutoSizer>
 			</div>

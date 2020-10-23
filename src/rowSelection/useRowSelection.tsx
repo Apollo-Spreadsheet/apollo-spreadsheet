@@ -3,22 +3,49 @@ import { SelectionProps } from './selectionProps'
 import { ApiRef } from '../api/types/apiRef'
 import { useApiExtends } from '../api/useApiExtends'
 import { ROW_SELECTION_CHANGE } from '../api/eventConstants'
+import { IconButton, Tooltip } from '@material-ui/core'
+import DeleteIcon from '@material-ui/icons/Delete'
+import { Row } from '../types'
+import { RowSelectionApi } from '../api/types'
 
 export const ROW_SELECTION_HEADER_ID = '__selection__'
-
-interface Props<TRow> {
-	selection?: SelectionProps<TRow>
-	apiRef: ApiRef
-	initialised: boolean
-}
 
 /**
  * useRowSelection is a hook that provides utility for selecting rows
  * @param rows
  * @param selection
  */
-export function useRowSelection<TRow = any>({ selection, apiRef, initialised }: Props<TRow>) {
+export function useRowSelection(apiRef: ApiRef, initialised: boolean, selection?: SelectionProps) {
 	const selectedIds = useRef<string[]>([])
+
+	function createSelectionHeader() {
+		return {
+			colSpan: 1,
+			id: ROW_SELECTION_HEADER_ID,
+			title: '',
+			className: selection?.className,
+			renderer: () => {
+				return (
+					<Tooltip placement={'top'} title={'Click to delete the selected rows'}>
+						<IconButton onClick={selection?.onHeaderIconClick}>
+							<DeleteIcon />
+						</IconButton>
+					</Tooltip>
+				)
+			},
+			accessor: ROW_SELECTION_HEADER_ID,
+			width: selection?.width ?? '2%',
+		}
+	}
+
+	//Build the selection header if does not exist yet
+	useEffect(() => {
+		const selectionExists = apiRef.current.getColumnById(ROW_SELECTION_HEADER_ID)
+		if (selection && !selectionExists) {
+			const newColumns = [...apiRef.current.getColumns(), createSelectionHeader()]
+			apiRef.current.updateColumns(newColumns)
+		}
+	}, [selection, apiRef])
 
 	//Detect if a row exists in selected but not in rows
 	useEffect(() => {
@@ -34,14 +61,14 @@ export function useRowSelection<TRow = any>({ selection, apiRef, initialised }: 
 	}, [])
 
 	const selectRow = useCallback(
-		(idOrRow: string | TRow) => {
+		(idOrRow: string | Row) => {
 			//Ensure selection is enabled
 			if (!selection) {
 				return
 			}
 			const _id = typeof idOrRow !== 'object' ? idOrRow : idOrRow[selection.key]
 			//Find the target row in order to determinate whether we can select or not
-			const targetRow: any = apiRef.current.getRowById(String(_id))
+			const targetRow = apiRef.current.getRowById(String(_id))
 			if (!targetRow) {
 				return console.warn(
 					`Row not found with the given key ${selection.key} on param: ${idOrRow} and extracted the id: ${_id}`,
@@ -56,7 +83,7 @@ export function useRowSelection<TRow = any>({ selection, apiRef, initialised }: 
 			const rowIndex = apiRef.current.getRowIndex(String(_id))
 			apiRef.current.selectCell({
 				colIndex: apiRef.current.getColumnCount() - 1,
-				rowIndex
+				rowIndex,
 			})
 
 			//Toggle effect
@@ -76,19 +103,18 @@ export function useRowSelection<TRow = any>({ selection, apiRef, initialised }: 
 			return []
 		}
 		return apiRef.current
-			.getRowsWithFilter((e: any) => selectedIds.current.some(id => String(id) === String(e[selection.key])))
+			.getRowsWithFilter((e: any) =>
+				selectedIds.current.some(id => String(id) === String(e[selection.key])),
+			)
 			.map((e: any) => String(e[selection.key]))
 	}, [apiRef, selection])
 
-	useApiExtends(
-		apiRef,
-		{
-			isRowSelected,
-			selectRow,
-			getSelectedRows,
-		},
-		'RowSelectionApi',
-	)
+	const rowSelectionApi: RowSelectionApi = {
+		isRowSelected,
+		selectRow,
+		getSelectedRowIds: getSelectedRows,
+	}
+	useApiExtends(apiRef, rowSelectionApi, 'RowSelectionApi')
 
 	return {
 		isRowSelected,

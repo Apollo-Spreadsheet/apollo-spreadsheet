@@ -1,27 +1,23 @@
-import { Header, NestedHeader } from '../columnGrid/types/header.type'
+import { Column, NestedHeader } from '../columnGrid/types/header.type'
 import { NavigationCoords } from '../navigation/types/navigation-coords.type'
 import { GridTheme } from '../types/grid-theme'
 import { RegisterChildFn } from './interfaces/registerChildFn'
 import { MergeCell } from '../mergeCells/interfaces/merge-cell'
 import { GridCell } from './interfaces/gridCell'
-import {
-	CellChangeParams,
-} from '../editorManager/useEditorManager'
-import { Alignment, OnScrollParams } from "react-virtualized";
-import { MergePosition } from "../mergeCells/createMergedPositions"
-import { StretchMode } from "../types/stretch-mode.enum"
-import { ApiRef } from "../api/types/apiRef"
+import { CellChangeParams } from '../editorManager/useEditorManager'
+import { Alignment, OnScrollParams } from 'react-virtualized'
+import { MergePosition } from '../mergeCells/createMergedPositions'
+import { StretchMode } from '../types/stretch-mode.enum'
+import { ApiRef } from '../api/types/apiRef'
+import { SelectionProps } from '../rowSelection'
 
 export interface DisableSortFilterParam {
-	(column: Header): boolean
+	(column: Column): boolean
 }
 
 export interface GridWrapperCommonProps {
-	headers: Header[]
+	columns: Column[]
 	nestedHeaders?: Array<NestedHeader[]>
-	// data: GridData;
-	/** @default { rowIndex: 0, colIndex: 0} **/
-	defaultCoords?: NavigationCoords
 	/** @default false **/
 	suppressNavigation?: boolean
 	/** @default false **/
@@ -46,7 +42,7 @@ export interface GridWrapperCommonProps {
 	 * The default ("auto") scrolls the least amount possible to ensure that the specified cell is fully visible.
 	 * Use "start" to align cells to the top/left of the Grid and "end" to align bottom/right.
 	 */
-	scrollToAlignment?: Alignment;
+	scrollToAlignment?: Alignment
 
 	/**
 	 * Border for highlighted cell
@@ -69,4 +65,5 @@ export interface GridWrapperProps<TRow = any> extends GridWrapperCommonProps {
 	getColumnWidth: ({ index }: { index: number }) => number
 	apiRef: ApiRef
 	stretchMode: StretchMode
+	selection?: SelectionProps
 }

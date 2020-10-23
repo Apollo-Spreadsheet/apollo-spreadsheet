@@ -1,15 +1,15 @@
 import faker from 'faker'
 import { GridRow } from '../types/row.interface'
-import { Header, NestedHeader } from '../../../src/columnGrid/types/header.type'
+import { Column, NestedHeader } from '../../../src/columnGrid/types/header.type'
 
 export const getSimpleData = (rows: number, columns: number) => {
-	const headerData: Header[] = []
+	const headerData: Column[] = []
 	const nestedHeaders: NestedHeader[] = []
 	const data: any = []
 	const headerRows = 2
 
 	for (let i = 0; i < headerRows; i += 1) {
-		const row: Header[] = []
+		const row: Column[] = []
 		for (let j = 0; j < columns; j += 1) {
 			if (i === 0) {
 				if (j % 2 === 0) {

@@ -1,30 +1,24 @@
-import React, { forwardRef, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import React, { forwardRef, useCallback, useRef, useState } from "react"
 import GridWrapper from './gridWrapper/GridWrapper'
 import ColumnGrid from './columnGrid/ColumnGrid'
-import { KeyDownEventParams, useNavigation } from './navigation/useNavigation'
+import { useNavigation } from './navigation/useNavigation'
 import { StretchMode } from './types/stretch-mode.enum'
-import { DisableSortFilterParam, GridWrapperCommonProps } from './gridWrapper/gridWrapperProps'
 import { useMergeCells } from './mergeCells/useMergeCells'
-import { NavigationCoords } from './navigation/types/navigation-coords.type'
 import { useHeaders } from './columnGrid/useHeaders'
 import { useData } from './data/useData'
-import { ROW_SELECTION_HEADER_ID, useRowSelection } from './rowSelection/useRowSelection'
-import { ClickAwayListener, IconButton, Tooltip, useForkRef } from '@material-ui/core'
-import DeleteIcon from '@material-ui/icons/Delete'
-import { SelectionProps } from './rowSelection/selectionProps'
+import { useRowSelection } from './rowSelection/useRowSelection'
+import { ClickAwayListener, useForkRef } from '@material-ui/core'
 import { useEditorManager } from './editorManager/useEditorManager'
 import { createPortal } from 'react-dom'
-import { orderBy } from 'lodash'
-import { GridContainer, GridContainerCommonProps } from './gridContainer/GridContainer'
-import { ScrollSync } from 'react-virtualized'
+import { GridContainer} from './gridContainer/GridContainer'
 import { useApiRef } from './api/useApiRef'
-import { ApiRef } from './api/types/apiRef'
 import { useApiFactory } from './api/useApiFactory'
 import { makeStyles } from '@material-ui/core/styles'
 import { useEvents } from './events/useEvents'
 import { useApiEventHandler } from './api/useApiEventHandler'
 import { CELL_CLICK, CELL_DOUBLE_CLICK } from './api/eventConstants'
-import { GridTheme } from './types'
+import { ApolloSpreadsheetProps } from "./ApolloSpreadsheetProps"
+import { useSort } from "./sort/useSort"
 
 const useStyles = makeStyles(() => ({
 	root: {
@@ -33,36 +27,9 @@ const useStyles = makeStyles(() => ({
 	},
 }))
 
-interface Props<TRow = any> extends GridWrapperCommonProps, GridContainerCommonProps {
-	theme?: GridTheme
-	/**
-	 * Main grid body (rows and cells) class name
-	 */
-	className?: string
-	rows: TRow[]
-	/** @default 50 **/
-	minRowHeight?: number
-	/** @default 50 **/
-	minColumnHeight?: number
-	/** @default 30 **/
-	minColumnWidth?: number
-	/** @default StretchMode.None  */
-	stretchMode?: StretchMode
-	onKeyDown?: (params: KeyDownEventParams) => void
-	selection?: SelectionProps<TRow>
-	onCreateRow?: (coords: NavigationCoords) => void
-	/**
-	 * Indicates if the sort is disabled globally or on a specific column
-	 * @default true **/
-	disableSort?: boolean | DisableSortFilterParam
-	/**
-	 * Providing a custom ApiRef will override internal ref by allowing the exposure of grid methods
-	 */
-	apiRef?: ApiRef
-}
 
 export const ApolloSpreadSheet = forwardRef(
-	(props: Props, componentRef: React.Ref<HTMLDivElement>) => {
+	(props: ApolloSpreadsheetProps, componentRef: React.Ref<HTMLDivElement>) => {
 		const classes = useStyles()
 		const minColumnWidth = props.minColumnWidth ?? 30
 		const [gridFocused, setGridFocused] = useState(true)
@@ -75,49 +42,11 @@ export const ApolloSpreadSheet = forwardRef(
 		const forkedRef = useForkRef(rootContainerRef, componentRef)
 		const initialised = useApiFactory(rootContainerRef, apiRef, props.theme)
 
-		const [sort, setSort] = useState<{
-			field: string
-			order: 'asc' | 'desc'
-		} | null>(null)
-
-		const rows = useMemo(() => {
-			if (sort) {
-				return orderBy(props.rows, [sort.field], [sort.order])
-			}
-			return props.rows
-		}, [sort, props.rows])
-
-		const headers = useMemo(() => {
-			if (!props.selection) {
-				return props.headers
-			}
-
-			//Bind our selection header
-			const newHeaders = [...props.headers]
-			newHeaders.push({
-				colSpan: 1,
-				id: ROW_SELECTION_HEADER_ID,
-				title: '',
-				className: props.selection?.className,
-				renderer: () => {
-					return (
-						<Tooltip placement={'top'} title={'Click to delete the selected rows'}>
-							<IconButton onClick={props.selection?.onHeaderIconClick}>
-								<DeleteIcon />
-							</IconButton>
-						</Tooltip>
-					)
-				},
-				accessor: ROW_SELECTION_HEADER_ID,
-				width: props.selection?.width ?? '2%',
-			})
-			return newHeaders
-		}, [props.headers, props.selection])
 
 		useEvents(rootContainerRef, apiRef)
 
-		const { headersData, getColumnAt, dynamicColumnCount } = useHeaders({
-			headers,
+		const { gridHeaders, dynamicColumnCount, columns } = useHeaders({
+			columns: props.columns,
 			nestedHeaders: props.nestedHeaders,
 			minColumnWidth,
 			apiRef,
@@ -125,70 +54,42 @@ export const ApolloSpreadSheet = forwardRef(
 		})
 
 		useMergeCells({
-			data: props.mergeCells,
-			rowCount: rows.length,
-			columnCount: headers.length,
+			mergeCells: props.mergeCells,
+			rowCount: props.rows.length,
+			columnCount: columns.length,
 			apiRef,
 			initialised,
 		})
 
-		const data = useData({
-			rows,
-			headers,
+		const { cells, rows } = useData({
+			rows: props.rows,
+			columns: columns,
 			selection: props.selection,
 			apiRef,
 			initialised,
 		})
 
-		const [coords, selectCell] = useNavigation({
+		useSort(apiRef, initialised)
+
+		const coords = useNavigation({
 			defaultCoords: props.defaultCoords ?? {
 				rowIndex: 0,
 				colIndex: 0,
 			},
-			data,
-			columnCount: headers.length,
 			suppressControls: props.suppressNavigation || !gridFocused,
-			getColumnAt,
 			onCellChange: props.onCellChange,
 			onCreateRow: props.onCreateRow,
 			apiRef,
 			initialised,
 		})
 
-		useRowSelection({
-			selection: props.selection,
-			apiRef,
-			initialised,
-		})
-
+		useRowSelection(apiRef, initialised, props.selection)
 
 		const editorNode = useEditorManager({
-			getColumnAt,
 			onCellChange: props.onCellChange,
 			apiRef,
 			initialised,
 		})
-
-
-		/** @todo Extract to useSort hook **/
-		function onSortClick(field: string) {
-			if (field === sort?.field) {
-				const nextSort = sort?.order === 'asc' ? 'desc' : 'asc'
-				if (nextSort === 'asc') {
-					setSort(null)
-				} else {
-					setSort({
-						field,
-						order: nextSort,
-					})
-				}
-			} else {
-				setSort({
-					field,
-					order: 'asc',
-				})
-			}
-		}
 
 		const onClickAway = useCallback(() => {
 			if (!gridFocused) {
@@ -196,12 +97,12 @@ export const ApolloSpreadSheet = forwardRef(
 			}
 			if (props.outsideClickDeselects) {
 				setGridFocused(false)
-				selectCell({
+				apiRef.current.selectCell({
 					rowIndex: -1,
 					colIndex: -1,
 				})
 			}
-		}, [props.outsideClickDeselects, selectCell, gridFocused])
+		}, [props.outsideClickDeselects, apiRef, gridFocused])
 
 		//Detect if any element is clicked again to enable focus
 		const onCellMouseHandler = useCallback(() => {
@@ -217,7 +118,7 @@ export const ApolloSpreadSheet = forwardRef(
 			<ClickAwayListener onClickAway={onClickAway}>
 				<div ref={forkedRef} className={classes.root}>
 					<GridContainer
-						headers={headers}
+						headers={columns}
 						minColumnWidth={minColumnWidth}
 						dynamicColumnCount={dynamicColumnCount}
 						stretchMode={props.stretchMode ?? StretchMode.All}
@@ -226,27 +127,25 @@ export const ApolloSpreadSheet = forwardRef(
 						{({ scrollLeft, onScroll, getColumnWidth, width, columnGridRef, height, mainGridRef, registerChild }) => (
 									<div id="apollo-grids" className={props.className}>
 										<ColumnGrid
-											data={headersData}
-											headers={headers}
+											data={gridHeaders}
+											columns={columns}
 											width={width}
 											defaultColumnWidth={minColumnWidth}
 											getColumnWidth={getColumnWidth}
 											ref={columnGridRef}
 											minRowHeight={props.minColumnHeight ?? 50}
 											scrollLeft={scrollLeft}
-											coords={coords}
 											stretchMode={props.stretchMode}
 											nestedHeaders={props.nestedHeaders}
 											overscanColumnCount={props.overscanColumnCount}
 											overscanRowCount={props.overscanRowCount}
-											onSortClick={onSortClick}
-											sort={sort}
 											disableSort={props.disableSort}
 											apiRef={apiRef}
 										/>
 										<GridWrapper
 											rows={rows}
-											data={data}
+											data={cells}
+											coords={coords}
 											overscanColumnCount={props.overscanColumnCount}
 											overscanRowCount={props.overscanRowCount}
 											registerChild={registerChild}
@@ -258,10 +157,8 @@ export const ApolloSpreadSheet = forwardRef(
 											scrollLeft={scrollLeft}
 											onScroll={onScroll}
 											height={height}
-											columnCount={headers.length}
-											coords={coords}
-											headers={headers}
-											defaultCoords={props.defaultCoords}
+											columnCount={columns.length}
+											columns={columns}
 											suppressNavigation={props.suppressNavigation}
 											outsideClickDeselects={props.outsideClickDeselects}
 											onCellChange={props.onCellChange}
@@ -269,6 +166,7 @@ export const ApolloSpreadSheet = forwardRef(
 											apiRef={apiRef}
 											scrollToAlignment={props.scrollToAlignment}
 											highlightBorderColor={props.highlightBorderColor}
+											selection={props.selection}
 										/>
 									</div>
 						)}

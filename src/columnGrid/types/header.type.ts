@@ -1,18 +1,19 @@
-import React, { CSSProperties } from "react";
-import { InputBaseProps, TooltipProps } from "@material-ui/core";
+import React, { CSSProperties } from 'react'
+import { InputBaseProps, TooltipProps } from '@material-ui/core'
 import { NavigationCoords } from '../../navigation/types/navigation-coords.type'
 import { EditorRef } from '../../editorManager/useEditorManager'
 import { PopperProps } from '@material-ui/core/Popper/Popper'
-import { ReactDatePickerProps } from "react-datepicker";
+import { ReactDatePickerProps } from 'react-datepicker'
+import { Row } from '../../types'
 
-export interface CellRendererProps<TRow = unknown> {
+export interface CellRendererProps<TRow = Row> {
 	row: TRow
-	column: Header
+	column: Column
 }
 
-export interface CellEditorProps<TRow = unknown> {
+export interface CellEditorProps<TRow = Row> {
 	row: TRow
-	column: Header
+	column: Column
 	/**
 	 * useImperativeHandle is required internally so it should be passed into here the api ref
 	 * @param ref
@@ -21,7 +22,7 @@ export interface CellEditorProps<TRow = unknown> {
 }
 
 export type ICellRenderer = (cellProps: CellRendererProps) => React.ReactNode | JSX.Element
-export type IHeaderRenderer = (column: Header) => React.ReactNode | JSX.Element
+export type IHeaderRenderer = (column: Column) => React.ReactNode | JSX.Element
 export type ICellEditor = (cellProps: CellEditorProps) => React.ReactNode | JSX.Element
 
 export enum ColumnCellType {
@@ -34,7 +35,7 @@ export interface IsReadOnlyCallback {
 	(coords: NavigationCoords): boolean
 }
 
-export interface Header<Key = string> {
+export interface Column<Key = string> {
 	id: Key
 	title: string
 	accessor: string
@@ -127,11 +128,9 @@ export interface NestedHeader {
 	colSpan?: number
 }
 
-export interface GridHeader extends Header {
+export interface GridHeader extends Column {
 	colSpan: number
 	isNested: boolean
-	/** @todo ParentRow has to be removed, not necessary anymore **/
-	parentRow?: any
 	gridType?: 'body' | 'header'
 	dummy?: boolean
 	dummyFor?: 'colSpan' | 'rowSpan'

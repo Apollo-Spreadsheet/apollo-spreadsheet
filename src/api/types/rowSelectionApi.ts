@@ -1,5 +1,6 @@
+import { Row } from "../../types"
 
-export interface RowSelectionApi<TRow = unknown> {
+export interface RowSelectionApi {
   /**
    * Returns whether the given row id is selected or not
    * @param id
@@ -9,9 +10,9 @@ export interface RowSelectionApi<TRow = unknown> {
    * Selects the given id or row object (if row is passed, it will try to access the key via accessor)
    * @param idOrRow
    */
-  selectRow: (idOrRow: string | any) => void
+  selectRow: (idOrRow: string | Row) => void
   /**
-   * Returns all selected rows
+   * Returns all selected row ids
    */
-  getSelectedRows: () => any[]
+  getSelectedRowIds: () => string[]
 }

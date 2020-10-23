@@ -1,7 +1,7 @@
-import { parseColumnWidthsConfiguration } from "./parseColumnWidthsConfiguration";
-import { FixedColumnWidthDictionary } from "../types/fixed-column-width-dictionary";
-import { Header } from "../types/header.type";
-import { StretchMode } from "../../types/stretch-mode.enum";
+import { parseColumnWidthsConfiguration } from './parseColumnWidthsConfiguration'
+import { FixedColumnWidthDictionary } from '../types/fixed-column-width-dictionary'
+import { Column } from '../types/header.type'
+import { StretchMode } from '../../types/stretch-mode.enum'
 
 /**
  * Creates an object indexing the fixed column widths by its index as key for fast lookup on dynamic widths
@@ -11,7 +11,7 @@ import { StretchMode } from "../../types/stretch-mode.enum";
  * @param stretchMode
  */
 export const createFixedWidthMapping = (
-	columns: Header[],
+	columns: Column[],
 	containerWidth: number,
 	minColumnWidth: number,
 	stretchMode: StretchMode,
@@ -19,7 +19,7 @@ export const createFixedWidthMapping = (
 ) => {
 	const mapping = columns.reduce((acc, e, i) => {
 		//If there is no width or its negative, apply min column width
-		if (containerWidth <= 0){
+		if (containerWidth <= 0) {
 			acc[i] = minColumnWidth
 			return acc
 		}
@@ -35,7 +35,7 @@ export const createFixedWidthMapping = (
 		}
 
 		//Avoid overflow if we do have stretch mode
-		if (stretchMode !== StretchMode.None && value > containerWidth){
+		if (stretchMode !== StretchMode.None && value > containerWidth) {
 			value = minColumnWidth
 		}
 
@@ -45,7 +45,6 @@ export const createFixedWidthMapping = (
 
 	const isAllColWidthsFilled = columns.filter(e => e.width).length === columns.length
 	let totalSize = Object.values(mapping).reduce((acc, e) => acc + e, 0)
-
 
 	//Loop over the new mapping and adjust
 	const remainingSize = Math.max(0, Math.max(0, containerWidth) - totalSize)

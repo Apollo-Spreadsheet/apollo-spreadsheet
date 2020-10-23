@@ -1,9 +1,11 @@
-import React, { useCallback, useMemo, useRef, useState } from 'react'
-import { Header, GridHeader, NestedHeader } from './types/header.type'
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { Column, GridHeader, NestedHeader } from './types/header.type'
 import { FixedColumnWidthDictionary } from './types/fixed-column-width-dictionary'
 import { StretchMode } from '../types/stretch-mode.enum'
 import { insertDummyCells } from '../gridWrapper/utils/insertDummyCells'
-import { ApiRef, useApiExtends } from "../api";
+import { ApiRef, COLUMNS_CHANGED, useApiExtends } from '../api'
+import { ColumnApi } from '../api/types/columnApi'
+import { parseColumnWidthsConfiguration } from './utils'
 
 export interface FixedColumnWidthRecord {
 	totalSize: number
@@ -11,17 +13,17 @@ export interface FixedColumnWidthRecord {
 }
 
 export interface GetColumnAt {
-	(index: number, row?: number): Header | undefined
+	(index: number, row?: number): Column | undefined
 }
 
 interface HeadersState {
-	headersData: GridHeader[][]
+	gridHeaders: GridHeader[][]
 	dynamicColumnCount: number
-	getColumnAt: GetColumnAt
+	columns: Column[]
 }
 
 interface Props {
-	headers: Header[]
+	columns: Column[]
 	nestedHeaders?: Array<NestedHeader[]>
 	minColumnWidth: number
 	stretchMode?: StretchMode
@@ -39,20 +41,27 @@ interface Props {
  * @param stretchMode
  */
 export function useHeaders({
-	headers,
+	columns,
 	nestedHeaders,
 	minColumnWidth,
 	stretchMode,
 	apiRef,
-	initialised
+	initialised,
 }: Props): HeadersState {
-	const headersRef = useRef<Header[]>(headers)
+	const columnsRef = useRef<Column[]>(columns)
+	const nestedHeadersRef = useRef<NestedHeader[][] | undefined>(nestedHeaders)
+	const [gridHeaders, setGridHeaders] = useState<GridHeader[][]>([[]])
 
-	const headersData: GridHeader[][] = useMemo(() => {
-		headersRef.current = headers
+	function createGridHeaders({
+		columns: paramColumns,
+		nestedHeaders: paramNestedHeaders,
+	}: {
+		columns: Column[]
+		nestedHeaders?: Array<NestedHeader[]>
+	}) {
 		//Detect duplicated
-		const duplicateColumns = headers.filter((column, i) => {
-			return headers.findIndex(d => d.id === column.id) !== i
+		const duplicateColumns = paramColumns.filter((column, i) => {
+			return paramColumns.findIndex(d => d.id === column.id) !== i
 		})
 
 		if (duplicateColumns.length) {
@@ -64,9 +73,9 @@ export function useHeaders({
 		}
 
 		//Validate % width to prevent overflow
-		const totalWidth = headers.reduce((acc, e) => {
+		const totalWidth = paramColumns.reduce((acc, e) => {
 			if (e.width && typeof e.width === 'string' && e.width.includes('%')) {
-				return acc + parseFloat(e.width)
+				return acc + parseFloat(e.width.replace('%', '').trim())
 			}
 			return acc
 		}, 0)
@@ -78,7 +87,7 @@ export function useHeaders({
 		}
 
 		//Check and maybe validate if needed
-		const transformedHeaders = headers.map(
+		const transformedHeaders = paramColumns.map(
 			e =>
 				({
 					...e,
@@ -87,11 +96,11 @@ export function useHeaders({
 				} as GridHeader),
 		)
 
-		if (nestedHeaders) {
+		if (paramNestedHeaders) {
 			//Check if any row passes the limit of spanning
-			nestedHeaders.forEach((row, i) => {
+			paramNestedHeaders.forEach((row, i) => {
 				const spanSize = row.reduce((acc, e) => acc + (e.colSpan ?? 0), 0)
-				if (spanSize > headers.length) {
+				if (spanSize > columns.length) {
 					throw new Error(
 						'Span size is bigger than the main headers size, please review the configuration at row: ' +
 							i,
@@ -99,7 +108,7 @@ export function useHeaders({
 				}
 			})
 
-			const nestedTransform = nestedHeaders.map(rows => {
+			const nestedTransform = paramNestedHeaders.map(rows => {
 				return rows.map(
 					(e, i) =>
 						({
@@ -114,35 +123,62 @@ export function useHeaders({
 			})
 
 			//Here we combine with headers and insert the dummy cells
-			return insertDummyCells([...nestedTransform, transformedHeaders])
+			return setGridHeaders(insertDummyCells([...nestedTransform, transformedHeaders]))
 		}
 
 		//Only one level is necessary
-		return insertDummyCells([transformedHeaders])
-	}, [headers, nestedHeaders])
+		setGridHeaders(insertDummyCells([transformedHeaders]))
+	}
+
+	const updateColumns = useCallback(
+		(updatedColumns: Column[]) => {
+			columnsRef.current = updatedColumns
+			createGridHeaders({ columns: updatedColumns, nestedHeaders: nestedHeadersRef.current })
+			apiRef.current.dispatchEvent(COLUMNS_CHANGED, { columns: updatedColumns })
+		},
+		[apiRef],
+	)
+
+	useEffect(() => {
+		columnsRef.current = columns
+		nestedHeadersRef.current = nestedHeaders
+		createGridHeaders({ columns: columns, nestedHeaders })
+		//TODO review if this might give us trouble in case of only nested headers changing
+		apiRef.current.dispatchEvent(COLUMNS_CHANGED, { columns: columns })
+	}, [columns, nestedHeaders])
 
 	//Stores the amount of columns that we want to calculate using the remaining width of the grid
 	const dynamicColumnCount = useMemo(() => {
-		return headers.filter(e => !e.width).length
-	}, [headers])
+		return columns.filter(e => !e.width).length
+	}, [columns])
 
-	const getColumnAt = useCallback(
-		(index: number) => {
-			return headersRef.current[index]
-		},
-		[],
-	)
-	const getColumnCount = useCallback(() => {
-		return headersRef.current.length
+	const getColumnAt = useCallback((index: number) => {
+		return columnsRef.current[index]
 	}, [])
 
-	useApiExtends(apiRef, {
+	const getColumnById = useCallback((id: string) => {
+		return columnsRef.current.find(e => e.id === id)
+	}, [])
+
+	const getColumnCount = useCallback(() => {
+		return columnsRef.current.length
+	}, [])
+
+	const getColumns = useCallback(() => columnsRef.current, [])
+
+	const columnApi: ColumnApi = {
 		getColumnAt,
-		getColumnCount
-	}, 'ColumnApi')
+		getColumnCount,
+		getColumnById,
+		updateColumns,
+		getColumns,
+	}
+
+	useApiExtends(apiRef, columnApi, 'ColumnApi')
+
 	return {
-		headersData,
+		gridHeaders,
 		dynamicColumnCount,
-		getColumnAt,
+		columns: columnsRef.current,
 	}
 }

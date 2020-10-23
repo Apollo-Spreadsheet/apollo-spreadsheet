@@ -6,9 +6,10 @@ import { createMergedPositions, MergePosition } from "./createMergedPositions"
 import { createMergedGroups, MergeGroup } from "./createMergedGroups"
 import { useApiExtends } from "../api/useApiExtends"
 import { ApiRef } from "../api/types/apiRef"
+import { MergeCellsApi } from "../api/types"
 
 export interface MergedCellsHookProps {
-	data?: MergeCell[]
+	mergeCells?: MergeCell[]
 	rowCount: number
 	columnCount: number
 	apiRef: ApiRef
@@ -20,18 +21,18 @@ export interface MergedCellsHookProps {
  * return util functions
  * @param data
  */
-export function useMergeCells({ data, rowCount, columnCount, apiRef, initialised }: MergedCellsHookProps) {
+export function useMergeCells({ mergeCells, rowCount, columnCount, apiRef, initialised }: MergedCellsHookProps) {
 	const mergedPositions = useRef<MergePosition[]>([])
 	const mergeGroups = useRef<MergeGroup>({})
 	const mergeData = useRef<MergeCell[]>([])
 	useEffect(() => {
-		if (!data){
+		if (!mergeCells){
 			return
 		}
-		mergeData.current = validateMergeData(data, rowCount, columnCount)
-		mergeGroups.current = createMergedGroups(data)
-		mergedPositions.current = createMergedPositions(data)
-	}, [data, rowCount, columnCount])
+		mergeData.current = validateMergeData(mergeCells, rowCount, columnCount)
+		mergeGroups.current = createMergedGroups(mergeCells)
+		mergedPositions.current = createMergedPositions(mergeCells)
+	}, [mergeCells, rowCount, columnCount])
 
 
 	const isMerged = useCallback(({ rowIndex, colIndex}: NavigationCoords) => {
@@ -73,11 +74,13 @@ export function useMergeCells({ data, rowCount, columnCount, apiRef, initialised
 	const getMergedData = useCallback(() => mergeData.current, [])
 	const getMergedGroups = useCallback(() => mergeGroups.current, [])
 
-	useApiExtends(apiRef, {
+	const mergedCellsApi: MergeCellsApi = {
 		getSpanProperties,
 		isMerged,
 		getMergedPath,
 		getMergedData,
 		getMergedGroups
-	}, 'MergeCellsAPI')
+	}
+
+	useApiExtends(apiRef, mergedCellsApi, 'MergeCellsAPI')
 }

@@ -1,25 +1,42 @@
+import { Row } from "../../types"
+import { GridCell } from "../../gridWrapper/interfaces"
+
 /**
  * The Row API interface that is available in the grid [[apiRef]].
  */
-export interface RowApi<TRow = unknown> {
+export interface RowApi{
 	/**
-	 * Get the full set of rows as `TRow`.
+	 * Returns the underlying cells data
+	 */
+	getCells: () => GridCell[][]
+
+	/**
+	 * Get the full set of rows as `Row`.
+	 * This set of rows might be sorted
 	 * @returns `TRow`[]
 	 */
-	getRows: () => TRow[]
+	getRows: () => Row[]
+
+	/**
+	 * Returns the original rows passed from Apollo props without any sort applied
+	 * respecting the given data order
+	 */
+	getOriginalRows: () => Row[]
 
 	/**
 	 * Fetches the row at the given index
 	 */
-	getRowAt: (index: number) => TRow | undefined
+	getRowAt: (index: number) => Row | undefined
 
 	/**
 	 * Get the total number of rows in the grid.
 	 */
 	getRowsCount: () => number
 
-	getRowById: (id: string) => TRow | undefined
+	getRowById: (id: string) => Row | undefined
 	getRowIndex: (id: string) => number
 
-	getRowsWithFilter: (predicate: (value: TRow, index: number, array: TRow[]) => unknown, thisArg?: any) => TRow[]
+	getRowsWithFilter: (predicate: (value: Row, index: number, array: Row[]) => unknown, thisArg?: any) => Row[]
+
+	updateRows: (rows: Row[]) => void
 }

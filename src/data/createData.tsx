@@ -2,26 +2,22 @@ import { formatCellValue } from './formatCellValue'
 import { GridCell } from '../gridWrapper/interfaces/gridCell'
 import { Checkbox } from '@material-ui/core'
 import { insertDummyCells } from '../gridWrapper/utils/insertDummyCells'
-import { Header } from '../columnGrid/types/header.type'
+import { Column } from '../columnGrid/types/header.type'
 import { SelectionProps } from '../rowSelection/selectionProps'
 import React from 'react'
 import { ApiRef } from '../api/types/apiRef'
+import { Row } from '../types'
 
-interface CreateDataParams<TRow = any> {
+interface CreateDataParams<TRow = Row> {
 	rows: TRow[]
 	apiRef: ApiRef
-	headers: Header[]
-	selection?: SelectionProps<TRow>
+	columns: Column[]
+	selection?: SelectionProps
 }
 
-export function createData({
-	headers,
-	selection,
-	apiRef,
-	rows
-}: CreateDataParams) {
+export function createData({ columns, selection, apiRef, rows }: CreateDataParams) {
 	const cellsList = rows.reduce((list: any[], row: any, rowIndex) => {
-		const cells = headers.reduce((_cells, header, colIndex) => {
+		const cells = columns.reduce((_cells, header, colIndex) => {
 			const isDummy = apiRef.current.isMerged({ rowIndex, colIndex })
 			if (isDummy) {
 				return _cells

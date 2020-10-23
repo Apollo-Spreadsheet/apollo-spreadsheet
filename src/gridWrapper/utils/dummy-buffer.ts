@@ -23,7 +23,6 @@ export interface DummyCell {
 	first?: boolean
 	last?: boolean
 	style?: React.CSSProperties
-	parentRow?: any
 }
 
 export interface BufferedRecord {
@@ -79,8 +78,7 @@ export class DummyBuffer {
 			style: {
 				...parent.style,
 				...style,
-			},
-			parentRow: parent /** @todo We might only need the id in the future or the index */,
+			}
 		} as DummyCell
 	}
 

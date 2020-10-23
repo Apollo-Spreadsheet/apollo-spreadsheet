@@ -5,5 +5,6 @@ import { EditorManagerApi } from "./editorManagerApi"
 import { MergeCellsApi } from "./mergeCellsApi"
 import { NavigationApi } from "./navigationApi"
 import { ColumnApi } from "./columnApi";
+import { SortApi } from "./sortApi";
 
-export type GridApi<TRow = unknown> = CoreApi & RowApi<TRow> & RowSelectionApi & EditorManagerApi & MergeCellsApi & NavigationApi & ColumnApi
+export type GridApi = CoreApi & RowApi & RowSelectionApi & EditorManagerApi & MergeCellsApi & NavigationApi & ColumnApi & SortApi

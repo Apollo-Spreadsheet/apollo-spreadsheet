@@ -1,39 +1,31 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react'
-import {
-	isCtrlMetaKey,
-	isIndexOutOfBoundaries,
-	isMetaKey,
-	isPrintableChar,
-} from './navigation.utils'
+import { isIndexOutOfBoundaries, isMetaKey, isPrintableChar } from './navigation.utils'
 import { NavigationCoords } from './types/navigation-coords.type'
 import { isFunctionType } from '../helpers/isFunction'
-import { GetColumnAt } from '../columnGrid/useHeaders'
 import { GridCell } from '../gridWrapper/interfaces/gridCell'
-import {
-	BeginEditingParams,
-	CellChangeParams,
-	IEditorState,
-	StopEditingParams,
-} from '../editorManager/useEditorManager'
+import { CellChangeParams } from '../editorManager/useEditorManager'
 import * as clipboardy from 'clipboardy'
-import { ColumnCellType, Header } from '../columnGrid/types/header.type'
+import { ColumnCellType, Column } from '../columnGrid/types/header.type'
 import dayjs from 'dayjs'
 import { ROW_SELECTION_HEADER_ID } from '../rowSelection/useRowSelection'
 import { debounce, DebouncedFunc } from 'lodash'
 import { NavigationKey } from '../editorManager/enums/navigation-key.enum'
-import { MergeCell } from '../mergeCells/interfaces/merge-cell'
-import { MergePosition } from '../mergeCells/createMergedPositions'
 import { ApiRef } from '../api/types/apiRef'
 import { useApiEventHandler } from '../api/useApiEventHandler'
-import { CELL_BEGIN_EDITING, CELL_CLICK, CELL_DOUBLE_CLICK } from '../api/eventConstants'
-import { useApiExtends } from "../api/useApiExtends"
+import {
+	CELL_BEGIN_EDITING,
+	CELL_CLICK,
+	CELL_DOUBLE_CLICK,
+	DATA_CHANGED,
+	ROWS_CHANGED,
+} from '../api/eventConstants'
+import { useApiExtends } from '../api/useApiExtends'
+import { Row } from '../types'
+import { NavigationApi } from '../api/types'
 
-interface Props<TRow = unknown> {
+interface Props {
 	defaultCoords: NavigationCoords
-	data: GridCell[][]
-	columnCount: number
 	suppressControls: boolean
-	getColumnAt: GetColumnAt
 	onCellChange?: (params: CellChangeParams) => void
 	onCreateRow?: (coords: NavigationCoords) => void
 	apiRef: ApiRef
@@ -47,24 +39,29 @@ export interface KeyDownEventParams {
 }
 
 export function useNavigation({
-	data,
-	columnCount,
 	defaultCoords,
 	suppressControls,
-	getColumnAt,
 	onCellChange,
 	onCreateRow,
 	apiRef,
 	initialised,
-}: Props): [NavigationCoords, SelectCellFn] {
+}: Props): NavigationCoords {
 	const coordsRef = useRef<NavigationCoords>(defaultCoords)
 	const [coords, setCoords] = useState<NavigationCoords>(defaultCoords)
 	const delayEditorDebounce = useRef<DebouncedFunc<any> | null>(null)
 
-	const onCellBeginEditing = useCallback(
-		() => {
-			if (delayEditorDebounce.current) {
-				delayEditorDebounce.current.cancel()
+	const onCellBeginEditing = useCallback(() => {
+		if (delayEditorDebounce.current) {
+			delayEditorDebounce.current.cancel()
+		}
+	}, [apiRef])
+
+	const onRowsChanged = useCallback(
+		({ rows }: { rows: unknown[] }) => {
+			const target = rows[coordsRef.current.rowIndex]
+			if (!target) {
+				coordsRef.current = defaultCoords
+				setCoords(defaultCoords)
 			}
 		},
 		[apiRef],
@@ -72,6 +69,9 @@ export function useNavigation({
 
 	//Cancels the debounce if the editor is prematurely open
 	useApiEventHandler(apiRef, CELL_BEGIN_EDITING, onCellBeginEditing)
+
+	//Subscribe for data changes to ensure the selected coordinates exist
+	useApiEventHandler(apiRef, ROWS_CHANGED, onRowsChanged)
 
 	//Cleanup the debounce on unmount
 	useEffect(() => {
@@ -100,7 +100,7 @@ export function useNavigation({
 	 */
 	const findNextNavigableColumnIndex = (currentIndex: number, direction: 'left' | 'right') => {
 		const nextIndex = direction === 'right' ? currentIndex + 1 : currentIndex - 1
-		const nextCol = getColumnAt(nextIndex)
+		const nextCol = apiRef.current.getColumnAt(nextIndex)
 		//Fallback the current in case it was not found
 		if (!nextCol) {
 			return currentIndex
@@ -112,12 +112,18 @@ export function useNavigation({
 		return nextIndex
 	}
 
-	const handleCellPaste = async (column: Header, row: any, currentValue: unknown) => {
+	const handleCellPaste = async (column: Column, row: Row, currentValue: unknown) => {
 		try {
 			const text = await clipboardy.read()
 			if (column.validatorHook) {
 				if (column.validatorHook(text)) {
-					return onCellChange?.({ coords, previousValue: currentValue, newValue: text, column, row })
+					return onCellChange?.({
+						coords,
+						previousValue: currentValue,
+						newValue: text,
+						column,
+						row,
+					})
 				} else {
 					return
 				}
@@ -125,14 +131,26 @@ export function useNavigation({
 			//Fallback is the column type
 			if (column.type === ColumnCellType.Numeric) {
 				if (!isNaN(Number(text))) {
-					return onCellChange?.({ coords, previousValue: currentValue, newValue: text, column, row })
+					return onCellChange?.({
+						coords,
+						previousValue: currentValue,
+						newValue: text,
+						column,
+						row,
+					})
 				} else {
 					return
 				}
 			}
 			if (column.type === ColumnCellType.Calendar) {
 				if (dayjs(text, 'YYYY-MM-DD').format('YYYY-MM-DD') === text) {
-					return onCellChange?.({ coords, previousValue: currentValue, newValue: text, column, row })
+					return onCellChange?.({
+						coords,
+						previousValue: currentValue,
+						newValue: text,
+						column,
+						row,
+					})
 				} else {
 					return
 				}
@@ -144,7 +162,7 @@ export function useNavigation({
 		}
 	}
 
-	const handleCellCut = async (currentValue: unknown, column: Header, row: any) => {
+	const handleCellCut = async (currentValue: unknown, column: Column, row: Row) => {
 		await clipboardy.write(String(currentValue))
 		const newValue = getDefaultValueFromValue(currentValue)
 		if (currentValue === newValue) {
@@ -156,7 +174,7 @@ export function useNavigation({
 	function handleEditorOpenControls(event: KeyboardEvent) {
 		if (event.key === 'Escape') {
 			event.preventDefault()
-			return apiRef.current.stopEditing()
+			return apiRef.current.stopEditing({ save: false })
 		}
 
 		if (event.key === 'Enter') {
@@ -167,8 +185,8 @@ export function useNavigation({
 
 	function handleControlOrMetaPressedControls(
 		event: KeyboardEvent,
-		column: Header,
-		row: any,
+		column: Column,
+		row: Row,
 		currentValue: unknown,
 	) {
 		if (event.key === 'x') {
@@ -219,7 +237,10 @@ export function useNavigation({
 			event.preventDefault()
 			let nextRowIndex = coords.rowIndex - 1
 			//If we have span we need to skip that to the next
-			const isNextMerged = apiRef.current.isMerged({ rowIndex: nextRowIndex, colIndex: coords.colIndex })
+			const isNextMerged = apiRef.current.isMerged({
+				rowIndex: nextRowIndex,
+				colIndex: coords.colIndex,
+			})
 			if (isNextMerged) {
 				const path = apiRef.current.getMergedPath(nextRowIndex)
 				if (path.length !== 2) {
@@ -246,12 +267,12 @@ export function useNavigation({
 			event.preventDefault()
 			let nextColIndex = coords.colIndex + 1
 
-			if (isIndexOutOfBoundaries(nextColIndex, 0, columnCount - 1)) {
+			if (isIndexOutOfBoundaries(nextColIndex, 0, apiRef.current.getColumnCount() - 1)) {
 				return
 			}
 
 			//Is navigable?
-			const col = getColumnAt(nextColIndex)
+			const col = apiRef.current.getColumnAt(nextColIndex)
 			if (!col) {
 				return console.error('Column not found at' + nextColIndex)
 			}
@@ -280,10 +301,10 @@ export function useNavigation({
 		if (event.key === 'ArrowLeft' || (event.key === 'Tab' && event.shiftKey)) {
 			event.preventDefault()
 			let nextColIndex = coords.colIndex - 1
-			if (isIndexOutOfBoundaries(nextColIndex, 0, columnCount - 1)) {
+			if (isIndexOutOfBoundaries(nextColIndex, 0, apiRef.current.getColumnCount() - 1)) {
 				return
 			}
-			const col = getColumnAt(nextColIndex)
+			const col = apiRef.current.getColumnAt(nextColIndex)
 			if (!col) {
 				return console.error('Column not found at ' + nextColIndex)
 			}
@@ -310,7 +331,7 @@ export function useNavigation({
 		}
 	}
 
-	function handleSelectionHeaderControls(event: KeyboardEvent, row: unknown) {
+	function handleSelectionHeaderControls(event: KeyboardEvent, row: Row) {
 		//Enable only checkbox via enter
 		if (event.key === 'Enter') {
 			return apiRef.current.selectRow(row)
@@ -332,13 +353,13 @@ export function useNavigation({
 
 			//Validate boundaries
 			if (
-				isIndexOutOfBoundaries(colIndex, 0, columnCount - 1) ||
+				isIndexOutOfBoundaries(colIndex, 0, apiRef.current.getColumnCount() - 1) ||
 				isIndexOutOfBoundaries(rowIndex, 0, apiRef.current.getRowsCount() - 1)
 			) {
 				return
 			}
 
-			const column = getColumnAt(colIndex)
+			const column = apiRef.current.getColumnAt(colIndex)
 			if (!column) {
 				return console.warn('Column not found ')
 			}
@@ -378,7 +399,7 @@ export function useNavigation({
 			coordsRef.current = { colIndex, rowIndex }
 			setCoords({ colIndex, rowIndex })
 		},
-		[coords, columnCount, getColumnAt, apiRef],
+		[coords, apiRef],
 	)
 
 	const onKeyDown = useCallback(
@@ -432,7 +453,7 @@ export function useNavigation({
 			if (!row) {
 				return console.warn('Row index')
 			}
-			const currentValue = (row as any)[column.accessor]
+			const currentValue = row[column.accessor]
 
 			//Handle specific keyboard handlers
 			if (column.id === ROW_SELECTION_HEADER_ID) {
@@ -459,7 +480,7 @@ export function useNavigation({
 					previousValue: currentValue,
 					coords,
 					row,
-					column
+					column,
 				})
 			}
 
@@ -492,7 +513,7 @@ export function useNavigation({
 				})
 			}
 		},
-		[coords, data, getColumnAt, columnCount, suppressControls, onCellChange, initialised, apiRef],
+		[coords, suppressControls, onCellChange, initialised, apiRef],
 	)
 
 	const onCellClick = useCallback(
@@ -522,9 +543,10 @@ export function useNavigation({
 	useApiEventHandler(apiRef, 'keydown', onKeyDown)
 	useApiEventHandler(apiRef, CELL_CLICK, onCellClick)
 	useApiEventHandler(apiRef, CELL_DOUBLE_CLICK, onCellDoubleClick)
-	useApiExtends(apiRef, {
+	const navigationApi: NavigationApi = {
 		getSelectedCoords,
-		selectCell
-	}, 'NavigationApi')
-	return [coords, selectCell]
+		selectCell,
+	}
+	useApiExtends(apiRef, navigationApi, 'NavigationApi')
+	return coords
 }

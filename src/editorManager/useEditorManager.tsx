@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useRef, useState } from 'react'
 import { GetColumnAt } from '../columnGrid/useHeaders'
 import { ROW_SELECTION_HEADER_ID } from '../rowSelection/useRowSelection'
 import { NavigationCoords } from '../navigation/types/navigation-coords.type'
-import { ColumnCellType, Header } from '../columnGrid/types/header.type'
+import { ColumnCellType, Column } from '../columnGrid/types/header.type'
 import TextEditor from './components/TextEditor'
 import NumericEditor from './components/NumericEditor'
 import { EditorProps } from './editorProps'
@@ -10,8 +10,9 @@ import { CalendarEditor } from './components/CalendarEditor'
 import { isFunctionType } from '../helpers/isFunction'
 import { useApiExtends } from '../api/useApiExtends'
 import { ApiRef } from '../api/types/apiRef'
-import { CELL_BEGIN_EDITING, CELL_STOP_EDITING } from "../api/eventConstants"
-import clsx from "clsx"
+import { CELL_BEGIN_EDITING, CELL_STOP_EDITING } from '../api/eventConstants'
+import clsx from 'clsx'
+import { EditorManagerApi } from '../api/types'
 
 export interface StopEditingParams {
 	/** @default true **/
@@ -36,11 +37,10 @@ export interface CellChangeParams<Row = unknown, ValueType = unknown> {
 	previousValue: ValueType
 	newValue: ValueType
 	row: Row
-	column: Header
+	column: Column
 }
 
 export interface EditorManagerProps<TRow = unknown> {
-	getColumnAt: GetColumnAt
 	onCellChange?: (params: CellChangeParams<TRow>) => void
 	apiRef: ApiRef
 	initialised: boolean
@@ -61,12 +61,7 @@ export interface EditorRef<T = unknown> {
  * This hook controls the editing states, interacts with useNavigation hook and also manages the commit/cancel cycle of
  * an editor
  */
-export function useEditorManager<TRow>({
-	getColumnAt,
-	onCellChange,
-	apiRef,
-	initialised,
-}: EditorManagerProps) {
+export function useEditorManager<TRow>({ onCellChange, apiRef, initialised }: EditorManagerProps) {
 	const editorRef = useRef<EditorRef | null>()
 	const state = useRef<IEditorState | null>(null)
 	const [editorNode, setEditorNode] = useState<JSX.Element | null>(null)
@@ -75,12 +70,12 @@ export function useEditorManager<TRow>({
 	useEffect(() => {
 		if (editorNode && state.current) {
 			const target = apiRef.current.getRowAt(state.current.rowIndex) as TRow
-			const column = getColumnAt(state.current.colIndex)
+			const column = apiRef.current.getColumnAt(state.current.colIndex)
 			if (!target || !column) {
 				stopEditing({ save: false })
 			}
 		}
-	}, [apiRef, getColumnAt, editorNode])
+	}, [apiRef, editorNode])
 
 	/**
 	 * Closes the existing editor without saving anything
@@ -97,7 +92,10 @@ export function useEditorManager<TRow>({
 				if (newValue === undefined) {
 					state.current = null
 					editorRef.current = null
-					apiRef.current.dispatchEvent(CELL_STOP_EDITING, { colIndex: editorState.colIndex, rowIndex: editorState.rowIndex })
+					apiRef.current.dispatchEvent(CELL_STOP_EDITING, {
+						colIndex: editorState.colIndex,
+						rowIndex: editorState.rowIndex,
+					})
 					return setEditorNode(null)
 				}
 
@@ -105,20 +103,25 @@ export function useEditorManager<TRow>({
 				if (!isValid) {
 					editorRef.current = null
 					state.current = null
-					apiRef.current.dispatchEvent(CELL_STOP_EDITING, { colIndex: editorState.colIndex, rowIndex: editorState.rowIndex })
+					apiRef.current.dispatchEvent(CELL_STOP_EDITING, {
+						colIndex: editorState.colIndex,
+						rowIndex: editorState.rowIndex,
+					})
 					return setEditorNode(null)
 				}
 
-				if (newValue != editorState.initialValue){
+				if (newValue != editorState.initialValue) {
 					const row = apiRef.current.getRowAt(editorState.rowIndex)
 					const column = apiRef.current.getColumnAt(editorState.colIndex)
-					if (!row){
-						console.warn(`Row not found at ${editorState.rowIndex} when attempting to invoke onCellChange`)
-					}
-					else if (!column){
-						console.warn(`Column not found at ${editorState.colIndex} when attempting to invoke onCellChange`)
-					}
-					else {
+					if (!row) {
+						console.warn(
+							`Row not found at ${editorState.rowIndex} when attempting to invoke onCellChange`,
+						)
+					} else if (!column) {
+						console.warn(
+							`Column not found at ${editorState.colIndex} when attempting to invoke onCellChange`,
+						)
+					} else {
 						onCellChange?.({
 							coords: {
 								rowIndex: editorState.rowIndex,
@@ -127,7 +130,7 @@ export function useEditorManager<TRow>({
 							previousValue: editorState.initialValue,
 							newValue,
 							row,
-							column
+							column,
 						})
 					}
 				}
@@ -135,7 +138,10 @@ export function useEditorManager<TRow>({
 
 			editorRef.current = null
 			state.current = null
-			apiRef.current.dispatchEvent(CELL_STOP_EDITING, { colIndex: editorState.colIndex, rowIndex: editorState.rowIndex })
+			apiRef.current.dispatchEvent(CELL_STOP_EDITING, {
+				colIndex: editorState.colIndex,
+				rowIndex: editorState.rowIndex,
+			})
 			setEditorNode(null)
 		},
 		[editorNode, onCellChange, apiRef],
@@ -150,7 +156,7 @@ export function useEditorManager<TRow>({
 		editorRef.current = ref
 	}
 
-	const getEditor = (row: TRow, column: Header, props: any) => {
+	const getEditor = (row: TRow, column: Column, props: any) => {
 		let EditorComponent: any = TextEditor
 		if (column.editor) {
 			EditorComponent = column.editor({ row, column, onRefMount })
@@ -202,7 +208,7 @@ export function useEditorManager<TRow>({
 			) {
 				return
 			}
-			const column = getColumnAt(coords.colIndex)
+			const column = apiRef.current.getColumnAt(coords.colIndex)
 			if (!column) {
 				return console.warn(
 					`Column not found at ${coords.colIndex}, therefore we can't start editing.`,
@@ -265,21 +271,18 @@ export function useEditorManager<TRow>({
 			setEditorNode(editor)
 			apiRef.current.dispatchEvent(CELL_BEGIN_EDITING, coords)
 		},
-		[getColumnAt, editorNode, stopEditing, apiRef],
+		[editorNode, stopEditing, apiRef],
 	)
 
 	function getEditorState() {
 		return state.current
 	}
 
-	useApiExtends(
-		apiRef,
-		{
-			beginEditing,
-			stopEditing,
-			getEditorState,
-		},
-		'EditorManagerApi',
-	)
+	const editorManagerApi: EditorManagerApi = {
+		beginEditing,
+		stopEditing,
+		getEditorState,
+	}
+	useApiExtends(apiRef, editorManagerApi, 'EditorManagerApi')
 	return editorNode
 }

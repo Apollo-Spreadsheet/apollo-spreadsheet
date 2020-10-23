@@ -1,9 +1,9 @@
-import { Header } from '../types/header.type'
+import { Column } from '../types/header.type'
 
-export const createColumnMock = (column?: Partial<Header>) => {
+export const createColumnMock = (column?: Partial<Column>) => {
 	return {
 		id: 'column - ' + Math.random(),
 		accessor: column?.accessor ?? 'access-' + Math.random(),
 		...column,
-	} as Header
+	} as Column
 }

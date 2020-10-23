@@ -8,7 +8,7 @@ import React, {
 } from 'react'
 import { Grid, CellMeasurerCache } from 'react-virtualized'
 import CellMeasurer from '../cellMeasurer/CellMeasureWrapper'
-import { GridHeader, Header } from './types/header.type'
+import { GridHeader, Column } from './types/header.type'
 import clsx from 'clsx'
 import { ColumnGridProps } from './column-grid-props'
 import { MeasurerRendererProps } from '../cellMeasurer/cellMeasureWrapperProps'
@@ -31,7 +31,7 @@ const useStyles = makeStyles(() => ({
 		boxSizing: 'border-box',
 		background: '#efefef',
 		cursor: 'default',
-		border: '1px solid #ccc'
+		border: '1px solid #ccc',
 	},
 	headerContainer: {
 		outline: 'none',
@@ -52,12 +52,10 @@ const useStyles = makeStyles(() => ({
 		width: '100%',
 		height: '100%',
 	},
-	sort: {
-
-	},
+	sort: {},
 	disableScroll: {
-		overflow: 'hidden'
-	}
+		overflow: 'hidden',
+	},
 }))
 export const ColumnGrid = React.memo(
 	forwardRef((props: ColumnGridProps, componentRef) => {
@@ -146,25 +144,26 @@ export const ColumnGrid = React.memo(
 			const { title, renderer } = cell as GridHeader
 			const theme = props.apiRef.current.theme
 			const isSortDisabled = headersSortDisabledMap[cell.id] ?? true //in case its not found, we set to true
-
+			const sort = props.apiRef.current.getSortState()
+			const coords = props.apiRef.current.getSelectedCoords()
 			const sortComponent =
-				isSortDisabled || cell.accessor !== props.sort?.field ? null : (
-					<div className={classes.sort}>{getSortIndicatorComponent(props.sort?.order)}</div>
+				isSortDisabled || cell.accessor !== sort?.accessor ? null : (
+					<div className={classes.sort}>{getSortIndicatorComponent(sort?.order)}</div>
 				)
 
 			let headerClassName = !cell.dummy
 				? cell.isNested
-					? clsx(classes.defaultHeader, theme?.headerClass, theme?.nestedHeaderClass, cell.className)
+					? clsx(
+							classes.defaultHeader,
+							theme?.headerClass,
+							theme?.nestedHeaderClass,
+							cell.className,
+					  )
 					: clsx(classes.defaultHeader, theme?.headerClass, cell.className)
 				: undefined
 
 			//If the cell is selected we set the column as selected too
-			if (
-				!cell.dummy &&
-				props.coords.colIndex === columnIndex &&
-				!cell['isNested'] &&
-				rowIndex === 0
-			) {
+			if (!cell.dummy && coords.colIndex === columnIndex && !cell['isNested'] && rowIndex === 0) {
 				headerClassName = clsx(headerClassName, theme?.currentColumnClass)
 			}
 
@@ -182,7 +181,7 @@ export const ColumnGrid = React.memo(
 			return (
 				<div
 					ref={ref}
-					role={"columnheader"}
+					role={'columnheader'}
 					className={headerClassName}
 					aria-colindex={columnIndex}
 					data-rowindex={rowIndex}
@@ -193,7 +192,7 @@ export const ColumnGrid = React.memo(
 					}}
 				>
 					<span
-						onClick={isSortDisabled ? undefined : () => props.onSortClick(cell.accessor)}
+						onClick={isSortDisabled ? undefined : () => props.apiRef.current.toggleSort(cell.id)}
 						className={classes.contentSpan}
 					>
 						{children}
@@ -240,24 +239,12 @@ export const ColumnGrid = React.memo(
 					/>
 				)
 			},
-			[
-				props.data,
-				props.apiRef,
-				props.coords,
-				props.width,
-				headersSortDisabledMap,
-				props.disableSort,
-				props.sort,
-			],
+			[props.data, props.apiRef, props.width, headersSortDisabledMap, props.disableSort],
 		)
 
 		const rowCount = useMemo(() => {
 			return props.nestedHeaders ? props.nestedHeaders.length + 1 : 1
 		}, [props.nestedHeaders])
-
-		const columnCount = useMemo(() => {
-			return props.headers.length
-		}, [props.headers])
 
 		const onRefMount = useCallback(instance => {
 			gridRef.current = instance
@@ -273,7 +260,7 @@ export const ColumnGrid = React.memo(
 				deferredMeasurementCache={cache}
 				rowHeight={cache.rowHeight}
 				rowCount={rowCount}
-				columnCount={columnCount}
+				columnCount={props.columns.length}
 				overscanRowCount={props.overscanRowCount ?? 2}
 				overscanColumnCount={props.overscanColumnCount ?? 2}
 				width={props.width}

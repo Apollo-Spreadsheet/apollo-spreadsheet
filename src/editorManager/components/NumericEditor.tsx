@@ -119,8 +119,6 @@ export const NumericEditor = forwardRef(
 					style={{
 						width: anchorStyle.width,
 						minHeight: anchorStyle.height,
-						background: anchorStyle.background,
-						backgroundColor: anchorStyle.backgroundColor
 					}}
 				>
 					<TextareaAutosize
@@ -139,7 +137,10 @@ export const NumericEditor = forwardRef(
 						rowsMin={1}
 						maxLength={maxLength}
 						className={clsx(classes.input, additionalProps?.className)}
-						style={additionalProps?.style}
+						style={{
+							minHeight: anchorStyle.height,
+							...additionalProps?.style,
+						}}
 					/>
 				</div>
 			</Popover>

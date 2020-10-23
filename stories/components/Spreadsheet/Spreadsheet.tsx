@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Alignment } from 'react-virtualized'
 import { createMergeCellsData } from './createMergedCells'
 import { GridTheme } from '../../../src/types/grid-theme'
@@ -116,17 +116,20 @@ export function Spreadsheet() {
 		cellClass: classes.rowClass,
 	}
 
- 	const onCellChange = useCallback((changes: CellChangeParams) => {
-		setData(prev => {
-			const newData = [...prev]
-			const column = headers[changes.coords.colIndex]
-			newData[changes.coords.rowIndex] = {
-				...newData[changes.coords.rowIndex],
-				[column.accessor]: changes.newValue,
-			}
-			return newData
-		})
-	}, [data,headers])
+	const onCellChange = useCallback(
+		(changes: CellChangeParams) => {
+			setData(prev => {
+				const newData = [...prev]
+				const column = headers[changes.coords.colIndex]
+				newData[changes.coords.rowIndex] = {
+					...newData[changes.coords.rowIndex],
+					[column.accessor]: changes.newValue,
+				}
+				return newData
+			})
+		},
+		[data, headers],
+	)
 
 	const [delayedPosition, setDelayedPosition] = useState<NavigationCoords | null>(null)
 
@@ -226,7 +229,7 @@ export function Spreadsheet() {
 	}
 
 	function onHeaderIconClick() {
-		const selectedRows = apiRef.current?.getSelectedRows() ?? []
+		const selectedRows = apiRef.current?.getSelectedRowIds() ?? []
 		if (selectedRows.length === 0) {
 			return
 		}
@@ -267,7 +270,7 @@ export function Spreadsheet() {
 			<ApolloSpreadSheet
 				className={classes.root}
 				apiRef={apiRef}
-				headers={headers}
+				columns={headers}
 				rows={data}
 				onCellChange={onCellChange}
 				outsideClickDeselects={outsideClickDeselects}

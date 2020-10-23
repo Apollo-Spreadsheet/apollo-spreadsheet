@@ -12,11 +12,10 @@ import { NavigationCoords } from '../navigation/types/navigation-coords.type'
 import clsx from 'clsx'
 import { GridCellProps } from 'react-virtualized/dist/es/Grid'
 import { MeasurerRendererProps } from '../cellMeasurer/cellMeasureWrapperProps'
-import {  GridWrapperProps } from './gridWrapperProps'
+import { GridWrapperProps } from './gridWrapperProps'
 import { makeStyles } from '@material-ui/core/styles'
 import { MergeCell } from '../mergeCells/interfaces/merge-cell'
-import { StretchMode } from "../types";
-import { useApiRef } from "../api";
+import { StretchMode } from '../types'
 
 const useStyles = makeStyles(() => ({
 	bodyContainer: {
@@ -31,8 +30,8 @@ const useStyles = makeStyles(() => ({
 		},
 	},
 	disabledCell: {
-		cursor:'default', //no clickable action for this cell
-		pointerEvents: 'none' //no events for this cell
+		cursor: 'default', //no clickable action for this cell
+		pointerEvents: 'none', //no events for this cell
 	},
 	suppressHorizontalOverflow: {
 		overflowX: 'hidden',
@@ -61,11 +60,10 @@ const GridWrapper = forwardRef((props: GridWrapperProps, componentRef: React.Ref
 	 */
 	const getColumnAt = useCallback(
 		(index: number) => {
-			return props.headers[index]
+			return props.columns[index]
 		},
-		[props.headers],
+		[props.columns],
 	)
-
 
 	useImperativeHandle(
 		componentRef,
@@ -75,7 +73,7 @@ const GridWrapper = forwardRef((props: GridWrapperProps, componentRef: React.Ref
 			},
 			forceUpdate: () => {
 				gridRef.current?.forceUpdate()
-			}
+			},
 		}),
 		[props.data, getColumnAt, gridRef.current],
 	)
@@ -84,7 +82,10 @@ const GridWrapper = forwardRef((props: GridWrapperProps, componentRef: React.Ref
 		cache.clearAll()
 		gridRef.current?.recomputeGridSize()
 		//When the re-computation happens the scroll position is affected and gets reset
-		gridRef.current?.scrollToCell({ columnIndex: props.coords.colIndex, rowIndex: props.coords.rowIndex })
+		gridRef.current?.scrollToCell({
+			columnIndex: props.coords.colIndex,
+			rowIndex: props.coords.rowIndex,
+		})
 	}
 
 	function recomputingCleanup() {
@@ -101,7 +102,6 @@ const GridWrapper = forwardRef((props: GridWrapperProps, componentRef: React.Ref
 		recomputingTimeout.current = setTimeout(recomputeSizes, 100)
 		return recomputingCleanup
 	}, [props.data, props.width, props.height])
-
 
 	const activeMergePath = useMemo(() => {
 		//If there is no merging then we use the active directly
@@ -165,11 +165,11 @@ const GridWrapper = forwardRef((props: GridWrapperProps, componentRef: React.Ref
 
 	function renderCell({ style, cell, ref, rowIndex, columnIndex }) {
 		const isSelected = rowIndex === props.coords.rowIndex && columnIndex === props.coords.colIndex
-		const navigationDisabled = props.headers[0][columnIndex]?.disableNavigation
-		const column = props.headers[columnIndex]
+		const navigationDisabled = props.columns[0][columnIndex]?.disableNavigation
+		const column = props.columns[columnIndex]
 		//Dummy zIndex is 0 and a spanned cell has 5 but a normal cell has 1
 		const zIndex = (cell.rowSpan || cell.colSpan) && !cell.dummy ? 5 : cell.dummy ? 0 : 1
-		const isRowSelected = isActiveRow({ rowIndex, colIndex: columnIndex })
+		const isRowActive = isActiveRow({ rowIndex, colIndex: columnIndex })
 		const theme = props.apiRef.current.theme
 
 		if (isSelected) {
@@ -178,7 +178,9 @@ const GridWrapper = forwardRef((props: GridWrapperProps, componentRef: React.Ref
 			style.borderRight = '0px'
 			style.borderTop = '0px'
 			style.borderBottom = '0px'
-			style.border = props.highlightBorderColor ? `1px solid ${props.highlightBorderColor}` :'1px solid blue'
+			style.border = props.highlightBorderColor
+				? `1px solid ${props.highlightBorderColor}`
+				: '1px solid blue'
 		} else {
 			//Bind default border and clear other borders
 			if (!theme || (!theme.cellClass && !cell.dummy)) {
@@ -197,12 +199,20 @@ const GridWrapper = forwardRef((props: GridWrapperProps, componentRef: React.Ref
 		 * of the parent because there is none visible
 		 * */
 		let cellClassName = clsx(classes.cellDefaultStyle, theme?.cellClass, column.cellClassName)
-		if (isRowSelected && !cell.dummy && theme?.currentRowClass) {
+		if (isRowActive && !cell.dummy && theme?.currentRowClass) {
 			cellClassName = clsx(cellClassName, theme?.currentRowClass)
 		}
 
 		if (navigationDisabled && !cell.dummy && theme?.disabledCellClass) {
 			cellClassName = clsx(cellClassName, classes.disabledCell, theme?.disabledCellClass)
+		}
+
+		if (props.selection && props.selection.cellClassName) {
+			const row = props.apiRef.current.getRowAt(rowIndex)
+			const isRowSelected = props.apiRef.current.isRowSelected(row?.[props.selection.key])
+			if (isRowSelected) {
+				cellClassName = clsx(cellClassName, props.selection.cellClassName)
+			}
 		}
 
 		return (
@@ -266,7 +276,8 @@ const GridWrapper = forwardRef((props: GridWrapperProps, componentRef: React.Ref
 			props.data,
 			props.apiRef,
 			activeMergePath,
-			props.headers,
+			props.columns,
+			props.selection,
 		],
 	)
 
@@ -307,7 +318,11 @@ const GridWrapper = forwardRef((props: GridWrapperProps, componentRef: React.Ref
 	return (
 		<Grid
 			{...props}
-			className={props.stretchMode !== StretchMode.None ? clsx(classes.bodyContainer, classes.suppressHorizontalOverflow) : classes.bodyContainer}
+			className={
+				props.stretchMode !== StretchMode.None
+					? clsx(classes.bodyContainer, classes.suppressHorizontalOverflow)
+					: classes.bodyContainer
+			}
 			// className={classes.bodyContainer}
 			ref={onRefMount}
 			cellRenderer={cellRenderer}
@@ -315,9 +330,9 @@ const GridWrapper = forwardRef((props: GridWrapperProps, componentRef: React.Ref
 			rowHeight={cache.rowHeight}
 			rowCount={props.rows.length}
 			columnCount={props.columnCount}
+			columnWidth={props.getColumnWidth}
 			overscanRowCount={props.overscanRowCount ?? 2}
 			overscanColumnCount={props.overscanColumnCount ?? 2}
-			columnWidth={props.getColumnWidth}
 			onSectionRendered={onSectionRendered}
 			scrollToRow={props.coords.rowIndex}
 			scrollToColumn={props.coords.colIndex}

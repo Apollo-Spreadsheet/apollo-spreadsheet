@@ -1,8 +1,8 @@
 import React, { useRef, useState } from 'react'
-import { ApolloSpreadSheet } from '../../src'
+import { ApolloSpreadSheet, Row } from '../../src'
 import { AddCircle } from '@material-ui/icons'
 import { Avatar, Box, IconButton, LinearProgress } from '@material-ui/core'
-import { Header } from '../../src/columnGrid/types/header.type'
+import { Column } from '../../src/columnGrid/types/header.type'
 import faker from 'faker'
 import { makeStyles } from '@material-ui/core/styles'
 
@@ -74,11 +74,11 @@ const useStyles = makeStyles(() => ({
 
 export function VPD() {
 	const classes = useStyles()
-	function disableSort(header: Header) {
+	function disableSort(header: Column) {
 		return header.id === 'avatar'
 	}
 
-	const headers: Header[] = [
+	const headers: Column[] = [
 		{
 			id: 'avatar',
 			title: '',
@@ -88,7 +88,7 @@ export function VPD() {
 			disableCellCut: true,
 			disableCellPaste: true,
 			width: '3%',
-			cellRenderer: ({ row }: { row: any }) => {
+			cellRenderer: ({ row }: { row: Row }) => {
 				const index = rows.findIndex(e => e.id === row.id)
 				const isOdd = index % 2 === 0
 				return (
@@ -169,7 +169,7 @@ export function VPD() {
 	return (
 		<Box width={'98%'} height={'400px'} style={{ margin: 10 }}>
 			<ApolloSpreadSheet
-				headers={headers}
+				columns={headers}
 				rows={rows}
 				minColumnWidth={30}
 				disableSort={disableSort}

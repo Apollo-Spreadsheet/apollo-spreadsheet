@@ -1,11 +1,11 @@
 import { StretchMode } from '../types/stretch-mode.enum'
-import { GridHeader, Header, NestedHeader } from "./types/header.type"
+import { GridHeader, Column, NestedHeader } from './types/header.type'
 import { GridTheme } from '../types/grid-theme'
 import { NavigationCoords } from '../navigation/types/navigation-coords.type'
-import { DisableSortFilterParam } from "../gridWrapper/gridWrapperProps"
-import GridWrapper from "../gridWrapper/GridWrapper";
-import React from "react";
-import { ApiRef } from "../api/types";
+import { DisableSortFilterParam } from '../gridWrapper/gridWrapperProps'
+import GridWrapper from '../gridWrapper/GridWrapper'
+import React from 'react'
+import { ApiRef } from '../api/types'
 
 export interface ColumnGridProps {
 	/**
@@ -14,7 +14,7 @@ export interface ColumnGridProps {
 	disableSort?: boolean | DisableSortFilterParam
 	apiRef: ApiRef
 	data: Array<GridHeader[]>
-	headers: Header[]
+	columns: Column[]
 	nestedHeaders?: Array<NestedHeader[]>
 	minRowHeight: number
 
@@ -23,8 +23,6 @@ export interface ColumnGridProps {
 
 	width: number
 	scrollLeft: number
-	// isScrolling: boolean
-	coords: NavigationCoords
 	/** @default StretchMode.None  */
 	stretchMode?: StretchMode
 	/**
@@ -39,6 +37,4 @@ export interface ColumnGridProps {
 	 * @default 2
 	 */
 	overscanColumnCount?: number
-	onSortClick: (field: string) => void
-	sort: { field: string; order: 'asc' | 'desc' } | null
 }

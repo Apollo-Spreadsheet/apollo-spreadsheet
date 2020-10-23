@@ -1,6 +1,6 @@
 import { createFixedWidthMapping } from '../utils/createFixedWidthMapping'
 import { StretchMode } from '../../types/stretch-mode.enum'
-import { Header } from '../types/header.type'
+import { Column } from '../types/header.type'
 import { createColumnMock } from '../__mocks__/column-mock'
 
 describe('createFixedWidthMapping()', () => {
@@ -14,7 +14,7 @@ describe('createFixedWidthMapping()', () => {
 	})
 
 	it('should create a fixed column out of 2 columns without stretching', () => {
-		const columns: Header[] = [
+		const columns: Column[] = [
 			createColumnMock({
 				width: '200',
 			}),
@@ -31,7 +31,7 @@ describe('createFixedWidthMapping()', () => {
 	})
 
 	it('should remove the scroll width from the total container width (All columns filled)', () => {
-		const columns: Header[] = [
+		const columns: Column[] = [
 			createColumnMock({
 				width: '950',
 			}),
@@ -50,7 +50,7 @@ describe('createFixedWidthMapping()', () => {
 	})
 
 	it('should not create an entry when the result is less than the minimum width column', () => {
-		const columns: Header[] = [
+		const columns: Column[] = [
 			createColumnMock({
 				width: '450',
 			}),
@@ -68,7 +68,7 @@ describe('createFixedWidthMapping()', () => {
 
 	describe('Stretching tests', () => {
 		it('should not do any stretch when a column width is not specified ', () => {
-			const columns: Header[] = [
+			const columns: Column[] = [
 				createColumnMock({
 					width: '10',
 				}),
@@ -84,7 +84,7 @@ describe('createFixedWidthMapping()', () => {
 		})
 
 		it('[StretchMode.None] should return the amount left of width and not apply in any column', () => {
-			const columns: Header[] = [
+			const columns: Column[] = [
 				createColumnMock({
 					width: '450',
 				}),
@@ -101,7 +101,7 @@ describe('createFixedWidthMapping()', () => {
 		})
 
 		it('[StretchMode.All] should return equal distribution width', () => {
-			const columns: Header[] = [
+			const columns: Column[] = [
 				createColumnMock({ width: '100' }),
 				createColumnMock({ width: '100' }),
 			]
@@ -119,7 +119,7 @@ describe('createFixedWidthMapping()', () => {
 
 		it('[StretchMode.All] should limit the column width distribution when it overflows the containerWidth', () => {
 			//Overflow with forced widths
-			const columns: Header[] = [
+			const columns: Column[] = [
 				createColumnMock({ width: '200' }),
 				createColumnMock({ width: '200' }),
 			]
@@ -136,7 +136,7 @@ describe('createFixedWidthMapping()', () => {
 		})
 
 		it('[StretchMode.Last] should apply the remaining column width to the last column', () => {
-			const columns: Header[] = [
+			const columns: Column[] = [
 				createColumnMock({ width: '100' }),
 				createColumnMock({ width: '100' }),
 			]

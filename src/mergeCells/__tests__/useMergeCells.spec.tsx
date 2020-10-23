@@ -16,7 +16,7 @@ describe('useMergeCells hook', () => {
 
 	it('should mount without any data', () => {
 		const props: MergedCellsHookProps = {
-			data: [],
+			mergeCells: [],
 			columnCount: 0,
 			rowCount: 0,
 		}
@@ -27,7 +27,7 @@ describe('useMergeCells hook', () => {
 
 	it('should mount with data', () => {
 		const props: MergedCellsHookProps = {
-			data: [{
+			mergeCells: [{
 				rowIndex: 0,
 				colIndex: 0,
 				rowSpan: 3,
@@ -42,12 +42,12 @@ describe('useMergeCells hook', () => {
 		]
 		const { result } = renderHook(() => useMergeCells(props))
 		expect(result.current.mergedPositions).toEqual(expectedMergedPositions)
-		expect(result.current.mergeData).toEqual(props.data)
+		expect(result.current.mergeData).toEqual(props.mergeCells)
 	})
 
 	it('should dispatch console.error and ignore negative positions', () => {
 		const props: MergedCellsHookProps = {
-			data: [{
+			mergeCells: [{
 				rowIndex: 0,
 				colIndex: 0,
 				rowSpan: 3,
@@ -67,14 +67,14 @@ describe('useMergeCells hook', () => {
 		]
 		const { result } = renderHook(() => useMergeCells(props))
 		expect(result.current.mergedPositions).toEqual(expectedMergedPositions)
-		expect(result.current.mergeData).toEqual([props.data![0]])
+		expect(result.current.mergeData).toEqual([props.mergeCells![0]])
 		expect(consoleSpy.mock.calls.length).toBe(1)
 		expect(consoleSpy.mock.calls.map(e => e[0])).toEqual([MERGED_NEGATIVE_VALUES({ rowIndex: -1, colIndex: -1 })])
 	})
 
 	it('should fetch correctly the span properties', () => {
 		const props: MergedCellsHookProps = {
-			data: [{
+			mergeCells: [{
 				rowIndex: 0,
 				colIndex: 0,
 				rowSpan: 3,
@@ -84,13 +84,13 @@ describe('useMergeCells hook', () => {
 			rowCount: 10,
 		}
 		const { result } = renderHook(() => useMergeCells(props))
-		expect(result.current.mergeData).toEqual(props.data)
-		expect(result.current.getSpanProperties({ rowIndex: 0, colIndex: 0 })).toEqual(props.data![0])
+		expect(result.current.mergeData).toEqual(props.mergeCells)
+		expect(result.current.getSpanProperties({ rowIndex: 0, colIndex: 0 })).toEqual(props.mergeCells![0])
 	})
 
 	it('should not find any span properties for non existing coordinates', () => {
 		const props: MergedCellsHookProps = {
-			data: [{
+			mergeCells: [{
 				rowIndex: 0,
 				colIndex: 0,
 				rowSpan: 3,
@@ -100,7 +100,7 @@ describe('useMergeCells hook', () => {
 			rowCount: 10,
 		}
 		const { result } = renderHook(() => useMergeCells(props))
-		expect(result.current.mergeData).toEqual(props.data)
+		expect(result.current.mergeData).toEqual(props.mergeCells)
 		expect(result.current.getSpanProperties({ rowIndex: 99, colIndex: 99 })).toBeUndefined()
 	})
 })
