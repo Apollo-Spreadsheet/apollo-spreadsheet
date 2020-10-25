@@ -2,21 +2,25 @@ import { parseColumnWidthsConfiguration } from './parseColumnWidthsConfiguration
 import { FixedColumnWidthDictionary } from '../types/fixed-column-width-dictionary'
 import { Column } from '../types/header.type'
 import { StretchMode } from '../../types/stretch-mode.enum'
+import memoizeOne from 'memoize-one'
+import { dequal as isDeepEqual } from 'dequal'
 
 /**
  * Creates an object indexing the fixed column widths by its index as key for fast lookup on dynamic widths
+ * The result is also memoized and the latest is returned
  * @param columns
  * @param containerWidth
  * @param minColumnWidth
  * @param stretchMode
  */
-export const createFixedWidthMapping = (
+export const createFixedWidthMapping = memoizeOne((
 	columns: Column[],
 	containerWidth: number,
 	minColumnWidth: number,
 	stretchMode: StretchMode,
 	scrollWidth: number,
 ) => {
+	console.warn("CALCULATING")
 	const mapping = columns.reduce((acc, e, i) => {
 		//If there is no width or its negative, apply min column width
 		if (containerWidth <= 0) {
@@ -24,6 +28,7 @@ export const createFixedWidthMapping = (
 			return acc
 		}
 
+		//Just return and delay to calculate after
 		if (!e.width) {
 			return acc
 		}
@@ -49,27 +54,40 @@ export const createFixedWidthMapping = (
 	//Loop over the new mapping and adjust
 	const remainingSize = Math.max(0, Math.max(0, containerWidth) - totalSize)
 
-	//We might have a margin that some width is left
-	if (isAllColWidthsFilled && totalSize < containerWidth) {
-		//Add the remaining size into the last
-		if (stretchMode === StretchMode.Last) {
-			const last = Object.keys(mapping).pop()
-			if (last) {
-				mapping[last] += remainingSize
+	//Check the remaining and fill
+	if (!isAllColWidthsFilled){
+		console.error("Filling with the remaining width => " + remainingSize + " out of " + totalSize)
+		const columnsNotSet = columns.filter(e => !e.width)
+		//Apply the same stretch strategy of ALL
+		const ratio = remainingSize / columns.length
+		columnsNotSet.forEach((_, i) => {
+			console.log("Applying " + ratio + " to column " + columns[i])
+			mapping[i] = ratio
+		})
+	}
+	else {
+		//We might have a margin that some width is left
+		if (totalSize < containerWidth) {
+			//Add the remaining size into the last
+			if (stretchMode === StretchMode.Last) {
+				const last = Object.keys(mapping).pop()
+				if (last) {
+					mapping[last] += remainingSize
 
-				//Update the total size because it has been incremented
+					//Update the total size because it has been incremented
+					totalSize = Object.values(mapping).reduce((acc, e) => acc + e, 0)
+				}
+			}
+
+			//Add a ratio to every column with the remaining
+			if (stretchMode === StretchMode.All) {
+				const ratio = remainingSize / columns.length
+				for (const key in mapping) {
+					mapping[key] += ratio
+				}
+				//Update the total size because the calculated values have been updated
 				totalSize = Object.values(mapping).reduce((acc, e) => acc + e, 0)
 			}
-		}
-
-		//Add a ratio to every column with the remaining
-		if (stretchMode === StretchMode.All) {
-			const ratio = remainingSize / columns.length
-			for (const key in mapping) {
-				mapping[key] += ratio
-			}
-			//Update the total size because the calculated values have been updated
-			totalSize = Object.values(mapping).reduce((acc, e) => acc + e, 0)
 		}
 	}
 
@@ -82,4 +100,4 @@ export const createFixedWidthMapping = (
 		totalSize,
 		mapping,
 	}
-}
+}, isDeepEqual)

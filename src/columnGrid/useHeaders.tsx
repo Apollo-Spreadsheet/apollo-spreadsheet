@@ -5,7 +5,6 @@ import { StretchMode } from '../types/stretch-mode.enum'
 import { insertDummyCells } from '../gridWrapper/utils/insertDummyCells'
 import { ApiRef, COLUMNS_CHANGED, useApiExtends } from '../api'
 import { ColumnApi } from '../api/types/columnApi'
-import { parseColumnWidthsConfiguration } from './utils'
 
 export interface FixedColumnWidthRecord {
 	totalSize: number
@@ -18,7 +17,6 @@ export interface GetColumnAt {
 
 interface HeadersState {
 	gridHeaders: GridHeader[][]
-	dynamicColumnCount: number
 	columns: Column[]
 }
 
@@ -178,7 +176,6 @@ export function useHeaders({
 
 	return {
 		gridHeaders,
-		dynamicColumnCount,
 		columns: columnsRef.current,
 	}
 }

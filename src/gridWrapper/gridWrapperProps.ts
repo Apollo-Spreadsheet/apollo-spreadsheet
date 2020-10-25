@@ -57,7 +57,6 @@ export interface GridWrapperProps<TRow = any> extends GridWrapperCommonProps {
 	scrollLeft: number
 	onScroll?: (params: OnScrollParams) => any
 	height: number
-	registerChild?: RegisterChildFn
 	rows: TRow[]
 	coords: NavigationCoords
 	data: GridCell[][]

@@ -283,14 +283,9 @@ const GridWrapper = forwardRef((props: GridWrapperProps, componentRef: React.Ref
 
 	const onRefMount = useCallback(
 		instance => {
-			//Pass down for react-virtualized under-layer
-			if (instance) {
-				props.registerChild?.(instance)
-			}
-
 			gridRef.current = instance
 		},
-		[props.registerChild, (componentRef as any).current],
+		[],
 	)
 
 	const onSectionRendered = useCallback(

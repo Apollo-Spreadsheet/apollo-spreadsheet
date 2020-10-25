@@ -1,13 +1,11 @@
 import React, { useCallback, useRef } from 'react'
 import { StretchMode } from '../types/stretch-mode.enum'
 import { scrollbarWidth } from '@xobotyi/scrollbar-width'
-import { AutoSizer, ColumnSizer, OnScrollParams, ScrollSync } from 'react-virtualized'
+import { AutoSizer, OnScrollParams, ScrollSync } from 'react-virtualized'
 import { createFixedWidthMapping } from '../columnGrid/utils/createFixedWidthMapping'
 import { FixedColumnWidthRecord } from '../columnGrid/useHeaders'
 import { Column } from '../columnGrid/types/header.type'
-import { RegisterChildFn } from '../gridWrapper/interfaces/registerChildFn'
 import { makeStyles } from '@material-ui/core/styles'
-import shallowDiffers from '../helpers/shallowDiffers'
 import clsx from 'clsx'
 
 const useStyles = makeStyles(() => ({
@@ -21,7 +19,6 @@ export interface GridContainerChildrenProps {
 	width: number
 	height: number
 	getColumnWidth: ({ index }: { index: number }) => number
-	registerChild?: RegisterChildFn
 	columnGridRef: React.MutableRefObject<any>
 	mainGridRef: React.MutableRefObject<any>
 	scrollLeft: number
@@ -37,7 +34,6 @@ export interface GridContainerCommonProps {
 interface Props extends GridContainerCommonProps {
 	headers: Column[]
 	minColumnWidth: number
-	dynamicColumnCount: number
 	stretchMode: StretchMode
 	children: (props: GridContainerChildrenProps) => unknown
 }
@@ -45,7 +41,6 @@ interface Props extends GridContainerCommonProps {
 export const GridContainer = React.memo(
 	({
 		minColumnWidth,
-		dynamicColumnCount,
 		stretchMode,
 		headers,
 		children,
@@ -62,9 +57,6 @@ export const GridContainer = React.memo(
 			totalSize: 0,
 			mapping: {},
 		})
-		const lastContainerWidth = useRef(0)
-		const remainingWidth = useRef(0)
-		const lastHeaders = useRef<Column[]>([])
 
 		/**
 		 * Helper that facades with getColumnWidth function provided by react-virtualize and either returns
@@ -97,15 +89,7 @@ export const GridContainer = React.memo(
 			[headers.length],
 		)
 
-		const buildColumnTotalWidth = (containerWidth: number) => {
-			//Returned cached result
-			if (
-				!shallowDiffers(headers, lastHeaders.current) &&
-				lastContainerWidth.current === containerWidth
-			) {
-				return remainingWidth.current
-			}
-
+		const calculateColumnWidths = (containerWidth: number) => {
 			const { mapping, totalSize } = createFixedWidthMapping(
 				headers,
 				containerWidth,
@@ -120,66 +104,45 @@ export const GridContainer = React.memo(
 				mapping,
 			}
 
-			const width = Math.min(
-				containerWidth,
-				Math.max(0, containerWidth) - fixedColumnWidths.current.totalSize,
-			)
-
-			//Cache the dependencies
-			lastContainerWidth.current = containerWidth
-			lastHeaders.current = headers
-			remainingWidth.current = width
-
-			return width
 		}
 
 		function render(containerWidth: number, containerHeight = 500) {
 			const normalizedContainerWidth =
 				stretchMode !== StretchMode.None ? containerWidth - scrollbarSize : containerWidth
-			const remainingWidth = buildColumnTotalWidth(normalizedContainerWidth)
-			return (
-				<ColumnSizer
-					columnMinWidth={minColumnWidth}
-					columnCount={dynamicColumnCount}
-					width={remainingWidth}
-				>
-					{({ registerChild, getColumnWidth }) => {
-						if (stretchMode !== StretchMode.None) {
-							return (
-								<>
-									{children({
-										width: containerWidth,
-										height: containerHeight,
-										getColumnWidth: getColumnWidthHelper(getColumnWidth),
-										mainGridRef,
-										columnGridRef,
-										registerChild,
-										scrollLeft: 0,
-									})}
-								</>
-							)
-						}
 
-						return (
-							<ScrollSync>
-								{({ onScroll, scrollLeft }) => (
-									<>
-										{children({
-											width: getTotalColumnWidth(getColumnWidth) + scrollbarSize,
-											height: containerHeight,
-											getColumnWidth: getColumnWidthHelper(getColumnWidth),
-											scrollLeft,
-											onScroll,
-											registerChild,
-											columnGridRef,
-											mainGridRef,
-										})}
-									</>
-								)}
-							</ScrollSync>
-						)
-					}}
-				</ColumnSizer>
+			//Invoke our column builder
+			calculateColumnWidths(normalizedContainerWidth)
+			if (stretchMode !== StretchMode.None) {
+				return (
+					<>
+						{children({
+							width: containerWidth,
+							height: containerHeight,
+							getColumnWidth: getColumnWidthHelper(),
+							mainGridRef,
+							columnGridRef,
+							scrollLeft: 0,
+						})}
+					</>
+				)
+			}
+
+			return (
+				<ScrollSync>
+					{({ onScroll, scrollLeft }) => (
+						<>
+							{children({
+								width: getTotalColumnWidth() + scrollbarSize,
+								height: containerHeight,
+								getColumnWidth: getColumnWidthHelper(),
+								scrollLeft,
+								onScroll,
+								columnGridRef,
+								mainGridRef,
+							})}
+						</>
+					)}
+				</ScrollSync>
 			)
 		}
 

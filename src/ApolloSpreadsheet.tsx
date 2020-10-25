@@ -45,7 +45,7 @@ export const ApolloSpreadSheet = forwardRef(
 
 		useEvents(rootContainerRef, apiRef)
 
-		const { gridHeaders, dynamicColumnCount, columns } = useHeaders({
+		const { gridHeaders, columns } = useHeaders({
 			columns: props.columns,
 			nestedHeaders: props.nestedHeaders,
 			minColumnWidth,
@@ -120,11 +120,10 @@ export const ApolloSpreadSheet = forwardRef(
 					<GridContainer
 						headers={columns}
 						minColumnWidth={minColumnWidth}
-						dynamicColumnCount={dynamicColumnCount}
 						stretchMode={props.stretchMode ?? StretchMode.All}
 						containerClassName={props.containerClassName}
 					>
-						{({ scrollLeft, onScroll, getColumnWidth, width, columnGridRef, height, mainGridRef, registerChild }) => (
+						{({ scrollLeft, onScroll, getColumnWidth, width, columnGridRef, height, mainGridRef }) => (
 									<div id="apollo-grids" className={props.className}>
 										<ColumnGrid
 											data={gridHeaders}
@@ -148,7 +147,6 @@ export const ApolloSpreadSheet = forwardRef(
 											coords={coords}
 											overscanColumnCount={props.overscanColumnCount}
 											overscanRowCount={props.overscanRowCount}
-											registerChild={registerChild}
 											defaultColumnWidth={minColumnWidth}
 											width={width}
 											getColumnWidth={getColumnWidth}

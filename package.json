@@ -43,6 +43,7 @@
     "clipboardy": "^2.3.0",
     "clsx": "^1.1.1",
     "dayjs": "^1.9.1",
+    "dequal": "^2.0.2",
     "json2csv": "^5.0.1",
     "react-datepicker": "^3.2.2",
     "react-virtualized": "^9.21.2",
