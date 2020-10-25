@@ -1,9 +1,9 @@
-import { parseColumnWidthsConfiguration } from './parseColumnWidthsConfiguration'
-import { FixedColumnWidthDictionary } from '../types/fixed-column-width-dictionary'
-import { Column } from '../types/header.type'
-import { StretchMode } from '../../types/stretch-mode.enum'
-import memoizeOne from 'memoize-one'
-import { dequal as isDeepEqual } from 'dequal'
+import { parseColumnWidthsConfiguration } from "./parseColumnWidthsConfiguration";
+import { FixedColumnWidthDictionary } from "../types/fixed-column-width-dictionary";
+import { Column } from "../types/header.type";
+import { StretchMode } from "../../types/stretch-mode.enum";
+import memoizeOne from "memoize-one";
+import { dequal as isDeepEqual } from "dequal";
 
 /**
  * Creates an object indexing the fixed column widths by its index as key for fast lookup on dynamic widths
@@ -87,7 +87,7 @@ export const createFixedWidthMapping = memoizeOne(
 		fixedTotalSize = Object.values(mapping).reduce((acc, e) => acc + e, 0)
 
 		//Add a fallback to prevent overflow which might be possible using rounding numbers
-		if (fixedTotalSize > containerWidth) {
+		if (fixedTotalSize > containerWidth && stretchMode !== StretchMode.None) {
 			//Loop over the mapping and reduce a ratio
 			const overflowValue = (fixedTotalSize - containerWidth)
 			const ratioToReduce = overflowValue / columns.length

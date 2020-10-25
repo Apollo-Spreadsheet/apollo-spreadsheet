@@ -66,8 +66,8 @@ storiesOf('Stretch Modes', module)
 	})
 	.add('Last', () => {
 		const headers: Column[] = [
-			createColumnMock({ width: '20%', title: 'Id', accessor: 'id' }),
-			createColumnMock({ width: '30%', title: 'Name', accessor: 'name' }),
+			createColumnMock({ width: 50, title: 'Id', accessor: 'id' }),
+			createColumnMock({ width: 150, title: 'Name', accessor: 'name' }),
 			createColumnMock({ title: 'Country', accessor: 'country' }),
 		]
 		return <ExampleTable headerData={headers} stretchMode={StretchMode.Last} />
