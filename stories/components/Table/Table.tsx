@@ -120,6 +120,7 @@ export function Table() {
 			id: 'org',
 			title: 'Organization',
 			accessor: 'org',
+			width: '20%',
 		},
 	]
 

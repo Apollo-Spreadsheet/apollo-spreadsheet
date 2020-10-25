@@ -59,7 +59,7 @@ export const createFixedWidthMapping = memoizeOne(
 			const columnsNotSet = columns.filter(e => !e.width)
 			//Apply the same stretch strategy of ALL
 			const ratio = Math.max(minColumnWidth, remainingSize / columnsNotSet.length)
-			for(const col of columnsNotSet){
+			for (const col of columnsNotSet) {
 				const colIndex = columns.findIndex(e => e.id === col.id)
 				mapping[colIndex] = ratio
 			}
@@ -89,7 +89,13 @@ export const createFixedWidthMapping = memoizeOne(
 
 		//Add a fallback to prevent overflow which might be possible using rounding numbers
 		if (fixedTotalSize > containerWidth) {
-			fixedTotalSize = containerWidth - scrollWidth
+			//Loop over the mapping and reduce a ratio
+			const overflowValue = (fixedTotalSize - containerWidth)
+			const ratioToReduce = overflowValue / columns.length
+			for(const key in mapping){
+				mapping[key] -= ratioToReduce
+			}
+			fixedTotalSize = containerWidth
 		}
 
 		return {
