@@ -63,26 +63,17 @@ export const GridContainer = React.memo(
 		 * the fixed width from our mapping or fetches directly from react-virtualize
 		 * @param getColumnWidth
 		 */
-		const getColumnWidthHelper = (getColumnWidth?: ({ index }: { index: number }) => number) => ({
-			index,
-		}: {
+		const getColumnWidthHelper = useCallback(({ index}: {
 			index: number
 		}) => {
-			let value = minColumnWidth
-			//If we have no column width accessor than it means we only use fixed widths
-			if (!getColumnWidth) {
-				value = fixedColumnWidths.current.mapping[index]
-			} else {
-				value = fixedColumnWidths.current.mapping[index] ?? getColumnWidth({ index })
-			}
+			const value = fixedColumnWidths.current.mapping[index]
 			return isNaN(value) ? minColumnWidth : value
-		}
+		}, [])
 
-		const getTotalColumnWidth = useCallback(
-			(getColumnWidth?: ({ index }: { index: number }) => number) => {
+		const getTotalColumnWidth = useCallback(() => {
 				let value = 0
 				for (let i = 0; i < headers.length; i++) {
-					value += getColumnWidthHelper(getColumnWidth)({ index: i })
+					value += getColumnWidthHelper({ index: i })
 				}
 				return value - scrollbarSize
 			},
@@ -95,7 +86,6 @@ export const GridContainer = React.memo(
 				containerWidth,
 				minColumnWidth,
 				stretchMode,
-				scrollbarSize,
 			)
 
 			//Just update with the new calculated (if it was otherwise it might have been a cached result)
@@ -118,7 +108,7 @@ export const GridContainer = React.memo(
 						{children({
 							width: containerWidth,
 							height: containerHeight,
-							getColumnWidth: getColumnWidthHelper(),
+							getColumnWidth: getColumnWidthHelper,
 							mainGridRef,
 							columnGridRef,
 							scrollLeft: 0,
@@ -134,7 +124,7 @@ export const GridContainer = React.memo(
 							{children({
 								width: getTotalColumnWidth() + scrollbarSize,
 								height: containerHeight,
-								getColumnWidth: getColumnWidthHelper(),
+								getColumnWidth: getColumnWidthHelper,
 								scrollLeft,
 								onScroll,
 								columnGridRef,

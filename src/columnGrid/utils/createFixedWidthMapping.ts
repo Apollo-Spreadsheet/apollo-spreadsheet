@@ -19,7 +19,6 @@ export const createFixedWidthMapping = memoizeOne(
 		containerWidth: number,
 		minColumnWidth: number,
 		stretchMode: StretchMode,
-		scrollWidth: number,
 	) => {
 		const mapping = columns.reduce((acc, e, i) => {
 			//If there is no width or its negative, apply min column width
