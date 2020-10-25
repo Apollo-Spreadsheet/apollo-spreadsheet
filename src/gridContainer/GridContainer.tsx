@@ -32,7 +32,7 @@ export interface GridContainerCommonProps {
 }
 
 interface Props extends GridContainerCommonProps {
-	headers: Column[]
+	columns: Column[]
 	minColumnWidth: number
 	stretchMode: StretchMode
 	children: (props: GridContainerChildrenProps) => unknown
@@ -42,7 +42,7 @@ export const GridContainer = React.memo(
 	({
 		minColumnWidth,
 		stretchMode,
-		headers,
+		columns,
 		children,
 		width,
 		height,
@@ -70,19 +70,9 @@ export const GridContainer = React.memo(
 			return isNaN(value) ? minColumnWidth : value
 		}, [])
 
-		const getTotalColumnWidth = useCallback(() => {
-				let value = 0
-				for (let i = 0; i < headers.length; i++) {
-					value += getColumnWidthHelper({ index: i })
-				}
-				return value - scrollbarSize
-			},
-			[headers.length],
-		)
-
 		const calculateColumnWidths = (containerWidth: number) => {
 			const { mapping, totalSize } = createFixedWidthMapping(
-				headers,
+				columns,
 				containerWidth,
 				minColumnWidth,
 				stretchMode,
@@ -117,12 +107,21 @@ export const GridContainer = React.memo(
 				)
 			}
 
+			// console.log({
+			// 	totalWidth: fixedColumnWidths.current.totalSize,
+			// 	totalViaFn: columns.reduce((acc, e, i) => {
+			// 		return acc + getColumnWidthHelper({index: i})
+			// 	},0),
+			// 	useScroll: fixedColumnWidths.current.totalSize > containerWidth,
+			// 	containerWidth,
+			// 	columnCount: columns.length
+			// })
 			return (
 				<ScrollSync>
 					{({ onScroll, scrollLeft }) => (
 						<>
 							{children({
-								width: getTotalColumnWidth() + scrollbarSize,
+								width: containerWidth,
 								height: containerHeight,
 								getColumnWidth: getColumnWidthHelper,
 								scrollLeft,
