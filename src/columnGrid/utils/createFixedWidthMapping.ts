@@ -13,91 +13,89 @@ import { dequal as isDeepEqual } from 'dequal'
  * @param minColumnWidth
  * @param stretchMode
  */
-export const createFixedWidthMapping = memoizeOne((
-	columns: Column[],
-	containerWidth: number,
-	minColumnWidth: number,
-	stretchMode: StretchMode,
-	scrollWidth: number,
-) => {
-	console.warn("CALCULATING")
-	const mapping = columns.reduce((acc, e, i) => {
-		//If there is no width or its negative, apply min column width
-		if (containerWidth <= 0) {
-			acc[i] = minColumnWidth
-			return acc
-		}
-
-		//Just return and delay to calculate after
-		if (!e.width) {
-			return acc
-		}
-
-		let value = parseColumnWidthsConfiguration(e.width, containerWidth)
-		//Avoid creating an entry because react-virtualized grid will use the minimum width
-		if (value < minColumnWidth) {
-			value = minColumnWidth
-		}
-
-		//Avoid overflow if we do have stretch mode
-		if (stretchMode !== StretchMode.None && value > containerWidth) {
-			value = minColumnWidth
-		}
-
-		acc[i] = value
-		return acc
-	}, {} as FixedColumnWidthDictionary)
-
-	const isAllColWidthsFilled = columns.filter(e => e.width).length === columns.length
-	let totalSize = Object.values(mapping).reduce((acc, e) => acc + e, 0)
-
-	//Loop over the new mapping and adjust
-	const remainingSize = Math.max(0, Math.max(0, containerWidth) - totalSize)
-
-	//Check the remaining and fill
-	if (!isAllColWidthsFilled){
-		console.error("Filling with the remaining width => " + remainingSize + " out of " + totalSize)
-		const columnsNotSet = columns.filter(e => !e.width)
-		//Apply the same stretch strategy of ALL
-		const ratio = remainingSize / columns.length
-		columnsNotSet.forEach((_, i) => {
-			console.log("Applying " + ratio + " to column " + columns[i])
-			mapping[i] = ratio
-		})
-	}
-	else {
-		//We might have a margin that some width is left
-		if (totalSize < containerWidth) {
-			//Add the remaining size into the last
-			if (stretchMode === StretchMode.Last) {
-				const last = Object.keys(mapping).pop()
-				if (last) {
-					mapping[last] += remainingSize
-
-					//Update the total size because it has been incremented
-					totalSize = Object.values(mapping).reduce((acc, e) => acc + e, 0)
-				}
+export const createFixedWidthMapping = memoizeOne(
+	(
+		columns: Column[],
+		containerWidth: number,
+		minColumnWidth: number,
+		stretchMode: StretchMode,
+		scrollWidth: number,
+	) => {
+		const mapping = columns.reduce((acc, e, i) => {
+			//If there is no width or its negative, apply min column width
+			if (containerWidth <= 0) {
+				acc[i] = minColumnWidth
+				return acc
 			}
 
-			//Add a ratio to every column with the remaining
-			if (stretchMode === StretchMode.All) {
-				const ratio = remainingSize / columns.length
-				for (const key in mapping) {
-					mapping[key] += ratio
+			//Just return and delay to calculate after
+			if (!e.width) {
+				return acc
+			}
+
+			let value = parseColumnWidthsConfiguration(e.width, containerWidth)
+			//Avoid creating an entry because react-virtualized grid will use the minimum width
+			if (value < minColumnWidth) {
+				value = minColumnWidth
+			}
+
+			//Avoid overflow if we do have stretch mode
+			if (stretchMode !== StretchMode.None && value > containerWidth) {
+				value = minColumnWidth
+			}
+
+			acc[i] = value
+			return acc
+		}, {} as FixedColumnWidthDictionary)
+
+		const isAllColWidthsFilled = columns.filter(e => e.width).length === columns.length
+		let fixedTotalSize = Object.values(mapping).reduce((acc, e) => acc + e, 0)
+
+		//Loop over the new mapping and adjust
+		const remainingSize = Math.max(0, containerWidth - fixedTotalSize)
+
+		//Check the remaining and fill
+		if (!isAllColWidthsFilled) {
+			const columnsNotSet = columns.filter(e => !e.width)
+			//Apply the same stretch strategy of ALL
+			const ratio = Math.max(minColumnWidth, remainingSize / columnsNotSet.length)
+			for(const col of columnsNotSet){
+				const colIndex = columns.findIndex(e => e.id === col.id)
+				mapping[colIndex] = ratio
+			}
+		} else {
+			//We might have a margin that some width is left
+			if (fixedTotalSize < containerWidth) {
+				//Add the remaining size into the last
+				if (stretchMode === StretchMode.Last) {
+					const last = Object.keys(mapping).pop()
+					if (last) {
+						mapping[last] += remainingSize
+					}
 				}
-				//Update the total size because the calculated values have been updated
-				totalSize = Object.values(mapping).reduce((acc, e) => acc + e, 0)
+
+				//Add a ratio to every column with the remaining
+				if (stretchMode === StretchMode.All) {
+					const ratio = Math.max(minColumnWidth, remainingSize / columns.length)
+					for (const key in mapping) {
+						mapping[key] += ratio
+					}
+				}
 			}
 		}
-	}
 
-	//Add a fallback to prevent overflow which might be possible using rounding numbers
-	if (totalSize > containerWidth) {
-		totalSize = containerWidth - scrollWidth
-	}
+		//Update the total size because the calculated values have been updated
+		fixedTotalSize = Object.values(mapping).reduce((acc, e) => acc + e, 0)
 
-	return {
-		totalSize,
-		mapping,
-	}
-}, isDeepEqual)
+		//Add a fallback to prevent overflow which might be possible using rounding numbers
+		if (fixedTotalSize > containerWidth) {
+			fixedTotalSize = containerWidth - scrollWidth
+		}
+
+		return {
+			totalSize: fixedTotalSize,
+			mapping,
+		}
+	},
+	isDeepEqual,
+)
