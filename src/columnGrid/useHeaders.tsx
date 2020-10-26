@@ -5,8 +5,9 @@ import { StretchMode } from '../types/stretch-mode.enum'
 import { insertDummyCells } from '../gridWrapper/utils/insertDummyCells'
 import { ApiRef, COLUMNS_CHANGED, useApiExtends } from '../api'
 import { ColumnApi } from '../api/types/columnApi'
+import { useLogger } from "../logger";
 
-export interface FixedColumnWidthRecord {
+export interface ColumnWidthRecord {
 	totalSize: number
 	mapping: FixedColumnWidthDictionary
 }
@@ -46,6 +47,7 @@ export function useHeaders({
 	apiRef,
 	initialised,
 }: Props): HeadersState {
+	const logger = useLogger('useHeaders')
 	const columnsRef = useRef<Column[]>(columns)
 	const nestedHeadersRef = useRef<NestedHeader[][] | undefined>(nestedHeaders)
 	const [gridHeaders, setGridHeaders] = useState<GridHeader[][]>([[]])
@@ -57,6 +59,7 @@ export function useHeaders({
 		columns: Column[]
 		nestedHeaders?: Array<NestedHeader[]>
 	}) {
+		logger.debug('Creating grid headers.')
 		//Detect duplicated
 		const duplicateColumns = paramColumns.filter((column, i) => {
 			return paramColumns.findIndex(d => d.id === column.id) !== i
@@ -95,6 +98,7 @@ export function useHeaders({
 		)
 
 		if (paramNestedHeaders) {
+			logger.debug('Grid detected nested headers.')
 			//Check if any row passes the limit of spanning
 			paramNestedHeaders.forEach((row, i) => {
 				const spanSize = row.reduce((acc, e) => acc + (e.colSpan ?? 0), 0)
@@ -130,6 +134,7 @@ export function useHeaders({
 
 	const updateColumns = useCallback(
 		(updatedColumns: Column[]) => {
+			logger.debug('Updating columns.')
 			columnsRef.current = updatedColumns
 			createGridHeaders({ columns: updatedColumns, nestedHeaders: nestedHeadersRef.current })
 			apiRef.current.dispatchEvent(COLUMNS_CHANGED, { columns: updatedColumns })
@@ -144,11 +149,6 @@ export function useHeaders({
 		//TODO review if this might give us trouble in case of only nested headers changing
 		apiRef.current.dispatchEvent(COLUMNS_CHANGED, { columns: columns })
 	}, [columns, nestedHeaders])
-
-	//Stores the amount of columns that we want to calculate using the remaining width of the grid
-	const dynamicColumnCount = useMemo(() => {
-		return columns.filter(e => !e.width).length
-	}, [columns])
 
 	const getColumnAt = useCallback((index: number) => {
 		return columnsRef.current[index]

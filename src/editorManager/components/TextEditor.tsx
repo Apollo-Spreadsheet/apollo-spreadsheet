@@ -96,7 +96,7 @@ export const TextEditor = forwardRef(
 				elevation={0}
 				TransitionProps={{ timeout: 0 }}
 				onClose={onEditorPortalClose}
-				marginThreshold={10}
+				marginThreshold={0}
 				disableRestoreFocus
 				PaperProps={{
 					style: {

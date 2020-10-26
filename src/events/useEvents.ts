@@ -1,8 +1,10 @@
 import React, { useCallback, useEffect } from 'react'
 import { ApiRef } from '../api/types/apiRef'
 import { CELL_CLICK, CELL_DOUBLE_CLICK, GRID_FOCUS_OUT } from "../api/eventConstants"
+import { useLogger } from "../logger";
 
 export function useEvents(gridRootRef: React.RefObject<HTMLDivElement>, apiRef: ApiRef) {
+	const logger = useLogger('useEvents')
 	const createHandler = useCallback(
 		(name: string) => (...args: any[]) => apiRef.current.dispatchEvent(name, ...args),
 		[apiRef],
@@ -40,13 +42,12 @@ export function useEvents(gridRootRef: React.RefObject<HTMLDivElement>, apiRef: 
 
 	useEffect(() => {
 		if (gridRootRef && gridRootRef.current && apiRef.current?.isInitialised) {
-			console.info('Binding events listeners')
+			logger.debug('Binding events listeners')
 			const keyDownHandler = createHandler('keydown')
 			const gridRootElem = gridRootRef.current
 
 			gridRootRef.current.addEventListener('click', onClickHandler, { capture: true })
 			gridRootRef.current.addEventListener('dblclick', onDoubleClickHandler, { capture: true })
-			//gridRootRef.current.addEventListener('focusout', onFocusOut)
 
 			document.addEventListener('keydown', keyDownHandler)
 
@@ -54,10 +55,9 @@ export function useEvents(gridRootRef: React.RefObject<HTMLDivElement>, apiRef: 
 			const api = apiRef.current
 
 			return () => {
-				console.info('Clearing all events listeners')
+				logger.debug('Clearing all events listeners')
 				gridRootElem.removeEventListener('click', onClickHandler, { capture: true })
 				gridRootElem.removeEventListener('dblclick', onDoubleClickHandler, { capture: true })
-				//gridRootElem.removeEventListener('focusout', onFocusOut)
 				document.removeEventListener('keydown', keyDownHandler)
 				api.removeAllListeners()
 			}

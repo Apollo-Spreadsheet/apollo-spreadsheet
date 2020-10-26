@@ -10,7 +10,6 @@ function CellMeasureWrapper ({ rowSpan, colSpan, cellRenderer, rendererProps, st
 				alignItems: 'center',
 				overflow: 'hidden',
 				wordBreak: 'break-word',
-				// textOverflow: 'ellipsis',
 				textAlign: 'center',
 			}
 			const { rowIndex, cache } = props

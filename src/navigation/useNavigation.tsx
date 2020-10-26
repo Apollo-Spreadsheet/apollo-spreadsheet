@@ -22,6 +22,7 @@ import {
 import { useApiExtends } from '../api/useApiExtends'
 import { Row } from '../types'
 import { NavigationApi } from '../api/types'
+import { useLogger } from '../logger'
 
 interface Props {
 	defaultCoords: NavigationCoords
@@ -31,8 +32,6 @@ interface Props {
 	apiRef: ApiRef
 	initialised: boolean
 }
-
-export type SelectCellFn = (params: NavigationCoords) => void
 
 export interface KeyDownEventParams {
 	event: KeyboardEvent | React.KeyboardEvent
@@ -46,6 +45,7 @@ export function useNavigation({
 	apiRef,
 	initialised,
 }: Props): NavigationCoords {
+	const logger = useLogger('useNavigation')
 	const coordsRef = useRef<NavigationCoords>(defaultCoords)
 	const [coords, setCoords] = useState<NavigationCoords>(defaultCoords)
 	const delayEditorDebounce = useRef<DebouncedFunc<any> | null>(null)
@@ -158,7 +158,7 @@ export function useNavigation({
 
 			return onCellChange?.({ coords, previousValue: currentValue, newValue: text, column, row })
 		} catch (ex) {
-			console.error(ex)
+			logger.error('handleCellPaste -> ' + ex)
 		}
 	}
 
@@ -244,7 +244,7 @@ export function useNavigation({
 			if (isNextMerged) {
 				const path = apiRef.current.getMergedPath(nextRowIndex)
 				if (path.length !== 2) {
-					return console.warn(
+					return logger.warn(
 						`[Navigation] Merge group path not correct, returned ${path.length} positions instead of 2. Please review`,
 					)
 				}
@@ -274,7 +274,7 @@ export function useNavigation({
 			//Is navigable?
 			const col = apiRef.current.getColumnAt(nextColIndex)
 			if (!col) {
-				return console.error('Column not found at' + nextColIndex)
+				return logger.error('Column not found at' + nextColIndex)
 			}
 
 			if (col.disableNavigation) {
@@ -289,7 +289,7 @@ export function useNavigation({
 						colIndex: nextColIndex,
 					})
 				} else {
-					return console.warn(
+					return logger.warn(
 						`[Navigation] Merge group path not correct, returned ${path.length} positions instead of 2. Please review`,
 					)
 				}
@@ -306,7 +306,7 @@ export function useNavigation({
 			}
 			const col = apiRef.current.getColumnAt(nextColIndex)
 			if (!col) {
-				return console.error('Column not found at ' + nextColIndex)
+				return logger.error('Column not found at ' + nextColIndex)
 			}
 
 			if (col.disableNavigation) {
@@ -321,7 +321,7 @@ export function useNavigation({
 						colIndex: nextColIndex,
 					})
 				} else {
-					return console.warn(
+					return logger.warn(
 						`[Navigation] Merge group path not correct, returned ${path.length} positions instead of 2. Please review`,
 					)
 				}
@@ -340,6 +340,7 @@ export function useNavigation({
 
 	const selectCell = useCallback(
 		({ colIndex, rowIndex }: NavigationCoords) => {
+			logger.debug(`Select cell for coordinates [${rowIndex},${colIndex}]`)
 			//Coordinates when the grid is clicked away
 			if (colIndex === -1 && rowIndex === -1) {
 				coordsRef.current = { colIndex, rowIndex }
@@ -361,7 +362,7 @@ export function useNavigation({
 
 			const column = apiRef.current.getColumnAt(colIndex)
 			if (!column) {
-				return console.warn('Column not found ')
+				return logger.warn(`Column not found at index ${colIndex}`)
 			}
 
 			const isDisabled = isFunctionType(column.disableNavigation)
@@ -382,11 +383,10 @@ export function useNavigation({
 			if (delayEditingOpen) {
 				delayEditorDebounce.current = debounce(() => {
 					delayEditorDebounce.current = null
-					const target = apiRef.current.rootElementRef?.current?.querySelector(
-						`[aria-colIndex='${colIndex}'][data-rowIndex='${rowIndex}'][role='cell']`,
-					)
+					const selector = `[aria-colIndex='${colIndex}'][data-rowIndex='${rowIndex}'][role='cell']`
+					const target = apiRef.current.rootElementRef?.current?.querySelector(selector)
 					if (!target) {
-						return console.error('Cell dom element not found on delayEditingOpen debounce')
+						return logger.error('Cell dom element not found on delayEditingOpen debounce with selector: ' + selector)
 					}
 
 					apiRef.current.beginEditing({
@@ -416,16 +416,17 @@ export function useNavigation({
 				return handleEditorOpenControls(event)
 			}
 
-			const cellElement = apiRef.current.rootElementRef?.current?.querySelector(
-				`[aria-colIndex='${coords.colIndex}'][data-rowIndex='${coords.rowIndex}'][role='cell']`,
-			)
+			const selector = `[aria-colIndex='${coords.colIndex}'][data-rowIndex='${coords.rowIndex}'][role='cell']`
+			const cellElement = apiRef.current.rootElementRef?.current?.querySelector(selector)
 			if (!cellElement) {
-				return console.error('Cell DOM element not found')
+				return logger.error(
+					`Cell DOM element not found with coordinates [${coords.rowIndex},${coords.colIndex}] using the following selector: ${selector}`,
+				)
 			}
 
 			const column = apiRef.current.getColumnAt(coords.colIndex)
 			if (!column) {
-				return console.warn('Column not found')
+				return logger.warn('Column not found')
 			}
 
 			//Travel like excel rules for non-editing
@@ -451,7 +452,7 @@ export function useNavigation({
 
 			const row = apiRef.current.getRowAt(coords.rowIndex)
 			if (!row) {
-				return console.warn('Row index')
+				return logger.warn(`Row not found at index ${coords.rowIndex}`)
 			}
 			const currentValue = row[column.accessor]
 

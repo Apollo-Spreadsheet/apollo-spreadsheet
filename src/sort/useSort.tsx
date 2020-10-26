@@ -3,6 +3,7 @@ import { ApiRef } from "../api/types"
 import { useApiExtends } from "../api"
 import { SortApi } from "../api/types/sortApi"
 import { orderBy } from 'lodash'
+import { useLogger } from "../logger";
 
 export interface SortState {
   accessor: string
@@ -10,6 +11,7 @@ export interface SortState {
 }
 
 export function useSort(apiRef: ApiRef, initialised: boolean){
+  const logger = useLogger('useSort')
   const stateRef = useRef<SortState | null>(null)
   const [sort, setSort] = useState<SortState | null>(null)
 
@@ -17,16 +19,18 @@ export function useSort(apiRef: ApiRef, initialised: boolean){
     if (!stateRef.current){
       return
     }
+    logger.debug(`Clearing sort at accessor ${stateRef.current.accessor}`)
     stateRef.current = null
     setSort(null)
     apiRef.current.updateRows(apiRef.current.getOriginalRows())
   }, [apiRef])
 
   const toggleSort = useCallback((columnId: string) => {
+    logger.debug(`Toggling sort for column id: ${columnId}`)
     const currentRows = apiRef.current.getRows()
     const column = apiRef.current.getColumnById(columnId)
     if (!column){
-      return console.error(`${columnId} not found at toggleSort`)
+      return logger.error(`Column id: ${columnId} not found at toggleSort`)
     }
 
     if (column?.accessor === stateRef.current?.accessor) {
@@ -52,15 +56,17 @@ export function useSort(apiRef: ApiRef, initialised: boolean){
   }, [apiRef, clearSort])
 
   const sortColumn = useCallback((columnId: string, order: 'asc' | 'desc') => {
+    logger.debug(`Sorting ${columnId} with order ${order}`)
     const column = apiRef.current.getColumnById(columnId)
     if (!column){
-      return console.error(`${columnId} not found at sortColumn`)
+      return logger.error(`Column id: ${columnId} not found at sortColumn`)
     }
     
     //Ensure its not applied already
     if (stateRef.current?.accessor === column.accessor && stateRef.current?.order === order){
       return 
     }
+
     stateRef.current = {
       accessor: column.accessor,
       order

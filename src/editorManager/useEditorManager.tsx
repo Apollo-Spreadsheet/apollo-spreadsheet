@@ -13,6 +13,7 @@ import { ApiRef } from '../api/types/apiRef'
 import { CELL_BEGIN_EDITING, CELL_STOP_EDITING } from '../api/eventConstants'
 import clsx from 'clsx'
 import { EditorManagerApi } from '../api/types'
+import { useLogger } from "../logger"
 
 export interface StopEditingParams {
 	/** @default true **/
@@ -62,6 +63,7 @@ export interface EditorRef<T = unknown> {
  * an editor
  */
 export function useEditorManager<TRow>({ onCellChange, apiRef, initialised }: EditorManagerProps) {
+	const logger = useLogger('useEditorManager')
 	const editorRef = useRef<EditorRef | null>()
 	const state = useRef<IEditorState | null>(null)
 	const [editorNode, setEditorNode] = useState<JSX.Element | null>(null)
@@ -114,11 +116,11 @@ export function useEditorManager<TRow>({ onCellChange, apiRef, initialised }: Ed
 					const row = apiRef.current.getRowAt(editorState.rowIndex)
 					const column = apiRef.current.getColumnAt(editorState.colIndex)
 					if (!row) {
-						console.warn(
+						logger.warn(
 							`Row not found at ${editorState.rowIndex} when attempting to invoke onCellChange`,
 						)
 					} else if (!column) {
-						console.warn(
+						logger.warn(
 							`Column not found at ${editorState.colIndex} when attempting to invoke onCellChange`,
 						)
 					} else {
@@ -175,14 +177,14 @@ export function useEditorManager<TRow>({ onCellChange, apiRef, initialised }: Ed
 
 	const validateEditorRef = (editorRef: EditorRef) => {
 		if (!editorRef) {
-			console.warn(`
+			logger.warn(`
 				useImperativeHandle is missing on the editor component OR has some misconfiguration. Editor reference is not defined therefore
 				its not possible to start editing at the current cell. Please review your setup
 			`)
 			return false
 		}
 		if (!editorRef['getValue'] || !isFunctionType(editorRef['getValue'])) {
-			console.warn(
+			logger.warn(
 				`Editor reference "getValue()" method is invalid, not a function or undefined, please review your setup`,
 			)
 			return false
@@ -200,7 +202,7 @@ export function useEditorManager<TRow>({ onCellChange, apiRef, initialised }: Ed
 	 */
 	const beginEditing = useCallback(
 		({ coords, targetElement, defaultKey }: BeginEditingParams) => {
-			console.log(`Begin editing invoked for coords: [${coords.rowIndex},${coords.colIndex}]`)
+			logger.debug(`Begin editing invoked for coords: [${coords.rowIndex},${coords.colIndex}]`)
 			//Validate if is editing but in the same coords
 			if (
 				state.current?.rowIndex === coords.rowIndex &&
@@ -210,7 +212,7 @@ export function useEditorManager<TRow>({ onCellChange, apiRef, initialised }: Ed
 			}
 			const column = apiRef.current.getColumnAt(coords.colIndex)
 			if (!column) {
-				return console.warn(
+				return logger.warn(
 					`Column not found at ${coords.colIndex}, therefore we can't start editing.`,
 				)
 			}
@@ -230,7 +232,7 @@ export function useEditorManager<TRow>({ onCellChange, apiRef, initialised }: Ed
 
 			const row = apiRef.current.getRowAt(coords.rowIndex)
 			if (!row) {
-				return console.warn(
+				return logger.warn(
 					`Row not found at ${coords.rowIndex}, therefore we can't start editing at column: ${column.id}`,
 				)
 			}

@@ -19,6 +19,7 @@ import { useApiEventHandler } from './api/useApiEventHandler'
 import { CELL_CLICK, CELL_DOUBLE_CLICK } from './api/eventConstants'
 import { ApolloSpreadsheetProps } from './ApolloSpreadsheetProps'
 import { useSort } from './sort/useSort'
+import { useLogger } from "./logger";
 
 const useStyles = makeStyles(() => ({
 	root: {
@@ -29,6 +30,7 @@ const useStyles = makeStyles(() => ({
 
 export const ApolloSpreadSheet = forwardRef(
 	(props: ApolloSpreadsheetProps, componentRef: React.Ref<HTMLDivElement>) => {
+		const logger = useLogger('ApolloSpreadSheet')
 		const classes = useStyles()
 		const minColumnWidth = props.minColumnWidth ?? 30
 		const [gridFocused, setGridFocused] = useState(true)
@@ -94,6 +96,7 @@ export const ApolloSpreadSheet = forwardRef(
 				return
 			}
 			if (props.outsideClickDeselects) {
+				logger.debug('Grid click away detected.')
 				setGridFocused(false)
 				apiRef.current.selectCell({
 					rowIndex: -1,
@@ -105,6 +108,7 @@ export const ApolloSpreadSheet = forwardRef(
 		//Detect if any element is clicked again to enable focus
 		const onCellMouseHandler = useCallback(() => {
 			if (!gridFocused) {
+				logger.debug('Grid focus restored.')
 				setGridFocused(true)
 			}
 		}, [gridFocused])

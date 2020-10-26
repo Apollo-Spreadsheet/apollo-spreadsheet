@@ -9,6 +9,7 @@ import { DATA_CHANGED, ROW_SELECTION_CHANGE, ROWS_CHANGED } from '../api/eventCo
 import { createData } from './createData'
 import { Row } from '../types'
 import { RowApi } from '../api/types'
+import { useLogger } from "../logger";
 
 interface Props {
 	rows: Row[]
@@ -22,6 +23,7 @@ interface Props {
  * `useData` handles all the rows and cells operations of this plugin
  */
 export function useData({ rows, columns, selection, initialised, apiRef }: Props) {
+	const logger = useLogger('useData')
 	const rowsRef = useRef<Row[]>(rows)
 	const originalRowsRef = useRef<Row[]>(rows)
 	const cells = useRef<GridCell[][]>([])
@@ -36,7 +38,7 @@ export function useData({ rows, columns, selection, initialised, apiRef }: Props
 			})
 
 			if (!updatedData) {
-				return console.error('No data has been returned from createData')
+				return logger.error('No data has been returned from createData, please review the dependencies')
 			}
 
 			cells.current = updatedData
@@ -48,6 +50,7 @@ export function useData({ rows, columns, selection, initialised, apiRef }: Props
 
 	const updateRows = useCallback(
 		(updatedRows: Row[]) => {
+			logger.debug('Updating rows.')
 			//Only update the current rows
 			rowsRef.current = updatedRows
 			apiRef.current.dispatchEvent(ROWS_CHANGED, { rows: updatedRows })
@@ -67,6 +70,7 @@ export function useData({ rows, columns, selection, initialised, apiRef }: Props
 	}, [rows, columns, updateRows, initialised, onRowsChangeHandle])
 
 	const onRowSelectionChange = useCallback(() => {
+		logger.debug('Row selection changed.')
 		onRowsChangeHandle({ rows: rowsRef.current, columns: columns })
 	}, [onRowsChangeHandle])
 

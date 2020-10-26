@@ -2,11 +2,12 @@ import React, { useCallback, useRef } from 'react'
 import { StretchMode } from '../types/stretch-mode.enum'
 import { scrollbarWidth } from '@xobotyi/scrollbar-width'
 import { AutoSizer, OnScrollParams, ScrollSync } from 'react-virtualized'
-import { createFixedWidthMapping } from '../columnGrid/utils/createFixedWidthMapping'
-import { FixedColumnWidthRecord } from '../columnGrid/useHeaders'
+import { createColumnWidthsMapping } from '../columnGrid/utils/createColumnWidthsMapping'
+import { ColumnWidthRecord } from '../columnGrid/useHeaders'
 import { Column } from '../columnGrid/types/header.type'
 import { makeStyles } from '@material-ui/core/styles'
 import clsx from 'clsx'
+import { useLogger } from "../logger";
 
 const useStyles = makeStyles(() => ({
 	root: {
@@ -48,12 +49,13 @@ export const GridContainer = React.memo(
 		height,
 		containerClassName,
 	}: Props) => {
+		const logger = useLogger('GridContainer')
 		const scrollbarSize = scrollbarWidth() ?? 0
 		const classes = useStyles()
 		const gridContainerRef = useRef<HTMLDivElement | null>(null)
 		const mainGridRef = useRef<any | null>(null)
 		const columnGridRef = useRef<any | null>(null)
-		const fixedColumnWidths = useRef<FixedColumnWidthRecord>({
+		const columnWidths = useRef<ColumnWidthRecord>({
 			totalSize: 0,
 			mapping: {},
 		})
@@ -66,12 +68,12 @@ export const GridContainer = React.memo(
 		const getColumnWidthHelper = useCallback(({ index}: {
 			index: number
 		}) => {
-			const value = fixedColumnWidths.current.mapping[index]
+			const value = columnWidths.current.mapping[index]
 			return isNaN(value) ? minColumnWidth : value
 		}, [])
 
 		const calculateColumnWidths = (containerWidth: number) => {
-			const { mapping, totalSize } = createFixedWidthMapping(
+			const { mapping, totalSize } = createColumnWidthsMapping(
 				columns,
 				containerWidth,
 				minColumnWidth,
@@ -79,7 +81,7 @@ export const GridContainer = React.memo(
 			)
 
 			//Just update with the new calculated (if it was otherwise it might have been a cached result)
-			fixedColumnWidths.current = {
+			columnWidths.current = {
 				totalSize,
 				mapping,
 			}
@@ -92,6 +94,17 @@ export const GridContainer = React.memo(
 
 			//Invoke our column builder
 			calculateColumnWidths(normalizedContainerWidth)
+
+			logger.debug({
+				containerWidth,
+				containerHeight,
+				scrollbarSize,
+				stretchMode,
+				normalizedContainerWidth,
+				columnWidths: columnWidths.current,
+				hasHorizontalScroll: stretchMode === StretchMode.None
+			})
+
 			if (stretchMode !== StretchMode.None) {
 				return (
 					<>
@@ -107,15 +120,6 @@ export const GridContainer = React.memo(
 				)
 			}
 
-			// console.log({
-			// 	totalWidth: fixedColumnWidths.current.totalSize,
-			// 	totalViaFn: columns.reduce((acc, e, i) => {
-			// 		return acc + getColumnWidthHelper({index: i})
-			// 	},0),
-			// 	useScroll: fixedColumnWidths.current.totalSize > containerWidth,
-			// 	containerWidth,
-			// 	columnCount: columns.length
-			// })
 			return (
 				<ScrollSync>
 					{({ onScroll, scrollLeft }) => (

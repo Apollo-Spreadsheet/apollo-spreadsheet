@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useState } from "react"
 import { useApiExtends } from './useApiExtends'
 import { ApiRef } from './types/apiRef'
 import { GridTheme } from "../types"
+import { useLogger } from "../logger"
 
 /**
  * Initializes a new api instance
@@ -13,6 +14,7 @@ export function useApiFactory(
 	apiRef: ApiRef,
 	theme?: GridTheme
 ): boolean {
+	const logger = useLogger('useApiFactory')
 	const [initialised, setInit] = useState(false)
 
 	const publishEvent = useCallback(
@@ -24,11 +26,11 @@ export function useApiFactory(
 
 	const subscribeEvent = useCallback(
 		(event: string, handler: (param: any) => void): (() => void) => {
-			console.debug(`Binding ${event} event`)
+			logger.debug(`Binding ${event} event`)
 			apiRef.current.on(event, handler)
 			const api = apiRef.current
 			return () => {
-				console.debug(`Clearing ${event} event`)
+				logger.debug(`Clearing ${event} event`)
 				api.removeListener(event, handler)
 			}
 		},
@@ -36,7 +38,7 @@ export function useApiFactory(
 	)
 
 	useEffect(() => {
-		console.debug('Initializing grid api.')
+		logger.debug('Initializing grid api.')
 		apiRef.current.isInitialised = true
 		apiRef.current.rootElementRef = gridRootRef
 		apiRef.current.theme = theme
@@ -45,7 +47,7 @@ export function useApiFactory(
 		const api = apiRef.current
 
 		return () => {
-			console.debug('Clearing all events listeners')
+			logger.debug('Clearing all events listeners')
 			api.removeAllListeners()
 		}
 	}, [gridRootRef, apiRef, theme])

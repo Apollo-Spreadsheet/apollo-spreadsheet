@@ -1,9 +1,9 @@
-import { parseColumnWidthsConfiguration } from "./parseColumnWidthsConfiguration";
-import { FixedColumnWidthDictionary } from "../types/fixed-column-width-dictionary";
-import { Column } from "../types/header.type";
-import { StretchMode } from "../../types/stretch-mode.enum";
-import memoizeOne from "memoize-one";
-import { dequal as isDeepEqual } from "dequal";
+import { parseColumnWidthsConfiguration } from "./parseColumnWidthsConfiguration"
+import { FixedColumnWidthDictionary } from "../types/fixed-column-width-dictionary"
+import { Column } from "../types/header.type"
+import { StretchMode } from "../../types/stretch-mode.enum"
+import memoizeOne from "memoize-one"
+import { dequal as isDeepEqual } from "dequal"
 
 /**
  * Creates an object indexing the fixed column widths by its index as key for fast lookup on dynamic widths
@@ -13,7 +13,7 @@ import { dequal as isDeepEqual } from "dequal";
  * @param minColumnWidth
  * @param stretchMode
  */
-export const createFixedWidthMapping = memoizeOne(
+export const createColumnWidthsMapping = memoizeOne(
 	(
 		columns: Column[],
 		containerWidth: number,

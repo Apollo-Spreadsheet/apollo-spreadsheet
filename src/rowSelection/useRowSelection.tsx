@@ -7,6 +7,7 @@ import { IconButton, Tooltip } from '@material-ui/core'
 import DeleteIcon from '@material-ui/icons/Delete'
 import { Row } from '../types'
 import { RowSelectionApi } from '../api/types'
+import { useLogger } from "../logger";
 
 export const ROW_SELECTION_HEADER_ID = '__selection__'
 
@@ -16,6 +17,7 @@ export const ROW_SELECTION_HEADER_ID = '__selection__'
  * @param selection
  */
 export function useRowSelection(apiRef: ApiRef, initialised: boolean, selection?: SelectionProps) {
+	const logger = useLogger('useRowSelection')
 	const selectedIds = useRef<string[]>([])
 
 	function createSelectionHeader() {
@@ -42,6 +44,7 @@ export function useRowSelection(apiRef: ApiRef, initialised: boolean, selection?
 	useEffect(() => {
 		const selectionExists = apiRef.current.getColumnById(ROW_SELECTION_HEADER_ID)
 		if (selection && !selectionExists) {
+			logger.debug('Creating the selection header.')
 			const newColumns = [...apiRef.current.getColumns(), createSelectionHeader()]
 			apiRef.current.updateColumns(newColumns)
 		}
@@ -50,6 +53,7 @@ export function useRowSelection(apiRef: ApiRef, initialised: boolean, selection?
 	//Detect if a row exists in selected but not in rows
 	useEffect(() => {
 		if (!selection) {
+			logger.debug('Removing selection ids.')
 			//Ensure cleanup because selection might have been disabled
 			selectedIds.current = []
 			apiRef.current.dispatchEvent(ROW_SELECTION_CHANGE)
@@ -62,6 +66,7 @@ export function useRowSelection(apiRef: ApiRef, initialised: boolean, selection?
 
 	const selectRow = useCallback(
 		(idOrRow: string | Row) => {
+			logger.debug('Selecting row ' + idOrRow.toString())
 			//Ensure selection is enabled
 			if (!selection) {
 				return
@@ -70,7 +75,7 @@ export function useRowSelection(apiRef: ApiRef, initialised: boolean, selection?
 			//Find the target row in order to determinate whether we can select or not
 			const targetRow = apiRef.current.getRowById(String(_id))
 			if (!targetRow) {
-				return console.warn(
+				return logger.warn(
 					`Row not found with the given key ${selection.key} on param: ${idOrRow} and extracted the id: ${_id}`,
 				)
 			}

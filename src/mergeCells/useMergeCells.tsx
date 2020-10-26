@@ -7,6 +7,7 @@ import { createMergedGroups, MergeGroup } from "./createMergedGroups"
 import { useApiExtends } from "../api/useApiExtends"
 import { ApiRef } from "../api/types/apiRef"
 import { MergeCellsApi } from "../api/types"
+import { useLogger } from "../logger";
 
 export interface MergedCellsHookProps {
 	mergeCells?: MergeCell[]
@@ -22,6 +23,7 @@ export interface MergedCellsHookProps {
  * @param data
  */
 export function useMergeCells({ mergeCells, rowCount, columnCount, apiRef, initialised }: MergedCellsHookProps) {
+	const logger = useLogger('useMergeCells')
 	const mergedPositions = useRef<MergePosition[]>([])
 	const mergeGroups = useRef<MergeGroup>({})
 	const mergeData = useRef<MergeCell[]>([])
