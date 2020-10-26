@@ -1,7 +1,7 @@
 import React, { CSSProperties } from 'react'
 import { TooltipProps } from '@material-ui/core'
 import { NavigationCoords } from '../../navigation/types'
-import { EditorRef } from '../../editorManager'
+import { EditorProps, EditorRef } from '../../editorManager'
 import { PopperProps } from '@material-ui/core/Popper/Popper'
 import { ReactDatePickerProps } from 'react-datepicker'
 import { Row } from '../../types'
@@ -14,6 +14,7 @@ export interface CellRendererProps<TRow = Row> {
 export interface CellEditorProps<TRow = Row> {
 	row: TRow
 	column: Column
+	editorProps: EditorProps
 	/**
 	 * useImperativeHandle is required internally so it should be passed into here the api ref
 	 * @param ref

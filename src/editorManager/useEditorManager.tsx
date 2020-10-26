@@ -190,7 +190,7 @@ export function useEditorManager({ onCellChange, apiRef }: EditorManagerProps) {
 		(row: Row, column: Column, props: EditorProps) => {
 			let EditorComponent: any = TextEditor
 			if (column.editor) {
-				EditorComponent = column.editor({ row, column, onRefMount })
+				EditorComponent = column.editor({ row, column, onRefMount, editorProps: props })
 			} else if (column.type === ColumnCellType.Calendar) {
 				EditorComponent = CalendarEditor
 			} else if (column.type === ColumnCellType.Numeric) {
