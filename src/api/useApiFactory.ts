@@ -1,3 +1,4 @@
+/* eslint-disable no-param-reassign */
 import React, { useCallback, useEffect, useState } from 'react'
 import { useApiExtends } from './useApiExtends'
 import { ApiRef } from './types/apiRef'
@@ -34,7 +35,7 @@ export function useApiFactory(
 				api.removeListener(event, handler)
 			}
 		},
-		[apiRef],
+		[apiRef, logger],
 	)
 
 	useEffect(() => {
@@ -50,7 +51,7 @@ export function useApiFactory(
 			logger.debug('Clearing all events listeners')
 			api.removeAllListeners()
 		}
-	}, [gridRootRef, apiRef, theme])
+	}, [gridRootRef, apiRef, theme, logger])
 
 	useApiExtends(apiRef, { subscribeEvent, dispatchEvent: publishEvent }, 'CoreApi')
 

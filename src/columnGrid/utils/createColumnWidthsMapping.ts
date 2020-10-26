@@ -1,7 +1,6 @@
 import { parseColumnWidthsConfiguration } from './parseColumnWidthsConfiguration'
-import { FixedColumnWidthDictionary } from '../types/fixed-column-width-dictionary'
-import { Column } from '../types/header.type'
-import { StretchMode } from '../../types/stretch-mode.enum'
+import { ColumnWidthDictionary, Column } from '../types'
+import { StretchMode } from '../../types'
 import memoizeOne from 'memoize-one'
 import { dequal as isDeepEqual } from 'dequal'
 
@@ -40,7 +39,7 @@ export const createColumnWidthsMapping = memoizeOne(
 
 			acc[i] = value
 			return acc
-		}, {} as FixedColumnWidthDictionary)
+		}, {} as ColumnWidthDictionary)
 
 		const isAllColWidthsFilled = columns.filter(e => e.width).length === columns.length
 		let fixedTotalSize = Object.values(mapping).reduce((acc, e) => acc + e, 0)
@@ -57,9 +56,7 @@ export const createColumnWidthsMapping = memoizeOne(
 				const colIndex = columns.findIndex(e => e.id === col.id)
 				mapping[colIndex] = ratio
 			}
-		} else {
-			//We might have a margin that some width is left
-			if (fixedTotalSize < containerWidth) {
+		} else if (fixedTotalSize < containerWidth) {
 				//Add the remaining size into the last
 				if (stretchMode === StretchMode.Last) {
 					const last = Object.keys(mapping).pop()
@@ -71,11 +68,10 @@ export const createColumnWidthsMapping = memoizeOne(
 				//Add a ratio to every column with the remaining
 				if (stretchMode === StretchMode.All) {
 					const ratio = Math.max(minColumnWidth, remainingSize / columns.length)
-					for (const key in mapping) {
+					for (const key of Object.keys(mapping)) {
 						mapping[key] += ratio
 					}
 				}
-			}
 		}
 
 		//Update the total size because the calculated values have been updated
@@ -86,7 +82,7 @@ export const createColumnWidthsMapping = memoizeOne(
 			//Loop over the mapping and reduce a ratio
 			const overflowValue = fixedTotalSize - containerWidth
 			const ratioToReduce = overflowValue / columns.length
-			for (const key in mapping) {
+			for (const key of Object.keys(mapping)) {
 				mapping[key] -= ratioToReduce
 			}
 			fixedTotalSize = containerWidth

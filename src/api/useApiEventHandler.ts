@@ -15,5 +15,5 @@ export function useApiEventHandler(
 		}
 
 		return undefined
-	}, [apiRef, eventName, handler])
+	}, [apiRef, eventName, handler, logger])
 }

@@ -1,22 +1,23 @@
 import { formatCellValue } from './formatCellValue'
-import { GridCell } from '../gridWrapper/interfaces/gridCell'
+import { GridCell } from '../gridWrapper/interfaces'
 import { Checkbox } from '@material-ui/core'
-import { insertDummyCells } from '../gridWrapper/utils/insertDummyCells'
-import { Column } from '../columnGrid/types/header.type'
-import { SelectionProps } from '../rowSelection/selectionProps'
+import { insertDummyCells } from '../gridWrapper/utils'
+import { Column } from '../columnGrid/types'
+import { SelectionProps } from '../rowSelection'
 import React from 'react'
-import { ApiRef } from '../api/types/apiRef'
+import { ApiRef } from '../api/types'
 import { Row } from '../types'
 
-interface CreateDataParams<TRow = Row> {
-	rows: TRow[]
+interface CreateDataParams {
+	rows: Row[]
 	apiRef: ApiRef
 	columns: Column[]
 	selection?: SelectionProps
 }
 
 export function createData({ columns, selection, apiRef, rows }: CreateDataParams) {
-	const cellsList = rows.reduce((list: any[], row: any, rowIndex) => {
+	const cellsList = rows.reduce((list: GridCell[][], row: Row, rowIndex) => {
+		const updatedList = [...list]
 		const cells = columns.reduce((_cells, header, colIndex) => {
 			const isDummy = apiRef.current.isMerged({ rowIndex, colIndex })
 			if (isDummy) {
@@ -32,7 +33,7 @@ export function createData({ columns, selection, apiRef, rows }: CreateDataParam
 			_cells.push({
 				colSpan: spanInfo?.colSpan,
 				rowSpan: spanInfo?.rowSpan,
-				value: value,
+				value,
 			})
 			return _cells
 		}, [] as GridCell[])
@@ -54,9 +55,9 @@ export function createData({ columns, selection, apiRef, rows }: CreateDataParam
 			}
 		}
 
-		list[rowIndex] = cells
-		return list
+		updatedList[rowIndex] = cells
+		return updatedList
 	}, [] as GridCell[][])
 
-	return insertDummyCells(cellsList) as GridCell[][]
+	return insertDummyCells(cellsList as any[]) as GridCell[][]
 }

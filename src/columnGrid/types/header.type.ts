@@ -1,7 +1,7 @@
 import React, { CSSProperties } from 'react'
-import { InputBaseProps, TooltipProps } from '@material-ui/core'
-import { NavigationCoords } from '../../navigation/types/navigation-coords.type'
-import { EditorRef } from '../../editorManager/useEditorManager'
+import { TooltipProps } from '@material-ui/core'
+import { NavigationCoords } from '../../navigation/types'
+import { EditorRef } from '../../editorManager'
 import { PopperProps } from '@material-ui/core/Popper/Popper'
 import { ReactDatePickerProps } from 'react-datepicker'
 import { Row } from '../../types'
@@ -35,6 +35,10 @@ export interface IsReadOnlyCallback {
 	(coords: NavigationCoords): boolean
 }
 
+export interface DisableNavigationFn {
+	(coords: NavigationCoords): boolean
+}
+
 export interface Column<Key = string> {
 	id: Key
 	title: string
@@ -56,11 +60,13 @@ export interface Column<Key = string> {
 	cellClassName?: string
 	readOnly?: boolean | IsReadOnlyCallback
 	/** @todo Types **/
-	disableNavigation?: boolean | Function /** @todo Types **/
+	disableNavigation?: boolean | DisableNavigationFn
 	/**
 	 * Cell value type for this column (the values are formatted accordingly)
-	 * NOTE: If you attempt to use the calendar editor you must `import 'react-datepicker/dist/react-datepicker.css'` on your application
-	 * This does not come by default due to SSR frameworks such as Next.js, in order to support them we have to rely on the integration
+	 * NOTE: If you attempt to use the calendar editor
+	 * you must `import 'react-datepicker/dist/react-datepicker.css'` on your application
+	 * This does not come by default due to SSR frameworks such as Next.js,
+	 * in order to support them we have to rely on the integration
 	 * @default   Text and editor TextAreaEditor
 	 */
 	type?: ColumnCellType

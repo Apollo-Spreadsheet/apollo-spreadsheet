@@ -3,6 +3,4 @@
  * @param value
  * @param containerWidth
  */
-export const percentageToPixels = (value: number, containerWidth: number) => {
-	return (value * containerWidth) / 100
-}
+export const percentageToPixels = (value: number, containerWidth: number) => (value * containerWidth) / 100

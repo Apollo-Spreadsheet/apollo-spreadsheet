@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect } from 'react'
-import { ApiRef } from '../api/types/apiRef'
-import { CELL_CLICK, CELL_DOUBLE_CLICK, GRID_FOCUS_OUT } from '../api/eventConstants'
+import { ApiRef } from '../api/types'
+import { CELL_CLICK, CELL_DOUBLE_CLICK } from '../api'
 import { useLogger } from '../logger'
 
 export function useEvents(gridRootRef: React.RefObject<HTMLDivElement>, apiRef: ApiRef) {
@@ -17,8 +17,8 @@ export function useEvents(gridRootRef: React.RefObject<HTMLDivElement>, apiRef: 
 			if (isCell) {
 				apiRef.current.dispatchEvent(CELL_CLICK, {
 					event,
-					colIndex: parseInt(target.getAttribute('aria-colindex') || '-1'),
-					rowIndex: parseInt(target.getAttribute('data-rowindex') || '-1'),
+					colIndex: Number(target.getAttribute('aria-colindex') || '-1'),
+					rowIndex: Number(target.getAttribute('data-rowindex') || '-1'),
 				})
 			}
 		},
@@ -32,8 +32,8 @@ export function useEvents(gridRootRef: React.RefObject<HTMLDivElement>, apiRef: 
 			if (isCell) {
 				apiRef.current.dispatchEvent(CELL_DOUBLE_CLICK, {
 					event,
-					colIndex: parseInt(target.getAttribute('aria-colindex') || '-1'),
-					rowIndex: parseInt(target.getAttribute('data-rowindex') || '-1'),
+					colIndex: Number(target.getAttribute('aria-colindex') || '-1'),
+					rowIndex: Number(target.getAttribute('data-rowindex') || '-1'),
 				})
 			}
 		},
@@ -51,6 +51,7 @@ export function useEvents(gridRootRef: React.RefObject<HTMLDivElement>, apiRef: 
 
 			document.addEventListener('keydown', keyDownHandler)
 
+			// eslint-disable-next-line no-param-reassign
 			apiRef.current.isInitialised = true
 			const api = apiRef.current
 
@@ -62,7 +63,5 @@ export function useEvents(gridRootRef: React.RefObject<HTMLDivElement>, apiRef: 
 				api.removeAllListeners()
 			}
 		}
-
-		return
-	}, [gridRootRef, apiRef])
+	}, [gridRootRef, apiRef, logger, createHandler, onClickHandler, onDoubleClickHandler])
 }

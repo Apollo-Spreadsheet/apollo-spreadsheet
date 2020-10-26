@@ -1,12 +1,10 @@
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { NavigationCoords } from '../navigation/types/navigation-coords.type'
+import { useCallback, useEffect, useRef } from 'react'
+import { NavigationCoords } from '../navigation/types'
 import { validateMergeData } from './validateMergeData'
-import { MergeCell } from './interfaces/merge-cell'
+import { MergeCell } from './interfaces'
 import { createMergedPositions, MergePosition } from './createMergedPositions'
 import { createMergedGroups, MergeGroup } from './createMergedGroups'
-import { useApiExtends } from '../api/useApiExtends'
-import { ApiRef } from '../api/types/apiRef'
-import { MergeCellsApi } from '../api/types'
+import { useApiExtends, ApiRef, MergeCellsApi } from '../api'
 import { useLogger } from '../logger'
 
 export interface MergedCellsHookProps {
@@ -26,8 +24,7 @@ export function useMergeCells({
 	mergeCells,
 	rowCount,
 	columnCount,
-	apiRef,
-	initialised,
+	apiRef
 }: MergedCellsHookProps) {
 	const logger = useLogger('useMergeCells')
 	const mergedPositions = useRef<MergePosition[]>([])
@@ -37,10 +34,11 @@ export function useMergeCells({
 		if (!mergeCells) {
 			return
 		}
+		logger.debug('Creating and validating merged cells')
 		mergeData.current = validateMergeData(mergeCells, rowCount, columnCount)
 		mergeGroups.current = createMergedGroups(mergeCells)
 		mergedPositions.current = createMergedPositions(mergeCells)
-	}, [mergeCells, rowCount, columnCount])
+	}, [mergeCells, rowCount, columnCount, logger])
 
 	const isMerged = useCallback(({ rowIndex, colIndex }: NavigationCoords) => {
 		return mergedPositions.current.some(e => e.row === rowIndex && e.col === colIndex)
@@ -51,7 +49,7 @@ export function useMergeCells({
 	 * @param coords
 	 */
 	const getMergedPath = useCallback((rowIndex: number) => {
-		//First position is the parent OR the active if its the parent and the second is the child aka current
+		//First position is the parent
 		const activeRowPath: number[] = []
 
 		//Check if the target row exists in any group
@@ -70,11 +68,9 @@ export function useMergeCells({
 	 * Returns the col/row span of the given colIndex/rowIndex
 	 * @param coords
 	 */
-	const getSpanProperties = useCallback((coords: NavigationCoords) => {
-		return mergeData.current.find(
+	const getSpanProperties = useCallback((coords: NavigationCoords) => mergeData.current.find(
 			e => e.rowIndex === coords.rowIndex && e.colIndex === coords.colIndex,
-		)
-	}, [])
+		), [])
 
 	const getMergedData = useCallback(() => mergeData.current, [])
 	const getMergedGroups = useCallback(() => mergeGroups.current, [])

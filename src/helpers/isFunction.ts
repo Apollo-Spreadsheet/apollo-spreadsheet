@@ -3,6 +3,6 @@
  * @param obj
  */
 // eslint-disable-next-line @typescript-eslint/ban-types
-export function isFunctionType(obj: any): obj is Function {
+export function isFunctionType(obj: unknown): obj is Function {
 	return typeof obj === 'function'
 }

@@ -1,16 +1,8 @@
-import React, {
-	CSSProperties,
-	forwardRef,
-	useCallback,
-	useEffect,
-	useImperativeHandle,
-	useMemo,
-	useState,
-} from 'react'
+import React, { CSSProperties, forwardRef, useCallback, useImperativeHandle, useMemo, useState } from 'react'
 import { Popover, TextareaAutosize } from '@material-ui/core'
 import { EditorProps } from '../editorProps'
 import { makeStyles } from '@material-ui/core/styles'
-import { handleEditorKeydown } from '../utils/handleEditorKeydown'
+import { handleEditorKeydown } from '../utils'
 import clsx from 'clsx'
 import { GRID_RESIZE, useApiEventHandler } from '../../api'
 
@@ -29,33 +21,20 @@ const useStyles = makeStyles(() => ({
 	},
 }))
 export const TextEditor = forwardRef(
-	(
-		{
-			value,
-			stopEditing,
-			anchorRef,
-			maxLength,
-			validatorHook,
-			additionalProps,
-			apiRef,
-		}: EditorProps,
-		componentRef,
-	) => {
+	({ value, stopEditing, anchorRef, maxLength, validatorHook, additionalProps, apiRef }: EditorProps, componentRef) => {
 		const classes = useStyles()
 		const [editingValue, setEditingValue] = useState(String(value))
 
 		const onAnchorResize = useCallback(() => {
 			stopEditing()
-		}, [])
+		}, [stopEditing])
 
 		useApiEventHandler(apiRef, GRID_RESIZE, onAnchorResize)
 
 		useImperativeHandle(
 			componentRef,
 			() => ({
-				getValue: () => {
-					return editingValue
-				},
+				getValue: () => editingValue,
 			}),
 			[editingValue],
 		)
@@ -65,17 +44,19 @@ export const TextEditor = forwardRef(
 				return true
 			}
 			return validatorHook(editingValue)
-		}, [editingValue])
+		}, [editingValue, validatorHook])
 
 		const onTextAreaResizeMount = useCallback((ref: HTMLTextAreaElement | null) => {
 			if (!ref) {
 				return
 			}
+			// eslint-disable-next-line no-param-reassign
 			ref.selectionStart = editingValue.length
+			// eslint-disable-next-line no-param-reassign
 			ref.selectionEnd = editingValue.length
-		}, [])
+		}, [editingValue.length])
 
-		const anchorStyle = anchorRef['style'] as CSSProperties
+		const anchorStyle = (anchorRef as any).style as CSSProperties
 
 		function onEditorPortalClose(event: unknown, reason: 'backdropClick' | 'escapeKeyDown') {
 			//Only allow to cancel if its invalid
@@ -122,7 +103,7 @@ export const TextEditor = forwardRef(
 						id={'apollo-textarea'}
 						value={editingValue}
 						ref={onTextAreaResizeMount}
-						onChange={e => setEditingValue(e.target['value'])}
+						onChange={e => setEditingValue(e.target.value)}
 						autoFocus
 						onKeyDown={e => handleEditorKeydown(e, stopEditing)}
 						aria-label="text apollo editor"

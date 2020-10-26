@@ -8,8 +8,6 @@ export interface GridContainerChildrenProps {
 	width: number
 	height: number
 	getColumnWidth: ({ index }: { index: number }) => number
-	columnGridRef: React.MutableRefObject<any>
-	mainGridRef: React.MutableRefObject<any>
 	scrollLeft: number
 	onScroll?: (params: OnScrollParams) => any
 }

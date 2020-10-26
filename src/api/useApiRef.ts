@@ -1,7 +1,6 @@
 import { useRef } from 'react'
 import { EventEmitter } from 'events'
-import { ApiRef } from './types/apiRef'
-import { GridApi } from './types/gridApi'
+import { ApiRef, GridApi } from './types'
 import { useLogger } from '../logger'
 
 /**

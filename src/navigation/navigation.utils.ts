@@ -79,7 +79,8 @@ export function isPrintableChar(keyCode) {
 }
 
 /**
- * Checks if passed key code is ctrl or cmd key. Depends on what OS the code runs it check key code based on
+ * Checks if passed key code is ctrl or cmd key.
+ * Depends on what OS the code runs it check key code based on
  * different meta key codes.
  *
  * @param {number} keyCode The keyboard key code.
@@ -98,7 +99,8 @@ export function isCtrlKey(keyCode) {
 }
 
 /**
- * Checks if passed key code is ctrl or cmd key. This helper checks if the key code matches to meta keys
+ * Checks if passed key code is ctrl or cmd key.
+ * This helper checks if the key code matches to meta keys
  * regardless of the OS on which it is running.
  *
  * @param {number} keyCode The keyboard key code.

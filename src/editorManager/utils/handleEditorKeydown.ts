@@ -1,6 +1,6 @@
 import { StopEditingParams } from '../useEditorManager'
 import React from 'react'
-import { NavigationKey } from '../enums/navigation-key.enum'
+import { NavigationKey } from '../enums'
 import { isCaretAtEndPosition } from './isCaretAtEndPosition'
 
 /**
@@ -13,8 +13,8 @@ export function handleEditorKeydown(
 	stopEditing: (params: StopEditingParams) => void,
 ) {
 	if (NavigationKey[e.key]) {
-		const cursorStart = e.target['selectionStart']
-		const cursorEnd = e.target['selectionEnd']
+		const cursorStart = (e.target as any).selectionStart
+		const cursorEnd = (e.target as any).selectionEnd
 		if (e.key === 'Tab') {
 			e.preventDefault()
 			stopEditing({ save: true })
@@ -35,7 +35,7 @@ export function handleEditorKeydown(
 			stopEditing({ save: true })
 		}
 
-		if (e.key === 'ArrowRight' && isCaretAtEndPosition(cursorEnd, e.target['value'].length)) {
+		if (e.key === 'ArrowRight' && isCaretAtEndPosition(cursorEnd, (e.target as any).value.length)) {
 			e.preventDefault()
 			stopEditing({ save: true })
 		}

@@ -9,7 +9,7 @@
   "singleQuote": true,
   "trailingComma": "all",
   "useTabs": true,
-  "printWidth": 100,
+  "printWidth": 140,
   "tabWidth": 2,
   "jsxBracketSameLine": false
 }

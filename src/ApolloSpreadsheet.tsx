@@ -63,13 +63,13 @@ export const ApolloSpreadSheet = forwardRef(
 
 		const { cells, rows } = useData({
 			rows: props.rows,
-			columns: columns,
+			columns,
 			selection: props.selection,
 			apiRef,
 			initialised,
 		})
 
-		useSort(apiRef, initialised)
+		useSort(apiRef)
 
 		const coords = useNavigation({
 			defaultCoords: props.defaultCoords ?? {
@@ -103,15 +103,15 @@ export const ApolloSpreadSheet = forwardRef(
 					colIndex: -1,
 				})
 			}
-		}, [props.outsideClickDeselects, apiRef, gridFocused])
+		}, [gridFocused, props.outsideClickDeselects, logger, apiRef])
 
-		//Detect if any element is clicked again to enable focus
+		// Detect if any element is clicked again to enable focus
 		const onCellMouseHandler = useCallback(() => {
 			if (!gridFocused) {
 				logger.debug('Grid focus restored.')
 				setGridFocused(true)
 			}
-		}, [gridFocused])
+		}, [gridFocused, logger])
 
 		useApiEventHandler(apiRef, CELL_CLICK, onCellMouseHandler)
 		useApiEventHandler(apiRef, CELL_DOUBLE_CLICK, onCellMouseHandler)
@@ -131,9 +131,7 @@ export const ApolloSpreadSheet = forwardRef(
 							onScroll,
 							getColumnWidth,
 							width,
-							columnGridRef,
 							height,
-							mainGridRef,
 						}) => (
 							<div id="apollo-grids" className={props.className}>
 								<ColumnGrid
@@ -143,7 +141,6 @@ export const ApolloSpreadSheet = forwardRef(
 									width={width}
 									defaultColumnWidth={minColumnWidth}
 									getColumnWidth={getColumnWidth}
-									ref={columnGridRef}
 									minRowHeight={props.minColumnHeight ?? 50}
 									scrollLeft={scrollLeft}
 									stretchMode={props.stretchMode}
@@ -163,7 +160,6 @@ export const ApolloSpreadSheet = forwardRef(
 									width={width}
 									getColumnWidth={getColumnWidth}
 									minRowHeight={props.minRowHeight ?? 50}
-									ref={mainGridRef}
 									scrollLeft={scrollLeft}
 									onScroll={onScroll}
 									height={height}

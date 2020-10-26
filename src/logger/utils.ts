@@ -31,9 +31,10 @@ export function createLoggerInstance(name: string, logLevel: string): Logger {
 		throw new Error(`Log level ${logLevel} not recognized.`)
 	}
 
-	const logger = LOG_LEVELS.reduce((logger, method, i) => {
+	const logger = LOG_LEVELS.reduce((e, method, i) => {
+		const handler = { ...e }
 		if (i >= index) {
-			logger[method] = (...args: any[]) => {
+			handler[method] = (...args: any[]) => {
 				const [message, ...rest] = args
 				if (typeof message === 'object' || Array.isArray(message)) {
 					console[method](`${name}%c: `, 'color:white', message, ...rest)
@@ -42,9 +43,9 @@ export function createLoggerInstance(name: string, logLevel: string): Logger {
 				}
 			}
 		} else {
-			logger[method] = empty
+			handler[method] = empty
 		}
-		return logger
+		return handler
 	}, {} as any)
 
 	return logger as Logger

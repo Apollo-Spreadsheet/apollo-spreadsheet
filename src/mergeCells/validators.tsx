@@ -1,28 +1,19 @@
 import { MergeCell } from './interfaces/merge-cell'
-import { NavigationCoords } from '../navigation/types/navigation-coords.type'
 
-export const isZeroSpan = (cell: MergeCell) => {
-	return cell.rowSpan === 0 && cell.colSpan === 0
-}
+export const isZeroSpan = (cell: MergeCell) => cell.rowSpan === 0 && cell.colSpan === 0
 
-export const isSingleCell = (cell: MergeCell) => {
-	return cell.rowSpan === 1 && cell.colSpan === 1
-}
+export const isSingleCell = (cell: MergeCell) => cell.rowSpan === 1 && cell.colSpan === 1
 
-export const containsNegativeValues = (cell: MergeCell) => {
-	return cell.rowIndex < 0 || cell.colIndex < 0 || cell.rowSpan < 0 || cell.colSpan < 0
-}
+export const containsNegativeValues = (cell: MergeCell) =>
+	cell.rowIndex < 0 || cell.colIndex < 0 || cell.rowSpan < 0 || cell.colSpan < 0
 
-export const isOutOfBounds = (cell: MergeCell, rowCount: number, columnCount: number) => {
-	return (
-		cell.rowIndex < 0 ||
-		cell.colIndex < 0 ||
-		cell.rowIndex >= rowCount ||
-		cell.rowIndex + cell.rowSpan - 1 >= rowCount ||
-		cell.colIndex >= columnCount ||
-		cell.colIndex + cell.colSpan - 1 >= columnCount
-	)
-}
+export const isOutOfBounds = (cell: MergeCell, rowCount: number, columnCount: number) =>
+	cell.rowIndex < 0 ||
+	cell.colIndex < 0 ||
+	cell.rowIndex >= rowCount ||
+	cell.rowIndex + cell.rowSpan - 1 >= rowCount ||
+	cell.colIndex >= columnCount ||
+	cell.colIndex + cell.colSpan - 1 >= columnCount
 
 /** @todo Might need a review soon **/
 export const isOverlapping = (target: MergeCell, data: MergeCell[]) => {

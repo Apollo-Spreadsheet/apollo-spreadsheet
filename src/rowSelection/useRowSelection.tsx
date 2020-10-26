@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react'
+import React, { useCallback, useEffect, useRef } from 'react'
 import { SelectionProps } from './selectionProps'
 import { ApiRef } from '../api/types/apiRef'
 import { useApiExtends } from '../api/useApiExtends'
@@ -20,25 +20,24 @@ export function useRowSelection(apiRef: ApiRef, initialised: boolean, selection?
 	const logger = useLogger('useRowSelection')
 	const selectedIds = useRef<string[]>([])
 
-	function createSelectionHeader() {
-		return {
+	const createSelectionHeader = useCallback(
+		() => ({
 			colSpan: 1,
 			id: ROW_SELECTION_HEADER_ID,
 			title: '',
 			className: selection?.className,
-			renderer: () => {
-				return (
-					<Tooltip placement={'top'} title={'Click to delete the selected rows'}>
-						<IconButton onClick={selection?.onHeaderIconClick}>
-							<DeleteIcon />
-						</IconButton>
-					</Tooltip>
-				)
-			},
+			renderer: () => (
+				<Tooltip placement={'top'} title={'Click to delete the selected rows'}>
+					<IconButton onClick={selection?.onHeaderIconClick}>
+						<DeleteIcon />
+					</IconButton>
+				</Tooltip>
+			),
 			accessor: ROW_SELECTION_HEADER_ID,
 			width: selection?.width ?? '2%',
-		}
-	}
+		}),
+		[selection],
+	)
 
 	//Build the selection header if does not exist yet
 	useEffect(() => {
@@ -48,7 +47,7 @@ export function useRowSelection(apiRef: ApiRef, initialised: boolean, selection?
 			const newColumns = [...apiRef.current.getColumns(), createSelectionHeader()]
 			apiRef.current.updateColumns(newColumns)
 		}
-	}, [selection, apiRef])
+	}, [selection, apiRef, logger, createSelectionHeader])
 
 	//Detect if a row exists in selected but not in rows
 	useEffect(() => {
@@ -58,15 +57,13 @@ export function useRowSelection(apiRef: ApiRef, initialised: boolean, selection?
 			selectedIds.current = []
 			apiRef.current.dispatchEvent(ROW_SELECTION_CHANGE)
 		}
-	}, [apiRef, selection, selectedIds])
+	}, [apiRef, selection, selectedIds, logger])
 
-	const isRowSelected = useCallback((id: string) => {
-		return selectedIds.current.some(e => e === id)
-	}, [])
+	const isRowSelected = useCallback((id: string) => selectedIds.current.some(e => e === id), [])
 
 	const selectRow = useCallback(
 		(idOrRow: string | Row) => {
-			logger.debug('Selecting row ' + idOrRow.toString())
+			logger.debug(`Selecting row ${idOrRow.toString()}`)
 			//Ensure selection is enabled
 			if (!selection) {
 				return
@@ -100,7 +97,7 @@ export function useRowSelection(apiRef: ApiRef, initialised: boolean, selection?
 
 			apiRef.current.dispatchEvent(ROW_SELECTION_CHANGE)
 		},
-		[isRowSelected, selection, apiRef],
+		[logger, selection, apiRef, isRowSelected],
 	)
 
 	const getSelectedRows = useCallback(() => {
@@ -108,8 +105,8 @@ export function useRowSelection(apiRef: ApiRef, initialised: boolean, selection?
 			return []
 		}
 		return apiRef.current
-			.getRowsWithFilter((e: any) =>
-				selectedIds.current.some(id => String(id) === String(e[selection.key])),
+			.getRowsWithFilter(e =>
+				selectedIds.current.some(id => String(id) === String(e[selection.key]))
 			)
 			.map((e: any) => String(e[selection.key]))
 	}, [apiRef, selection])
@@ -119,6 +116,7 @@ export function useRowSelection(apiRef: ApiRef, initialised: boolean, selection?
 		selectRow,
 		getSelectedRowIds: getSelectedRows,
 	}
+
 	useApiExtends(apiRef, rowSelectionApi, 'RowSelectionApi')
 
 	return {

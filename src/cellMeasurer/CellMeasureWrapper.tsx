@@ -1,7 +1,7 @@
 import React from 'react'
 import { CellMeasurer } from 'react-virtualized'
 import { CellMeasureWrapperProps } from './cellMeasureWrapperProps'
-import { getMaxSum } from './utils/getMaxSum'
+import { getMaxSum } from './utils'
 
 function CellMeasureWrapper({
 	rowSpan,
@@ -28,12 +28,7 @@ function CellMeasureWrapper({
 
 		const rowSpanStyle = !rowSpan
 			? {}
-			: {
-					/** @todo Missing an edge case of the last row to cover or even if its not the last
-					 * it is not evaluating when it has only a child or too and it expands twice the size leaving a big empty space
-					 */
-					height: getMaxSum(rowGenerator, rowSpan),
-			  }
+			: { height: getMaxSum(rowGenerator, rowSpan) }
 
 		//Fetch all column widths and sum into a unique value
 		const buildSpanColumnWidth = (spanSize: number) => {
@@ -47,9 +42,7 @@ function CellMeasureWrapper({
 
 		const colSpanStyle = !colSpan
 			? {}
-			: {
-					width: buildSpanColumnWidth(colSpan),
-			  }
+			: { width: buildSpanColumnWidth(colSpan) }
 
 		const _style: React.CSSProperties = {
 			...style,
@@ -70,8 +63,7 @@ function CellMeasureWrapper({
 					...rendererProps,
 					style: spanningStyle,
 					ref: registerChild,
-				})
-			}
+				})}
 		</CellMeasurer>
 	)
 }

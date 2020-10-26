@@ -7,7 +7,8 @@ interface Props {
 
 /**
  * @todo We need to use a mask instead of borders, borders will provoke a full renderer and the mask
- * can provide also multiple selection if needed or any kind of operation without the need of invoking grid lifecycle methods
+ * can provide also multiple selection if needed or any kind
+ * of operation without the need of invoking grid lifecycle methods
  * @param anchorElement
  * @constructor
  */
@@ -40,8 +41,8 @@ export function NavigationMask({ anchorElement }: Props) {
 		>
 			<div
 				style={{
-					width: anchorElement['style'].width,
-					height: anchorElement['style'].height,
+					width: (anchorElement as any).style.width,
+					height: (anchorElement as any).style.height,
 					border: '1px solid blue',
 				}}
 			/>

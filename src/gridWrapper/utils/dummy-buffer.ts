@@ -52,8 +52,10 @@ export class DummyBuffer {
 		const first = index === 0
 		const last = index === totalDummies - 1
 
-		/** @todo Review this part, we might only provide a className with theme to indicate whether its the last
-		 * column or last row or even for spanns, the user might want to do something about it **/
+		/** @todo Review this part, we might only provide a className with theme
+		 * to indicate whether its the last
+		 * column or last row or even for spanns, the user might want to do something about it
+		 * **/
 		if (dummyFor === 'colSpan') {
 			style.borderLeft = 0
 			if (!last) {
@@ -112,6 +114,7 @@ export class DummyBuffer {
 				}),
 			)
 
+			// eslint-disable-next-line no-param-reassign
 			item.remainingRows -= 1
 		})
 

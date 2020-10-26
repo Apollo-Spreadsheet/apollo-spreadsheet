@@ -1,10 +1,7 @@
-import { StretchMode } from '../types/stretch-mode.enum'
-import { GridHeader, Column, NestedHeader } from './types/header.type'
-import { GridTheme } from '../types/grid-theme'
-import { NavigationCoords } from '../navigation/types/navigation-coords.type'
-import { DisableSortFilterParam } from '../gridWrapper/gridWrapperProps'
-import GridWrapper from '../gridWrapper/GridWrapper'
-import React from 'react'
+import { StretchMode } from '../types'
+import { GridHeader, Column, NestedHeader } from './types'
+import { NavigationCoords } from '../navigation/types'
+import { DisableSortFilterParam } from '../gridWrapper'
 import { ApiRef } from '../api/types'
 
 export interface ColumnGridProps {

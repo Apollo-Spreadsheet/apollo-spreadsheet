@@ -1,16 +1,8 @@
-import React, {
-	CSSProperties,
-	forwardRef,
-	useCallback,
-	useEffect,
-	useImperativeHandle,
-	useMemo,
-	useState,
-} from 'react'
+import React, { CSSProperties, forwardRef, useCallback, useImperativeHandle, useMemo, useState } from 'react'
 import { EditorProps } from '../editorProps'
-import { Popover, TextareaAutosize, TextField } from '@material-ui/core'
+import { Popover, TextareaAutosize } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles'
-import { handleEditorKeydown } from '../utils/handleEditorKeydown'
+import { handleEditorKeydown } from '../utils'
 import clsx from 'clsx'
 import { GRID_RESIZE, useApiEventHandler } from '../../api'
 
@@ -30,35 +22,20 @@ const useStyles = makeStyles(() => ({
 }))
 
 export const NumericEditor = forwardRef(
-	(
-		{
-			value,
-			stopEditing,
-			anchorRef,
-			maxLength,
-			validatorHook,
-			additionalProps,
-			apiRef,
-		}: EditorProps,
-		componentRef,
-	) => {
+	({ value, stopEditing, anchorRef, maxLength, validatorHook, additionalProps, apiRef }: EditorProps, componentRef) => {
 		const classes = useStyles()
-		const [editingValue, setEditingValue] = useState<string>(
-			isNaN(Number(value)) ? '0' : String(value),
-		)
+		const [editingValue, setEditingValue] = useState<string>(isNaN(Number(value)) ? '0' : String(value))
 
 		const onAnchorResize = useCallback(() => {
 			stopEditing()
-		}, [])
+		}, [stopEditing])
 
 		useApiEventHandler(apiRef, GRID_RESIZE, onAnchorResize)
 
 		useImperativeHandle(
 			componentRef,
 			() => ({
-				getValue: () => {
-					return editingValue === '' ? 0 : parseFloat(editingValue)
-				},
+				getValue: () => (editingValue === '' ? 0 : parseFloat(editingValue)),
 			}),
 			[editingValue],
 		)
@@ -77,15 +54,17 @@ export const NumericEditor = forwardRef(
 			}
 			//Use default number validator
 			return !isNaN(Number(editingValue))
-		}, [editingValue])
+		}, [editingValue, validatorHook])
 
 		const onTextAreaResizeMount = useCallback((ref: HTMLTextAreaElement | null) => {
 			if (!ref) {
 				return
 			}
+			// eslint-disable-next-line no-param-reassign
 			ref.selectionStart = editingValue.toString().length
+			// eslint-disable-next-line no-param-reassign
 			ref.selectionEnd = editingValue.toString().length
-		}, [])
+		}, [editingValue])
 
 		function onEditorPortalClose(event: unknown, reason: 'backdropClick' | 'escapeKeyDown') {
 			//Only allow to cancel if its invalid
@@ -100,7 +79,7 @@ export const NumericEditor = forwardRef(
 			stopEditing({ save: false })
 		}
 
-		const anchorStyle = anchorRef['style'] as CSSProperties
+		const anchorStyle = (anchorRef as any).style as CSSProperties
 		return (
 			<Popover
 				id={'editor-portal'}
@@ -136,7 +115,7 @@ export const NumericEditor = forwardRef(
 						onKeyPress={onKeyPress}
 						onKeyDown={e => handleEditorKeydown(e, stopEditing)}
 						onChange={e => {
-							setEditingValue(e.target['value'].replace(',', '.'))
+							setEditingValue(e.target.value.replace(',', '.'))
 						}}
 						autoFocus
 						aria-label="numeric apollo editor"

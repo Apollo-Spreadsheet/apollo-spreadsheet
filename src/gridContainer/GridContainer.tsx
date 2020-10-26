@@ -1,9 +1,9 @@
 import React, { useCallback, useRef } from 'react'
-import { StretchMode } from '../types/stretch-mode.enum'
+import { StretchMode } from '../types'
 import { scrollbarWidth } from '@xobotyi/scrollbar-width'
-import { AutoSizer, OnScrollParams, ScrollSync, Size } from 'react-virtualized'
-import { createColumnWidthsMapping } from '../columnGrid/utils/createColumnWidthsMapping'
-import { ColumnWidthRecord } from '../columnGrid/useHeaders'
+import { AutoSizer, ScrollSync, Size } from 'react-virtualized'
+import { createColumnWidthsMapping } from '../columnGrid/utils'
+import { ColumnWidthRecord } from '../columnGrid'
 import { makeStyles } from '@material-ui/core/styles'
 import clsx from 'clsx'
 import { useLogger } from '../logger'
@@ -32,8 +32,6 @@ export const GridContainer = React.memo(
 		const scrollbarSize = scrollbarWidth() ?? 0
 		const classes = useStyles()
 		const gridContainerRef = useRef<HTMLDivElement | null>(null)
-		const mainGridRef = useRef<any | null>(null)
-		const columnGridRef = useRef<any | null>(null)
 		const columnWidths = useRef<ColumnWidthRecord>({
 			totalSize: 0,
 			mapping: {},
@@ -47,7 +45,7 @@ export const GridContainer = React.memo(
 		const getColumnWidthHelper = useCallback(({ index }: { index: number }) => {
 			const value = columnWidths.current.mapping[index]
 			return isNaN(value) ? minColumnWidth : value
-		}, [])
+		}, [minColumnWidth])
 
 		const calculateColumnWidths = (containerWidth: number) => {
 			const { mapping, totalSize } = createColumnWidthsMapping(
@@ -98,8 +96,6 @@ export const GridContainer = React.memo(
 							width: containerWidth,
 							height: containerHeight,
 							getColumnWidth: getColumnWidthHelper,
-							mainGridRef,
-							columnGridRef,
 							scrollLeft: 0,
 						})}
 					</>
@@ -116,8 +112,6 @@ export const GridContainer = React.memo(
 								getColumnWidth: getColumnWidthHelper,
 								scrollLeft,
 								onScroll,
-								columnGridRef,
-								mainGridRef,
 							})}
 						</>
 					)}

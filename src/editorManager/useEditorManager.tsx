@@ -1,19 +1,17 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react'
-import { GetColumnAt } from '../columnGrid/useHeaders'
-import { ROW_SELECTION_HEADER_ID } from '../rowSelection/useRowSelection'
-import { NavigationCoords } from '../navigation/types/navigation-coords.type'
-import { ColumnCellType, Column } from '../columnGrid/types/header.type'
+import { ROW_SELECTION_HEADER_ID } from '../rowSelection'
+import { NavigationCoords } from '../navigation/types'
+import { ColumnCellType, Column } from '../columnGrid/types'
 import TextEditor from './components/TextEditor'
 import NumericEditor from './components/NumericEditor'
 import { EditorProps } from './editorProps'
-import { CalendarEditor } from './components/CalendarEditor'
-import { isFunctionType } from '../helpers/isFunction'
-import { useApiExtends } from '../api/useApiExtends'
-import { ApiRef } from '../api/types/apiRef'
-import { CELL_BEGIN_EDITING, CELL_STOP_EDITING } from '../api/eventConstants'
+import { CalendarEditor } from './components'
+import { isFunctionType } from '../helpers'
+import { useApiExtends, EditorManagerApi, ApiRef, CELL_BEGIN_EDITING, CELL_STOP_EDITING } from '../api'
 import clsx from 'clsx'
-import { EditorManagerApi } from '../api/types'
 import { useLogger } from '../logger'
+import { Row } from '../types'
+import valueEqual from 'value-equal'
 
 export interface StopEditingParams {
 	/** @default true **/
@@ -62,22 +60,11 @@ export interface EditorRef<T = unknown> {
  * This hook controls the editing states, interacts with useNavigation hook and also manages the commit/cancel cycle of
  * an editor
  */
-export function useEditorManager<TRow>({ onCellChange, apiRef, initialised }: EditorManagerProps) {
+export function useEditorManager({ onCellChange, apiRef }: EditorManagerProps) {
 	const logger = useLogger('useEditorManager')
 	const editorRef = useRef<EditorRef | null>()
 	const state = useRef<IEditorState | null>(null)
 	const [editorNode, setEditorNode] = useState<JSX.Element | null>(null)
-
-	//Detect if the active editing row/column has been deleted
-	useEffect(() => {
-		if (editorNode && state.current) {
-			const target = apiRef.current.getRowAt(state.current.rowIndex) as TRow
-			const column = apiRef.current.getColumnAt(state.current.colIndex)
-			if (!target || !column) {
-				stopEditing({ save: false })
-			}
-		}
-	}, [apiRef, editorNode])
 
 	/**
 	 * Closes the existing editor without saving anything
@@ -112,7 +99,7 @@ export function useEditorManager<TRow>({ onCellChange, apiRef, initialised }: Ed
 					return setEditorNode(null)
 				}
 
-				if (newValue != editorState.initialValue) {
+				if (valueEqual(newValue, editorState.initialValue)) {
 					const row = apiRef.current.getRowAt(editorState.rowIndex)
 					const column = apiRef.current.getColumnAt(editorState.colIndex)
 					if (!row) {
@@ -146,36 +133,21 @@ export function useEditorManager<TRow>({ onCellChange, apiRef, initialised }: Ed
 			})
 			setEditorNode(null)
 		},
-		[editorNode, onCellChange, apiRef],
+		[apiRef, logger, onCellChange],
 	)
 
-	//Invoked when the editor mounts on DOM
-	const onRefMount = (ref: EditorRef) => {
-		if (!ref) {
-			return
-		}
-		validateEditorRef(ref)
-		editorRef.current = ref
-	}
-
-	const getEditor = (row: TRow, column: Column, props: any) => {
-		let EditorComponent: any = TextEditor
-		if (column.editor) {
-			EditorComponent = column.editor({ row, column, onRefMount })
-		} else {
-			if (column.type === ColumnCellType.Calendar) {
-				EditorComponent = CalendarEditor
-			} else if (column.type === ColumnCellType.Numeric) {
-				EditorComponent = NumericEditor
+	//Detect if the active editing row/column has been deleted
+	useEffect(() => {
+		if (editorNode && state.current) {
+			const target = apiRef.current.getRowAt(state.current.rowIndex)
+			const column = apiRef.current.getColumnAt(state.current.colIndex)
+			if (!target || !column) {
+				stopEditing({ save: false })
 			}
 		}
+	}, [apiRef, editorNode, stopEditing])
 
-		return column.editor
-			? EditorComponent
-			: React.createElement(EditorComponent, { ...props, ref: onRefMount })
-	}
-
-	const validateEditorRef = (editorRef: EditorRef) => {
+	const validateEditorRef = useCallback((editorRef: EditorRef) => {
 		if (!editorRef) {
 			logger.warn(`
 				useImperativeHandle is missing on the editor component OR has some misconfiguration. Editor reference is not defined therefore
@@ -183,15 +155,39 @@ export function useEditorManager<TRow>({ onCellChange, apiRef, initialised }: Ed
 			`)
 			return false
 		}
-		if (!editorRef['getValue'] || !isFunctionType(editorRef['getValue'])) {
+		if (!editorRef.getValue || !isFunctionType(editorRef.getValue)) {
 			logger.warn(
-				`Editor reference "getValue()" method is invalid, not a function or undefined, please review your setup`,
+				'Editor reference "getValue()" method is invalid, not a function or undefined, please review your setup',
 			)
 			return false
 		}
 
 		return true
-	}
+	}, [logger])
+	
+	//Invoked when the editor mounts on DOM
+	const onRefMount = useCallback((ref: EditorRef) => {
+		if (!ref) {
+			return
+		}
+		validateEditorRef(ref)
+		editorRef.current = ref
+	}, [validateEditorRef])
+
+	const getEditor = useCallback((row: Row, column: Column, props: EditorProps) => {
+		let EditorComponent: any = TextEditor
+		if (column.editor) {
+			EditorComponent = column.editor({ row, column, onRefMount })
+		} else if (column.type === ColumnCellType.Calendar) {
+				EditorComponent = CalendarEditor
+			} else if (column.type === ColumnCellType.Numeric) {
+				EditorComponent = NumericEditor
+			}
+
+		return column.editor
+			? EditorComponent
+			: React.createElement(EditorComponent, { ...props, ref: onRefMount })
+	}, [onRefMount])
 
 	/**
 	 * Starts editing in a given cell considering multiple configurations
@@ -220,6 +216,8 @@ export function useEditorManager<TRow>({ onCellChange, apiRef, initialised }: Ed
 			if (column.id === ROW_SELECTION_HEADER_ID) {
 				return
 			}
+
+			// eslint-disable-next-line no-nested-ternary
 			const isReadOnly = column.readOnly
 				? typeof column.readOnly === 'function'
 					? column.readOnly(coords)
@@ -237,15 +235,14 @@ export function useEditorManager<TRow>({ onCellChange, apiRef, initialised }: Ed
 				)
 			}
 
-			const value = (row as TRow)[column.accessor]
+			// eslint-disable-next-line no-nested-ternary
+			const value = row[column.accessor]
 				? defaultKey
-					? (row as TRow)[column.accessor] + defaultKey
-					: (row as TRow)[column.accessor]
-				: defaultKey
-				? defaultKey
-				: ''
+					? row[column.accessor] + defaultKey
+					: row[column.accessor]
+				: defaultKey || ''
 
-			const initialValue = (row as TRow)[column.accessor] ?? ''
+			const initialValue = row[column.accessor] ?? ''
 
 			const editorProps: EditorProps = {
 				anchorRef: targetElement,
@@ -260,7 +257,7 @@ export function useEditorManager<TRow>({ onCellChange, apiRef, initialised }: Ed
 				apiRef,
 			}
 
-			const editor = getEditor(row as TRow, column, editorProps)
+			const editor = getEditor(row, column, editorProps)
 			state.current = {
 				node: editor,
 				rowIndex: coords.rowIndex,
@@ -274,7 +271,7 @@ export function useEditorManager<TRow>({ onCellChange, apiRef, initialised }: Ed
 			setEditorNode(editor)
 			apiRef.current.dispatchEvent(CELL_BEGIN_EDITING, coords)
 		},
-		[editorNode, stopEditing, apiRef],
+		[logger, apiRef, stopEditing, getEditor],
 	)
 
 	function getEditorState() {

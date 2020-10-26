@@ -1,13 +1,7 @@
 import React from 'react'
 import { CellMeasurerCache } from 'react-virtualized'
 import { MeasuredCellParent } from 'react-virtualized/dist/es/CellMeasurer'
-import { GetColumnWidthFn } from '../gridWrapper/interfaces/getColumnWidthFn'
-import { GridCell } from '../gridWrapper/interfaces/gridCell'
-
-interface CellMeasureRendererProps {
-	// style: React.CSSProperties
-	// ref?: RegisterChildFn
-}
+import { GetColumnWidthFn, GridCell } from '../gridWrapper/interfaces'
 
 export interface MeasurerRendererProps {
 	style: React.CSSProperties

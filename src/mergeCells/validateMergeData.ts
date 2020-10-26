@@ -17,39 +17,22 @@ import {
 
 export function validateMergeData(data: MergeCell[], rowCount: number, columnCount: number) {
 	const validData: MergeCell[] = []
-	for (const e of data) {
+	data.forEach(e => {
 		if (containsNegativeValues(e)) {
 			console.error(MERGED_NEGATIVE_VALUES(e))
-			continue
-		}
-
-		if (isOutOfBounds(e, rowCount, columnCount)) {
+		} else if (isOutOfBounds(e, rowCount, columnCount)) {
 			console.error(MERGED_OUT_OF_BONDS(e))
-			continue
-		}
-
-		if (isSingleCell(e)) {
+		} else if (isSingleCell(e)) {
 			console.error(MERGED_SINGLE_CELL(e))
-			continue
-		}
-
-		if (isZeroSpan(e)) {
+		} else if (isZeroSpan(e)) {
 			console.error(MERGED_ZERO_SPAN(e))
-			continue
-		}
-
-		if (validData.some(x => x.rowIndex === e.rowIndex && x.colIndex === e.colIndex)) {
+		} else if (validData.some(x => x.rowIndex === e.rowIndex && x.colIndex === e.colIndex)) {
 			console.error(MERGED_DUPLICATED(e))
-			continue
-		}
-
-		if (isOverlapping(e, validData)) {
+		} else if (isOverlapping(e, validData)) {
 			console.error(MERGED_OVERLAP(e))
-			continue
+		} else {
+			validData.push(e)
 		}
-
-		validData.push(e)
-	}
-
+	})
 	return validData
 }

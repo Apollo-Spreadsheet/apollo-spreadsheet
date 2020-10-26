@@ -1,6 +1,7 @@
 export interface GridTheme {
 	/**
-	 * Styles the whole row where the cell is selected and also applies styling to the highlighted cell
+	 * Styles the whole row where the cell is selected and
+	 * also applies styling to the highlighted cell
 	 */
 	currentRowClass?: string
 	/**

@@ -1,14 +1,13 @@
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { Column } from '../columnGrid/types/header.type'
-import { SelectionProps } from '../rowSelection/selectionProps'
-import { GridCell } from '../gridWrapper/interfaces/gridCell'
-import { ApiRef } from '../api/types/apiRef'
-import { useApiExtends } from '../api/useApiExtends'
-import { useApiEventHandler } from '../api/useApiEventHandler'
-import { DATA_CHANGED, ROW_SELECTION_CHANGE, ROWS_CHANGED } from '../api/eventConstants'
+import { useCallback, useEffect, useRef, useState } from 'react'
+import { Column } from '../columnGrid/types'
+import { SelectionProps } from '../rowSelection'
+import { GridCell } from '../gridWrapper/interfaces'
+import { ApiRef, RowApi } from '../api/types'
+import { useApiExtends, useApiEventHandler, DATA_CHANGED, ROW_SELECTION_CHANGE, ROWS_CHANGED } from '../api'
+
 import { createData } from './createData'
 import { Row } from '../types'
-import { RowApi } from '../api/types'
+
 import { useLogger } from '../logger'
 
 interface Props {
@@ -27,7 +26,7 @@ export function useData({ rows, columns, selection, initialised, apiRef }: Props
 	const rowsRef = useRef<Row[]>(rows)
 	const originalRowsRef = useRef<Row[]>(rows)
 	const cells = useRef<GridCell[][]>([])
-	const [_, forceUpdate] = useState(false)
+	const [, forceUpdate] = useState(false)
 
 	const onRowsChangeHandle = useCallback(
 		(params: { rows: Row[]; columns: Column[] }) => {
@@ -38,16 +37,14 @@ export function useData({ rows, columns, selection, initialised, apiRef }: Props
 			})
 
 			if (!updatedData) {
-				return logger.error(
-					'No data has been returned from createData, please review the dependencies',
-				)
+				return logger.error('No data has been returned from createData, please review the dependencies')
 			}
 
 			cells.current = updatedData
 			forceUpdate(p => !p)
 			apiRef.current.dispatchEvent(DATA_CHANGED, { updatedData })
 		},
-		[initialised, selection, apiRef],
+		[apiRef, selection, logger],
 	)
 
 	const updateRows = useCallback(
@@ -58,7 +55,7 @@ export function useData({ rows, columns, selection, initialised, apiRef }: Props
 			apiRef.current.dispatchEvent(ROWS_CHANGED, { rows: updatedRows })
 			onRowsChangeHandle({ rows: updatedRows, columns: apiRef.current.getColumns() })
 		},
-		[apiRef, selection],
+		[apiRef, logger, onRowsChangeHandle],
 	)
 
 	//Refresh the data if any dependency change
@@ -73,26 +70,30 @@ export function useData({ rows, columns, selection, initialised, apiRef }: Props
 
 	const onRowSelectionChange = useCallback(() => {
 		logger.debug('Row selection changed.')
-		onRowsChangeHandle({ rows: rowsRef.current, columns: columns })
-	}, [onRowsChangeHandle])
+		onRowsChangeHandle({ rows: rowsRef.current, columns })
+	}, [columns, logger, onRowsChangeHandle])
 
 	const getRowAt = useCallback((index: number) => rowsRef.current[index], [])
+
 	const getRows = useCallback(() => rowsRef.current, [])
-	const getRowsCount = useCallback(() => rowsRef.current.length, [rows])
-	const getRowById = useCallback(
-		(id: string) => rowsRef.current.find(e => String(e[selection?.key ?? '']) === id),
-		[],
-	)
+
+	const getRowsCount = useCallback(() => rowsRef.current.length, [])
+
+	const getRowById = useCallback((id: string) => {
+		return rowsRef.current.find(e => String(e[selection?.key ?? '']) === id)
+	}, [selection?.key])
+
 	const getRowsWithFilter = useCallback(
-		(predicate: (value: Row, index: number, array: Row[]) => unknown, thisArg?: any) =>
-			rowsRef.current.filter(predicate, thisArg),
-		[],
-	)
-	const getRowIndex = useCallback(
-		(id: string) => rowsRef.current.findIndex(e => String(e[selection?.key ?? '']) === id),
-		[],
-	)
+		(predicate: (value: Row, index: number, array: Row[]) => unknown, thisArg?: any) => {
+			return rowsRef.current.filter(predicate, thisArg)
+		}, [])
+
+	const getRowIndex = useCallback((id: string) => {
+		return rowsRef.current.findIndex(e => String(e[selection?.key ?? '']) === id)
+	}, [selection?.key])
+
 	const getOriginalRows = useCallback(() => originalRowsRef.current, [])
+
 	const getCells = useCallback(() => cells.current, [])
 
 	const rowApi: RowApi = {

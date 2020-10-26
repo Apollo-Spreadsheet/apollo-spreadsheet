@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useRef, useState } from 'react'
 import { ApiRef } from '../api/types'
 import { useApiExtends } from '../api'
 import { SortApi } from '../api/types/sortApi'
@@ -10,7 +10,7 @@ export interface SortState {
 	order: 'asc' | 'desc'
 }
 
-export function useSort(apiRef: ApiRef, initialised: boolean) {
+export function useSort(apiRef: ApiRef) {
 	const logger = useLogger('useSort')
 	const stateRef = useRef<SortState | null>(null)
 	const [sort, setSort] = useState<SortState | null>(null)
@@ -23,7 +23,7 @@ export function useSort(apiRef: ApiRef, initialised: boolean) {
 		stateRef.current = null
 		setSort(null)
 		apiRef.current.updateRows(apiRef.current.getOriginalRows())
-	}, [apiRef])
+	}, [apiRef, logger])
 
 	const toggleSort = useCallback(
 		(columnId: string) => {
@@ -59,7 +59,7 @@ export function useSort(apiRef: ApiRef, initialised: boolean) {
 				)
 			}
 		},
-		[apiRef, clearSort],
+		[apiRef, clearSort, logger],
 	)
 
 	const sortColumn = useCallback(
@@ -70,7 +70,7 @@ export function useSort(apiRef: ApiRef, initialised: boolean) {
 				return logger.error(`Column id: ${columnId} not found at sortColumn`)
 			}
 
-			//Ensure its not applied already
+			// Ensure its not applied already
 			if (stateRef.current?.accessor === column.accessor && stateRef.current?.order === order) {
 				return
 			}
@@ -85,7 +85,7 @@ export function useSort(apiRef: ApiRef, initialised: boolean) {
 				orderBy([...currentRows], [stateRef.current.accessor], [stateRef.current.order]),
 			)
 		},
-		[apiRef],
+		[apiRef, logger],
 	)
 
 	const getSortState = useCallback(() => stateRef.current, [])

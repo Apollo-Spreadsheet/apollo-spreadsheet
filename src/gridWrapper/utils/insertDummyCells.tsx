@@ -1,4 +1,3 @@
-import React from 'react'
 import { BufferedRecord, DummyBuffer, DummyCell } from './dummy-buffer'
 import flatMap from 'lodash/flatMap'
 

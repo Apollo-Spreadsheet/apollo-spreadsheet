@@ -1,20 +1,19 @@
 import React, {
-	forwardRef,
+	CSSProperties,
 	useCallback,
 	useEffect,
-	useImperativeHandle,
 	useMemo,
 	useRef,
 } from 'react'
 import { CellMeasurerCache, Grid, SectionRenderedParams } from 'react-virtualized'
 import CellMeasurer from '../cellMeasurer/CellMeasureWrapper'
-import { NavigationCoords } from '../navigation/types/navigation-coords.type'
+import { NavigationCoords } from '../navigation/types'
 import clsx from 'clsx'
 import { GridCellProps } from 'react-virtualized/dist/es/Grid'
-import { MeasurerRendererProps } from '../cellMeasurer/cellMeasureWrapperProps'
+import { MeasurerRendererProps } from '../cellMeasurer'
 import { GridWrapperProps } from './gridWrapperProps'
 import { makeStyles } from '@material-ui/core/styles'
-import { MergeCell } from '../mergeCells/interfaces/merge-cell'
+import { MergeCell } from '../mergeCells/interfaces'
 import { StretchMode } from '../types'
 import { useLogger } from '../logger'
 
@@ -39,7 +38,7 @@ const useStyles = makeStyles(() => ({
 	},
 }))
 
-const GridWrapper = forwardRef((props: GridWrapperProps, componentRef: React.Ref<any>) => {
+const GridWrapper = React.memo((props: GridWrapperProps) => {
 	const logger = useLogger('GridWrapper')
 	const cache = useRef(
 		new CellMeasurerCache({
@@ -55,32 +54,7 @@ const GridWrapper = forwardRef((props: GridWrapperProps, componentRef: React.Ref
 	const gridRef = useRef<Grid | null>(null)
 	const recomputingTimeout = useRef<NodeJS.Timeout | undefined>(undefined)
 
-	/**
-	 * Returns a given column at the provided index if exists
-	 * @param index
-	 * @param line  This represents the row but by default we fetch only from the first, this is in order to support nested headers
-	 */
-	const getColumnAt = useCallback(
-		(index: number) => {
-			return props.columns[index]
-		},
-		[props.columns],
-	)
-
-	useImperativeHandle(
-		componentRef,
-		() => ({
-			recomputeGridSize: () => {
-				gridRef.current?.recomputeGridSize()
-			},
-			forceUpdate: () => {
-				gridRef.current?.forceUpdate()
-			},
-		}),
-		[props.data, getColumnAt, gridRef.current],
-	)
-
-	function recomputeSizes() {
+	const recomputeSizes = useCallback(() => {
 		logger.debug('Recomputing sizes.')
 		cache.clearAll()
 		gridRef.current?.recomputeGridSize()
@@ -89,7 +63,7 @@ const GridWrapper = forwardRef((props: GridWrapperProps, componentRef: React.Ref
 			columnIndex: props.coords.colIndex,
 			rowIndex: props.coords.rowIndex,
 		})
-	}
+	}, [logger, cache, props.coords])
 
 	function recomputingCleanup() {
 		if (recomputingTimeout.current) {
@@ -104,7 +78,7 @@ const GridWrapper = forwardRef((props: GridWrapperProps, componentRef: React.Ref
 		}
 		recomputingTimeout.current = setTimeout(recomputeSizes, 100)
 		return recomputingCleanup
-	}, [props.data, props.width, props.height])
+	}, [props.data, props.width, props.height, recomputeSizes])
 
 	const activeMergePath = useMemo(() => {
 		//If there is no merging then we use the active directly
@@ -123,15 +97,13 @@ const GridWrapper = forwardRef((props: GridWrapperProps, componentRef: React.Ref
 		const mergeInfo = props.mergeCells.find(e => e.rowIndex === props.coords.rowIndex)
 		if (mergeInfo) {
 			return [mergeInfo.rowIndex]
-		} else {
+		}
 			const mergedPosition = props.mergedPositions.find(e => e.row === props.coords.rowIndex)
 			//In case the given row is merged, build the path with all existing merge cells
 			if (mergedPosition) {
 				return props.apiRef.current.getMergedPath(props.coords.rowIndex)
-			} else {
-				return [props.coords.rowIndex]
 			}
-		}
+				return [props.coords.rowIndex]
 	}, [props.coords, props.mergeCells, props.mergedPositions, props.apiRef])
 
 	/**
@@ -139,7 +111,7 @@ const GridWrapper = forwardRef((props: GridWrapperProps, componentRef: React.Ref
 	 * @param rowIndex
 	 * @param colIndex
 	 */
-	function isActiveRow({ rowIndex, colIndex }: NavigationCoords) {
+	const isActiveRow = useCallback(({ rowIndex, colIndex }: NavigationCoords) => {
 		if (activeMergePath[0] === rowIndex && activeMergePath.length === 1) {
 			return true
 		}
@@ -164,35 +136,34 @@ const GridWrapper = forwardRef((props: GridWrapperProps, componentRef: React.Ref
 		}
 
 		return false
-	}
+	}, [activeMergePath, props.mergeCells])
 
-	function renderCell({ style, cell, ref, rowIndex, columnIndex }) {
+	const renderCell = useCallback(({ style, cell, ref, rowIndex, columnIndex }) => {
 		const isSelected = rowIndex === props.coords.rowIndex && columnIndex === props.coords.colIndex
 		const navigationDisabled = props.columns[0][columnIndex]?.disableNavigation
 		const column = props.columns[columnIndex]
 		//Dummy zIndex is 0 and a spanned cell has 5 but a normal cell has 1
-		const zIndex = (cell.rowSpan || cell.colSpan) && !cell.dummy ? 5 : cell.dummy ? 0 : 1
+		const defaultZIndex = cell.dummy ? 0 : 1
+		const zIndex = (cell.rowSpan || cell.colSpan) && !cell.dummy ? 5 : defaultZIndex
 		const isRowActive = isActiveRow({ rowIndex, colIndex: columnIndex })
-		const theme = props.apiRef.current.theme
-
+		const { theme } = props.apiRef.current
+		const cellStyle: CSSProperties = { ...style }
 		if (isSelected) {
 			//Ensure there are no other borders
-			style.borderLeft = '0px'
-			style.borderRight = '0px'
-			style.borderTop = '0px'
-			style.borderBottom = '0px'
-			style.border = props.highlightBorderColor
+			cellStyle.borderLeft = '0px'
+			cellStyle.borderRight = '0px'
+			cellStyle.borderTop = '0px'
+			cellStyle.borderBottom = '0px'
+			cellStyle.border = props.highlightBorderColor
 				? `1px solid ${props.highlightBorderColor}`
 				: '1px solid blue'
-		} else {
+		} else if (!theme || (!theme.cellClass && !cell.dummy)) {
 			//Bind default border and clear other borders
-			if (!theme || (!theme.cellClass && !cell.dummy)) {
-				style.borderLeft = '0px'
-				style.borderRight = '0px'
-				style.borderTop = '0px'
-				style.borderBottom = '0px'
-				style.border = '1px solid rgb(204, 204, 204)'
-			}
+				cellStyle.borderLeft = '0px'
+				cellStyle.borderRight = '0px'
+				cellStyle.borderTop = '0px'
+				cellStyle.borderBottom = '0px'
+				cellStyle.border = '1px solid rgb(204, 204, 204)'
 		}
 
 		/**
@@ -227,7 +198,7 @@ const GridWrapper = forwardRef((props: GridWrapperProps, componentRef: React.Ref
 				data-dummy={cell.dummy}
 				className={cellClassName}
 				style={{
-					...style,
+					...cellStyle,
 					justifyContent: cell?.dummy ? 'top' : 'center',
 					zIndex,
 				}}
@@ -236,7 +207,7 @@ const GridWrapper = forwardRef((props: GridWrapperProps, componentRef: React.Ref
 				{cell.value}
 			</div>
 		)
-	}
+	}, [classes, isActiveRow, props.apiRef, props.columns, props.coords.colIndex, props.coords.rowIndex, props.highlightBorderColor, props.selection])
 
 	const cellRenderer = useCallback(
 		({ rowIndex, columnIndex, key, parent, style, ...otherArgs }: GridCellProps) => {
@@ -273,15 +244,7 @@ const GridWrapper = forwardRef((props: GridWrapperProps, componentRef: React.Ref
 				/>
 			) : null
 		},
-		[
-			props.coords,
-			props.width,
-			props.data,
-			props.apiRef,
-			activeMergePath,
-			props.columns,
-			props.selection,
-		],
+		[props, cache, renderCell],
 	)
 
 	const onRefMount = useCallback(instance => {
@@ -318,7 +281,6 @@ const GridWrapper = forwardRef((props: GridWrapperProps, componentRef: React.Ref
 					? clsx(classes.bodyContainer, classes.suppressHorizontalOverflow)
 					: classes.bodyContainer
 			}
-			// className={classes.bodyContainer}
 			ref={onRefMount}
 			cellRenderer={cellRenderer}
 			deferredMeasurementCache={cache}
