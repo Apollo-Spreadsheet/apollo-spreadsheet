@@ -4,12 +4,11 @@ import { scrollbarWidth } from '@xobotyi/scrollbar-width'
 import { AutoSizer, OnScrollParams, ScrollSync, Size } from "react-virtualized"
 import { createColumnWidthsMapping } from '../columnGrid/utils/createColumnWidthsMapping'
 import { ColumnWidthRecord } from '../columnGrid/useHeaders'
-import { Column } from '../columnGrid/types/header.type'
 import { makeStyles } from '@material-ui/core/styles'
 import clsx from 'clsx'
 import { useLogger } from "../logger"
-import { ApiRef } from "../api/types"
 import { GRID_RESIZE } from "../api"
+import { GridContainerProps } from "./GridContainerProps"
 
 const useStyles = makeStyles(() => ({
 	root: {
@@ -18,29 +17,6 @@ const useStyles = makeStyles(() => ({
 	},
 }))
 
-export interface GridContainerChildrenProps {
-	width: number
-	height: number
-	getColumnWidth: ({ index }: { index: number }) => number
-	columnGridRef: React.MutableRefObject<any>
-	mainGridRef: React.MutableRefObject<any>
-	scrollLeft: number
-	onScroll?: (params: OnScrollParams) => any
-}
-
-export interface GridContainerCommonProps {
-	height?: React.ReactText
-	width?: React.ReactText
-	containerClassName?: string
-}
-
-interface Props extends GridContainerCommonProps {
-	columns: Column[]
-	minColumnWidth: number
-	stretchMode: StretchMode
-	children: (props: GridContainerChildrenProps) => unknown
-	apiRef: ApiRef
-}
 
 export const GridContainer = React.memo(
 	({
@@ -52,7 +28,7 @@ export const GridContainer = React.memo(
 		width,
 		height,
 		containerClassName,
-	}: Props) => {
+	}: GridContainerProps) => {
 		const logger = useLogger('GridContainer')
 		const scrollbarSize = scrollbarWidth() ?? 0
 		const classes = useStyles()

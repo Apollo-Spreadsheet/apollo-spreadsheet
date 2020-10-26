@@ -1,5 +1,5 @@
 import { DisableSortFilterParam, GridWrapperCommonProps } from "./gridWrapper"
-import { GridContainerCommonProps } from "./gridContainer/GridContainer"
+import { GridContainerCommonProps } from "./gridContainer"
 import { GridTheme, Row, StretchMode } from "./types"
 import { KeyDownEventParams, NavigationCoords } from "./navigation"
 import { SelectionProps } from "./rowSelection"

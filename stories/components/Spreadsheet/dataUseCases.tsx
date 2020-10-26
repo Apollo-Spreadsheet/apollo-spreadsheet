@@ -1,4 +1,3 @@
-import { getSimpleData } from '../LargeDataGrid/generateData'
 import React from 'react'
 import PeopleIcon from '@material-ui/icons/People'
 import { ColumnCellType, Column } from '../../../src/columnGrid/types/header.type'
@@ -260,8 +259,4 @@ export function useTopCase(calendarClass?: string) {
 		data: rows,
 		headerData,
 	}
-}
-
-export const getRandomUseCase = () => {
-	return getSimpleData(20, 8)
 }
