@@ -16,7 +16,7 @@ import { GridWrapperProps } from './gridWrapperProps'
 import { makeStyles } from '@material-ui/core/styles'
 import { MergeCell } from '../mergeCells/interfaces/merge-cell'
 import { StretchMode } from '../types'
-import { useLogger } from "../logger"
+import { useLogger } from '../logger'
 
 const useStyles = makeStyles(() => ({
 	bodyContainer: {
@@ -284,12 +284,9 @@ const GridWrapper = forwardRef((props: GridWrapperProps, componentRef: React.Ref
 		],
 	)
 
-	const onRefMount = useCallback(
-		instance => {
-			gridRef.current = instance
-		},
-		[],
-	)
+	const onRefMount = useCallback(instance => {
+		gridRef.current = instance
+	}, [])
 
 	const onSectionRendered = useCallback(
 		(params: SectionRenderedParams) => {

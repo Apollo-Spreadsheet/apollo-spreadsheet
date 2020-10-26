@@ -5,7 +5,7 @@ import { StretchMode } from '../types/stretch-mode.enum'
 import { insertDummyCells } from '../gridWrapper/utils/insertDummyCells'
 import { ApiRef, COLUMNS_CHANGED, useApiExtends } from '../api'
 import { ColumnApi } from '../api/types/columnApi'
-import { useLogger } from "../logger";
+import { useLogger } from '../logger'
 
 export interface ColumnWidthRecord {
 	totalSize: number

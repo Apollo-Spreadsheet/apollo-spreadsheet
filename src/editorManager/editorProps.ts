@@ -1,6 +1,6 @@
 import { StopEditingParams } from './useEditorManager'
 import { Column } from '../columnGrid/types'
-import { ApiRef } from "../api/types"
+import { ApiRef } from '../api/types'
 
 export interface EditorProps {
 	value: string

@@ -13,7 +13,7 @@ import { ApiRef } from '../api/types/apiRef'
 import { CELL_BEGIN_EDITING, CELL_STOP_EDITING } from '../api/eventConstants'
 import clsx from 'clsx'
 import { EditorManagerApi } from '../api/types'
-import { useLogger } from "../logger"
+import { useLogger } from '../logger'
 
 export interface StopEditingParams {
 	/** @default true **/
@@ -257,7 +257,7 @@ export function useEditorManager<TRow>({ onCellChange, apiRef, initialised }: Ed
 				},
 				stopEditing,
 				validatorHook: column.validatorHook,
-				apiRef
+				apiRef,
 			}
 
 			const editor = getEditor(row as TRow, column, editorProps)

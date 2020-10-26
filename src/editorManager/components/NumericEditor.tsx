@@ -1,7 +1,8 @@
 import React, {
 	CSSProperties,
 	forwardRef,
-	useCallback, useEffect,
+	useCallback,
+	useEffect,
 	useImperativeHandle,
 	useMemo,
 	useState,
@@ -9,9 +10,9 @@ import React, {
 import { EditorProps } from '../editorProps'
 import { Popover, TextareaAutosize, TextField } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles'
-import { handleEditorKeydown } from "../utils/handleEditorKeydown"
-import clsx from "clsx";
-import { GRID_RESIZE, useApiEventHandler } from "../../api"
+import { handleEditorKeydown } from '../utils/handleEditorKeydown'
+import clsx from 'clsx'
+import { GRID_RESIZE, useApiEventHandler } from '../../api'
 
 const useStyles = makeStyles(() => ({
 	input: {
@@ -29,7 +30,18 @@ const useStyles = makeStyles(() => ({
 }))
 
 export const NumericEditor = forwardRef(
-	({ value, stopEditing, anchorRef, maxLength, validatorHook, additionalProps, apiRef }: EditorProps, componentRef) => {
+	(
+		{
+			value,
+			stopEditing,
+			anchorRef,
+			maxLength,
+			validatorHook,
+			additionalProps,
+			apiRef,
+		}: EditorProps,
+		componentRef,
+	) => {
 		const classes = useStyles()
 		const [editingValue, setEditingValue] = useState<string>(
 			isNaN(Number(value)) ? '0' : String(value),
@@ -45,7 +57,7 @@ export const NumericEditor = forwardRef(
 			componentRef,
 			() => ({
 				getValue: () => {
-					return editingValue === "" ? 0 : parseFloat(editingValue)
+					return editingValue === '' ? 0 : parseFloat(editingValue)
 				},
 			}),
 			[editingValue],
@@ -75,7 +87,7 @@ export const NumericEditor = forwardRef(
 			ref.selectionEnd = editingValue.toString().length
 		}, [])
 
-		function onEditorPortalClose(event: unknown, reason:'backdropClick' | 'escapeKeyDown') {
+		function onEditorPortalClose(event: unknown, reason: 'backdropClick' | 'escapeKeyDown') {
 			//Only allow to cancel if its invalid
 			if (!isValidValue) {
 				return stopEditing({ save: false })
@@ -116,7 +128,7 @@ export const NumericEditor = forwardRef(
 					}}
 				>
 					<TextareaAutosize
-						{...additionalProps?.componentProps as React.HTMLAttributes<any>}
+						{...(additionalProps?.componentProps as React.HTMLAttributes<any>)}
 						id={'apollo-textarea'}
 						value={editingValue}
 						ref={onTextAreaResizeMount}

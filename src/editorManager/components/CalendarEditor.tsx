@@ -1,14 +1,14 @@
 import React, { forwardRef, useEffect, useImperativeHandle, useRef, useState } from 'react'
 import { EditorProps } from '../editorProps'
 import { Popper } from '@material-ui/core'
-import ReactDatePicker, { ReactDatePickerProps } from "react-datepicker";
+import ReactDatePicker, { ReactDatePickerProps } from 'react-datepicker'
 import dayjs from 'dayjs'
 import { makeStyles } from '@material-ui/core/styles'
-import clsx from "clsx";
+import clsx from 'clsx'
 
 const useStyles = makeStyles(theme => ({
 	root: {
-		zIndex: 999
+		zIndex: 999,
 	},
 	calendarContainer: {
 		border: 'none',
@@ -97,9 +97,15 @@ export const CalendarEditor = forwardRef(
 		}, [state])
 
 		return (
-			<Popper open id={'apollo-calendar'} anchorEl={anchorRef} placement={'right-start'} className={clsx(classes.root, additionalProps?.className)}>
+			<Popper
+				open
+				id={'apollo-calendar'}
+				anchorEl={anchorRef}
+				placement={'right-start'}
+				className={clsx(classes.root, additionalProps?.className)}
+			>
 				<ReactDatePicker
-					{...additionalProps?.componentProps as ReactDatePickerProps}
+					{...(additionalProps?.componentProps as ReactDatePickerProps)}
 					id={'apollo-calendar'}
 					autoFocus
 					calendarClassName={classes.calendarContainer}

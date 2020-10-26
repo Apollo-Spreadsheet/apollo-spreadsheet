@@ -78,7 +78,7 @@ export class DummyBuffer {
 			style: {
 				...parent.style,
 				...style,
-			}
+			},
 		} as DummyCell
 	}
 

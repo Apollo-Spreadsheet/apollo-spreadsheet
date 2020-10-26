@@ -1,10 +1,10 @@
-import { Row } from "../../types"
-import { GridCell } from "../../gridWrapper/interfaces"
+import { Row } from '../../types'
+import { GridCell } from '../../gridWrapper/interfaces'
 
 /**
  * The Row API interface that is available in the grid [[apiRef]].
  */
-export interface RowApi{
+export interface RowApi {
 	/**
 	 * Returns the underlying cells data
 	 */
@@ -36,7 +36,10 @@ export interface RowApi{
 	getRowById: (id: string) => Row | undefined
 	getRowIndex: (id: string) => number
 
-	getRowsWithFilter: (predicate: (value: Row, index: number, array: Row[]) => unknown, thisArg?: any) => Row[]
+	getRowsWithFilter: (
+		predicate: (value: Row, index: number, array: Row[]) => unknown,
+		thisArg?: any,
+	) => Row[]
 
 	updateRows: (rows: Row[]) => void
 }

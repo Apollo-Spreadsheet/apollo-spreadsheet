@@ -9,7 +9,7 @@ import { DATA_CHANGED, ROW_SELECTION_CHANGE, ROWS_CHANGED } from '../api/eventCo
 import { createData } from './createData'
 import { Row } from '../types'
 import { RowApi } from '../api/types'
-import { useLogger } from "../logger";
+import { useLogger } from '../logger'
 
 interface Props {
 	rows: Row[]
@@ -38,7 +38,9 @@ export function useData({ rows, columns, selection, initialised, apiRef }: Props
 			})
 
 			if (!updatedData) {
-				return logger.error('No data has been returned from createData, please review the dependencies')
+				return logger.error(
+					'No data has been returned from createData, please review the dependencies',
+				)
 			}
 
 			cells.current = updatedData

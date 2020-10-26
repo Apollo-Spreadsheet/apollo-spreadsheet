@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect } from 'react'
 import { ApiRef } from '../api/types/apiRef'
-import { CELL_CLICK, CELL_DOUBLE_CLICK, GRID_FOCUS_OUT } from "../api/eventConstants"
-import { useLogger } from "../logger";
+import { CELL_CLICK, CELL_DOUBLE_CLICK, GRID_FOCUS_OUT } from '../api/eventConstants'
+import { useLogger } from '../logger'
 
 export function useEvents(gridRootRef: React.RefObject<HTMLDivElement>, apiRef: ApiRef) {
 	const logger = useLogger('useEvents')

@@ -1,6 +1,6 @@
-import { useEffect  } from 'react'
+import { useEffect } from 'react'
 import { ApiRef } from './types/apiRef'
-import { useLogger } from "../logger";
+import { useLogger } from '../logger'
 
 export function useApiEventHandler(
 	apiRef: ApiRef,

@@ -1,8 +1,8 @@
-import React, { useCallback, useEffect, useState } from "react"
+import React, { useCallback, useEffect, useState } from 'react'
 import { useApiExtends } from './useApiExtends'
 import { ApiRef } from './types/apiRef'
-import { GridTheme } from "../types"
-import { useLogger } from "../logger"
+import { GridTheme } from '../types'
+import { useLogger } from '../logger'
 
 /**
  * Initializes a new api instance
@@ -12,7 +12,7 @@ import { useLogger } from "../logger"
 export function useApiFactory(
 	gridRootRef: React.RefObject<HTMLDivElement>,
 	apiRef: ApiRef,
-	theme?: GridTheme
+	theme?: GridTheme,
 ): boolean {
 	const logger = useLogger('useApiFactory')
 	const [initialised, setInit] = useState(false)

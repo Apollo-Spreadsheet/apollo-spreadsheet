@@ -1,7 +1,7 @@
-import { useEffect } from "react"
-import { ApiRef } from "./types/apiRef"
-import { GridApi } from "./types/gridApi"
-import { useLogger } from "../logger"
+import { useEffect } from 'react'
+import { ApiRef } from './types/apiRef'
+import { GridApi } from './types/gridApi'
+import { useLogger } from '../logger'
 
 export function useApiExtends(apiRef: ApiRef, apiMethods: Partial<GridApi>, apiName: string) {
 	const logger = useLogger('useApiExtends')

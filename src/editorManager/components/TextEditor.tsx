@@ -10,9 +10,9 @@ import React, {
 import { Popover, TextareaAutosize } from '@material-ui/core'
 import { EditorProps } from '../editorProps'
 import { makeStyles } from '@material-ui/core/styles'
-import { handleEditorKeydown } from "../utils/handleEditorKeydown"
-import clsx from "clsx"
-import { GRID_RESIZE, useApiEventHandler } from "../../api"
+import { handleEditorKeydown } from '../utils/handleEditorKeydown'
+import clsx from 'clsx'
+import { GRID_RESIZE, useApiEventHandler } from '../../api'
 
 const useStyles = makeStyles(() => ({
 	input: {
@@ -29,7 +29,18 @@ const useStyles = makeStyles(() => ({
 	},
 }))
 export const TextEditor = forwardRef(
-	({ value, stopEditing, anchorRef, maxLength, validatorHook, additionalProps, apiRef }: EditorProps, componentRef) => {
+	(
+		{
+			value,
+			stopEditing,
+			anchorRef,
+			maxLength,
+			validatorHook,
+			additionalProps,
+			apiRef,
+		}: EditorProps,
+		componentRef,
+	) => {
 		const classes = useStyles()
 		const [editingValue, setEditingValue] = useState(String(value))
 
@@ -55,7 +66,6 @@ export const TextEditor = forwardRef(
 			}
 			return validatorHook(editingValue)
 		}, [editingValue])
-
 
 		const onTextAreaResizeMount = useCallback((ref: HTMLTextAreaElement | null) => {
 			if (!ref) {
@@ -96,7 +106,7 @@ export const TextEditor = forwardRef(
 						zIndex: 10,
 						border: isValidValue ? anchorStyle.border : '1px solid red',
 						borderRadius: 0,
-						background: 'transparent'
+						background: 'transparent',
 					},
 				}}
 			>
@@ -108,7 +118,7 @@ export const TextEditor = forwardRef(
 					}}
 				>
 					<TextareaAutosize
-						{...additionalProps?.componentProps as React.HTMLAttributes<any>}
+						{...(additionalProps?.componentProps as React.HTMLAttributes<any>)}
 						id={'apollo-textarea'}
 						value={editingValue}
 						ref={onTextAreaResizeMount}
@@ -123,7 +133,6 @@ export const TextEditor = forwardRef(
 							minHeight: anchorStyle.height,
 							...additionalProps?.style,
 						}}
-
 					/>
 				</div>
 			</Popover>

@@ -35,10 +35,10 @@ export function createLoggerInstance(name: string, logLevel: string): Logger {
 		if (i >= index) {
 			logger[method] = (...args: any[]) => {
 				const [message, ...rest] = args
-				if (typeof message === 'object' || Array.isArray(message)){
-					console[method](`${name}%c: `,  'color:white', message, ...rest)
+				if (typeof message === 'object' || Array.isArray(message)) {
+					console[method](`${name}%c: `, 'color:white', message, ...rest)
 				} else {
-					console[method](`${name}%c: ${message}`,  'color:white', ...rest)
+					console[method](`${name}%c: ${message}`, 'color:white', ...rest)
 				}
 			}
 		} else {

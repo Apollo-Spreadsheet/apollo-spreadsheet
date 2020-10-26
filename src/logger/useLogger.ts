@@ -4,7 +4,6 @@ import { createLoggerInstance, localStorageAvailable } from './utils'
 
 const forceDebug = localStorageAvailable() && window.localStorage.getItem('APOLLO_DEBUG') != null
 
-
 export function loggerFactory(
 	name: string,
 	logLevel: string | boolean = process.env.NODE_ENV === 'production' ? 'error' : 'warn',

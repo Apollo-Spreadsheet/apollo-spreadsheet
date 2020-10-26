@@ -386,7 +386,9 @@ export function useNavigation({
 					const selector = `[aria-colIndex='${colIndex}'][data-rowIndex='${rowIndex}'][role='cell']`
 					const target = apiRef.current.rootElementRef?.current?.querySelector(selector)
 					if (!target) {
-						return logger.error('Cell dom element not found on delayEditingOpen debounce with selector: ' + selector)
+						return logger.error(
+							'Cell dom element not found on delayEditingOpen debounce with selector: ' + selector,
+						)
 					}
 
 					apiRef.current.beginEditing({

@@ -1,7 +1,7 @@
-import { MergeCell } from "./interfaces/merge-cell"
+import { MergeCell } from './interfaces/merge-cell'
 
 export interface MergeGroup {
-  [rowIndex: number]: number[]
+	[rowIndex: number]: number[]
 }
 
 /**
@@ -10,20 +10,20 @@ export interface MergeGroup {
  * @param data
  */
 export function createMergedGroups(data: MergeCell[]) {
-  const groups: MergeGroup = []
-  for (const e of data) {
-    const childRows: number[] = []
-    const ranges = {
-      rowStart: e.rowIndex + 1,
-      rowEnd: e.rowIndex + Math.max(0, e.rowSpan - 1),
-      colStart: e.colIndex,
-      colEnd: e.colIndex + Math.max(0, e.colSpan - 1),
-    }
+	const groups: MergeGroup = []
+	for (const e of data) {
+		const childRows: number[] = []
+		const ranges = {
+			rowStart: e.rowIndex + 1,
+			rowEnd: e.rowIndex + Math.max(0, e.rowSpan - 1),
+			colStart: e.colIndex,
+			colEnd: e.colIndex + Math.max(0, e.colSpan - 1),
+		}
 
-    for (let i = ranges.rowStart; i <= ranges.rowEnd; i++) {
-      childRows.push(i)
-    }
-    groups[e.rowIndex] = childRows
-  }
-  return groups
+		for (let i = ranges.rowStart; i <= ranges.rowEnd; i++) {
+			childRows.push(i)
+		}
+		groups[e.rowIndex] = childRows
+	}
+	return groups
 }

@@ -7,7 +7,7 @@ import { IconButton, Tooltip } from '@material-ui/core'
 import DeleteIcon from '@material-ui/icons/Delete'
 import { Row } from '../types'
 import { RowSelectionApi } from '../api/types'
-import { useLogger } from "../logger"
+import { useLogger } from '../logger'
 
 export const ROW_SELECTION_HEADER_ID = '__selection__'
 

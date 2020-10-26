@@ -239,7 +239,14 @@ export const ColumnGrid = React.memo(
 					/>
 				)
 			},
-			[props.data, props.apiRef, props.width, headersSortDisabledMap, props.disableSort, props.coords],
+			[
+				props.data,
+				props.apiRef,
+				props.width,
+				headersSortDisabledMap,
+				props.disableSort,
+				props.coords,
+			],
 		)
 
 		const rowCount = useMemo(() => {

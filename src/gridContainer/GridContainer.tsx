@@ -1,14 +1,14 @@
 import React, { useCallback, useRef } from 'react'
 import { StretchMode } from '../types/stretch-mode.enum'
 import { scrollbarWidth } from '@xobotyi/scrollbar-width'
-import { AutoSizer, OnScrollParams, ScrollSync, Size } from "react-virtualized"
+import { AutoSizer, OnScrollParams, ScrollSync, Size } from 'react-virtualized'
 import { createColumnWidthsMapping } from '../columnGrid/utils/createColumnWidthsMapping'
 import { ColumnWidthRecord } from '../columnGrid/useHeaders'
 import { makeStyles } from '@material-ui/core/styles'
 import clsx from 'clsx'
-import { useLogger } from "../logger"
-import { GRID_RESIZE } from "../api"
-import { GridContainerProps } from "./GridContainerProps"
+import { useLogger } from '../logger'
+import { GRID_RESIZE } from '../api'
+import { GridContainerProps } from './GridContainerProps'
 
 const useStyles = makeStyles(() => ({
 	root: {
@@ -16,7 +16,6 @@ const useStyles = makeStyles(() => ({
 		width: '100%',
 	},
 }))
-
 
 export const GridContainer = React.memo(
 	({
@@ -45,9 +44,7 @@ export const GridContainer = React.memo(
 		 * the fixed width from our mapping or fetches directly from react-virtualize
 		 * @param getColumnWidth
 		 */
-		const getColumnWidthHelper = useCallback(({ index}: {
-			index: number
-		}) => {
+		const getColumnWidthHelper = useCallback(({ index }: { index: number }) => {
 			const value = columnWidths.current.mapping[index]
 			return isNaN(value) ? minColumnWidth : value
 		}, [])
@@ -65,15 +62,17 @@ export const GridContainer = React.memo(
 				totalSize,
 				mapping,
 			}
-
 		}
 
-		const onResize = useCallback((info: Size) => {
-			if (!apiRef.current.isInitialised){
-				return
-			}
-			apiRef.current.dispatchEvent(GRID_RESIZE, info)
-		}, [apiRef])
+		const onResize = useCallback(
+			(info: Size) => {
+				if (!apiRef.current.isInitialised) {
+					return
+				}
+				apiRef.current.dispatchEvent(GRID_RESIZE, info)
+			},
+			[apiRef],
+		)
 
 		function render(containerWidth: number, containerHeight = 500) {
 			const normalizedContainerWidth =
@@ -89,7 +88,7 @@ export const GridContainer = React.memo(
 				stretchMode,
 				normalizedContainerWidth,
 				columnWidths: columnWidths.current,
-				hasHorizontalScroll: stretchMode === StretchMode.None
+				hasHorizontalScroll: stretchMode === StretchMode.None,
 			})
 
 			if (stretchMode !== StretchMode.None) {
