@@ -6,6 +6,8 @@
 OR
 `yarn add apollo-spreadsheet`
 
+[Apollo in NPM](https://www.npmjs.com/package/apollo-spreadsheet)
+
 ## Motivation
 I have been dealing with large data sets views in the past two years, the most common "need" was a tabular plugin that offer a mix of excel and table.
 There are no plugin that solves the exactly same problem that ApolloSS solves, especially for free
