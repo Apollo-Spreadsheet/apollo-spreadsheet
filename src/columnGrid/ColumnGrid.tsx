@@ -96,7 +96,7 @@ export const ColumnGrid = React.memo(
 				}
 			}
 			return mapping
-		}, [props.data, props.disableSort])
+		}, [props.data, props.disableSort, props.coords])
 
 		useImperativeHandle(componentRef, () => ({
 			recomputeGridSize: () => {
@@ -145,7 +145,7 @@ export const ColumnGrid = React.memo(
 			const theme = props.apiRef.current.theme
 			const isSortDisabled = headersSortDisabledMap[cell.id] ?? true //in case its not found, we set to true
 			const sort = props.apiRef.current.getSortState()
-			const coords = props.apiRef.current.getSelectedCoords()
+			const coords = props.coords
 			const sortComponent =
 				isSortDisabled || cell.accessor !== sort?.accessor ? null : (
 					<div className={classes.sort}>{getSortIndicatorComponent(sort?.order)}</div>
@@ -239,7 +239,7 @@ export const ColumnGrid = React.memo(
 					/>
 				)
 			},
-			[props.data, props.apiRef, props.width, headersSortDisabledMap, props.disableSort],
+			[props.data, props.apiRef, props.width, headersSortDisabledMap, props.disableSort, props.coords],
 		)
 
 		const rowCount = useMemo(() => {

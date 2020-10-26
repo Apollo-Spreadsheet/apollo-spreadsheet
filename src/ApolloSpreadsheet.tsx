@@ -19,7 +19,7 @@ import { useApiEventHandler } from './api/useApiEventHandler'
 import { CELL_CLICK, CELL_DOUBLE_CLICK } from './api/eventConstants'
 import { ApolloSpreadsheetProps } from './ApolloSpreadsheetProps'
 import { useSort } from './sort/useSort'
-import { useLogger } from "./logger";
+import { useLogger } from "./logger"
 
 const useStyles = makeStyles(() => ({
 	root: {
@@ -137,6 +137,7 @@ export const ApolloSpreadSheet = forwardRef(
 							<div id="apollo-grids" className={props.className}>
 								<ColumnGrid
 									data={gridHeaders}
+									coords={coords}
 									columns={columns}
 									width={width}
 									defaultColumnWidth={minColumnWidth}

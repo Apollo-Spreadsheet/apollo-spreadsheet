@@ -17,7 +17,7 @@ export interface ColumnGridProps {
 	columns: Column[]
 	nestedHeaders?: Array<NestedHeader[]>
 	minRowHeight: number
-
+	coords: NavigationCoords
 	defaultColumnWidth: number
 	getColumnWidth: ({ index }: { index: number }) => number
 
