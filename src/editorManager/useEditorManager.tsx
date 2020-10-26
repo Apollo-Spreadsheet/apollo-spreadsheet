@@ -105,7 +105,7 @@ export function useEditorManager({ onCellChange, apiRef }: EditorManagerProps) {
 					return setEditorNode(null)
 				}
 
-				if (valueEqual(newValue, editorState.initialValue)) {
+				if (!valueEqual(newValue, editorState.initialValue)) {
 					const row = apiRef.current.getRowAt(editorState.rowIndex)
 					const column = apiRef.current.getColumnAt(editorState.colIndex)
 					if (!row) {
