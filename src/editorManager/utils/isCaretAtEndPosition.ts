@@ -3,4 +3,5 @@
  * @param targetPos
  * @param textLength
  */
-export const isCaretAtEndPosition = (targetPos: number, textLength: number) => targetPos === textLength
+export const isCaretAtEndPosition = (targetPos: number, textLength: number) =>
+	targetPos === textLength

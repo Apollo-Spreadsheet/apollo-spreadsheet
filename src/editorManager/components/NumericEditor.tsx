@@ -1,4 +1,11 @@
-import React, { CSSProperties, forwardRef, useCallback, useImperativeHandle, useMemo, useState } from 'react'
+import React, {
+	CSSProperties,
+	forwardRef,
+	useCallback,
+	useImperativeHandle,
+	useMemo,
+	useState,
+} from 'react'
 import { EditorProps } from '../editorProps'
 import { Popover, TextareaAutosize } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles'
@@ -22,9 +29,22 @@ const useStyles = makeStyles(() => ({
 }))
 
 export const NumericEditor = forwardRef(
-	({ value, stopEditing, anchorRef, maxLength, validatorHook, additionalProps, apiRef }: EditorProps, componentRef) => {
+	(
+		{
+			value,
+			stopEditing,
+			anchorRef,
+			maxLength,
+			validatorHook,
+			additionalProps,
+			apiRef,
+		}: EditorProps,
+		componentRef,
+	) => {
 		const classes = useStyles()
-		const [editingValue, setEditingValue] = useState<string>(isNaN(Number(value)) ? '0' : String(value))
+		const [editingValue, setEditingValue] = useState<string>(
+			isNaN(Number(value)) ? '0' : String(value),
+		)
 
 		const onAnchorResize = useCallback(() => {
 			stopEditing()
@@ -56,15 +76,18 @@ export const NumericEditor = forwardRef(
 			return !isNaN(Number(editingValue))
 		}, [editingValue, validatorHook])
 
-		const onTextAreaResizeMount = useCallback((ref: HTMLTextAreaElement | null) => {
-			if (!ref) {
-				return
-			}
-			// eslint-disable-next-line no-param-reassign
-			ref.selectionStart = editingValue.toString().length
-			// eslint-disable-next-line no-param-reassign
-			ref.selectionEnd = editingValue.toString().length
-		}, [editingValue])
+		const onTextAreaResizeMount = useCallback(
+			(ref: HTMLTextAreaElement | null) => {
+				if (!ref) {
+					return
+				}
+				// eslint-disable-next-line no-param-reassign
+				ref.selectionStart = editingValue.toString().length
+				// eslint-disable-next-line no-param-reassign
+				ref.selectionEnd = editingValue.toString().length
+			},
+			[editingValue],
+		)
 
 		function onEditorPortalClose(event: unknown, reason: 'backdropClick' | 'escapeKeyDown') {
 			//Only allow to cancel if its invalid

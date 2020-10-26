@@ -15,110 +15,115 @@ const useStyles = makeStyles(() => ({
 	},
 }))
 
-export const CalendarEditor = forwardRef(({ stopEditing, anchorRef, value, additionalProps }: EditorProps, componentRef) => {
-	const classes = useStyles()
-	const [state, setState] = useState<{ value: dayjs.Dayjs; close: boolean }>({
-		value: dayjs(value),
-		close: false,
-	})
-	//const popperPlacement = useRef<string>('right-start')
+export const CalendarEditor = forwardRef(
+	({ stopEditing, anchorRef, value, additionalProps }: EditorProps, componentRef) => {
+		const classes = useStyles()
+		const [state, setState] = useState<{ value: dayjs.Dayjs; close: boolean }>({
+			value: dayjs(value),
+			close: false,
+		})
+		//const popperPlacement = useRef<string>('right-start')
 
-	useImperativeHandle(componentRef, () => ({
-		getValue: () => dayjs(state.value).format('YYYY-MM-DD'),
-	}))
+		useImperativeHandle(componentRef, () => ({
+			getValue: () => dayjs(state.value).format('YYYY-MM-DD'),
+		}))
 
-	//Close state is a flag indicating whether to stop editing (for click event)
-	useEffect(() => {
-		if (state.close) {
-			stopEditing({ save: true })
-		}
-	}, [state.close, stopEditing])
+		//Close state is a flag indicating whether to stop editing (for click event)
+		useEffect(() => {
+			if (state.close) {
+				stopEditing({ save: true })
+			}
+		}, [state.close, stopEditing])
 
-	const onKeyDown = useCallback((e: KeyboardEvent) => {
-		if (e.key === 'Tab') {
-			e.preventDefault()
-			e.stopImmediatePropagation()
-		}
+		const onKeyDown = useCallback(
+			(e: KeyboardEvent) => {
+				if (e.key === 'Tab') {
+					e.preventDefault()
+					e.stopImmediatePropagation()
+				}
 
-		if (e.key === 'ArrowUp') {
-			e.preventDefault()
-			setState({ ...state, value: state.value.subtract(1, 'week') })
-		}
+				if (e.key === 'ArrowUp') {
+					e.preventDefault()
+					setState({ ...state, value: state.value.subtract(1, 'week') })
+				}
 
-		if (e.key === 'ArrowDown') {
-			e.preventDefault()
-			setState({ ...state, value: state.value.add(1, 'week') })
-		}
-		if (e.key === 'ArrowRight') {
-			e.preventDefault()
-			setState({ ...state, value: state.value.add(1, 'day') })
-		}
-		if (e.key === 'ArrowLeft') {
-			e.preventDefault()
-			setState({ ...state, value: state.value.subtract(1, 'day') })
-		}
+				if (e.key === 'ArrowDown') {
+					e.preventDefault()
+					setState({ ...state, value: state.value.add(1, 'week') })
+				}
+				if (e.key === 'ArrowRight') {
+					e.preventDefault()
+					setState({ ...state, value: state.value.add(1, 'day') })
+				}
+				if (e.key === 'ArrowLeft') {
+					e.preventDefault()
+					setState({ ...state, value: state.value.subtract(1, 'day') })
+				}
 
-		if (e.key === 'Enter') {
-			e.preventDefault()
-			stopEditing({ save: true })
-		}
+				if (e.key === 'Enter') {
+					e.preventDefault()
+					stopEditing({ save: true })
+				}
 
-		if (e.key === 'Escape') {
-			e.preventDefault()
-			stopEditing({ save: false })
-		}
+				if (e.key === 'Escape') {
+					e.preventDefault()
+					stopEditing({ save: false })
+				}
 
-		//Re-use this for second arms, might be very useful
-		// if (popperPlacement.current.startsWith('right') && e.key === 'ArrowRight') {
-		// 	e.preventDefault()
-		// 	e.stopImmediatePropagation()
-		// }
-		// if (popperPlacement.current.startsWith('left') && e.key === 'ArrowLeft') {
-		// 	e.preventDefault()
-		// 	e.stopImmediatePropagation()
-		// }
-		// if (popperPlacement.current.startsWith('right') && e.key === 'ArrowLeft') {
-		// 	e.preventDefault()
-		// 	e.stopImmediatePropagation()
-		// 	stopEditing(true)
-		// }
-		// if (popperPlacement.current.startsWith('left') && e.key === 'ArrowRight') {
-		// 	e.preventDefault()
-		// 	e.stopImmediatePropagation()
-		// 	stopEditing(true)
-		// }
-	}, [state, stopEditing])
+				//Re-use this for second arms, might be very useful
+				// if (popperPlacement.current.startsWith('right') && e.key === 'ArrowRight') {
+				// 	e.preventDefault()
+				// 	e.stopImmediatePropagation()
+				// }
+				// if (popperPlacement.current.startsWith('left') && e.key === 'ArrowLeft') {
+				// 	e.preventDefault()
+				// 	e.stopImmediatePropagation()
+				// }
+				// if (popperPlacement.current.startsWith('right') && e.key === 'ArrowLeft') {
+				// 	e.preventDefault()
+				// 	e.stopImmediatePropagation()
+				// 	stopEditing(true)
+				// }
+				// if (popperPlacement.current.startsWith('left') && e.key === 'ArrowRight') {
+				// 	e.preventDefault()
+				// 	e.stopImmediatePropagation()
+				// 	stopEditing(true)
+				// }
+			},
+			[state, stopEditing],
+		)
 
-	useEffect(() => {
-		document.addEventListener('keydown', onKeyDown)
-		return () => document.removeEventListener('keydown', onKeyDown)
-	}, [onKeyDown, state])
+		useEffect(() => {
+			document.addEventListener('keydown', onKeyDown)
+			return () => document.removeEventListener('keydown', onKeyDown)
+		}, [onKeyDown, state])
 
-	return (
-		<Popper
-			open
-			id={'apollo-calendar'}
-			anchorEl={anchorRef}
-			placement={'right-start'}
-			className={clsx(classes.root, additionalProps?.className)}
-		>
-			<ReactDatePicker
-				{...(additionalProps?.componentProps as ReactDatePickerProps)}
-				id={'apollo-calendar'}
-				autoFocus
-				calendarClassName={classes.calendarContainer}
-				showTimeInput={false}
-				showPopperArrow={false}
-				shouldCloseOnSelect
-				onClickOutside={() => stopEditing({ save: false })}
-				onChange={(date: Date) => {
-					setState({ value: dayjs(date), close: true })
-				}}
+		return (
+			<Popper
 				open
-				inline
-				selected={state.value.toDate()}
-				dateFormat="yyyy/MM/dd"
-			/>
-		</Popper>
-	)
-})
+				id={'apollo-calendar'}
+				anchorEl={anchorRef}
+				placement={'right-start'}
+				className={clsx(classes.root, additionalProps?.className)}
+			>
+				<ReactDatePicker
+					{...(additionalProps?.componentProps as ReactDatePickerProps)}
+					id={'apollo-calendar'}
+					autoFocus
+					calendarClassName={classes.calendarContainer}
+					showTimeInput={false}
+					showPopperArrow={false}
+					shouldCloseOnSelect
+					onClickOutside={() => stopEditing({ save: false })}
+					onChange={(date: Date) => {
+						setState({ value: dayjs(date), close: true })
+					}}
+					open
+					inline
+					selected={state.value.toDate()}
+					dateFormat="yyyy/MM/dd"
+				/>
+			</Popper>
+		)
+	},
+)

@@ -134,7 +134,12 @@ export const ColumnGrid = React.memo((props: ColumnGridProps) => {
 
 			let headerClassName = ''
 			if (!cell.dummy && cell.isNested) {
-				headerClassName = clsx(classes.defaultHeader, theme?.headerClass, theme?.nestedHeaderClass, cell.className)
+				headerClassName = clsx(
+					classes.defaultHeader,
+					theme?.headerClass,
+					theme?.nestedHeaderClass,
+					cell.className,
+				)
 			}
 
 			if (!cell.dummy && !cell.isNested) {
@@ -173,7 +178,10 @@ export const ColumnGrid = React.memo((props: ColumnGridProps) => {
 					}}
 				>
 					{/* eslint-disable-next-line jsx-a11y/click-events-have-key-events */}
-					<span onClick={isSortDisabled ? undefined : () => props.apiRef.current.toggleSort(cell.id)} className={classes.contentSpan}>
+					<span
+						onClick={isSortDisabled ? undefined : () => props.apiRef.current.toggleSort(cell.id)}
+						className={classes.contentSpan}
+					>
 						{children}
 						{sortComponent}
 					</span>

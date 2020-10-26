@@ -20,12 +20,7 @@ export interface MergedCellsHookProps {
  * return util functions
  * @param data
  */
-export function useMergeCells({
-	mergeCells,
-	rowCount,
-	columnCount,
-	apiRef
-}: MergedCellsHookProps) {
+export function useMergeCells({ mergeCells, rowCount, columnCount, apiRef }: MergedCellsHookProps) {
 	const logger = useLogger('useMergeCells')
 	const mergedPositions = useRef<MergePosition[]>([])
 	const mergeGroups = useRef<MergeGroup>({})
@@ -68,9 +63,11 @@ export function useMergeCells({
 	 * Returns the col/row span of the given colIndex/rowIndex
 	 * @param coords
 	 */
-	const getSpanProperties = useCallback((coords: NavigationCoords) => mergeData.current.find(
-			e => e.rowIndex === coords.rowIndex && e.colIndex === coords.colIndex,
-		), [])
+	const getSpanProperties = useCallback(
+		(coords: NavigationCoords) =>
+			mergeData.current.find(e => e.rowIndex === coords.rowIndex && e.colIndex === coords.colIndex),
+		[],
+	)
 
 	const getMergedData = useCallback(() => mergeData.current, [])
 	const getMergedGroups = useCallback(() => mergeGroups.current, [])

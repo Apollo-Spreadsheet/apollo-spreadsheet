@@ -45,7 +45,13 @@ export function useHeaders({ columns, nestedHeaders, apiRef }: Props): HeadersSt
 	const [gridHeaders, setGridHeaders] = useState<GridHeader[][]>([[]])
 
 	const createGridHeaders = useCallback(
-		({ columns: paramColumns, nestedHeaders: paramNestedHeaders }: { columns: Column[]; nestedHeaders?: Array<NestedHeader[]> }) => {
+		({
+			columns: paramColumns,
+			nestedHeaders: paramNestedHeaders,
+		}: {
+			columns: Column[]
+			nestedHeaders?: Array<NestedHeader[]>
+		}) => {
 			logger.debug('Creating grid headers.')
 			//Detect duplicated
 			const duplicateColumns = paramColumns.filter((column, i) => {
@@ -53,7 +59,11 @@ export function useHeaders({ columns, nestedHeaders, apiRef }: Props): HeadersSt
 			})
 
 			if (duplicateColumns.length) {
-				throw new Error(`Duplicate columns were found with ids: "${duplicateColumns.map(d => d.id).join(', ')}" in the columns array above`)
+				throw new Error(
+					`Duplicate columns were found with ids: "${duplicateColumns
+						.map(d => d.id)
+						.join(', ')}" in the columns array above`,
+				)
 			}
 
 			//Validate % width to prevent overflow
@@ -65,7 +75,9 @@ export function useHeaders({ columns, nestedHeaders, apiRef }: Props): HeadersSt
 			}, 0)
 
 			if (totalWidth > 100) {
-				throw new Error(`Column widths cannot pass 100%, please review your configuration. Received ${totalWidth}% out of 100%`)
+				throw new Error(
+					`Column widths cannot pass 100%, please review your configuration. Received ${totalWidth}% out of 100%`,
+				)
 			}
 
 			//Check and maybe validate if needed
@@ -84,7 +96,9 @@ export function useHeaders({ columns, nestedHeaders, apiRef }: Props): HeadersSt
 				paramNestedHeaders.forEach((row, i) => {
 					const spanSize = row.reduce((acc, e) => acc + (e.colSpan ?? 0), 0)
 					if (spanSize > columns.length) {
-						throw new Error(`Span size is bigger than the main headers size, please review the configuration at row: ${i}`)
+						throw new Error(
+							`Span size is bigger than the main headers size, please review the configuration at row: ${i}`,
+						)
 					}
 				})
 

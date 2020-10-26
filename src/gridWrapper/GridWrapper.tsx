@@ -1,10 +1,4 @@
-import React, {
-	CSSProperties,
-	useCallback,
-	useEffect,
-	useMemo,
-	useRef,
-} from 'react'
+import React, { CSSProperties, useCallback, useEffect, useMemo, useRef } from 'react'
 import { CellMeasurerCache, Grid, SectionRenderedParams } from 'react-virtualized'
 import CellMeasurer from '../cellMeasurer/CellMeasureWrapper'
 import { NavigationCoords } from '../navigation/types'
@@ -98,12 +92,12 @@ const GridWrapper = React.memo((props: GridWrapperProps) => {
 		if (mergeInfo) {
 			return [mergeInfo.rowIndex]
 		}
-			const mergedPosition = props.mergedPositions.find(e => e.row === props.coords.rowIndex)
-			//In case the given row is merged, build the path with all existing merge cells
-			if (mergedPosition) {
-				return props.apiRef.current.getMergedPath(props.coords.rowIndex)
-			}
-				return [props.coords.rowIndex]
+		const mergedPosition = props.mergedPositions.find(e => e.row === props.coords.rowIndex)
+		//In case the given row is merged, build the path with all existing merge cells
+		if (mergedPosition) {
+			return props.apiRef.current.getMergedPath(props.coords.rowIndex)
+		}
+		return [props.coords.rowIndex]
 	}, [props.coords, props.mergeCells, props.mergedPositions, props.apiRef])
 
 	/**
@@ -111,103 +105,118 @@ const GridWrapper = React.memo((props: GridWrapperProps) => {
 	 * @param rowIndex
 	 * @param colIndex
 	 */
-	const isActiveRow = useCallback(({ rowIndex, colIndex }: NavigationCoords) => {
-		if (activeMergePath[0] === rowIndex && activeMergePath.length === 1) {
-			return true
-		}
-
-		//We have the parent and the merged
-		if (activeMergePath.length > 1) {
-			if (rowIndex === activeMergePath[0]) {
-				const mergeInfo = Object.values(props.mergeCells ?? ([] as MergeCell[]))
-				const columnWithMerge = mergeInfo.reduce((acc, e) => {
-					if (!acc.some(index => index === e.colIndex)) {
-						acc.push(e.colIndex)
-					}
-					return acc
-				}, [] as number[])
-				return columnWithMerge.includes(colIndex)
-			}
-
-			//Second index means the current row with the highlight
-			if (rowIndex === activeMergePath[1]) {
+	const isActiveRow = useCallback(
+		({ rowIndex, colIndex }: NavigationCoords) => {
+			if (activeMergePath[0] === rowIndex && activeMergePath.length === 1) {
 				return true
 			}
-		}
 
-		return false
-	}, [activeMergePath, props.mergeCells])
+			//We have the parent and the merged
+			if (activeMergePath.length > 1) {
+				if (rowIndex === activeMergePath[0]) {
+					const mergeInfo = Object.values(props.mergeCells ?? ([] as MergeCell[]))
+					const columnWithMerge = mergeInfo.reduce((acc, e) => {
+						if (!acc.some(index => index === e.colIndex)) {
+							acc.push(e.colIndex)
+						}
+						return acc
+					}, [] as number[])
+					return columnWithMerge.includes(colIndex)
+				}
 
-	const renderCell = useCallback(({ style, cell, ref, rowIndex, columnIndex }) => {
-		const isSelected = rowIndex === props.coords.rowIndex && columnIndex === props.coords.colIndex
-		const navigationDisabled = props.columns[0][columnIndex]?.disableNavigation
-		const column = props.columns[columnIndex]
-		//Dummy zIndex is 0 and a spanned cell has 5 but a normal cell has 1
-		const defaultZIndex = cell.dummy ? 0 : 1
-		const zIndex = (cell.rowSpan || cell.colSpan) && !cell.dummy ? 5 : defaultZIndex
-		const isRowActive = isActiveRow({ rowIndex, colIndex: columnIndex })
-		const { theme } = props.apiRef.current
-		const cellStyle: CSSProperties = { ...style }
-		if (isSelected) {
-			//Ensure there are no other borders
-			cellStyle.borderLeft = '0px'
-			cellStyle.borderRight = '0px'
-			cellStyle.borderTop = '0px'
-			cellStyle.borderBottom = '0px'
-			cellStyle.border = props.highlightBorderColor
-				? `1px solid ${props.highlightBorderColor}`
-				: '1px solid blue'
-		} else if (!theme || (!theme.cellClass && !cell.dummy)) {
-			//Bind default border and clear other borders
+				//Second index means the current row with the highlight
+				if (rowIndex === activeMergePath[1]) {
+					return true
+				}
+			}
+
+			return false
+		},
+		[activeMergePath, props.mergeCells],
+	)
+
+	const renderCell = useCallback(
+		({ style, cell, ref, rowIndex, columnIndex }) => {
+			const isSelected = rowIndex === props.coords.rowIndex && columnIndex === props.coords.colIndex
+			const navigationDisabled = props.columns[0][columnIndex]?.disableNavigation
+			const column = props.columns[columnIndex]
+			//Dummy zIndex is 0 and a spanned cell has 5 but a normal cell has 1
+			const defaultZIndex = cell.dummy ? 0 : 1
+			const zIndex = (cell.rowSpan || cell.colSpan) && !cell.dummy ? 5 : defaultZIndex
+			const isRowActive = isActiveRow({ rowIndex, colIndex: columnIndex })
+			const { theme } = props.apiRef.current
+			const cellStyle: CSSProperties = { ...style }
+			if (isSelected) {
+				//Ensure there are no other borders
+				cellStyle.borderLeft = '0px'
+				cellStyle.borderRight = '0px'
+				cellStyle.borderTop = '0px'
+				cellStyle.borderBottom = '0px'
+				cellStyle.border = props.highlightBorderColor
+					? `1px solid ${props.highlightBorderColor}`
+					: '1px solid blue'
+			} else if (!theme || (!theme.cellClass && !cell.dummy)) {
+				//Bind default border and clear other borders
 				cellStyle.borderLeft = '0px'
 				cellStyle.borderRight = '0px'
 				cellStyle.borderTop = '0px'
 				cellStyle.borderBottom = '0px'
 				cellStyle.border = '1px solid rgb(204, 204, 204)'
-		}
-
-		/**
-		 * @todo We need to check if the row is a dummy but its parent dummy is not anymore visible (we need to pass the content to the last visible child)
-		 * e.:g
-		 * dummy 1 has a rowspan of total 3 but none of its parent are visible, so dummy 3 assume the children value and highlight
-		 * of the parent because there is none visible
-		 * */
-		let cellClassName = clsx(classes.cellDefaultStyle, theme?.cellClass, column.cellClassName)
-		if (isRowActive && !cell.dummy && theme?.currentRowClass) {
-			cellClassName = clsx(cellClassName, theme?.currentRowClass)
-		}
-
-		if (navigationDisabled && !cell.dummy && theme?.disabledCellClass) {
-			cellClassName = clsx(cellClassName, classes.disabledCell, theme?.disabledCellClass)
-		}
-
-		if (props.selection && props.selection.cellClassName) {
-			const row = props.apiRef.current.getRowAt(rowIndex)
-			const isRowSelected = props.apiRef.current.isRowSelected(row?.[props.selection.key])
-			if (isRowSelected) {
-				cellClassName = clsx(cellClassName, props.selection.cellClassName)
 			}
-		}
 
-		return (
-			<div
-				role={'cell'}
-				aria-colindex={columnIndex}
-				data-rowindex={rowIndex}
-				data-accessor={column.accessor}
-				data-dummy={cell.dummy}
-				className={cellClassName}
-				style={{
-					...cellStyle,
-					justifyContent: cell?.dummy ? 'top' : 'center',
-					zIndex,
-				}}
-				ref={ref}
-			>
-				{cell.value}
-			</div>
-		)
-	}, [classes, isActiveRow, props.apiRef, props.columns, props.coords.colIndex, props.coords.rowIndex, props.highlightBorderColor, props.selection])
+			/**
+			 * @todo We need to check if the row is a dummy but its parent dummy is not anymore visible (we need to pass the content to the last visible child)
+			 * e.:g
+			 * dummy 1 has a rowspan of total 3 but none of its parent are visible, so dummy 3 assume the children value and highlight
+			 * of the parent because there is none visible
+			 * */
+			let cellClassName = clsx(classes.cellDefaultStyle, theme?.cellClass, column.cellClassName)
+			if (isRowActive && !cell.dummy && theme?.currentRowClass) {
+				cellClassName = clsx(cellClassName, theme?.currentRowClass)
+			}
+
+			if (navigationDisabled && !cell.dummy && theme?.disabledCellClass) {
+				cellClassName = clsx(cellClassName, classes.disabledCell, theme?.disabledCellClass)
+			}
+
+			if (props.selection && props.selection.cellClassName) {
+				const row = props.apiRef.current.getRowAt(rowIndex)
+				const isRowSelected = props.apiRef.current.isRowSelected(row?.[props.selection.key])
+				if (isRowSelected) {
+					cellClassName = clsx(cellClassName, props.selection.cellClassName)
+				}
+			}
+
+			return (
+				<div
+					role={'cell'}
+					aria-colindex={columnIndex}
+					data-rowindex={rowIndex}
+					data-accessor={column.accessor}
+					data-dummy={cell.dummy}
+					className={cellClassName}
+					style={{
+						...cellStyle,
+						justifyContent: cell?.dummy ? 'top' : 'center',
+						zIndex,
+					}}
+					ref={ref}
+				>
+					{cell.value}
+				</div>
+			)
+		},
+		[
+			classes,
+			isActiveRow,
+			props.apiRef,
+			props.columns,
+			props.coords.colIndex,
+			props.coords.rowIndex,
+			props.highlightBorderColor,
+			props.selection,
+		],
+	)
 
 	const cellRenderer = useCallback(
 		({ rowIndex, columnIndex, key, parent, style, ...otherArgs }: GridCellProps) => {

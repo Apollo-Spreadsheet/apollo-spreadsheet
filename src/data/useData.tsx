@@ -3,7 +3,13 @@ import { Column } from '../columnGrid/types'
 import { SelectionProps } from '../rowSelection'
 import { GridCell } from '../gridWrapper/interfaces'
 import { ApiRef, RowApi } from '../api/types'
-import { useApiExtends, useApiEventHandler, DATA_CHANGED, ROW_SELECTION_CHANGE, ROWS_CHANGED } from '../api'
+import {
+	useApiExtends,
+	useApiEventHandler,
+	DATA_CHANGED,
+	ROW_SELECTION_CHANGE,
+	ROWS_CHANGED,
+} from '../api'
 
 import { createData } from './createData'
 import { Row } from '../types'
@@ -37,7 +43,9 @@ export function useData({ rows, columns, selection, initialised, apiRef }: Props
 			})
 
 			if (!updatedData) {
-				return logger.error('No data has been returned from createData, please review the dependencies')
+				return logger.error(
+					'No data has been returned from createData, please review the dependencies',
+				)
 			}
 
 			cells.current = updatedData
@@ -79,18 +87,26 @@ export function useData({ rows, columns, selection, initialised, apiRef }: Props
 
 	const getRowsCount = useCallback(() => rowsRef.current.length, [])
 
-	const getRowById = useCallback((id: string) => {
-		return rowsRef.current.find(e => String(e[selection?.key ?? '']) === id)
-	}, [selection?.key])
+	const getRowById = useCallback(
+		(id: string) => {
+			return rowsRef.current.find(e => String(e[selection?.key ?? '']) === id)
+		},
+		[selection?.key],
+	)
 
 	const getRowsWithFilter = useCallback(
 		(predicate: (value: Row, index: number, array: Row[]) => unknown, thisArg?: any) => {
 			return rowsRef.current.filter(predicate, thisArg)
-		}, [])
+		},
+		[],
+	)
 
-	const getRowIndex = useCallback((id: string) => {
-		return rowsRef.current.findIndex(e => String(e[selection?.key ?? '']) === id)
-	}, [selection?.key])
+	const getRowIndex = useCallback(
+		(id: string) => {
+			return rowsRef.current.findIndex(e => String(e[selection?.key ?? '']) === id)
+		},
+		[selection?.key],
+	)
 
 	const getOriginalRows = useCallback(() => originalRowsRef.current, [])
 

@@ -26,9 +26,7 @@ function CellMeasureWrapper({
 
 		const rowGenerator = row => cache.rowHeight({ index: rowIndex + row })
 
-		const rowSpanStyle = !rowSpan
-			? {}
-			: { height: getMaxSum(rowGenerator, rowSpan) }
+		const rowSpanStyle = !rowSpan ? {} : { height: getMaxSum(rowGenerator, rowSpan) }
 
 		//Fetch all column widths and sum into a unique value
 		const buildSpanColumnWidth = (spanSize: number) => {
@@ -40,9 +38,7 @@ function CellMeasureWrapper({
 			return value
 		}
 
-		const colSpanStyle = !colSpan
-			? {}
-			: { width: buildSpanColumnWidth(colSpan) }
+		const colSpanStyle = !colSpan ? {} : { width: buildSpanColumnWidth(colSpan) }
 
 		const _style: React.CSSProperties = {
 			...style,
@@ -63,7 +59,8 @@ function CellMeasureWrapper({
 					...rendererProps,
 					style: spanningStyle,
 					ref: registerChild,
-				})}
+				})
+			}
 		</CellMeasurer>
 	)
 }

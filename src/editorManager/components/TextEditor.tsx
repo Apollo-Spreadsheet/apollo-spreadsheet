@@ -1,4 +1,11 @@
-import React, { CSSProperties, forwardRef, useCallback, useImperativeHandle, useMemo, useState } from 'react'
+import React, {
+	CSSProperties,
+	forwardRef,
+	useCallback,
+	useImperativeHandle,
+	useMemo,
+	useState,
+} from 'react'
 import { Popover, TextareaAutosize } from '@material-ui/core'
 import { EditorProps } from '../editorProps'
 import { makeStyles } from '@material-ui/core/styles'
@@ -21,7 +28,18 @@ const useStyles = makeStyles(() => ({
 	},
 }))
 export const TextEditor = forwardRef(
-	({ value, stopEditing, anchorRef, maxLength, validatorHook, additionalProps, apiRef }: EditorProps, componentRef) => {
+	(
+		{
+			value,
+			stopEditing,
+			anchorRef,
+			maxLength,
+			validatorHook,
+			additionalProps,
+			apiRef,
+		}: EditorProps,
+		componentRef,
+	) => {
 		const classes = useStyles()
 		const [editingValue, setEditingValue] = useState(String(value))
 
@@ -46,15 +64,18 @@ export const TextEditor = forwardRef(
 			return validatorHook(editingValue)
 		}, [editingValue, validatorHook])
 
-		const onTextAreaResizeMount = useCallback((ref: HTMLTextAreaElement | null) => {
-			if (!ref) {
-				return
-			}
-			// eslint-disable-next-line no-param-reassign
-			ref.selectionStart = editingValue.length
-			// eslint-disable-next-line no-param-reassign
-			ref.selectionEnd = editingValue.length
-		}, [editingValue.length])
+		const onTextAreaResizeMount = useCallback(
+			(ref: HTMLTextAreaElement | null) => {
+				if (!ref) {
+					return
+				}
+				// eslint-disable-next-line no-param-reassign
+				ref.selectionStart = editingValue.length
+				// eslint-disable-next-line no-param-reassign
+				ref.selectionEnd = editingValue.length
+			},
+			[editingValue.length],
+		)
 
 		const anchorStyle = (anchorRef as any).style as CSSProperties
 

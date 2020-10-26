@@ -106,7 +106,7 @@ export function useRowSelection(apiRef: ApiRef, initialised: boolean, selection?
 		}
 		return apiRef.current
 			.getRowsWithFilter(e =>
-				selectedIds.current.some(id => String(id) === String(e[selection.key]))
+				selectedIds.current.some(id => String(id) === String(e[selection.key])),
 			)
 			.map((e: any) => String(e[selection.key]))
 	}, [apiRef, selection])

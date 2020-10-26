@@ -17,7 +17,7 @@ import {
 	useApiExtends,
 	NavigationApi,
 	ApiRef,
-	useApiEventHandler
+	useApiEventHandler,
 } from '../api'
 import { Row } from '../types'
 import { useLogger } from '../logger'
@@ -180,61 +180,67 @@ export function useNavigation({
 		[logger, coords, apiRef],
 	)
 
-	const handleCellPaste = useCallback(async (column: Column, row: Row, currentValue: unknown) => {
-		try {
-			const text = await clipboardy.read()
-			if (column.validatorHook) {
-				if (column.validatorHook(text)) {
-					return onCellChange?.({
-						coords,
-						previousValue: currentValue,
-						newValue: text,
-						column,
-						row,
-					})
+	const handleCellPaste = useCallback(
+		async (column: Column, row: Row, currentValue: unknown) => {
+			try {
+				const text = await clipboardy.read()
+				if (column.validatorHook) {
+					if (column.validatorHook(text)) {
+						return onCellChange?.({
+							coords,
+							previousValue: currentValue,
+							newValue: text,
+							column,
+							row,
+						})
+					}
+					return
 				}
-				return
-			}
-			//Fallback is the column type
-			if (column.type === ColumnCellType.Numeric) {
-				if (!isNaN(Number(text))) {
-					return onCellChange?.({
-						coords,
-						previousValue: currentValue,
-						newValue: text,
-						column,
-						row,
-					})
+				//Fallback is the column type
+				if (column.type === ColumnCellType.Numeric) {
+					if (!isNaN(Number(text))) {
+						return onCellChange?.({
+							coords,
+							previousValue: currentValue,
+							newValue: text,
+							column,
+							row,
+						})
+					}
+					return
 				}
-				return
-			}
-			if (column.type === ColumnCellType.Calendar) {
-				if (dayjs(text, 'YYYY-MM-DD').format('YYYY-MM-DD') === text) {
-					return onCellChange?.({
-						coords,
-						previousValue: currentValue,
-						newValue: text,
-						column,
-						row,
-					})
+				if (column.type === ColumnCellType.Calendar) {
+					if (dayjs(text, 'YYYY-MM-DD').format('YYYY-MM-DD') === text) {
+						return onCellChange?.({
+							coords,
+							previousValue: currentValue,
+							newValue: text,
+							column,
+							row,
+						})
+					}
+					return
 				}
-				return
-			}
 
-			return onCellChange?.({ coords, previousValue: currentValue, newValue: text, column, row })
-		} catch (ex) {
-			logger.error(`handleCellPaste -> ${ex}`)
-		}
-	}, [coords, logger, onCellChange])
+				return onCellChange?.({ coords, previousValue: currentValue, newValue: text, column, row })
+			} catch (ex) {
+				logger.error(`handleCellPaste -> ${ex}`)
+			}
+		},
+		[coords, logger, onCellChange],
+	)
 
-	const handleCellCut = useCallback(async (currentValue: unknown, column: Column, row: Row) => {
-		await clipboardy.write(String(currentValue))
-		const newValue = getDefaultValueFromValue(currentValue)
-		if (currentValue === newValue) {
-			return
-		}
-		onCellChange?.({ coords, previousValue: currentValue, newValue, column, row })
-	}, [coords, onCellChange])
+	const handleCellCut = useCallback(
+		async (currentValue: unknown, column: Column, row: Row) => {
+			await clipboardy.write(String(currentValue))
+			const newValue = getDefaultValueFromValue(currentValue)
+			if (currentValue === newValue) {
+				return
+			}
+			onCellChange?.({ coords, previousValue: currentValue, newValue, column, row })
+		},
+		[coords, onCellChange],
+	)
 
 	const handleEditorOpenControls = useCallback(
 		(event: KeyboardEvent) => {

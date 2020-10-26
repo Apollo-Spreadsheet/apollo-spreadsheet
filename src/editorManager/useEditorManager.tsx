@@ -7,7 +7,13 @@ import NumericEditor from './components/NumericEditor'
 import { EditorProps } from './editorProps'
 import { CalendarEditor } from './components'
 import { isFunctionType } from '../helpers'
-import { useApiExtends, EditorManagerApi, ApiRef, CELL_BEGIN_EDITING, CELL_STOP_EDITING } from '../api'
+import {
+	useApiExtends,
+	EditorManagerApi,
+	ApiRef,
+	CELL_BEGIN_EDITING,
+	CELL_STOP_EDITING,
+} from '../api'
 import clsx from 'clsx'
 import { useLogger } from '../logger'
 import { Row } from '../types'
@@ -147,47 +153,56 @@ export function useEditorManager({ onCellChange, apiRef }: EditorManagerProps) {
 		}
 	}, [apiRef, editorNode, stopEditing])
 
-	const validateEditorRef = useCallback((editorRef: EditorRef) => {
-		if (!editorRef) {
-			logger.warn(`
+	const validateEditorRef = useCallback(
+		(editorRef: EditorRef) => {
+			if (!editorRef) {
+				logger.warn(`
 				useImperativeHandle is missing on the editor component OR has some misconfiguration. Editor reference is not defined therefore
 				its not possible to start editing at the current cell. Please review your setup
 			`)
-			return false
-		}
-		if (!editorRef.getValue || !isFunctionType(editorRef.getValue)) {
-			logger.warn(
-				'Editor reference "getValue()" method is invalid, not a function or undefined, please review your setup',
-			)
-			return false
-		}
+				return false
+			}
+			if (!editorRef.getValue || !isFunctionType(editorRef.getValue)) {
+				logger.warn(
+					'Editor reference "getValue()" method is invalid, not a function or undefined, please review your setup',
+				)
+				return false
+			}
 
-		return true
-	}, [logger])
-	
+			return true
+		},
+		[logger],
+	)
+
 	//Invoked when the editor mounts on DOM
-	const onRefMount = useCallback((ref: EditorRef) => {
-		if (!ref) {
-			return
-		}
-		validateEditorRef(ref)
-		editorRef.current = ref
-	}, [validateEditorRef])
+	const onRefMount = useCallback(
+		(ref: EditorRef) => {
+			if (!ref) {
+				return
+			}
+			validateEditorRef(ref)
+			editorRef.current = ref
+		},
+		[validateEditorRef],
+	)
 
-	const getEditor = useCallback((row: Row, column: Column, props: EditorProps) => {
-		let EditorComponent: any = TextEditor
-		if (column.editor) {
-			EditorComponent = column.editor({ row, column, onRefMount })
-		} else if (column.type === ColumnCellType.Calendar) {
+	const getEditor = useCallback(
+		(row: Row, column: Column, props: EditorProps) => {
+			let EditorComponent: any = TextEditor
+			if (column.editor) {
+				EditorComponent = column.editor({ row, column, onRefMount })
+			} else if (column.type === ColumnCellType.Calendar) {
 				EditorComponent = CalendarEditor
 			} else if (column.type === ColumnCellType.Numeric) {
 				EditorComponent = NumericEditor
 			}
 
-		return column.editor
-			? EditorComponent
-			: React.createElement(EditorComponent, { ...props, ref: onRefMount })
-	}, [onRefMount])
+			return column.editor
+				? EditorComponent
+				: React.createElement(EditorComponent, { ...props, ref: onRefMount })
+		},
+		[onRefMount],
+	)
 
 	/**
 	 * Starts editing in a given cell considering multiple configurations

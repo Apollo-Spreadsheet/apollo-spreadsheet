@@ -42,10 +42,13 @@ export const GridContainer = React.memo(
 		 * the fixed width from our mapping or fetches directly from react-virtualize
 		 * @param getColumnWidth
 		 */
-		const getColumnWidthHelper = useCallback(({ index }: { index: number }) => {
-			const value = columnWidths.current.mapping[index]
-			return isNaN(value) ? minColumnWidth : value
-		}, [minColumnWidth])
+		const getColumnWidthHelper = useCallback(
+			({ index }: { index: number }) => {
+				const value = columnWidths.current.mapping[index]
+				return isNaN(value) ? minColumnWidth : value
+			},
+			[minColumnWidth],
+		)
 
 		const calculateColumnWidths = (containerWidth: number) => {
 			const { mapping, totalSize } = createColumnWidthsMapping(

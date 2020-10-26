@@ -126,13 +126,7 @@ export const ApolloSpreadSheet = forwardRef(
 						containerClassName={props.containerClassName}
 						apiRef={apiRef}
 					>
-						{({
-							scrollLeft,
-							onScroll,
-							getColumnWidth,
-							width,
-							height,
-						}) => (
+						{({ scrollLeft, onScroll, getColumnWidth, width, height }) => (
 							<div id="apollo-grids" className={props.className}>
 								<ColumnGrid
 									data={gridHeaders}

@@ -57,21 +57,21 @@ export const createColumnWidthsMapping = memoizeOne(
 				mapping[colIndex] = ratio
 			}
 		} else if (fixedTotalSize < containerWidth) {
-				//Add the remaining size into the last
-				if (stretchMode === StretchMode.Last) {
-					const last = Object.keys(mapping).pop()
-					if (last) {
-						mapping[last] += remainingSize
-					}
+			//Add the remaining size into the last
+			if (stretchMode === StretchMode.Last) {
+				const last = Object.keys(mapping).pop()
+				if (last) {
+					mapping[last] += remainingSize
 				}
+			}
 
-				//Add a ratio to every column with the remaining
-				if (stretchMode === StretchMode.All) {
-					const ratio = Math.max(minColumnWidth, remainingSize / columns.length)
-					for (const key of Object.keys(mapping)) {
-						mapping[key] += ratio
-					}
+			//Add a ratio to every column with the remaining
+			if (stretchMode === StretchMode.All) {
+				const ratio = Math.max(minColumnWidth, remainingSize / columns.length)
+				for (const key of Object.keys(mapping)) {
+					mapping[key] += ratio
 				}
+			}
 		}
 
 		//Update the total size because the calculated values have been updated
