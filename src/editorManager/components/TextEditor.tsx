@@ -8,13 +8,12 @@ import React, {
 	useState,
 } from 'react'
 import { Popover, TextareaAutosize } from '@material-ui/core'
-import { NavigationKey } from '../enums/navigation-key.enum'
-import { isCaretAtEndPosition } from '../utils/isCaretAtEndPosition'
 import { EditorProps } from '../editorProps'
 import { makeStyles } from '@material-ui/core/styles'
 import { addListener, removeListener } from 'resize-detector'
 import { handleEditorKeydown } from "../utils/handleEditorKeydown"
-import clsx from "clsx";
+import clsx from "clsx"
+import { GRID_RESIZE, useApiEventHandler } from "../../api";
 
 const useStyles = makeStyles(() => ({
 	input: {
@@ -31,21 +30,15 @@ const useStyles = makeStyles(() => ({
 	},
 }))
 export const TextEditor = forwardRef(
-	({ value, stopEditing, anchorRef, maxLength, validatorHook, additionalProps }: EditorProps, componentRef) => {
+	({ value, stopEditing, anchorRef, maxLength, validatorHook, additionalProps, apiRef }: EditorProps, componentRef) => {
 		const classes = useStyles()
 		const [editingValue, setEditingValue] = useState(String(value))
 
-		function onAnchorResize() {
+		const onAnchorResize = useCallback(() => {
 			stopEditing()
-		}
-
-		//Watch for DOM Changes on the target anchor and close editor because Popover does not change
-		useEffect(() => {
-			addListener(anchorRef as any, onAnchorResize)
-			return () => {
-				removeListener(anchorRef as any, onAnchorResize)
-			}
 		}, [])
+
+		useApiEventHandler(apiRef, GRID_RESIZE, onAnchorResize)
 
 		useImperativeHandle(
 			componentRef,

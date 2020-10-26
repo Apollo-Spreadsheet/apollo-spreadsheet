@@ -1,13 +1,15 @@
 import React, { useCallback, useRef } from 'react'
 import { StretchMode } from '../types/stretch-mode.enum'
 import { scrollbarWidth } from '@xobotyi/scrollbar-width'
-import { AutoSizer, OnScrollParams, ScrollSync } from 'react-virtualized'
+import { AutoSizer, OnScrollParams, ScrollSync, Size } from "react-virtualized"
 import { createColumnWidthsMapping } from '../columnGrid/utils/createColumnWidthsMapping'
 import { ColumnWidthRecord } from '../columnGrid/useHeaders'
 import { Column } from '../columnGrid/types/header.type'
 import { makeStyles } from '@material-ui/core/styles'
 import clsx from 'clsx'
-import { useLogger } from "../logger";
+import { useLogger } from "../logger"
+import { ApiRef } from "../api/types";
+import { GRID_RESIZE } from "../api";
 
 const useStyles = makeStyles(() => ({
 	root: {
@@ -27,8 +29,8 @@ export interface GridContainerChildrenProps {
 }
 
 export interface GridContainerCommonProps {
-	height?: number
-	width?: number
+	height?: React.ReactText
+	width?: React.ReactText
 	containerClassName?: string
 }
 
@@ -37,12 +39,14 @@ interface Props extends GridContainerCommonProps {
 	minColumnWidth: number
 	stretchMode: StretchMode
 	children: (props: GridContainerChildrenProps) => unknown
+	apiRef: ApiRef
 }
 
 export const GridContainer = React.memo(
 	({
 		minColumnWidth,
 		stretchMode,
+		apiRef,
 		columns,
 		children,
 		width,
@@ -87,6 +91,13 @@ export const GridContainer = React.memo(
 			}
 
 		}
+
+		const onResize = useCallback((info: Size) => {
+			if (!apiRef.current.isInitialised){
+				return
+			}
+			apiRef.current.dispatchEvent(GRID_RESIZE, info)
+		}, [apiRef])
 
 		function render(containerWidth: number, containerHeight = 500) {
 			const normalizedContainerWidth =
@@ -148,7 +159,7 @@ export const GridContainer = React.memo(
 					className={clsx(classes.root, containerClassName)}
 					style={{ width, height, position: 'relative' }}
 				>
-					{render(width, height)}
+					{render(Number(width), Number(height))}
 				</div>
 			)
 		}
@@ -162,8 +173,9 @@ export const GridContainer = React.memo(
 				<AutoSizer
 					disableWidth={width !== undefined}
 					disableHeight={height !== undefined}
-					defaultHeight={height}
-					defaultWidth={width}
+					defaultHeight={Number(height)}
+					defaultWidth={Number(width)}
+					onResize={onResize}
 				>
 					{({ width, height }) => render(width, height)}
 				</AutoSizer>

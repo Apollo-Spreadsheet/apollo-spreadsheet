@@ -124,6 +124,7 @@ export const ApolloSpreadSheet = forwardRef(
 						minColumnWidth={minColumnWidth}
 						stretchMode={props.stretchMode ?? StretchMode.All}
 						containerClassName={props.containerClassName}
+						apiRef={apiRef}
 					>
 						{({
 							scrollLeft,

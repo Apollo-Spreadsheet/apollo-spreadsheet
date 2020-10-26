@@ -257,6 +257,7 @@ export function useEditorManager<TRow>({ onCellChange, apiRef, initialised }: Ed
 				},
 				stopEditing,
 				validatorHook: column.validatorHook,
+				apiRef
 			}
 
 			const editor = getEditor(row as TRow, column, editorProps)

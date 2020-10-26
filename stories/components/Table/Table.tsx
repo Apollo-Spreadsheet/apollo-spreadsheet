@@ -125,7 +125,7 @@ export function Table() {
 	]
 
 	return (
-		<Box width={'98%'} height={'400px'} style={{ margin: 10 }}>
+		<Box width={'98%'} height={'calc(100vh - 100px)'} style={{ margin: 10 }}>
 			<ApolloSpreadSheet
 				apiRef={apiRef}
 				columns={headers}

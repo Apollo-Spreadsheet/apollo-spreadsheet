@@ -1,7 +1,6 @@
-import { NavigationKey } from './enums/navigation-key.enum'
-import React, { CSSProperties } from 'react'
 import { StopEditingParams } from './useEditorManager'
 import { Column } from '../columnGrid/types'
+import { ApiRef } from "../api/types"
 
 export interface EditorProps {
 	value: string
@@ -10,4 +9,5 @@ export interface EditorProps {
 	additionalProps: Column['editorProps']
 	maxLength: number
 	validatorHook?: Column['validatorHook']
+	apiRef: ApiRef
 }
