@@ -8,8 +8,8 @@ import { Column } from '../columnGrid/types/header.type'
 import { makeStyles } from '@material-ui/core/styles'
 import clsx from 'clsx'
 import { useLogger } from "../logger"
-import { ApiRef } from "../api/types";
-import { GRID_RESIZE } from "../api";
+import { ApiRef } from "../api/types"
+import { GRID_RESIZE } from "../api"
 
 const useStyles = makeStyles(() => ({
 	root: {

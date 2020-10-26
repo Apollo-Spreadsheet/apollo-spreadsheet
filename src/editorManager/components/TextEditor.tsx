@@ -10,10 +10,9 @@ import React, {
 import { Popover, TextareaAutosize } from '@material-ui/core'
 import { EditorProps } from '../editorProps'
 import { makeStyles } from '@material-ui/core/styles'
-import { addListener, removeListener } from 'resize-detector'
 import { handleEditorKeydown } from "../utils/handleEditorKeydown"
 import clsx from "clsx"
-import { GRID_RESIZE, useApiEventHandler } from "../../api";
+import { GRID_RESIZE, useApiEventHandler } from "../../api"
 
 const useStyles = makeStyles(() => ({
 	input: {

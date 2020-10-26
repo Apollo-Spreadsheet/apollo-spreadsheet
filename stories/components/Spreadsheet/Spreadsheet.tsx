@@ -90,25 +90,14 @@ export function Spreadsheet() {
 	const classes = useStyles()
 	const { headerData: headers, data: defaultData } = useTopCase(classes.calendarClass)
 	const [data, setData] = useState(defaultData)
-	const [outsideClickDeselects, setOutsideClickDeselect] = useState(true)
-	const [darkTheme, setDarkTheme] = useState(false)
-	const [selectionEnabled, setSelectionEnabled] = useState(true)
-	const [scrollAlignment, setScrollAlignment] = useState<Alignment>('auto')
 	const apiRef = useApiRef()
 
 	const mergeCellsData = useMemo(() => {
 		return createMergeCellsData(data, headers)
 	}, [data, headers])
 
-	const topDarkGridTheme: GridTheme = {
-		currentColumnClass: classes.currentColumnClassDark,
-		currentRowClass: classes.currentRowClassDark,
-		headerClass: classes.headerClassDark,
-		cellClass: classes.rowClassDark,
-		disabledCellClass: classes.disabledCellClass,
-	}
 
-	const topLightGridTheme: GridTheme = {
+	const customTheme: GridTheme = {
 		currentColumnClass: classes.currentColumnClass,
 		currentRowClass: classes.currentRowClass,
 		headerClass: classes.headerClass,
@@ -224,10 +213,6 @@ export function Spreadsheet() {
 		setData(updatedData)
 	}
 
-	function handleScrollAlignmentChange(e) {
-		setScrollAlignment(e.target.value)
-	}
-
 	function onHeaderIconClick() {
 		const selectedRows = apiRef.current?.getSelectedRowIds() ?? []
 		if (selectedRows.length === 0) {
@@ -237,59 +222,25 @@ export function Spreadsheet() {
 	}
 
 	return (
-		<Box height={'400px'} width={'99%'}>
-			<Button variant="contained" color={'primary'} onClick={createRowOnBottom}>
-				Create row on bottom
-			</Button>
-			<Checkbox
-				checked={outsideClickDeselects}
-				onChange={e => setOutsideClickDeselect((e?.target as any).checked)}
-			/>
-			Deselect on click away
-			<Checkbox checked={darkTheme} onChange={e => setDarkTheme((e?.target as any).checked)} />
-			Dark Theme Test
-			<Checkbox
-				checked={selectionEnabled}
-				onChange={e => setSelectionEnabled((e?.target as any).checked)}
-			/>
-			Toggle rowSelection hook
-			<FormControl style={{ minWidth: 120 }}>
-				<InputLabel id="demo-simple-select-label">Scroll Alignment</InputLabel>
-				<Select
-					labelId="demo-simple-select-label"
-					id="demo-simple-select"
-					value={scrollAlignment}
-					onChange={handleScrollAlignmentChange}
-				>
-					<MenuItem value={'auto'}>Auto (Default)</MenuItem>
-					<MenuItem value={'center'}>Center</MenuItem>
-					<MenuItem value={'start'}>Start</MenuItem>
-					<MenuItem value={'end'}>End</MenuItem>
-				</Select>
-			</FormControl>
+		<Box height={'calc(100vh - 100px)'} width={'99%'}>
 			<ApolloSpreadSheet
 				className={classes.root}
 				apiRef={apiRef}
 				columns={headers}
 				rows={data}
 				onCellChange={onCellChange}
-				outsideClickDeselects={outsideClickDeselects}
-				theme={darkTheme ? topDarkGridTheme : topLightGridTheme}
+				outsideClickDeselects={true}
+				theme={customTheme}
 				minRowHeight={25}
 				minColumnWidth={10}
 				stretchMode={StretchMode.All}
 				mergeCells={mergeCellsData}
-				scrollToAlignment={scrollAlignment}
 				onCreateRow={createRow}
-				selection={
-					selectionEnabled
-						? {
-								key: 'taskId',
-								checkboxClass: classes.checkBox,
-								onHeaderIconClick,
-						  }
-						: undefined
-				}
+				selection={{
+					key: 'taskId',
+					checkboxClass: classes.checkBox,
+					onHeaderIconClick,
+				}}
 			/>
 		</Box>
 	)
