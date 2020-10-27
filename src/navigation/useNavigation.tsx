@@ -115,7 +115,7 @@ export function useNavigation({
 	)
 
 	const selectCell = useCallback(
-		({ colIndex, rowIndex }: NavigationCoords) => {
+		({ colIndex, rowIndex }: NavigationCoords, targetElement?: HTMLElement) => {
 			logger.debug(`Select cell for coordinates [${rowIndex},${colIndex}]`)
 			//Coordinates when the grid is clicked away
 			if (colIndex === -1 && rowIndex === -1) {
@@ -160,7 +160,8 @@ export function useNavigation({
 				delayEditorDebounce.current = debounce(() => {
 					delayEditorDebounce.current = null
 					const selector = `[aria-colIndex='${colIndex}'][data-rowIndex='${rowIndex}'][role='cell']`
-					const target = apiRef.current.rootElementRef?.current?.querySelector(selector)
+					const target =
+						targetElement ?? apiRef.current.rootElementRef?.current?.querySelector(selector)
 					if (!target) {
 						return logger.error(
 							`Cell dom element not found on delayEditingOpen debounce with selector: ${selector}`,
@@ -543,23 +544,43 @@ export function useNavigation({
 	)
 
 	const onCellClick = useCallback(
-		({ event, colIndex, rowIndex }: { event: MouseEvent; colIndex: number; rowIndex: number }) => {
+		({
+			event,
+			colIndex,
+			rowIndex,
+			element,
+		}: {
+			event: MouseEvent
+			colIndex: number
+			rowIndex: number
+			element: HTMLElement
+		}) => {
 			event.preventDefault()
-			selectCell({ rowIndex, colIndex })
+			selectCell({ rowIndex, colIndex }, element)
 		},
 		[selectCell],
 	)
 
 	const onCellDoubleClick = useCallback(
-		({ event, colIndex, rowIndex }: { event: MouseEvent; colIndex: number; rowIndex: number }) => {
+		({
+			event,
+			colIndex,
+			rowIndex,
+			element,
+		}: {
+			event: MouseEvent
+			colIndex: number
+			rowIndex: number
+			element: HTMLDivElement
+		}) => {
 			event.preventDefault()
 			//Compare if the cell is equal to whats selected otherwise select it first
 			if (colIndex !== coords.colIndex && rowIndex !== coords.rowIndex) {
-				selectCell({ rowIndex, colIndex })
+				selectCell({ rowIndex, colIndex }, element)
 			}
 			apiRef.current.beginEditing({
 				coords: { colIndex, rowIndex },
-				targetElement: event.target as Element,
+				targetElement: element,
 			})
 		},
 		[apiRef, selectCell, coords],

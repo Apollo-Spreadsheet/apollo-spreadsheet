@@ -20,6 +20,18 @@ export function useEvents(gridRootRef: React.RefObject<HTMLDivElement>, apiRef: 
 					colIndex: Number(target.getAttribute('aria-colindex') || '-1'),
 					rowIndex: Number(target.getAttribute('data-rowindex') || '-1'),
 				})
+			} else {
+				//Check if the parent is a cell
+				const isParentCell =
+					target.parentElement?.getAttribute('role') === 'cell' &&
+					!target.parentElement?.getAttribute('data-dummy')
+				if (isParentCell) {
+					apiRef.current.dispatchEvent(CELL_CLICK, {
+						event,
+						colIndex: Number(target.parentElement?.getAttribute('aria-colindex') || '-1'),
+						rowIndex: Number(target.parentElement?.getAttribute('data-rowindex') || '-1'),
+					})
+				}
 			}
 		},
 		[apiRef],
@@ -34,7 +46,21 @@ export function useEvents(gridRootRef: React.RefObject<HTMLDivElement>, apiRef: 
 					event,
 					colIndex: Number(target.getAttribute('aria-colindex') || '-1'),
 					rowIndex: Number(target.getAttribute('data-rowindex') || '-1'),
+					element: target,
 				})
+			} else {
+				//Check if the parent is a cell
+				const isParentCell =
+					target.parentElement?.getAttribute('role') === 'cell' &&
+					!target.parentElement?.getAttribute('data-dummy')
+				if (isParentCell) {
+					apiRef.current.dispatchEvent(CELL_DOUBLE_CLICK, {
+						event,
+						colIndex: Number(target.parentElement?.getAttribute('aria-colindex') || '-1'),
+						rowIndex: Number(target.parentElement?.getAttribute('data-rowindex') || '-1'),
+						element: target.parentElement,
+					})
+				}
 			}
 		},
 		[apiRef],

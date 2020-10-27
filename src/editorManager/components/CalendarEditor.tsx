@@ -22,7 +22,6 @@ export const CalendarEditor = forwardRef(
 			value: dayjs(value),
 			close: false,
 		})
-		//const popperPlacement = useRef<string>('right-start')
 
 		useImperativeHandle(componentRef, () => ({
 			getValue: () => dayjs(state.value).format('YYYY-MM-DD'),
@@ -69,26 +68,6 @@ export const CalendarEditor = forwardRef(
 					e.preventDefault()
 					stopEditing({ save: false })
 				}
-
-				//Re-use this for second arms, might be very useful
-				// if (popperPlacement.current.startsWith('right') && e.key === 'ArrowRight') {
-				// 	e.preventDefault()
-				// 	e.stopImmediatePropagation()
-				// }
-				// if (popperPlacement.current.startsWith('left') && e.key === 'ArrowLeft') {
-				// 	e.preventDefault()
-				// 	e.stopImmediatePropagation()
-				// }
-				// if (popperPlacement.current.startsWith('right') && e.key === 'ArrowLeft') {
-				// 	e.preventDefault()
-				// 	e.stopImmediatePropagation()
-				// 	stopEditing(true)
-				// }
-				// if (popperPlacement.current.startsWith('left') && e.key === 'ArrowRight') {
-				// 	e.preventDefault()
-				// 	e.stopImmediatePropagation()
-				// 	stopEditing(true)
-				// }
 			},
 			[state, stopEditing],
 		)

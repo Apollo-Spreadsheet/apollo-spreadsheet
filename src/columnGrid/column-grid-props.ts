@@ -3,6 +3,7 @@ import { GridHeader, Column, NestedHeader } from './types'
 import { NavigationCoords } from '../navigation/types'
 import { DisableSortFilterParam } from '../gridWrapper'
 import { ApiRef } from '../api/types'
+import { SortState } from '../sort/useSort'
 
 export interface ColumnGridProps {
 	/**
@@ -17,7 +18,7 @@ export interface ColumnGridProps {
 	coords: NavigationCoords
 	defaultColumnWidth: number
 	getColumnWidth: ({ index }: { index: number }) => number
-
+	sort: SortState | null
 	width: number
 	scrollLeft: number
 	/** @default StretchMode.None  */

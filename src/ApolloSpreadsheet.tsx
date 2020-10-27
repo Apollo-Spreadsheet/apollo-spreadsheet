@@ -69,7 +69,7 @@ export const ApolloSpreadSheet = forwardRef(
 			initialised,
 		})
 
-		useSort(apiRef)
+		const sort = useSort(apiRef)
 
 		const coords = useNavigation({
 			defaultCoords: props.defaultCoords ?? {
@@ -143,6 +143,7 @@ export const ApolloSpreadSheet = forwardRef(
 									overscanRowCount={props.overscanRowCount}
 									disableSort={props.disableSort}
 									apiRef={apiRef}
+									sort={sort}
 								/>
 								<GridWrapper
 									rows={rows}

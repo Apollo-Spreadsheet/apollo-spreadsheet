@@ -125,7 +125,7 @@ export const ColumnGrid = React.memo((props: ColumnGridProps) => {
 			const { theme } = props.apiRef.current
 			//in case its not found, we set to true
 			const isSortDisabled = headersSortDisabledMap[cell.id] ?? true
-			const sort = props.apiRef.current.getSortState()
+			const { sort } = props
 			const { coords } = props
 			const sortComponent =
 				isSortDisabled || cell.accessor !== sort?.accessor ? null : (
