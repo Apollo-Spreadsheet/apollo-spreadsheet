@@ -40,6 +40,10 @@ export interface DisableNavigationFn {
 	(coords: NavigationCoords): boolean
 }
 
+export interface CellClassNameFn<TRow = Row> {
+	(row: TRow, column: Column): string
+}
+
 export interface ComponentPropsFn<TRow = Row> {
 	(row: TRow, column: Column):
 		| Partial<React.HTMLAttributes<HTMLInputElement>>
@@ -64,7 +68,7 @@ export interface Column<Key = string, Metadata = unknown> {
 	maxLength?: number
 	width?: React.ReactText
 	className?: string
-	cellClassName?: string
+	cellClassName?: string | CellClassNameFn
 	readOnly?: boolean | IsReadOnlyCallback
 	disableNavigation?: boolean | DisableNavigationFn
 	/**

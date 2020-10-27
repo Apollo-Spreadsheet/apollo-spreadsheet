@@ -140,6 +140,7 @@ const GridWrapper = React.memo((props: GridWrapperProps) => {
 			const isSelected = rowIndex === props.coords.rowIndex && columnIndex === props.coords.colIndex
 			const navigationDisabled = props.columns[0][columnIndex]?.disableNavigation
 			const column = props.columns[columnIndex]
+			const row = props.rows[rowIndex]
 			//Dummy zIndex is 0 and a spanned cell has 5 but a normal cell has 1
 			const defaultZIndex = cell.dummy ? 0 : 1
 			const zIndex = (cell.rowSpan || cell.colSpan) && !cell.dummy ? 5 : defaultZIndex
@@ -170,7 +171,13 @@ const GridWrapper = React.memo((props: GridWrapperProps) => {
 			 * dummy 1 has a rowspan of total 3 but none of its parent are visible, so dummy 3 assume the children value and highlight
 			 * of the parent because there is none visible
 			 * */
-			let cellClassName = clsx(classes.cellDefaultStyle, theme?.cellClass, column.cellClassName)
+			let cellClassName = clsx(
+				classes.cellDefaultStyle,
+				theme?.cellClass,
+				typeof column.cellClassName === 'function'
+					? column.cellClassName(row, column)
+					: column.cellClassName,
+			)
 			if (isRowActive && !cell.dummy && theme?.currentRowClass) {
 				cellClassName = clsx(cellClassName, theme?.currentRowClass)
 			}
@@ -211,6 +218,7 @@ const GridWrapper = React.memo((props: GridWrapperProps) => {
 			isActiveRow,
 			props.apiRef,
 			props.columns,
+			props.rows,
 			props.coords.colIndex,
 			props.coords.rowIndex,
 			props.highlightBorderColor,
