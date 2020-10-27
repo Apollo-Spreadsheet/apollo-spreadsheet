@@ -281,6 +281,10 @@ export function useEditorManager({ onCellChange, apiRef }: EditorManagerProps) {
 				additionalProps: {
 					...column.editorProps,
 					className: clsx(apiRef.current.theme?.editorClass, column.editorProps?.className),
+					componentProps:
+						typeof column.editorProps?.componentProps === 'function'
+							? column.editorProps?.componentProps(row, column)
+							: column.editorProps?.componentProps,
 				},
 				stopEditing,
 				validatorHook: column.validatorHook,

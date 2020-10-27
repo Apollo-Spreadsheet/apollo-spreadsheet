@@ -40,6 +40,12 @@ export interface DisableNavigationFn {
 	(coords: NavigationCoords): boolean
 }
 
+export interface ComponentPropsFn<TRow = Row> {
+	(row: TRow, column: Column):
+		| Partial<React.HTMLAttributes<HTMLInputElement>>
+		| Partial<ReactDatePickerProps>
+}
+
 export interface Column<Key = string> {
 	id: Key
 	title: string
@@ -60,7 +66,6 @@ export interface Column<Key = string> {
 	className?: string
 	cellClassName?: string
 	readOnly?: boolean | IsReadOnlyCallback
-	/** @todo Types **/
 	disableNavigation?: boolean | DisableNavigationFn
 	/**
 	 * Cell value type for this column (the values are formatted accordingly)
@@ -101,7 +106,10 @@ export interface Column<Key = string> {
 	editorProps?: {
 		className?: string
 		style?: CSSProperties
-		componentProps?: Partial<React.HTMLAttributes<HTMLInputElement>> | Partial<ReactDatePickerProps>
+		componentProps?:
+			| Partial<React.HTMLAttributes<HTMLInputElement>>
+			| Partial<ReactDatePickerProps>
+			| ComponentPropsFn
 	}
 	cellRenderer?: ICellRenderer
 	renderer?: IHeaderRenderer
