@@ -109,7 +109,10 @@ export function useEditorManager({ onCellChange, apiRef }: EditorManagerProps) {
 				//Compare the values before dispatch
 				if (!valueEqual(newValue, editorState.initialValue)) {
 					//If we have the hook, invoke it before we proceed
-					if (state.current?.shouldSaveHook && !state.current.shouldSaveHook?.(newValue)) {
+					if (
+						state.current?.shouldSaveHook &&
+						!state.current.shouldSaveHook?.(editorState.initialValue, newValue)
+					) {
 						editorRef.current = null
 						state.current = null
 						apiRef.current.dispatchEvent(CELL_STOP_EDITING, {

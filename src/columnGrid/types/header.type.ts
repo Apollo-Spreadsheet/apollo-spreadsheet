@@ -87,7 +87,7 @@ export interface Column<Key = string> {
 	 * the grid send the new value or just drop it
 	 * @param value
 	 */
-	shouldSaveHook?: (value: unknown) => boolean
+	shouldSaveHook?: (currentValue: unknown, newValue: unknown) => boolean
 	/**
 	 * Provide this hook in order to restrict which keyboard controls are allowed
 	 * Keep in mind there are some reserved, so this keyboard values are only while editing
