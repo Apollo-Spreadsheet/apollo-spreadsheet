@@ -30,7 +30,8 @@ export interface IEditorState {
 	colIndex: number
 	initialValue: React.ReactText
 	targetElement: Element
-	validatorHook?: (value: unknown) => boolean
+	validatorHook?: Column['validatorHook']
+	shouldSaveHook?: Column['shouldSaveHook']
 	/**
 	 * Useful to prevent navigation interception on second arms
 	 */
@@ -105,7 +106,18 @@ export function useEditorManager({ onCellChange, apiRef }: EditorManagerProps) {
 					return setEditorNode(null)
 				}
 
+				//Compare the values before dispatch
 				if (!valueEqual(newValue, editorState.initialValue)) {
+					//If we have the hook, invoke it before we proceed
+					if (state.current?.shouldSaveHook && !state.current.shouldSaveHook?.(newValue)) {
+						editorRef.current = null
+						state.current = null
+						apiRef.current.dispatchEvent(CELL_STOP_EDITING, {
+							colIndex: editorState.colIndex,
+							rowIndex: editorState.rowIndex,
+						})
+						return setEditorNode(null)
+					}
 					const row = apiRef.current.getRowAt(editorState.rowIndex)
 					const column = apiRef.current.getColumnAt(editorState.colIndex)
 					if (!row) {
@@ -281,6 +293,7 @@ export function useEditorManager({ onCellChange, apiRef }: EditorManagerProps) {
 				targetElement,
 				validatorHook: column.validatorHook,
 				isPopup: column.editor !== undefined || column.type === ColumnCellType.Calendar,
+				shouldSaveHook: column.shouldSaveHook,
 			}
 
 			setEditorNode(editor)
