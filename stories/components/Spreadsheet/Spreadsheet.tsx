@@ -96,7 +96,6 @@ export function Spreadsheet() {
 		return createMergeCellsData(data, headers)
 	}, [data, headers])
 
-
 	const customTheme: GridTheme = {
 		currentColumnClass: classes.currentColumnClass,
 		currentRowClass: classes.currentRowClass,
@@ -184,35 +183,6 @@ export function Spreadsheet() {
 		setDelayedPosition(null)
 	}, [delayedPosition])
 
-	const createRowOnBottom = () => {
-		const updatedData = [...data]
-		const newRow: any = {
-			taskId: 'task-' + Math.random().toString(),
-			taskContent: 'Task ' + updatedData.length + 1,
-			deliverableId: 'del-' + Math.random().toString(),
-			deliverableBody: 'New Del',
-			activityId: 'act-' + Math.random().toString(),
-			activityBody: 'New Act',
-			wpId: 'wp-' + Math.random().toString(),
-			wpBody: 'New WP',
-			lok: 1,
-			order: updatedData.length + 1,
-			startDate: '2020-10-07',
-			endDate: '2020-10-07',
-			materials: 0,
-			dependencies: [],
-			estimatedTime: 0,
-			realTime: 0,
-			status: 0,
-			approved: 0,
-			finishDate: null,
-			allocated: [],
-			extraCells: [],
-		}
-		updatedData.push(newRow)
-		setData(updatedData)
-	}
-
 	function onHeaderIconClick() {
 		const selectedRows = apiRef.current?.getSelectedRowIds() ?? []
 		if (selectedRows.length === 0) {
@@ -229,7 +199,7 @@ export function Spreadsheet() {
 				columns={headers}
 				rows={data}
 				onCellChange={onCellChange}
-				outsideClickDeselects={true}
+				outsideClickDeselects
 				theme={customTheme}
 				minRowHeight={25}
 				minColumnWidth={10}

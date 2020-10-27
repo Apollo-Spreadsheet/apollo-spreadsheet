@@ -46,7 +46,7 @@ export interface ComponentPropsFn<TRow = Row> {
 		| Partial<ReactDatePickerProps>
 }
 
-export interface Column<Key = string> {
+export interface Column<Key = string, Metadata = unknown> {
 	id: Key
 	title: string
 	accessor: string
@@ -126,6 +126,7 @@ export interface Column<Key = string> {
 	 * @default undefined
 	 */
 	delayEditorOpen?: number
+	metadata?: Metadata
 }
 
 /**
