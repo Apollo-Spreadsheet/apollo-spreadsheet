@@ -52,11 +52,15 @@ const GridWrapper = React.memo((props: GridWrapperProps) => {
 		logger.debug('Recomputing sizes.')
 		cache.clearAll()
 		gridRef.current?.recomputeGridSize()
-		//When the re-computation happens the scroll position is affected and gets reset
-		gridRef.current?.scrollToCell({
-			columnIndex: props.coords.colIndex,
-			rowIndex: props.coords.rowIndex,
-		})
+
+		//Ensure we do have a valid index range
+		if (props.coords.rowIndex !== -1 && props.coords.colIndex !== -1){
+			//When the re-computation happens the scroll position is affected and gets reset
+			gridRef.current?.scrollToCell({
+				columnIndex: props.coords.colIndex,
+				rowIndex: props.coords.rowIndex,
+			})
+		}
 	}, [logger, cache, props.coords])
 
 	function recomputingCleanup() {
