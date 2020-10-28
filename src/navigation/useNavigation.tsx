@@ -184,7 +184,12 @@ export function useNavigation({
 	const handleCellPaste = useCallback(
 		async (column: Column, row: Row, currentValue: unknown) => {
 			try {
-				const text = await clipboardy.read()
+				let text = await clipboardy.read()
+				//Check the text length if passes the maxLength allowed, if so we cut
+				if (column.maxLength && text.length > column.maxLength) {
+					text = text.slice(0, column.maxLength)
+				}
+
 				if (column.validatorHook) {
 					if (column.validatorHook(text)) {
 						return onCellChange?.({

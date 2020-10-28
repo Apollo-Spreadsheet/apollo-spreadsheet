@@ -4,6 +4,8 @@ import { useApiExtends } from '../api'
 import { SortApi } from '../api/types/sortApi'
 import { orderBy } from 'lodash'
 import { useLogger } from '../logger'
+import { Row } from '../types'
+import { ColumnCellType } from '../columnGrid/types'
 
 export interface SortState {
 	accessor: string
@@ -14,6 +16,12 @@ export function useSort(apiRef: ApiRef) {
 	const logger = useLogger('useSort')
 	const stateRef = useRef<SortState | null>(null)
 	const [sort, setSort] = useState<SortState | null>(null)
+
+	const sortRows = useCallback((rows: Row[], state: SortState, type?: ColumnCellType) => {
+		return type === undefined || type === ColumnCellType.TextArea
+			? orderBy([...rows], [e => e[state.accessor].toLowerCase()], [state.order])
+			: orderBy([...rows], [state.accessor], [state.order])
+	}, [])
 
 	const clearSort = useCallback(() => {
 		if (!stateRef.current) {
@@ -81,11 +89,9 @@ export function useSort(apiRef: ApiRef) {
 			}
 			setSort(stateRef.current)
 			const currentRows = apiRef.current.getRows()
-			apiRef.current.updateRows(
-				orderBy([...currentRows], [stateRef.current.accessor], [stateRef.current.order]),
-			)
+			apiRef.current.updateRows(sortRows(currentRows, stateRef.current, column.type))
 		},
-		[apiRef, logger],
+		[apiRef, logger, sortRows],
 	)
 
 	const getSortState = useCallback(() => stateRef.current, [])
