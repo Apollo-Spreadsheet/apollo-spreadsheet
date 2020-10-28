@@ -7,6 +7,7 @@ import { SelectionProps } from '../rowSelection'
 import React from 'react'
 import { ApiRef } from '../api/types'
 import { Row } from '../types'
+import { isFunctionType } from '../helpers'
 
 interface CreateDataParams {
 	rows: Row[]
@@ -18,16 +19,16 @@ interface CreateDataParams {
 export function createData({ columns, selection, apiRef, rows }: CreateDataParams) {
 	const cellsList = rows.reduce((list: GridCell[][], row: Row, rowIndex) => {
 		const updatedList = [...list]
-		const cells = columns.reduce((_cells, header, colIndex) => {
+		const cells = columns.reduce((_cells, column, colIndex) => {
 			const isDummy = apiRef.current.isMerged({ rowIndex, colIndex })
 			if (isDummy) {
 				return _cells
 			}
 
 			const spanInfo = apiRef.current.getSpanProperties({ rowIndex, colIndex })
-			const cellValue = row[header.accessor] !== undefined ? row[header.accessor] : ''
-			const value = header.cellRenderer
-				? (header.cellRenderer({ row, column: header }) as any)
+			const cellValue = row[column.accessor] !== undefined ? row[column.accessor] : ''
+			const value = column.cellRenderer
+				? column.cellRenderer({ row, column })
 				: formatCellValue(cellValue)
 
 			_cells.push({
@@ -46,7 +47,11 @@ export function createData({ columns, selection, apiRef, rows }: CreateDataParam
 				cells[cells.length - 1] = {
 					value: (
 						<Checkbox
-							className={selection.checkboxClass}
+							className={
+								isFunctionType(selection.checkboxClass)
+									? selection.checkboxClass({ row, column: columns[columns.length - 1] })
+									: selection.checkboxClass
+							}
 							checked={selected}
 							onClick={() => apiRef.current.selectRow(row[selection.key])}
 						/>
