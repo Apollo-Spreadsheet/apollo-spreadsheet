@@ -5,6 +5,7 @@ import { EditorProps, EditorRef } from '../../editorManager'
 import { PopperProps } from '@material-ui/core/Popper/Popper'
 import { ReactDatePickerProps } from 'react-datepicker'
 import { Row } from '../../types'
+import { DynamicCallback } from '../../types/dynamic-callback'
 
 export interface CellRendererProps<TRow = Row> {
 	row: TRow
@@ -40,10 +41,6 @@ export interface DisableNavigationFn {
 	(coords: NavigationCoords): boolean
 }
 
-export interface CellClassNameFn<TRow = Row> {
-	(row: TRow, column: Column): string
-}
-
 export interface ComponentPropsFn<TRow = Row> {
 	(row: TRow, column: Column):
 		| Partial<React.HTMLAttributes<HTMLInputElement>>
@@ -68,7 +65,7 @@ export interface Column<Key = string, Metadata = unknown> {
 	maxLength?: number
 	width?: React.ReactText
 	className?: string
-	cellClassName?: string | CellClassNameFn
+	cellClassName?: string | DynamicCallback<Row, string>
 	readOnly?: boolean | IsReadOnlyCallback
 	disableNavigation?: boolean | DisableNavigationFn
 	/**
@@ -122,9 +119,9 @@ export interface Column<Key = string, Metadata = unknown> {
 	 * Forces to disable the backspace keydown on cells (travel like excel default behaviour)
 	 * @default false
 	 */
-	disableBackspace?: boolean
-	disableCellPaste?: boolean
-	disableCellCut?: boolean
+	disableBackspace?: boolean | DynamicCallback<Row, boolean>
+	disableCellPaste?: boolean | DynamicCallback<Row, boolean>
+	disableCellCut?: boolean | DynamicCallback<Row, boolean>
 	/**
 	 * Number of ms to open editor (used in second arms)
 	 * @default undefined
@@ -142,7 +139,7 @@ export interface Column<Key = string, Metadata = unknown> {
 export interface NestedHeader {
 	title: string
 	tooltip?: string
-	className?: string
+	className?: string | DynamicCallback<Row, string>
 	tooltipProps?: {
 		/** @default true **/
 		arrow?: boolean

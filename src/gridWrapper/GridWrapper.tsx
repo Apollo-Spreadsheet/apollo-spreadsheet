@@ -175,7 +175,7 @@ const GridWrapper = React.memo((props: GridWrapperProps) => {
 				classes.cellDefaultStyle,
 				theme?.cellClass,
 				typeof column.cellClassName === 'function'
-					? column.cellClassName(row, column)
+					? column.cellClassName({ row, column })
 					: column.cellClassName,
 			)
 			if (isRowActive && !cell.dummy && theme?.currentRowClass) {
@@ -187,7 +187,6 @@ const GridWrapper = React.memo((props: GridWrapperProps) => {
 			}
 
 			if (props.selection && props.selection.cellClassName) {
-				const row = props.apiRef.current.getRowAt(rowIndex)
 				const isRowSelected = props.apiRef.current.isRowSelected(row?.[props.selection.key])
 				if (isRowSelected) {
 					cellClassName = clsx(cellClassName, props.selection.cellClassName)

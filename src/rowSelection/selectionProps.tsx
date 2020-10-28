@@ -1,5 +1,6 @@
 import React from 'react'
 import { Row } from '../types'
+import { DynamicCallback } from '../types/dynamic-callback'
 
 export interface SelectionProps {
 	/**
@@ -17,7 +18,7 @@ export interface SelectionProps {
 	/**
 	 * Classname for the row checkbox
 	 */
-	checkboxClass?: string
+	checkboxClass?: string | DynamicCallback<Row, string>
 
 	/**
 	 * Style for the column of selection
@@ -26,7 +27,7 @@ export interface SelectionProps {
 	/**
 	 * Style for the cell in the selected row
 	 */
-	cellClassName?: string
+	cellClassName?: string | DynamicCallback<Row, string>
 
 	/**
 	 * @default 2%
