@@ -13,13 +13,16 @@ export interface DisableSortFilterParam {
 	(column: Column): boolean
 }
 
+export interface OutsideClickDeselectCallback {
+	(target: HTMLElement): boolean
+}
 export interface GridWrapperCommonProps {
 	columns: Column[]
 	nestedHeaders?: Array<NestedHeader[]>
 	/** @default false **/
 	suppressNavigation?: boolean
 	/** @default false **/
-	outsideClickDeselects?: boolean
+	outsideClickDeselects?: boolean | OutsideClickDeselectCallback
 	mergeCells?: MergeCell[]
 	mergedPositions?: MergePosition[]
 	/**
