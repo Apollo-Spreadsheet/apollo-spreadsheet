@@ -125,7 +125,7 @@ export function useNavigation({
 
 			//Equal selection comparison
 			if (coords.colIndex === colIndex && coords.rowIndex === rowIndex) {
-				return
+				return logger.debug('Coordinates given are equal to the current coordinates')
 			}
 
 			//Validate boundaries
@@ -133,12 +133,25 @@ export function useNavigation({
 				isIndexOutOfBoundaries(colIndex, 0, apiRef.current.getColumnCount() - 1) ||
 				isIndexOutOfBoundaries(rowIndex, 0, apiRef.current.getRowsCount() - 1)
 			) {
-				return
+				return logger.warn('Attempting to go out of boundaries, states result ', {
+					colIndex,
+					rowIndex,
+					columnCount: apiRef.current.getColumnCount(),
+					rowsCount: apiRef.current.getRowsCount(),
+					columnOutOfBound: isIndexOutOfBoundaries(
+						colIndex,
+						0,
+						apiRef.current.getColumnCount() - 1,
+					),
+					rowOutOfBound: isIndexOutOfBoundaries(rowIndex, 0, apiRef.current.getRowsCount() - 1),
+				})
 			}
 
 			const column = apiRef.current.getColumnAt(colIndex)
 			if (!column) {
-				return logger.warn(`Column not found at index ${colIndex}`)
+				return logger.warn(
+					`Column not found at index ${colIndex}, review your configuration. Total loaded columns ${apiRef.current.getColumnCount()}`,
+				)
 			}
 
 			const isDisabled = isFunctionType(column.disableNavigation)
@@ -146,19 +159,24 @@ export function useNavigation({
 				: column.disableNavigation
 
 			if (isDisabled) {
-				return
+				return logger.info(`Navigation is disabled for the given column: ${column.id}`)
 			}
 
 			const delayEditingOpen = column.delayEditorOpen
 			//Cleanup
 			if (delayEditorDebounce.current) {
+				logger.info('Delay editor debounce is being cleared')
 				delayEditorDebounce.current.cancel()
 				delayEditorDebounce.current = null
 			}
 
 			if (delayEditingOpen) {
 				delayEditorDebounce.current = debounce(() => {
+					logger.info('Debounce has been invoked')
 					delayEditorDebounce.current = null
+					if (colIndex < 0 || rowIndex < 0) {
+						return logger.info("Debounce couldn't start editor at negative coordinates")
+					}
 					const selector = `[aria-colIndex='${colIndex}'][data-rowIndex='${rowIndex}'][role='cell']`
 					const target =
 						targetElement ?? apiRef.current.rootElementRef?.current?.querySelector(selector)
@@ -175,6 +193,8 @@ export function useNavigation({
 				}, delayEditingOpen)
 				delayEditorDebounce.current()
 			}
+
+			logger.info(`Coordinates are being dispatched to [${rowIndex},${colIndex}]`)
 			coordsRef.current = { colIndex, rowIndex }
 			setCoords({ colIndex, rowIndex })
 		},
@@ -426,7 +446,13 @@ export function useNavigation({
 			const editorState = apiRef.current.getEditorState()
 			//Ensure we can proceed navigation under this core conditions
 			if (!initialised || suppressControls || editorState?.isPopup) {
-				return
+				return logger.info(
+					`Navigation is suppressed for key ${event.key} with the following states: ${{
+						initialised,
+						suppressControls,
+						isPopup: editorState?.isPopup,
+					}}`,
+				)
 			}
 
 			const isCtrlPressed = (event.ctrlKey || event.metaKey) && !event.altKey
