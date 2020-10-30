@@ -117,6 +117,11 @@ export function useNavigation({
 	const selectCell = useCallback(
 		({ colIndex, rowIndex }: NavigationCoords, force?: boolean, targetElement?: HTMLElement) => {
 			logger.debug(`Select cell for coordinates [${rowIndex},${colIndex}]`)
+			if (!colIndex || !rowIndex) {
+				return logger.error(
+					`Undefined coordinates detected at selectCell [${rowIndex},${colIndex}]`,
+				)
+			}
 			//Coordinates when the grid is clicked away
 			if ((colIndex === -1 && rowIndex === -1) || force) {
 				logger.debug('Force or negative -1 coordinates selected')
