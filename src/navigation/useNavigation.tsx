@@ -119,9 +119,9 @@ export function useNavigation({
 	const selectCell = useCallback(
 		({ colIndex, rowIndex }: NavigationCoords, force?: boolean, targetElement?: HTMLElement) => {
 			logger.debug(`Select cell for coordinates [${rowIndex},${colIndex}]`)
-			if (!colIndex || !rowIndex) {
+			if (colIndex === undefined || rowIndex === undefined) {
 				return logger.error(
-					`Undefined coordinates detected at selectCell [${rowIndex},${colIndex}]`,
+					`Undefined coordinates detected at selectCell [${rowIndex},${colIndex}]. If you wish to remove highlight, you can pass -1, -1 coordinates`,
 				)
 			}
 			//Coordinates when the grid is clicked away
