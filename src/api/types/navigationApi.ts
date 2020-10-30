@@ -9,6 +9,8 @@ export interface NavigationApi {
 	/**
 	 * Selects a cell
 	 * @param coords
+	 * @param force   Bypass flag
+	 * @param targetElement Given in case the target cell has delayEditorOpen
 	 */
-	selectCell: (coords: NavigationCoords) => void
+	selectCell: (coords: NavigationCoords, force?: boolean, targetElement?: HTMLElement) => void
 }

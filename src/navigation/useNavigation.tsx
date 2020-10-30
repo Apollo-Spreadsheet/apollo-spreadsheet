@@ -608,7 +608,7 @@ export function useNavigation({
 			event.preventDefault()
 			//Compare if the cell is equal to whats selected otherwise select it first
 			if (colIndex !== coords.colIndex && rowIndex !== coords.rowIndex) {
-				selectCell({ rowIndex, colIndex },false, element)
+				selectCell({ rowIndex, colIndex }, false, element)
 			}
 			apiRef.current.beginEditing({
 				coords: { colIndex, rowIndex },
