@@ -19,7 +19,7 @@ export const CalendarEditor = forwardRef(
 	({ stopEditing, anchorRef, value, additionalProps }: EditorProps, componentRef) => {
 		const classes = useStyles()
 		const [state, setState] = useState<{ value: dayjs.Dayjs; close: boolean }>({
-			value: dayjs(value),
+			value: value ? dayjs(value) : dayjs(),
 			close: false,
 		})
 
