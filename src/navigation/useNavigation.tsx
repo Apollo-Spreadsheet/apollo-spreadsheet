@@ -18,6 +18,7 @@ import {
 	NavigationApi,
 	ApiRef,
 	useApiEventHandler,
+	CELL_NAVIGATION_CHANGED,
 } from '../api'
 import { Row } from '../types'
 import { useLogger } from '../logger'
@@ -59,10 +60,11 @@ export function useNavigation({
 			const target = rows[coordsRef.current.rowIndex]
 			if (!target) {
 				coordsRef.current = defaultCoords
+				apiRef.current.dispatchEvent(CELL_NAVIGATION_CHANGED, { coords: coordsRef.current })
 				setCoords(defaultCoords)
 			}
 		},
-		[defaultCoords],
+		[apiRef, defaultCoords],
 	)
 
 	//Cancels the debounce if the editor is prematurely open
@@ -126,6 +128,7 @@ export function useNavigation({
 			if ((colIndex === -1 && rowIndex === -1) || force) {
 				logger.debug('Force or negative -1 coordinates selected')
 				coordsRef.current = { colIndex, rowIndex }
+				apiRef.current.dispatchEvent(CELL_NAVIGATION_CHANGED, { coords: coordsRef.current })
 				return setCoords({ colIndex, rowIndex })
 			}
 
@@ -200,8 +203,8 @@ export function useNavigation({
 				delayEditorDebounce.current()
 			}
 
-			logger.info(`Coordinates are being dispatched to [${rowIndex},${colIndex}]`)
 			coordsRef.current = { colIndex, rowIndex }
+			apiRef.current.dispatchEvent(CELL_NAVIGATION_CHANGED, { coords: coordsRef.current })
 			setCoords({ colIndex, rowIndex })
 		},
 		[logger, coords, apiRef],
