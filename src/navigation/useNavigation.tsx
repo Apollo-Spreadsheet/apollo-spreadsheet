@@ -115,10 +115,11 @@ export function useNavigation({
 	)
 
 	const selectCell = useCallback(
-		({ colIndex, rowIndex }: NavigationCoords, targetElement?: HTMLElement) => {
+		({ colIndex, rowIndex }: NavigationCoords, force?: boolean, targetElement?: HTMLElement) => {
 			logger.debug(`Select cell for coordinates [${rowIndex},${colIndex}]`)
 			//Coordinates when the grid is clicked away
-			if (colIndex === -1 && rowIndex === -1) {
+			if ((colIndex === -1 && rowIndex === -1) || force) {
+				logger.debug('Force or negative -1 coordinates selected')
 				coordsRef.current = { colIndex, rowIndex }
 				return setCoords({ colIndex, rowIndex })
 			}
@@ -587,7 +588,7 @@ export function useNavigation({
 			element: HTMLElement
 		}) => {
 			event.preventDefault()
-			selectCell({ rowIndex, colIndex }, element)
+			selectCell({ rowIndex, colIndex }, false, element)
 		},
 		[selectCell],
 	)
@@ -607,7 +608,7 @@ export function useNavigation({
 			event.preventDefault()
 			//Compare if the cell is equal to whats selected otherwise select it first
 			if (colIndex !== coords.colIndex && rowIndex !== coords.rowIndex) {
-				selectCell({ rowIndex, colIndex }, element)
+				selectCell({ rowIndex, colIndex },false, element)
 			}
 			apiRef.current.beginEditing({
 				coords: { colIndex, rowIndex },
