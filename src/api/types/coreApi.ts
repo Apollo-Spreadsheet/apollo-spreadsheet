@@ -31,4 +31,9 @@ export interface CoreApi extends EventEmitter {
 	 * @param args
 	 */
 	dispatchEvent: (name: string, ...args: any[]) => void
+
+	/**
+	 * Removes the focus from the grid and wipes the highlight
+	 */
+	clearFocus(): void
 }

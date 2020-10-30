@@ -21,6 +21,7 @@ import { ApolloSpreadsheetProps } from './ApolloSpreadsheetProps'
 import { useSort } from './sort/useSort'
 import { useLogger } from './logger'
 import { isFunctionType } from './helpers'
+import { useApiExtends } from './api'
 
 const useStyles = makeStyles(() => ({
 	root: {
@@ -91,6 +92,16 @@ export const ApolloSpreadSheet = forwardRef(
 			apiRef,
 			initialised,
 		})
+		const clearFocus = useCallback(() => {
+			if (gridFocused) {
+				logger.debug('Grid clearFocus() invoked')
+				setGridFocused(false)
+				apiRef.current.selectCell({
+					rowIndex: -1,
+					colIndex: -1,
+				})
+			}
+		}, [apiRef, gridFocused, logger])
 
 		const onClickAway = useCallback(
 			(event: React.MouseEvent<Document>) => {
@@ -102,23 +113,16 @@ export const ApolloSpreadSheet = forwardRef(
 					props.outsideClickDeselects(event.target as HTMLElement)
 				) {
 					logger.debug('Grid click away detected.')
-					setGridFocused(false)
-					return apiRef.current.selectCell({
-						rowIndex: -1,
-						colIndex: -1,
-					})
+					return clearFocus()
 				}
 
 				if (props.outsideClickDeselects) {
 					logger.debug('Grid click away detected.')
 					setGridFocused(false)
-					apiRef.current.selectCell({
-						rowIndex: -1,
-						colIndex: -1,
-					})
+					clearFocus()
 				}
 			},
-			[gridFocused, props, logger, apiRef],
+			[gridFocused, props, logger, clearFocus],
 		)
 
 		// Detect if any element is clicked again to enable focus
@@ -131,6 +135,7 @@ export const ApolloSpreadSheet = forwardRef(
 
 		useApiEventHandler(apiRef, CELL_CLICK, onCellMouseHandler)
 		useApiEventHandler(apiRef, CELL_DOUBLE_CLICK, onCellMouseHandler)
+		useApiExtends(apiRef, { clearFocus }, 'CoreApi')
 
 		return (
 			<ClickAwayListener onClickAway={onClickAway}>
