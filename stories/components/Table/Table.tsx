@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useCallback, useState } from 'react'
 import { ApolloSpreadSheet, StretchMode } from '../../../src'
 import { Column } from '../../../src/columnGrid/types/header.type'
 import { AddCircle } from '@material-ui/icons'
@@ -124,6 +124,10 @@ export function Table() {
 		},
 	]
 
+	const canDragHandler = useCallback(({ column }) => {
+		return column.id !== 'order'
+	}, [])
+
 	return (
 		<Box width={'98%'} height={'calc(100vh - 100px)'} style={{ margin: 10 }}>
 			<ApolloSpreadSheet
@@ -141,6 +145,9 @@ export function Table() {
 					cellClassName: classes.selectedCell,
 				}}
 				disableSort={disableSort}
+				dragAndDrop={{
+					canDrag: canDragHandler,
+				}}
 				// nestedHeaders={[
 				// 	[
 				// 		{

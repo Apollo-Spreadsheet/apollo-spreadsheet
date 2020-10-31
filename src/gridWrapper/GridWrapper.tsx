@@ -10,6 +10,22 @@ import { makeStyles } from '@material-ui/core/styles'
 import { MergeCell } from '../mergeCells/interfaces'
 import { StretchMode } from '../types'
 import { useLogger } from '../logger'
+import {
+	DragDropContext,
+	Draggable,
+	DraggableProvided,
+	DraggableRubric,
+	DraggableStateSnapshot,
+	DragStart,
+	Droppable,
+	DroppableProvided,
+	DroppableStateSnapshot,
+	DropResult,
+	ResponderProvided,
+} from 'react-beautiful-dnd'
+import CloneItem from './CloneItem'
+import ReactDOM from 'react-dom'
+import { ROW_SELECTION_HEADER_ID } from '../rowSelection'
 
 const useStyles = makeStyles(() => ({
 	bodyContainer: {
@@ -139,6 +155,33 @@ const GridWrapper = React.memo((props: GridWrapperProps) => {
 		[activeMergePath, props.mergeCells],
 	)
 
+	const getItemStyle = (
+		isDragDisabled: boolean,
+		snapshot: DraggableStateSnapshot,
+		draggableStyle,
+	): CSSProperties => {
+		if (isDragDisabled) {
+			return { cursor: 'default' }
+		}
+
+		return {
+			// some basic styles to make the items look a bit nicer
+			userSelect: 'none',
+			// change background colour if dragging
+			//background: '#E6EFED',
+			//	border: `1px solid ${snapshot.isDragging}` ? 'blue' : 'black',
+			//margin: 0,
+			fontWeight: snapshot.isDragging ? 700 : 400,
+			opacity: draggableStyle.transform !== null ? '0.5' : 1,
+			display: 'flex',
+			width: '100%',
+			height: '100%',
+			// styles we need to apply on draggables
+			/** @todo Review because transform is making items disappear **/
+			// ...draggableStyle,
+		}
+	}
+
 	const renderCell = useCallback(
 		({ style, cell, ref, rowIndex, columnIndex }) => {
 			const isSelected = rowIndex === props.coords.rowIndex && columnIndex === props.coords.colIndex
@@ -197,6 +240,54 @@ const GridWrapper = React.memo((props: GridWrapperProps) => {
 				}
 			}
 
+			const dynamicDragId = `cell-${rowIndex},${columnIndex}`
+			const isDragDisabled =
+				!props.dragAndDrop?.canDrag?.({
+					row,
+					column,
+				}) || column.id === ROW_SELECTION_HEADER_ID
+
+			if (props.dragAndDrop) {
+				return (
+					<div
+						role={'cell'}
+						aria-colindex={columnIndex}
+						data-rowindex={rowIndex}
+						data-accessor={column.accessor}
+						data-dummy={cell.dummy}
+						className={cellClassName}
+						style={{
+							...cellStyle,
+							justifyContent: cell?.dummy ? 'top' : 'center',
+							zIndex,
+						}}
+						ref={ref}
+					>
+						<Draggable
+							draggableId={dynamicDragId}
+							index={rowIndex}
+							key={dynamicDragId}
+							isDragDisabled={isDragDisabled}
+						>
+							{(provided: DraggableProvided, snapshot: DraggableStateSnapshot) => (
+								<div
+									ref={provided.innerRef}
+									{...provided.draggableProps}
+									{...provided.dragHandleProps}
+									style={{
+										...getItemStyle(isDragDisabled, snapshot, provided.draggableProps.style),
+										justifyContent: cell?.dummy ? 'top' : 'center',
+										alignItems: 'center',
+									}}
+								>
+									{cell.value}
+								</div>
+							)}
+						</Draggable>
+					</div>
+				)
+			}
+
 			return (
 				<div
 					role={'cell'}
@@ -217,15 +308,17 @@ const GridWrapper = React.memo((props: GridWrapperProps) => {
 			)
 		},
 		[
-			classes,
-			isActiveRow,
-			props.apiRef,
+			props.coords.rowIndex,
+			props.coords.colIndex,
 			props.columns,
 			props.rows,
-			props.coords.colIndex,
-			props.coords.rowIndex,
-			props.highlightBorderColor,
+			props.apiRef,
 			props.selection,
+			props.dragAndDrop,
+			props.highlightBorderColor,
+			isActiveRow,
+			classes.cellDefaultStyle,
+			classes.disabledCell,
 		],
 	)
 
@@ -292,6 +385,138 @@ const GridWrapper = React.memo((props: GridWrapperProps) => {
 		},
 		[props.apiRef],
 	)
+
+	const reorder = (list: any[], startIndex: number, endIndex: number): any[] => {
+		const result = Array.from(list)
+		const [removed] = result.splice(startIndex, 1)
+		result.splice(endIndex, 0, removed)
+
+		return result
+	}
+
+	const onDragEnd = useCallback(
+		(result: DropResult) => {
+			console.error('onDRAG END')
+			console.log(result)
+			if (!result.destination) {
+				return
+			}
+
+			if (result.source.index === result.destination.index) {
+				return console.warn('Equal destingation')
+			}
+
+			console.log('Re-ordering..')
+
+			const newRows = reorder(props.rows, result.source.index, result.destination.index)
+
+			props.apiRef.current.updateRows(newRows)
+		},
+		[props.apiRef, props.rows],
+	)
+
+	const getDroppableStyles = (snapshot: DroppableStateSnapshot) => {
+		if (snapshot.isDraggingOver) {
+			return {
+				transition: 'all 0.3s cubic-bezier(.25,.8,.25,1)',
+				margin: 0,
+				// padding: '1px', //gives the card resize effect
+				background: '#DCF0E5',
+			}
+		}
+		// if (isDraggingFrom) {
+		// 	return 'blue'
+		// }
+		return {
+			cursor: 'pointer',
+		}
+	}
+
+	const onDragStart = useCallback((initial: DragStart, provided: ResponderProvided) => {
+		/** @todo https://github.com/atlassian/react-beautiful-dnd/blob/master/docs/guides/responders.md#block-updates-during-a-drag **/
+		console.log('DRAG START')
+		console.log({
+			initial,
+			provided,
+		})
+	}, [])
+
+	const onBeforeDragStart = useCallback((initial: DragStart) => {
+		console.log('BEFORE START DRAG')
+		console.log(initial)
+	}, [])
+
+	if (props.dragAndDrop) {
+		logger.info('Drag and drops experimental grid enabled.')
+		return (
+			<DragDropContext
+				onDragEnd={onDragEnd}
+				onDragStart={onDragStart}
+				onBeforeDragStart={onBeforeDragStart}
+			>
+				<Droppable
+					droppableId="droppable"
+					// isCombineEnabled
+					mode="virtual"
+					renderClone={(
+						provided: DraggableProvided,
+						snapshot: DraggableStateSnapshot,
+						rubric: DraggableRubric,
+					) => (
+						<CloneItem
+							provided={provided}
+							row={props.rows[rubric.source.index]}
+							index={rubric.source.index}
+							snapshot={snapshot}
+							minHeight={cache.defaultHeight}
+						/>
+					)}
+				>
+					{(droppableProvided: DroppableProvided, snapshot: DroppableStateSnapshot) => {
+						return (
+							<Grid
+								{...props}
+								className={
+									props.stretchMode !== StretchMode.None
+										? clsx(classes.bodyContainer, classes.suppressHorizontalOverflow)
+										: classes.bodyContainer
+								}
+								ref={ref => {
+									// react-virtualized has no way to get the list's ref that I can so
+									// So we use the `ReactDOM.findDOMNode(ref)` escape hatch to get the ref
+									if (ref) {
+										// eslint-disable-next-line react/no-find-dom-node
+										const gridInnerRef = ReactDOM.findDOMNode(ref)
+										if (gridInnerRef instanceof HTMLElement) {
+											droppableProvided.innerRef(gridInnerRef)
+										}
+										onRefMount(ref)
+									}
+								}}
+								style={{
+									...getDroppableStyles(snapshot),
+								}}
+								cellRenderer={cellRenderer}
+								deferredMeasurementCache={cache}
+								rowHeight={cache.rowHeight}
+								rowCount={props.rows.length}
+								columnCount={props.columnCount}
+								columnWidth={props.getColumnWidth}
+								overscanRowCount={props.overscanRowCount ?? 2}
+								overscanColumnCount={props.overscanColumnCount ?? 2}
+								onSectionRendered={onSectionRendered}
+								scrollToRow={props.coords.rowIndex}
+								scrollToColumn={props.coords.colIndex}
+								scrollToAlignment={props.scrollToAlignment}
+								onScroll={props.onScroll}
+								scrollLeft={props.scrollLeft}
+							/>
+						)
+					}}
+				</Droppable>
+			</DragDropContext>
+		)
+	}
 
 	return (
 		<Grid

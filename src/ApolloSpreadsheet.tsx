@@ -189,6 +189,7 @@ export const ApolloSpreadSheet = forwardRef(
 									scrollToAlignment={props.scrollToAlignment}
 									highlightBorderColor={props.highlightBorderColor}
 									selection={props.selection}
+									dragAndDrop={props.dragAndDrop}
 								/>
 							</div>
 						)}

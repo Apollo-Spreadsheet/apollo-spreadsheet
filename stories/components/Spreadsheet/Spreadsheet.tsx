@@ -116,7 +116,7 @@ export function Spreadsheet() {
 				return newData
 			})
 		},
-		[data, headers],
+		[headers],
 	)
 
 	const [delayedPosition, setDelayedPosition] = useState<NavigationCoords | null>(null)
@@ -210,6 +210,9 @@ export function Spreadsheet() {
 					key: 'taskId',
 					checkboxClass: classes.checkBox,
 					onHeaderIconClick,
+				}}
+				dragAndDrop={{
+					canDrag: () => true,
 				}}
 			/>
 		</Box>

@@ -5,9 +5,13 @@ import { GridCell } from './interfaces'
 import { CellChangeParams } from '../editorManager'
 import { Alignment, OnScrollParams } from 'react-virtualized'
 import { MergePosition } from '../mergeCells'
-import { StretchMode } from '../types'
+import { DynamicCallback, Row, StretchMode } from '../types'
 import { ApiRef } from '../api/types'
 import { SelectionProps } from '../rowSelection'
+
+export interface DragAndDropProps {
+	canDrag?: DynamicCallback<Row, boolean>
+}
 
 export interface DisableSortFilterParam {
 	(column: Column): boolean
@@ -49,6 +53,7 @@ export interface GridWrapperCommonProps {
 	 * Border for highlighted cell
 	 */
 	highlightBorderColor?: string
+	dragAndDrop?: DragAndDropProps
 }
 
 export interface GridWrapperProps<TRow = any> extends GridWrapperCommonProps {
