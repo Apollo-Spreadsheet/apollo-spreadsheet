@@ -30,7 +30,7 @@ const useStyles = makeStyles(() => ({
 }))
 
 interface Props {
-	row: any
+	value: string
 	snapshot: DraggableStateSnapshot
 	provided: DraggableProvided
 	index: number
@@ -42,15 +42,16 @@ function getStyle(
 	snapshot: DraggableStateSnapshot,
 	style?: CSSProperties,
 ) {
+	/** @todo If the draggableProps does not set the width and height correctly, we can get from the cache via col/row index **/
 	return {
 		...provided.draggableProps.style,
-		width: '100%', //Enable this if you want to simulate a row
+		// width: '100%', //Enable this if you want to simulate a row
 		...style,
 		margin: 0,
 	}
 }
 
-const CloneItem = memo(({ snapshot, index, provided, row, minHeight }: Props) => {
+const CloneItem = memo(({ snapshot, index, provided, value, minHeight }: Props) => {
 	const classes = useStyles({ minHeight })
 	return (
 		<div
@@ -59,12 +60,12 @@ const CloneItem = memo(({ snapshot, index, provided, row, minHeight }: Props) =>
 			{...provided.dragHandleProps}
 			style={getStyle(provided, snapshot)}
 			data-is-dragging={snapshot.isDragging}
-			data-testid={row.id}
+			// data-testid={row.id}
 			data-index={index}
 			// aria-label={`${row.name} quote ${row.content}`}
 			className={classes.container}
 		>
-			<div className={classes.cell}>{row.name} - Experimental</div>
+			<div className={classes.cell}>{value}</div>
 		</div>
 	)
 })

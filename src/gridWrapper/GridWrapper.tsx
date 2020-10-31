@@ -240,7 +240,7 @@ const GridWrapper = React.memo((props: GridWrapperProps) => {
 				}
 			}
 
-			const dynamicDragId = `cell-${rowIndex},${columnIndex}`
+			const dynamicDragId = `${rowIndex},${columnIndex}`
 			const isDragDisabled =
 				!props.dragAndDrop?.canDrag?.({
 					row,
@@ -462,15 +462,26 @@ const GridWrapper = React.memo((props: GridWrapperProps) => {
 						provided: DraggableProvided,
 						snapshot: DraggableStateSnapshot,
 						rubric: DraggableRubric,
-					) => (
-						<CloneItem
-							provided={provided}
-							row={props.rows[rubric.source.index]}
-							index={rubric.source.index}
-							snapshot={snapshot}
-							minHeight={cache.defaultHeight}
-						/>
-					)}
+					) => {
+						let value = ''
+						//Format `${rowIndex},${columnIndex}`
+						const splitted = rubric.draggableId.split(',')
+						const rowIndex = Number(splitted[0])
+						const colIndex = Number(splitted[1])
+						const cell = props.data[rowIndex]?.[colIndex]
+						if (cell && cell.value) {
+							value = cell.value.toString()
+						}
+						return (
+							<CloneItem
+								provided={provided}
+								value={value}
+								index={rubric.source.index}
+								snapshot={snapshot}
+								minHeight={cache.defaultHeight}
+							/>
+						)
+					}}
 				>
 					{(droppableProvided: DroppableProvided, snapshot: DroppableStateSnapshot) => {
 						return (
