@@ -12,6 +12,8 @@ import { useTopCase } from './dataUseCases'
 import { makeStyles } from '@material-ui/core/styles'
 import { useApiRef } from '../../../src/api/useApiRef'
 import 'react-datepicker/dist/react-datepicker.css'
+import ToggleOnIcon from '@material-ui/icons/ToggleOn'
+import ToggleOffIcon from '@material-ui/icons/ToggleOff'
 
 const useStyles = makeStyles(theme => ({
 	root: {
@@ -84,17 +86,58 @@ const useStyles = makeStyles(theme => ({
 			borderRadius: '20px',
 		},
 	},
+	columnWithMinimize: {
+		width: '100%',
+		height: '100%',
+		display: 'flex',
+		justifyContent: 'center',
+		alignItems: 'center',
+		// transition: 'all 500ms ease-in-out'
+	},
 }))
 
+const MIN_COLUMN_WIDTH = 10
 export function Spreadsheet() {
 	const classes = useStyles()
-	const { headerData: headers, data: defaultData } = useTopCase(classes.calendarClass)
+	const { headerData: columns, data: defaultData } = useTopCase(classes.calendarClass)
 	const [data, setData] = useState(defaultData)
 	const apiRef = useApiRef()
+	const [columnMinimized, setColumnMinimized] = useState<string[]>([])
+
+	const headersWithTemporaryMinimize = useMemo(() => {
+		const updatedColumns = [...columns]
+		updatedColumns.forEach((col, i) => {
+			if (i === 3 || i > 4){
+				return
+			}
+			const isMinimized = columnMinimized.some(id => col.id === id)
+			if (isMinimized) {
+				col.cellRenderer = () => {
+					return <></>
+				}
+			}
+			col.width = isMinimized ? MIN_COLUMN_WIDTH : '15%'
+			col.renderer = () => {
+				return (
+					<div className={classes.columnWithMinimize}>
+						{!isMinimized && <p>{col.title}</p>}
+						{isMinimized ? (
+							<ToggleOnIcon
+								onClick={() => setColumnMinimized(prev => [...prev.filter(e => e !== col.id)])}
+							/>
+						) : (
+							<ToggleOffIcon onClick={() => setColumnMinimized(prev => [...prev, col.id])} />
+						)}
+					</div>
+				)
+			}
+		})
+		return updatedColumns
+	}, [columns, columnMinimized])
 
 	const mergeCellsData = useMemo(() => {
-		return createMergeCellsData(data, headers)
-	}, [data, headers])
+		return createMergeCellsData(data, columns)
+	}, [data, columns])
 
 	const customTheme: GridTheme = {
 		currentColumnClass: classes.currentColumnClass,
@@ -108,7 +151,7 @@ export function Spreadsheet() {
 		(changes: CellChangeParams) => {
 			setData(prev => {
 				const newData = [...prev]
-				const column = headers[changes.coords.colIndex]
+				const column = columns[changes.coords.colIndex]
 				newData[changes.coords.rowIndex] = {
 					...newData[changes.coords.rowIndex],
 					[column.accessor]: changes.newValue,
@@ -116,7 +159,7 @@ export function Spreadsheet() {
 				return newData
 			})
 		},
-		[headers],
+		[columns],
 	)
 
 	const [delayedPosition, setDelayedPosition] = useState<NavigationCoords | null>(null)
@@ -137,13 +180,13 @@ export function Spreadsheet() {
 		const parentRow = data[coords.rowIndex]
 		const updatedData = [...data]
 		const newRow: any = {
-			taskId: 'new-task' + Math.random().toString(),
+			taskId: `new-task${Math.random().toString()}`,
 			taskContent: 'New task from enter',
-			deliverableId: parentRow ? parentRow.deliverableId : 'new-del-' + Math.random().toString(),
+			deliverableId: parentRow ? parentRow.deliverableId : `new-del-${Math.random().toString()}`,
 			deliverableBody: parentRow ? parentRow.deliverableBody : 'New DEL',
-			activityId: parentRow ? parentRow.activityId : 'new-act-' + Math.random().toString(),
+			activityId: parentRow ? parentRow.activityId : `new-act-${Math.random().toString()}`,
 			activityBody: parentRow ? parentRow.activityBody : 'New ACT',
-			wpId: parentRow ? parentRow.wpId : 'new-wp-' + Math.random().toString(),
+			wpId: parentRow ? parentRow.wpId : `new-wp-${Math.random().toString()}`,
 			wpBody: parentRow ? parentRow.wpBody : 'New WP',
 			lok: 1,
 			order: newOrder,
@@ -196,13 +239,13 @@ export function Spreadsheet() {
 			<ApolloSpreadSheet
 				className={classes.root}
 				apiRef={apiRef}
-				columns={headers}
+				columns={headersWithTemporaryMinimize}
 				rows={data}
 				onCellChange={onCellChange}
 				outsideClickDeselects
 				theme={customTheme}
 				minRowHeight={25}
-				minColumnWidth={10}
+				minColumnWidth={MIN_COLUMN_WIDTH}
 				stretchMode={StretchMode.All}
 				mergeCells={mergeCellsData}
 				onCreateRow={createRow}
@@ -211,6 +254,7 @@ export function Spreadsheet() {
 					checkboxClass: classes.checkBox,
 					onHeaderIconClick,
 				}}
+				disableSort
 				dragAndDrop={{
 					canDrag: () => true,
 				}}

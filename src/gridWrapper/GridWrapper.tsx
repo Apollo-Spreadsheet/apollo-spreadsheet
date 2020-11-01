@@ -63,6 +63,7 @@ const GridWrapper = React.memo((props: GridWrapperProps) => {
 	const classes = useStyles()
 	const gridRef = useRef<Grid | null>(null)
 	const recomputingTimeout = useRef<NodeJS.Timeout | undefined>(undefined)
+	const draggingRowIndex = useRef<number | null>(null)
 
 	const recomputeSizes = useCallback(() => {
 		logger.debug('Recomputing sizes.')
@@ -278,6 +279,12 @@ const GridWrapper = React.memo((props: GridWrapperProps) => {
 										...getItemStyle(isDragDisabled, snapshot, provided.draggableProps.style),
 										justifyContent: cell?.dummy ? 'top' : 'center',
 										alignItems: 'center',
+										/** @todo Hardcoded but we'll provide a className for some conditions **/
+										opacity:
+											draggingRowIndex.current === rowIndex &&
+											columnIndex !== ROW_SELECTION_HEADER_ID
+												? '0.3'
+												: '1',
 									}}
 								>
 									{cell.value}
@@ -398,6 +405,7 @@ const GridWrapper = React.memo((props: GridWrapperProps) => {
 		(result: DropResult) => {
 			console.error('onDRAG END')
 			console.log(result)
+			draggingRowIndex.current = null
 			if (!result.destination) {
 				return
 			}
@@ -406,11 +414,13 @@ const GridWrapper = React.memo((props: GridWrapperProps) => {
 				return console.warn('Equal destingation')
 			}
 
-			console.log('Re-ordering..')
-
+			/**
+			 * @todo Must be provided in a callback, this is temporary as a DEMO
+			 */
 			const newRows = reorder(props.rows, result.source.index, result.destination.index)
-
+			const { colIndex } = props.apiRef.current.getSelectedCoords()
 			props.apiRef.current.updateRows(newRows)
+			props.apiRef.current.selectCell({ rowIndex: result.destination.index, colIndex })
 		},
 		[props.apiRef, props.rows],
 	)
@@ -432,6 +442,13 @@ const GridWrapper = React.memo((props: GridWrapperProps) => {
 		}
 	}
 
+	const extractDraggableIdCoords = (id: string): NavigationCoords => {
+		//Format `${rowIndex},${columnIndex}`
+		const splitted = id.split(',')
+		const rowIndex = Number(splitted[0])
+		const colIndex = Number(splitted[1])
+		return { rowIndex, colIndex }
+	}
 	const onDragStart = useCallback((initial: DragStart, provided: ResponderProvided) => {
 		/** @todo https://github.com/atlassian/react-beautiful-dnd/blob/master/docs/guides/responders.md#block-updates-during-a-drag **/
 		console.log('DRAG START')
@@ -439,11 +456,24 @@ const GridWrapper = React.memo((props: GridWrapperProps) => {
 			initial,
 			provided,
 		})
+		// const coords = extractDraggableIdCoords(initial.draggableId)
+		// draggingCellCoords.current = coords
 	}, [])
 
 	const onBeforeDragStart = useCallback((initial: DragStart) => {
 		console.log('BEFORE START DRAG')
 		console.log(initial)
+		const coords = extractDraggableIdCoords(initial.draggableId)
+		draggingRowIndex.current = coords.rowIndex
+
+		/** @todo
+		 * Review if rbd offers a way to know which cells we can drop, i think they dont so if they don't do that
+		 * we need to create a ref like draggingRowIndex with a mapping of allowed coordinates
+		 * Also with that map i can apply styles to draggable targets and also apply non draggable zones styling
+		 * 1. By default we build that map
+		 * 2. We provide a callback that will be invoked for all rendered rows to build that map (not so effiecient)
+		 * 3. We provide the same interface as the map we build, so it can be prematured calculated from the developer side
+		 */
 	}, [])
 
 	if (props.dragAndDrop) {
@@ -458,6 +488,7 @@ const GridWrapper = React.memo((props: GridWrapperProps) => {
 					droppableId="droppable"
 					// isCombineEnabled
 					mode="virtual"
+					direction={'vertical'}
 					renderClone={(
 						provided: DraggableProvided,
 						snapshot: DraggableStateSnapshot,
@@ -465,9 +496,7 @@ const GridWrapper = React.memo((props: GridWrapperProps) => {
 					) => {
 						let value = ''
 						//Format `${rowIndex},${columnIndex}`
-						const splitted = rubric.draggableId.split(',')
-						const rowIndex = Number(splitted[0])
-						const colIndex = Number(splitted[1])
+						const { rowIndex, colIndex } = extractDraggableIdCoords(rubric.draggableId)
 						const cell = props.data[rowIndex]?.[colIndex]
 						if (cell && cell.value) {
 							value = cell.value.toString()

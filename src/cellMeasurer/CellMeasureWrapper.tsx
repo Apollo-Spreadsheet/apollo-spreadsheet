@@ -13,7 +13,7 @@ function CellMeasureWrapper({
 }: CellMeasureWrapperProps) {
 	const initializeStyles = () => {
 		const defaultStyle: React.CSSProperties = {
-			transform: 'translate3d(0, 0, 0)',
+			// transform: 'translate3d(0, 0, 0)',
 			alignItems: 'center',
 			overflow: 'hidden',
 			wordBreak: 'break-word',

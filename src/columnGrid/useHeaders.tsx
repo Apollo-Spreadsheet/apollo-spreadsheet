@@ -5,6 +5,8 @@ import { insertDummyCells } from '../gridWrapper/utils'
 import { ApiRef, COLUMNS_CHANGED, useApiExtends } from '../api'
 import { ColumnApi } from '../api/types/columnApi'
 import { useLogger } from '../logger'
+import { ROW_SELECTION_HEADER_ID, SelectionProps } from '../rowSelection'
+import { createSelectionColumn } from '../rowSelection/createSelectionColumn'
 
 export interface ColumnWidthRecord {
 	totalSize: number
@@ -26,6 +28,7 @@ interface Props {
 	minColumnWidth: number
 	stretchMode?: StretchMode
 	apiRef: ApiRef
+	selection?: SelectionProps
 	initialised: boolean
 }
 
@@ -38,7 +41,7 @@ interface Props {
  * @param minColumnWidth
  * @param stretchMode
  */
-export function useHeaders({ columns, nestedHeaders, apiRef }: Props): HeadersState {
+export function useHeaders({ columns, nestedHeaders, apiRef, selection }: Props): HeadersState {
 	const logger = useLogger('useHeaders')
 	const columnsRef = useRef<Column[]>(columns)
 	const nestedHeadersRef = useRef<NestedHeader[][] | undefined>(nestedHeaders)
@@ -53,9 +56,18 @@ export function useHeaders({ columns, nestedHeaders, apiRef }: Props): HeadersSt
 			nestedHeaders?: Array<NestedHeader[]>
 		}) => {
 			logger.debug('Creating grid headers.')
+			const newColumns = [...paramColumns]
+			//Selection column
+			const selectionExists = newColumns.some(e => e.id === ROW_SELECTION_HEADER_ID)
+			if (selection && !selectionExists) {
+				logger.debug('Creating the selection header.')
+				newColumns.push(createSelectionColumn(selection))
+				columnsRef.current = newColumns
+			}
+
 			//Detect duplicated
-			const duplicateColumns = paramColumns.filter((column, i) => {
-				return paramColumns.findIndex(d => d.id === column.id) !== i
+			const duplicateColumns = newColumns.filter((column, i) => {
+				return newColumns.findIndex(d => d.id === column.id) !== i
 			})
 
 			if (duplicateColumns.length) {
@@ -67,7 +79,7 @@ export function useHeaders({ columns, nestedHeaders, apiRef }: Props): HeadersSt
 			}
 
 			//Validate % width to prevent overflow
-			const totalWidth = paramColumns.reduce((acc, e) => {
+			const totalWidth = newColumns.reduce((acc, e) => {
 				if (e.width && typeof e.width === 'string' && e.width.includes('%')) {
 					return acc + parseFloat(e.width.replace('%', '').trim())
 				}
@@ -81,7 +93,7 @@ export function useHeaders({ columns, nestedHeaders, apiRef }: Props): HeadersSt
 			}
 
 			//Check and maybe validate if needed
-			const transformedHeaders = paramColumns.map(
+			const transformedHeaders = newColumns.map(
 				e =>
 					({
 						...e,
@@ -123,7 +135,7 @@ export function useHeaders({ columns, nestedHeaders, apiRef }: Props): HeadersSt
 			//Only one level is necessary
 			setGridHeaders(insertDummyCells([transformedHeaders]))
 		},
-		[columns, logger],
+		[columns, logger, selection],
 	)
 
 	const updateColumns = useCallback(

@@ -53,6 +53,7 @@ export const ApolloSpreadSheet = forwardRef(
 			minColumnWidth,
 			apiRef,
 			initialised,
+			selection: props.selection
 		})
 
 		useMergeCells({
