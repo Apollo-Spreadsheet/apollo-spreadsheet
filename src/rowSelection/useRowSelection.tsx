@@ -1,10 +1,8 @@
-import React, { useCallback, useEffect, useRef } from 'react'
+import { useCallback, useEffect, useRef } from 'react'
 import { SelectionProps } from './selectionProps'
-import { ApiRef } from '../api/types/apiRef'
-import { useApiExtends } from '../api/useApiExtends'
-import { ROW_SELECTION_CHANGE } from '../api/eventConstants'
+import { ApiRef, RowSelectionApi } from '../api/types'
+import { useApiExtends, ROW_SELECTION_CHANGE } from '../api'
 import { Row } from '../types'
-import { RowSelectionApi } from '../api/types'
 import { useLogger } from '../logger'
 
 export const ROW_SELECTION_HEADER_ID = '__selection__'
@@ -17,35 +15,6 @@ export const ROW_SELECTION_HEADER_ID = '__selection__'
 export function useRowSelection(apiRef: ApiRef, initialised: boolean, selection?: SelectionProps) {
 	const logger = useLogger('useRowSelection')
 	const selectedIds = useRef<string[]>([])
-
-	// const createSelectionHeader = useCallback(
-	// 	() => ({
-	// 		colSpan: 1,
-	// 		id: ROW_SELECTION_HEADER_ID,
-	// 		title: '',
-	// 		className: selection?.className,
-	// 		renderer: () => (
-	// 			<Tooltip placement={'top'} title={'Click to delete the selected rows'}>
-	// 				<IconButton onClick={selection?.onHeaderIconClick}>
-	// 					<DeleteIcon />
-	// 				</IconButton>
-	// 			</Tooltip>
-	// 		),
-	// 		accessor: ROW_SELECTION_HEADER_ID,
-	// 		width: selection?.width ?? '2%',
-	// 	}),
-	// 	[selection],
-	// )
-
-	//Build the selection header if does not exist yet
-	// useEffect(() => {
-	// 	const selectionExists = apiRef.current.getColumnById(ROW_SELECTION_HEADER_ID)
-	// 	if (selection && !selectionExists) {
-	// 		logger.debug('Creating the selection header.')
-	// 		const newColumns = [...apiRef.current.getColumns(), createSelectionHeader()]
-	// 		apiRef.current.updateColumns(newColumns)
-	// 	}
-	// }, [selection, apiRef, logger, createSelectionHeader])
 
 	//Detect if a row exists in selected but not in rows
 	useEffect(() => {

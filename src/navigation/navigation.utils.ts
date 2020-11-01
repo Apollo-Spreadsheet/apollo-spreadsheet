@@ -66,7 +66,7 @@ export function isIndexOutOfBoundaries(index: number, min: number, max: number) 
  * @param {number} keyCode The keyboard key code.
  * @returns {boolean}
  */
-export function isPrintableChar(keyCode) {
+export function isPrintableChar(keyCode: number) {
 	return (
 		keyCode === 32 || // space
 		(keyCode >= 48 && keyCode <= 57) || // 0-9
@@ -86,7 +86,7 @@ export function isPrintableChar(keyCode) {
  * @param {number} keyCode The keyboard key code.
  * @returns {boolean}
  */
-export function isCtrlKey(keyCode) {
+export function isCtrlKey(keyCode: number) {
 	const keys: number[] = []
 
 	if (navigator.platform.includes('Mac')) {
@@ -106,7 +106,7 @@ export function isCtrlKey(keyCode) {
  * @param {number} keyCode The keyboard key code.
  * @returns {boolean}
  */
-export function isCtrlMetaKey(keyCode) {
+export function isCtrlMetaKey(keyCode: number) {
 	return [
 		KEY_CODES.CONTROL,
 		KEY_CODES.COMMAND_LEFT,
@@ -139,7 +139,7 @@ export function isCtrlMetaKey(keyCode) {
  * @param {number} keyCode The keyboard key code.
  * @returns {boolean}
  */
-export function isMetaKey(keyCode) {
+export function isMetaKey(keyCode: number) {
 	const metaKeys = [
 		KEY_CODES.ARROW_DOWN,
 		KEY_CODES.ARROW_UP,
