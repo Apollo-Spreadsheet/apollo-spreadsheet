@@ -10,7 +10,7 @@ const useStyles = makeStyles(() => ({
 		backgroundColor: 'white',
 		boxSizing: 'border-box',
 		padding: '10px',
-		minHeight: props => props.minHeight,
+		minHeight: (props: { minHeight: number}) => props.minHeight,
 		marginBottom: '8px',
 		userSelect: 'none',
 		'&&:hover': {
