@@ -40,23 +40,28 @@ export function useMergeCells({ mergeCells, rowCount, columnCount, apiRef }: Mer
 	}, [])
 
 	/**
-	 * Returns the whole path including all the children and the head as the parent
+	 * Returns the parent of the merged position given
 	 * @param coords
+	 * @returns The parent coordinates or nothing
 	 */
-	const getMergedPath = useCallback((rowIndex: number) => {
-		//First position is the parent
-		const activeRowPath: number[] = []
-
-		//Check if the target row exists in any group
-		for (const [parentRow, childIndices] of Object.entries(mergeGroups.current)) {
-			const isIncluded = childIndices.includes(rowIndex)
-			if (isIncluded) {
-				activeRowPath.push(Number(parentRow))
-				activeRowPath.push(rowIndex)
-				break
+	const getMergeParentCoords = useCallback(({ rowIndex, colIndex }: NavigationCoords) => {
+		const targets = mergeData.current.filter(e => e.colIndex === colIndex)
+		if (targets.length === 0) {
+			console.error(
+				`Please review your setup, target merge column not found at getMergedPath from navigation. Given input [${rowIndex}, ${colIndex}]`,
+			)
+			return undefined
+		}
+		for (const target of targets) {
+			const rowStart = target.rowIndex
+			const rowEnd = target.rowIndex + target.rowSpan - 1
+			const isBetween = rowIndex >= rowStart && rowIndex <= rowEnd
+			if (isBetween) {
+				return { rowIndex: target.rowIndex, colIndex: target.colIndex }
 			}
 		}
-		return activeRowPath
+
+		return undefined
 	}, [])
 
 	/**
@@ -75,7 +80,7 @@ export function useMergeCells({ mergeCells, rowCount, columnCount, apiRef }: Mer
 	const mergedCellsApi: MergeCellsApi = {
 		getSpanProperties,
 		isMerged,
-		getMergedPath,
+		getMergeParentCoords,
 		getMergedData,
 		getMergedGroups,
 	}

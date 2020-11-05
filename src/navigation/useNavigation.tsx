@@ -350,15 +350,17 @@ export function useNavigation({
 					colIndex: coords.colIndex,
 				})
 				if (isNextMerged) {
-					const path = apiRef.current.getMergedPath(nextRowIndex)
-					const parentIndex = path[0]
-					if (path.length !== 2) {
+					const parentCoords = apiRef.current.getMergeParentCoords({
+						rowIndex: nextRowIndex,
+						colIndex: coords.colIndex,
+					})
+					if (!parentCoords) {
 						return logger.warn(
-							`[Navigation] Merge group path not correct, returned ${path.length} positions instead of 2. Please review`,
+							`[Navigation] Merge group path not correct, returned ${parentCoords} positions instead of the expected coordinates. Please review`,
 						)
 					}
 					//Means we have the parent, parent comes in the first position always
-					nextRowIndex = parentIndex
+					nextRowIndex = parentCoords.rowIndex
 				}
 
 				//Ensure we are not out of boundaries
@@ -391,15 +393,15 @@ export function useNavigation({
 				}
 
 				if (apiRef.current.isMerged({ rowIndex: coords.rowIndex, colIndex: nextColIndex })) {
-					const path = apiRef.current.getMergedPath(coords.rowIndex)
-					if (path.length === 2) {
-						return selectCell({
-							rowIndex: path[0],
-							colIndex: nextColIndex,
-						})
+					const parentCoords = apiRef.current.getMergeParentCoords({
+						rowIndex: coords.rowIndex,
+						colIndex: nextColIndex,
+					})
+					if (parentCoords) {
+						return selectCell(parentCoords)
 					}
 					return logger.warn(
-						`[Navigation] Merge group path not correct, returned ${path.length} positions instead of 2. Please review`,
+						`[Navigation] Merge group path not correct, returned ${parentCoords} positions instead of the expected coordinates. Please review`,
 					)
 				}
 
@@ -412,25 +414,25 @@ export function useNavigation({
 				if (isIndexOutOfBoundaries(nextColIndex, 0, apiRef.current.getColumnCount() - 1)) {
 					return
 				}
-				const col = apiRef.current.getColumnAt(nextColIndex)
-				if (!col) {
+				const nextColumn = apiRef.current.getColumnAt(nextColIndex)
+				if (!nextColumn) {
 					return logger.error(`Column not found at ${nextColIndex}`)
 				}
 
-				if (col.disableNavigation) {
+				if (nextColumn.disableNavigation) {
 					nextColIndex = findNextNavigableColumnIndex(coords.colIndex, 'left')
 				}
 
 				if (apiRef.current.isMerged({ rowIndex: coords.rowIndex, colIndex: nextColIndex })) {
-					const path = apiRef.current.getMergedPath(coords.rowIndex)
-					if (path.length === 2) {
-						return selectCell({
-							rowIndex: path[0],
-							colIndex: nextColIndex,
-						})
+					const parentCoords = apiRef.current.getMergeParentCoords({
+						rowIndex: coords.rowIndex,
+						colIndex: nextColIndex,
+					})
+					if (parentCoords) {
+						return selectCell(parentCoords)
 					}
 					return logger.warn(
-						`[Navigation] Merge group path not correct, returned ${path.length} positions instead of 2. Please review`,
+						`[Navigation] Merge group path not correct, returned ${parentCoords} positions instead of the expected coordinates. Please review`,
 					)
 				}
 

@@ -28,6 +28,7 @@ const useStyles = makeStyles(() => ({
 		height: '100%',
 		width: '100%',
 	},
+	fixedBottomContainer: {},
 }))
 
 export const ApolloSpreadSheet = forwardRef(
@@ -53,7 +54,7 @@ export const ApolloSpreadSheet = forwardRef(
 			minColumnWidth,
 			apiRef,
 			initialised,
-			selection: props.selection
+			selection: props.selection,
 		})
 
 		useMergeCells({

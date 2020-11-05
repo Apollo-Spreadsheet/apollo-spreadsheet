@@ -1,85 +1,109 @@
-import React from 'react'
+import React, { useRef } from 'react'
 import { useRowSelection } from '../useRowSelection'
 import { renderHook, act } from '@testing-library/react-hooks'
 import { SelectionProps } from '../selectionProps'
+import { useApiExtends, useApiFactory, useApiRef } from '../../api'
 
 describe('useRowSelection hook', () => {
-	const rows = [{
-		id: '1234',
-	}, {
-		id: '2222',
-	}]
+	const { result: { current: apiRefMock }} = renderHook(() => {
+		const ref = useApiRef()
+		const divRef = useRef(document.createElement('div'))
+		useApiFactory(divRef, ref)
+		const rows =  [{
+			id: '1',
+		}, {
+			id: '2',
+		}]
 
-	const selection: SelectionProps<unknown> = {
+		//Set initial mockedRows
+		useApiExtends(ref, {
+			getRowAt: index => rows[index]
+		}, 'test')
+		return ref
+	})
+
+	const selection: SelectionProps = {
 		key: 'id',
 	}
 
-	it('should mount without any data', () => {
-		const { result } = renderHook(() => useRowSelection({ rows: [] }))
+	it('should extend the api and set RowSelectionApi', () => {
+		renderHook(() => useRowSelection(apiRefMock, apiRefMock.current.isInitialised, undefined))
+		expect(apiRefMock.current.getSelectedRowIds).toBeDefined()
+		expect(apiRefMock.current.isRowSelected).toBeDefined()
+		expect(apiRefMock.current.selectRow).toBeDefined()
+	})
+
+	it('should mount without any data or selection', () => {
+		const { result } = renderHook(() => useRowSelection(apiRefMock, apiRefMock.current.isInitialised, undefined))
 		expect(result.current.getSelectedRows()).toEqual([])
 		expect(result.current.isRowSelected('0')).toEqual(false)
 	})
 
 	it('should mount with data and selection', () => {
-		const { result } = renderHook(() => useRowSelection({ rows, selection }))
+		const { result } = renderHook(() => useRowSelection(apiRefMock, apiRefMock.current.isInitialised, undefined))
 		expect(result.current.getSelectedRows()).toEqual([])
 		expect(result.current.isRowSelected('0')).toEqual(false)
 	})
 
 	it('should select a row', () => {
-		const { result } = renderHook(() => useRowSelection({ rows, selection }))
+		const { result } = renderHook(() => useRowSelection(apiRefMock, apiRefMock.current.isInitialised, undefined))
 		expect(result.current.getSelectedRows()).toEqual([])
+		const row = apiRefMock.current.getRowAt(0)!
 		act(() => {
-			result.current.selectRow(rows[0].id)
+			result.current.selectRow(row.id)
 		})
-		expect(result.current.getSelectedRows()).toEqual([rows[0].id])
-		expect(result.current.isRowSelected(rows[0].id)).toEqual(true)
+		expect(result.current.getSelectedRows()).toEqual([row.id])
+		expect(result.current.isRowSelected(row.id)).toEqual(true)
 	})
 
 	it('should select and unselect', () => {
-		const { result } = renderHook(() => useRowSelection({ rows, selection }))
+		const { result } = renderHook(() => useRowSelection(apiRefMock, apiRefMock.current.isInitialised, undefined))
 		expect(result.current.getSelectedRows()).toEqual([])
+		const row = apiRefMock.current.getRowAt(0)!
 		act(() => {
-			result.current.selectRow(rows[0].id)
+			result.current.selectRow(row.id)
 		})
-		expect(result.current.getSelectedRows()).toEqual([rows[0].id])
-		expect(result.current.isRowSelected(rows[0].id)).toEqual(true)
+		expect(result.current.getSelectedRows()).toEqual([row.id])
+		expect(result.current.isRowSelected(row.id)).toEqual(true)
 		act(() => {
-			result.current.selectRow(rows[0].id)
+			result.current.selectRow(row.id)
 		})
 		expect(result.current.getSelectedRows()).toEqual([])
 		expect(result.current.isRowSelected('0')).toEqual(false)
 	})
 
 	it('should clean all selected if selection is disabled/set undefined', () => {
-		const { result, rerender } = renderHook((props) => useRowSelection(props), {
+		const { result, rerender } = renderHook((props) => useRowSelection(apiRefMock, apiRefMock.current.isInitialised, props.selection), {
 			initialProps: {
-				rows,
 				selection,
 			},
 		})
+		const row = apiRefMock.current.getRowAt(1)!
 		act(() => {
-			result.current.selectRow(rows[1].id)
+			result.current.selectRow(row.id)
 		})
-		expect(result.current.getSelectedRows()).toEqual([rows[1].id])
-		rerender({ rows, selection: undefined as any })
+		expect(result.current.getSelectedRows()).toEqual([row.id])
+		rerender({ selection: undefined as any })
 		expect(result.current.getSelectedRows()).toEqual([])
 	})
 
 	it('should not allow the second row to be selected', () => {
-		const canSelect = (row: any) => {
-			return row.id !== rows[1].id
+		const row = apiRefMock.current.getRowAt(1)!
+		const canSelect = (e: any) => {
+			return e.id !== row.id
 		}
 		const canSelectMock = jest.fn(canSelect)
 
-		const { result } = renderHook(() => useRowSelection({
-			rows,
-			selection: { ...selection, canSelect: canSelectMock },
-		}))
+		const { result, rerender } = renderHook((props) => useRowSelection(apiRefMock, apiRefMock.current.isInitialised, props.selection), {
+			initialProps: {
+				selection: { ...selection, canSelect: canSelectMock }
+			},
+		})
+
 		expect(result.current.getSelectedRows()).toEqual([])
 		expect(canSelectMock.mock.calls.length).toBe(0)
 		act(() => {
-			result.current.selectRow(rows[1].id)
+			result.current.selectRow(row.id)
 		})
 		expect(canSelectMock.mock.calls.length).toBe(1)
 		expect(result.current.getSelectedRows()).toEqual([])

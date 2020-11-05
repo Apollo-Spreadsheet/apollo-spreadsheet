@@ -10,10 +10,12 @@ export interface MergeCellsApi {
 	isMerged: (coords: NavigationCoords) => boolean
 
 	/**
-	 * Returns the whole path including all the children and the head as the parent
-	 * @param coords
+	 * Returns the parent of the merged position given
+	 * @description Its useful for the navigation (Used internally to be careful using this without the proper
+	 * validations)
+	 * @param coords  The current coordinates of the merged position
 	 */
-	getMergedPath: (rowIndex: number) => number[]
+	getMergeParentCoords: (coords: NavigationCoords) => NavigationCoords | undefined
 
 	/**
 	 * Returns the col/row span of the given colIndex/rowIndex

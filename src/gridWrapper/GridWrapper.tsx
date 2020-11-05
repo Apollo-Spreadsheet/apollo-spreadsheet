@@ -95,7 +95,7 @@ const GridWrapper = React.memo((props: GridWrapperProps) => {
 		return recomputingCleanup
 	}, [props.data, props.width, props.height, recomputeSizes])
 
-	const activeMergePath = useMemo(() => {
+	const activeMergePath: NavigationCoords & { isSingleRow: boolean } = useMemo(() => {
 		//If there is no merging then we use the active directly
 		if (
 			!props.mergeCells ||
@@ -103,7 +103,7 @@ const GridWrapper = React.memo((props: GridWrapperProps) => {
 			!props.mergedPositions ||
 			props.mergedPositions.length === 0
 		) {
-			return [props.coords.rowIndex]
+			return { ...props.coords, isSingleRow: true }
 		}
 
 		//Find if the rowIndex and col are a parent merger otherwise they are merged
@@ -111,14 +111,18 @@ const GridWrapper = React.memo((props: GridWrapperProps) => {
 		//Otherwise we need go from the child up to the parent
 		const mergeInfo = props.mergeCells.find(e => e.rowIndex === props.coords.rowIndex)
 		if (mergeInfo) {
-			return [mergeInfo.rowIndex]
+			return { rowIndex: mergeInfo.rowIndex, colIndex: mergeInfo.colIndex, isSingleRow: false }
 		}
 		const mergedPosition = props.mergedPositions.find(e => e.row === props.coords.rowIndex)
 		//In case the given row is merged, build the path with all existing merge cells
 		if (mergedPosition) {
-			return props.apiRef.current.getMergedPath(props.coords.rowIndex)
+			const result = props.apiRef.current.getMergeParentCoords(props.coords)
+			if (!result) {
+				throw new Error(`getMergeParentCoords([${props.coords.rowIndex}, ${props.coords.colIndex}]) returned undefined`)
+			}
+			return { ...result, isSingleRow: false }
 		}
-		return [props.coords.rowIndex]
+		return { ...props.coords, isSingleRow: false }
 	}, [props.coords, props.mergeCells, props.mergedPositions, props.apiRef])
 
 	/**
@@ -128,13 +132,13 @@ const GridWrapper = React.memo((props: GridWrapperProps) => {
 	 */
 	const isActiveRow = useCallback(
 		({ rowIndex, colIndex }: NavigationCoords) => {
-			if (activeMergePath[0] === rowIndex && activeMergePath.length === 1) {
+			if (activeMergePath.rowIndex === rowIndex) {
 				return true
 			}
 
 			//We have the parent and the merged
-			if (activeMergePath.length > 1) {
-				if (rowIndex === activeMergePath[0]) {
+			if (activeMergePath) {
+				if (rowIndex === activeMergePath.rowIndex) {
 					const mergeInfo = Object.values(props.mergeCells ?? ([] as MergeCell[]))
 					const columnWithMerge = mergeInfo.reduce((acc, e) => {
 						if (!acc.some(index => index === e.colIndex)) {
@@ -146,7 +150,7 @@ const GridWrapper = React.memo((props: GridWrapperProps) => {
 				}
 
 				//Second index means the current row with the highlight
-				if (rowIndex === activeMergePath[1]) {
+				if (rowIndex === activeMergePath.rowIndex) {
 					return true
 				}
 			}

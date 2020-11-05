@@ -14,6 +14,7 @@ import { useApiRef } from '../../../src/api/useApiRef'
 import 'react-datepicker/dist/react-datepicker.css'
 import ToggleOnIcon from '@material-ui/icons/ToggleOn'
 import ToggleOffIcon from '@material-ui/icons/ToggleOff'
+import dump from './dump.json'
 
 const useStyles = makeStyles(theme => ({
 	root: {
@@ -100,11 +101,14 @@ const MIN_COLUMN_WIDTH = 10
 export function Spreadsheet() {
 	const classes = useStyles()
 	const { headerData: columns, data: defaultData } = useTopCase(classes.calendarClass)
-	const [data, setData] = useState(defaultData)
+	const [data, setData] = useState(dump)
 	const apiRef = useApiRef()
 	const [columnMinimized, setColumnMinimized] = useState<string[]>([])
 
 	const headersWithTemporaryMinimize = useMemo(() => {
+		/**
+		 * @todo Use metadata to identify its minimized
+		 */
 		const updatedColumns = [...columns]
 		updatedColumns.forEach((col, i) => {
 			if (i === 3 || i > 4){
@@ -255,9 +259,9 @@ export function Spreadsheet() {
 					onHeaderIconClick,
 				}}
 				disableSort
-				dragAndDrop={{
-					canDrag: () => true,
-				}}
+				// dragAndDrop={{
+				// 	canDrag: () => true,
+				// }}
 			/>
 		</Box>
 	)

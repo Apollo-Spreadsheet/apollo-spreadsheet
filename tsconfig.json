@@ -12,6 +12,7 @@
     "importHelpers": true,
     "strictNullChecks": true,
     "allowSyntheticDefaultImports": true,
+    "resolveJsonModule": true,
     "baseUrl": "src",
     "rootDir": ".",
     "outDir": "dist",

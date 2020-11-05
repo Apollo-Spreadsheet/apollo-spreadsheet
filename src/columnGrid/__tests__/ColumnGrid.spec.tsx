@@ -3,9 +3,13 @@ import ColumnGrid from '../ColumnGrid'
 import { ColumnGridProps } from '../column-grid-props'
 import React from 'react'
 import { createColumnMock } from '../__mocks__/column-mock'
+import { renderHook } from '@testing-library/react-hooks'
+import { useApiRef } from '../../api'
 
 describe('<ColumnGrid />', () => {
+	const { result: { current: apiRefMock }} = renderHook(() => useApiRef())
 	const props: ColumnGridProps = {
+		sort: null,
 		columns: [
 			createColumnMock({ id: '1', width: 100, title: 'First' }),
 			createColumnMock({ id: '12', title: 'Second', tooltip: 'Test' }),
@@ -16,9 +20,8 @@ describe('<ColumnGrid />', () => {
 		getColumnWidth: ({ index }: { index: number }) => 0,
 		width: 100,
 		scrollLeft: 0,
-		isScrolling: false,
-		height: 100,
 		coords: { rowIndex: 0, colIndex: 0 },
+		apiRef: apiRefMock
 	}
 	const grid = shallow(<ColumnGrid {...props} />)
 

@@ -163,13 +163,14 @@ export function useHeaders({ columns, nestedHeaders, apiRef, selection }: Props)
 	const getColumnCount = useCallback(() => columnsRef.current.length, [])
 
 	const getColumns = useCallback(() => columnsRef.current, [])
-
+	const getColumnIndex = useCallback((id: string) => columnsRef.current.findIndex(e => e.id === id), [])
 	const columnApi: ColumnApi = {
 		getColumnAt,
 		getColumnCount,
 		getColumnById,
 		updateColumns,
 		getColumns,
+		getColumnIndex
 	}
 
 	useApiExtends(apiRef, columnApi, 'ColumnApi')
