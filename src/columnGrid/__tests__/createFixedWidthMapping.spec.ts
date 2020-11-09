@@ -9,7 +9,7 @@ describe('createFixedWidthMapping()', () => {
 			totalSize: 0,
 			mapping: {},
 		}
-		const result = createColumnWidthsMapping([], 0, 0, StretchMode.None, 0)
+		const result = createColumnWidthsMapping([], 0, 0, StretchMode.None)
 		expect(result).toEqual(expected)
 	})
 
@@ -26,7 +26,7 @@ describe('createFixedWidthMapping()', () => {
 				0: 200,
 			},
 		}
-		const result = createColumnWidthsMapping(columns, 1000, 10, StretchMode.None, 0)
+		const result = createColumnWidthsMapping(columns, 1000, 10, StretchMode.None)
 		expect(result).toEqual(expected)
 	})
 
@@ -45,7 +45,7 @@ describe('createFixedWidthMapping()', () => {
 			}
 		}
 		//Total = 955 and column uses 950 but 5 are reversed to scroll so the other column must be at 0
-		const result = createColumnWidthsMapping(columns, 975, 10, StretchMode.All, 5)
+		const result = createColumnWidthsMapping(columns, 975, 10, StretchMode.All)
 		expect(result).toEqual(expected)
 	})
 
@@ -62,7 +62,7 @@ describe('createFixedWidthMapping()', () => {
 				0: 450,
 			},
 		}
-		const result = createColumnWidthsMapping(columns, 500, 100, StretchMode.None, 0)
+		const result = createColumnWidthsMapping(columns, 500, 100, StretchMode.None)
 		expect(result).toEqual(expected)
 	})
 
@@ -75,9 +75,9 @@ describe('createFixedWidthMapping()', () => {
 				createColumnMock(),
 			]
 			const expected = { totalSize: 10, mapping: { 0: 10 } }
-			const resultOfAll = createColumnWidthsMapping(columns, 200, 5, StretchMode.All, 0)
-			const resultOfLast = createColumnWidthsMapping(columns, 200, 5, StretchMode.Last, 0)
-			const resultOfNone = createColumnWidthsMapping(columns, 200, 5, StretchMode.None, 0)
+			const resultOfAll = createColumnWidthsMapping(columns, 200, 5, StretchMode.All)
+			const resultOfLast = createColumnWidthsMapping(columns, 200, 5, StretchMode.Last)
+			const resultOfNone = createColumnWidthsMapping(columns, 200, 5, StretchMode.None)
 			expect(resultOfAll).toEqual(expected)
 			expect(resultOfLast).toEqual(expected)
 			expect(resultOfNone).toEqual(expected)
@@ -96,7 +96,7 @@ describe('createFixedWidthMapping()', () => {
 					0: 450,
 				},
 			}
-			const result = createColumnWidthsMapping(columns, containerWidth, 1, StretchMode.None, 0)
+			const result = createColumnWidthsMapping(columns, containerWidth, 1, StretchMode.None)
 			expect(result).toEqual(expected)
 		})
 
@@ -113,7 +113,7 @@ describe('createFixedWidthMapping()', () => {
 					1: 150,
 				},
 			}
-			const result = createColumnWidthsMapping(columns, containerWidth, 1, StretchMode.All, 0)
+			const result = createColumnWidthsMapping(columns, containerWidth, 1, StretchMode.All)
 			expect(result).toEqual(expected)
 		})
 
@@ -131,7 +131,7 @@ describe('createFixedWidthMapping()', () => {
 					1: 200,
 				},
 			}
-			const result = createColumnWidthsMapping(columns, containerWidth, 1, StretchMode.All, 0)
+			const result = createColumnWidthsMapping(columns, containerWidth, 1, StretchMode.All)
 			expect(result).toEqual(expected)
 		})
 
@@ -148,7 +148,7 @@ describe('createFixedWidthMapping()', () => {
 					1: 200,
 				},
 			}
-			const result = createColumnWidthsMapping(columns, containerWidth, 1, StretchMode.Last, 0)
+			const result = createColumnWidthsMapping(columns, containerWidth, 1, StretchMode.Last)
 			expect(result).toEqual(expected)
 		})
 	})

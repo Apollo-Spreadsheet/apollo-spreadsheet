@@ -1,5 +1,5 @@
 import { createMergedPositions, MergePosition } from '../createMergedPositions'
-import { MergeCell } from '../interfaces/merge-cell'
+import { MergeCell } from '../interfaces'
 
 describe('createMergedPositions()', () => {
 	it('should return empty', () => {

@@ -82,11 +82,11 @@ export const NumericEditor = forwardRef(
 					return
 				}
 				// eslint-disable-next-line no-param-reassign
-				ref.selectionStart = editingValue.length
+				ref.selectionStart = ref.value.length
 				// eslint-disable-next-line no-param-reassign
-				ref.selectionEnd = editingValue.length
+				ref.selectionEnd = ref.value.length
 			},
-			[editingValue],
+			[],
 		)
 
 		function onEditorPortalClose(event: unknown, reason: 'backdropClick' | 'escapeKeyDown') {

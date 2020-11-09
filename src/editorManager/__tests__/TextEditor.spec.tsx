@@ -1,22 +1,25 @@
 import { mount, shallow } from 'enzyme'
 import TextEditor from '../components/TextEditor'
 import { EditorProps } from '../editorProps'
-import React from 'react'
+import React, { useRef } from 'react'
+import { renderHook } from '@testing-library/react-hooks'
+import { useApiFactory, useApiRef } from '../../api'
 
 describe('<TextEditor />', () => {
-	const onCommitMock = jest.fn(() => {
+	const { result: { current: apiRefMock }} = renderHook(() => {
+		const ref = useApiRef()
+		const divRef = useRef(document.createElement('div'))
+		useApiFactory(divRef, ref)
+		return ref
 	})
-	const onCommitCancelMock = jest.fn(() => {
-	})
-	// const mockAnchor = document.createElement('div')
+	const stopEditingMock = jest.fn()
 	const props: EditorProps = {
+		additionalProps: undefined,
+		apiRef: apiRefMock,
 		value: '',
-		onCommit: onCommitMock,
-		onCommitCancel: onCommitCancelMock,
+		stopEditing: stopEditingMock,
 		anchorRef: document.body,
-		cellWidth: 100,
-		cellHeight: 50,
-		maxLength: 500,
+		maxLength: 500
 	}
 	const wrapper = mount(<TextEditor {...props} />)
 	it('should match snapshot', () => {

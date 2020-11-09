@@ -1,19 +1,27 @@
-import React from 'react'
+import React, { useRef } from 'react'
 import { renderHook, act } from '@testing-library/react-hooks'
 import { useData } from '../useData'
 import { createColumnMock } from '../../columnGrid/__mocks__/column-mock'
-import { MergeCell } from '../../mergeCells/interfaces/merge-cell'
-import { createMergedPositions } from '../../mergeCells/createMergedPositions'
+import { MergeCell } from '../../mergeCells/interfaces'
+import { useMergeCells } from '../../mergeCells'
+import { useApiFactory, useApiRef } from '../../api'
 
 describe('useData hook', () => {
+	const { result: { current: apiRefMock }} = renderHook(() => {
+		const ref = useApiRef()
+		const divRef = useRef(document.createElement('div'))
+		useApiFactory(divRef, ref)
+		return ref
+	})
 	it('should mount without any data', () => {
 		const { result } = renderHook(() => useData({
+			apiRef: apiRefMock,
 			rows: [],
 			columns: [],
-			selectRow: jest.fn(),
-			isRowSelected: jest.fn(),
+			initialised: apiRefMock.current.isInitialised
 		}))
-		expect(result.current.data.length).toBe(0)
+		expect(result.current.rows.length).toBe(0)
+		expect(result.current.cells.length).toBe(0)
 	})
 
 	it('should mount with rows (no merge cells)', () => {
@@ -22,10 +30,11 @@ describe('useData hook', () => {
 		const { result } = renderHook(() => useData({
 			rows,
 			columns: mockHeaders,
-			selectRow: jest.fn(),
-			isRowSelected: jest.fn(),
+			apiRef: apiRefMock,
+			initialised: apiRefMock.current.isInitialised
 		}))
-		expect(result.current.data).toEqual([[{
+		expect(result.current.rows).toEqual(rows)
+		expect(result.current.cells).toEqual([[{
 			colSpan: undefined,
 			rowSpan: undefined,
 			value: '',
@@ -41,29 +50,24 @@ describe('useData hook', () => {
 			colSpan: 1,
 			colIndex: 0,
 		}]
-		const mergedPositions = createMergedPositions(mergeCells)
-		const { result } = renderHook(() => useData({
-			rows,
-			mergeCells,
-			mergedPositions,
-			columns: mockHeaders,
-			selectRow: jest.fn(),
-			isRowSelected: jest.fn(),
-		}))
-		expect(result.current.data).toMatchSnapshot()
-	})
-
-	it('should bind selection cell', () => {
-		const mockHeaders = [createColumnMock({ id: 'test', accessor: 'name' })]
-		const rows = [{ id: 1, name: 'testName' }]
+		act(() => {
+			renderHook(() => {
+				useMergeCells({
+					apiRef: apiRefMock,
+					mergeCells,
+					columnCount: mockHeaders.length,
+					rowCount: rows.length,
+					initialised: true
+				})
+			})
+		})
 		const { result } = renderHook(() => useData({
 			rows,
 			columns: mockHeaders,
-			selectRow: jest.fn(),
-			isRowSelected: jest.fn(),
-			selection: { key: 'id' },
+			apiRef: apiRefMock,
+			initialised: apiRefMock.current.isInitialised
 		}))
-		expect(result.current.data).toMatchSnapshot()
-	})
 
+		expect(result.current.cells).toMatchSnapshot()
+	})
 })

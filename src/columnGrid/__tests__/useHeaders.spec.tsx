@@ -1,11 +1,19 @@
-import React from 'react'
+import React, { useRef } from 'react'
 import { renderHook } from '@testing-library/react-hooks'
 import { useHeaders } from '../useHeaders'
-import { StretchMode } from '../../types/stretch-mode.enum'
+import { StretchMode } from '../../types'
 import { createColumnMock } from '../__mocks__/column-mock'
-import { GridHeader } from '../types/header.type'
+import { GridHeader } from '../types'
+import { useApiFactory, useApiRef } from '../../api'
 
 describe('useHeaders hook', () => {
+	const { result: { current: apiRefMock }} = renderHook(() => {
+		const ref = useApiRef()
+		const divRef = useRef(document.createElement('div'))
+		useApiFactory(divRef, ref)
+		return ref
+	})
+
 	const consoleSpy = jest
 	.spyOn(console, 'error')
 	.mockImplementation(() => {
@@ -22,39 +30,45 @@ describe('useHeaders hook', () => {
 			nestedHeaders: [],
 			minColumnWidth: 50,
 			stretchMode: StretchMode.All,
+			apiRef: apiRefMock,
+			initialised: apiRefMock.current.isInitialised
 		}))
 		expect(result.current.gridHeaders).toEqual([[]])
-		expect(result.current.dynamicColumnCount).toBe(0)
+		expect(result.current.columns.length).toEqual(0)
 	})
 
 	it('should mount with a dynamic and fixed header', () => {
-		const headers = [createColumnMock(), createColumnMock({ width: 200 })]
-		const expectedHeadersData: GridHeader[] = headers.map(e => ({
+		const columnsMock = [createColumnMock(), createColumnMock({ width: 200 })]
+		const expectedHeadersData: GridHeader[] = columnsMock.map(e => ({
 			...e,
 			isNested: false,
 			colSpan: 0,
 		}))
 		const { result } = renderHook(() => useHeaders({
-			columns: headers,
+			columns: columnsMock,
 			nestedHeaders: [],
 			minColumnWidth: 50,
 			stretchMode: StretchMode.All,
+			apiRef: apiRefMock,
+			initialised: apiRefMock.current.isInitialised
 		}))
 		expect(result.current.gridHeaders).toEqual([expectedHeadersData])
-		expect(result.current.dynamicColumnCount).toBe(1)
+		expect(result.current.columns).toEqual(columnsMock)
 	})
 
 	it('should throw error with duplicated header ids', () => {
-		const headers = [
+		const columnsMock = [
 			createColumnMock({ id: 't1', width: 200 }),
 			createColumnMock({ id: 't1', width: 200 }),
 		]
 		try {
 			renderHook(() => useHeaders({
-				columns: headers,
+				columns: columnsMock,
 				nestedHeaders: [],
 				minColumnWidth: 50,
 				stretchMode: StretchMode.All,
+				apiRef: apiRefMock,
+				initialised: apiRefMock.current.isInitialised
 			}))
 		} catch (ex) {
 			expect(ex).toBeTruthy()
@@ -62,16 +76,18 @@ describe('useHeaders hook', () => {
 	})
 
 	it('should throw error when span is bigger than total columns', () => {
-		const headers = [createColumnMock({ width: 200 })]
+		const columnsMock = [createColumnMock({ width: 200 })]
 		try {
 			renderHook(() => useHeaders({
-				columns: headers,
+				columns: columnsMock,
 				nestedHeaders: [[{
 					title: 'span 1',
 					colSpan: 4,
 				}]],
 				minColumnWidth: 50,
 				stretchMode: StretchMode.All,
+				apiRef: apiRefMock,
+				initialised: apiRefMock.current.isInitialised
 			}))
 		} catch (ex) {
 			expect(ex).toBeTruthy()
@@ -79,22 +95,24 @@ describe('useHeaders hook', () => {
 	})
 
 	it('should merge with nested headers', () => {
-		const headers = [createColumnMock({ id: 't1', accessor: 't1', width: 200 }), createColumnMock({
+		const columnsMock = [createColumnMock({ id: 't1', accessor: 't1', width: 200 }), createColumnMock({
 			id: 't2',
 			accessor: 't2',
 			width: 100,
 		})]
 		const { result } = renderHook(() => useHeaders({
-			columns: headers,
+			columns: columnsMock,
 			nestedHeaders: [[{
 				title: 'Test',
 				colSpan: 2,
 			}]],
 			minColumnWidth: 50,
 			stretchMode: StretchMode.All,
+			apiRef: apiRefMock,
+			initialised: apiRefMock.current.isInitialised
 		}))
 
 		expect(result.current.gridHeaders).toMatchSnapshot()
-		expect(result.current.dynamicColumnCount).toBe(0)
+		expect(result.current.columns).toBe(columnsMock)
 	})
 })
