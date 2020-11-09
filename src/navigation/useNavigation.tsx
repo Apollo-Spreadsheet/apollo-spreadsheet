@@ -186,7 +186,7 @@ export function useNavigation({
 					if (colIndex < 0 || rowIndex < 0) {
 						return logger.info("Debounce couldn't start editor at negative coordinates")
 					}
-					const selector = `[aria-colIndex='${colIndex}'][data-rowIndex='${rowIndex}'][role='cell']`
+					const selector = `[aria-colindex='${colIndex}'][data-rowindex='${rowIndex}'][role='cell']`
 					const target =
 						targetElement ?? apiRef.current.rootElementRef?.current?.querySelector(selector)
 					if (!target) {
@@ -472,7 +472,7 @@ export function useNavigation({
 				return handleEditorOpenControls(event)
 			}
 
-			const selector = `[aria-colIndex='${coords.colIndex}'][data-rowIndex='${coords.rowIndex}'][role='cell']`
+			const selector = `[aria-colindex='${coords.colIndex}'][data-rowindex='${coords.rowIndex}'][role='cell']`
 			const cellElement = apiRef.current.rootElementRef?.current?.querySelector(selector)
 			if (!cellElement) {
 				return logger.error(
