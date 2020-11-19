@@ -52,6 +52,11 @@ export interface Column<Key = string, Metadata = unknown> {
 	title: string
 	accessor: string
 	tooltip?: string
+	/**
+	 * Whether to hide this column (Might be useful for conditional rendering)
+	 * @default false
+	 */
+	hide?: boolean
 	tooltipProps?: {
 		/** @default true **/
 		arrow?: boolean

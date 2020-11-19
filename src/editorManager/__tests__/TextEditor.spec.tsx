@@ -31,4 +31,9 @@ describe('<TextEditor />', () => {
 		wrapper.find('#apollo-textarea').simulate('keydown', { key: 'Escape' })
 		console.log()
 	})
+
+	it.todo('should push caret to the end when there is already text (on mount)')
+	it.todo('should not push the caret after text length change')
+	it.todo('should save when pressed enter')
+	it.todo('should save when clicked away')
 })

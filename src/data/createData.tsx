@@ -2,7 +2,6 @@ import { formatCellValue } from './formatCellValue'
 import { GridCell } from '../gridWrapper/interfaces'
 import { Checkbox } from '@material-ui/core'
 import { insertDummyCells } from '../gridWrapper/utils'
-import { Column } from '../columnGrid/types'
 import { SelectionProps } from '../rowSelection'
 import React from 'react'
 import { ApiRef } from '../api/types'
@@ -12,11 +11,11 @@ import { isFunctionType } from '../helpers'
 interface CreateDataParams {
 	rows: Row[]
 	apiRef: ApiRef
-	columns: Column[]
 	selection?: SelectionProps
 }
 
-export function createData({ columns, selection, apiRef, rows }: CreateDataParams) {
+export function createData({ selection, apiRef, rows }: CreateDataParams) {
+	const columns = apiRef.current.getColumns()
 	const cellsList = rows.reduce((list: GridCell[][], row: Row, rowIndex) => {
 		const updatedList = [...list]
 		const cells = columns.reduce((_cells, column, colIndex) => {

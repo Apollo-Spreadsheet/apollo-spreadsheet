@@ -1,5 +1,4 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { Column } from '../columnGrid/types'
 import { SelectionProps } from '../rowSelection'
 import { GridCell } from '../gridWrapper/interfaces'
 import { ApiRef, RowApi } from '../api/types'
@@ -18,7 +17,6 @@ import { useLogger } from '../logger'
 
 interface Props {
 	rows: Row[]
-	columns: Column[]
 	selection?: SelectionProps
 	apiRef: ApiRef
 	initialised: boolean
@@ -27,7 +25,7 @@ interface Props {
 /**
  * `useData` handles all the rows and cells operations of this plugin
  */
-export function useData({ rows, columns, selection, initialised, apiRef }: Props) {
+export function useData({ rows, selection, initialised, apiRef }: Props) {
 	const logger = useLogger('useData')
 	const rowsRef = useRef<Row[]>(rows)
 	const originalRowsRef = useRef<Row[]>(rows)
@@ -35,7 +33,7 @@ export function useData({ rows, columns, selection, initialised, apiRef }: Props
 	const [, forceUpdate] = useState(false)
 
 	const onRowsChangeHandle = useCallback(
-		(params: { rows: Row[]; columns: Column[] }) => {
+		(params: { rows: Row[] }) => {
 			const updatedData = createData({
 				...params,
 				apiRef,
@@ -61,7 +59,7 @@ export function useData({ rows, columns, selection, initialised, apiRef }: Props
 			//Only update the current rows
 			rowsRef.current = updatedRows
 			apiRef.current.dispatchEvent(ROWS_CHANGED, { rows: updatedRows })
-			onRowsChangeHandle({ rows: updatedRows, columns: apiRef.current.getColumns() })
+			onRowsChangeHandle({ rows: updatedRows })
 		},
 		[apiRef, logger, onRowsChangeHandle],
 	)
@@ -72,14 +70,15 @@ export function useData({ rows, columns, selection, initialised, apiRef }: Props
 		if (!initialised) {
 			return
 		}
+
 		originalRowsRef.current = rows
 		updateRows(rows)
-	}, [rows, columns, updateRows, initialised, onRowsChangeHandle])
+	}, [rows, updateRows, initialised])
 
 	const onRowSelectionChange = useCallback(() => {
 		logger.debug('Row selection changed.')
-		onRowsChangeHandle({ rows: rowsRef.current, columns })
-	}, [columns, logger, onRowsChangeHandle])
+		onRowsChangeHandle({ rows: rowsRef.current })
+	}, [logger, onRowsChangeHandle])
 
 	const getRowAt = useCallback((index: number) => rowsRef.current[index], [])
 

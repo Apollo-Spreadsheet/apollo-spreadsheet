@@ -67,7 +67,6 @@ export const ApolloSpreadSheet = forwardRef(
 
 		const { cells, rows } = useData({
 			rows: props.rows,
-			columns,
 			selection: props.selection,
 			apiRef,
 			initialised,

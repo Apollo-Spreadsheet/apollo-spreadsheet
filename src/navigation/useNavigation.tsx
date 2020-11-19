@@ -472,6 +472,8 @@ export function useNavigation({
 				return handleEditorOpenControls(event)
 			}
 
+			/** @todo Extract to a util method that receives the coordinates and build up the selector to be re-used **/
+			/** @todo Add unit tests for the selector **/
 			const selector = `[aria-colindex='${coords.colIndex}'][data-rowindex='${coords.rowIndex}'][role='cell']`
 			const cellElement = apiRef.current.rootElementRef?.current?.querySelector(selector)
 			if (!cellElement) {

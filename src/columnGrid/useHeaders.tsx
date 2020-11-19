@@ -56,7 +56,7 @@ export function useHeaders({ columns, nestedHeaders, apiRef, selection }: Props)
 			nestedHeaders?: Array<NestedHeader[]>
 		}) => {
 			logger.debug('Creating grid headers.')
-			const newColumns = [...paramColumns]
+			const newColumns = [...paramColumns.filter(e => e.hide === undefined || !e.hide)]
 			//Selection column
 			const selectionExists = newColumns.some(e => e.id === ROW_SELECTION_HEADER_ID)
 			if (selection && !selectionExists) {

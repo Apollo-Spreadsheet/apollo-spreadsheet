@@ -66,7 +66,7 @@ export function Table() {
 		setRows(prev => [
 			...prev,
 			{
-				id: 'r-' + Math.random(),
+				id: `r-${Math.random()}`,
 				name: '',
 				city: '',
 				country: '',

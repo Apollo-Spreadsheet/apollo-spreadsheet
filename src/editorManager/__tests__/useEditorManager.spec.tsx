@@ -36,7 +36,6 @@ describe('useEditorManager hook', () => {
 				id: '222',
 				name: 'test',
 			}],
-			columns: mockedColumns
 		})
 		return ref
 	})
@@ -67,7 +66,6 @@ describe('useEditorManager hook', () => {
 					id: '1',
 					name: 'test',
 				}],
-				columns: mockedColumns
 			})
 			useRowSelection(ref, true, { key: 'id'})
 			return ref

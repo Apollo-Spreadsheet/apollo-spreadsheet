@@ -52,6 +52,7 @@
 		"react-virtualized": "^9.21.2",
 		"resize-detector": "^0.2.2",
 		"shallow-equal": "^1.2.1",
+		"shallowequal": "^1.1.0",
 		"value-equal": "^1.0.1"
 	},
 	"devDependencies": {
