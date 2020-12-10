@@ -10,7 +10,7 @@ export const createSelectionColumn = (selection: SelectionProps) => ({
 	title: '',
 	className: selection?.className,
 	renderer: () => (
-		<Tooltip placement={'top'} title={'Click to delete the selected rows'}>
+		<Tooltip placement={'top'} title={selection.tooltipText ?? 'Click to delete the selected rows'}>
 			<IconButton onClick={selection?.onHeaderIconClick}>
 				<DeleteIcon />
 			</IconButton>

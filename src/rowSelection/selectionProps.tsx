@@ -9,6 +9,11 @@ export interface SelectionProps {
 	key: string
 
 	/**
+	 * In case you want to customize the tooltip on the icon
+	 */
+	tooltipText?: string
+
+	/**
 	 * Middleware to enable/disable selection for specific row(s)
 	 * @default true
 	 * @param row
