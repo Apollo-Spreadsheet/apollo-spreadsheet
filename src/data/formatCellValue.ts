@@ -3,8 +3,8 @@
  * @param value
  */
 export const formatCellValue = (value: unknown) => {
-	if (typeof value === 'object' || Array.isArray(value) || value === undefined || value === null) {
-		return ''
-	}
-	return String(value)
+  if (typeof value === 'object' || Array.isArray(value) || value === undefined || value === null) {
+    return ''
+  }
+  return String(value)
 }

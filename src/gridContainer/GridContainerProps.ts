@@ -5,23 +5,23 @@ import { StretchMode } from '../types'
 import { ApiRef } from '../api/types'
 
 export interface GridContainerChildrenProps {
-	width: number
-	height: number
-	getColumnWidth: ({ index }: { index: number }) => number
-	scrollLeft: number
-	onScroll?: (params: OnScrollParams) => any
+  width: number
+  height: number
+  getColumnWidth: ({ index }: { index: number }) => number
+  scrollLeft: number
+  onScroll?: (params: OnScrollParams) => any
 }
 
 export interface GridContainerCommonProps {
-	height?: React.ReactText
-	width?: React.ReactText
-	containerClassName?: string
+  height?: React.ReactText
+  width?: React.ReactText
+  containerClassName?: string
 }
 
 export interface GridContainerProps extends GridContainerCommonProps {
-	columns: Column[]
-	minColumnWidth: number
-	stretchMode: StretchMode
-	children: (props: GridContainerChildrenProps) => unknown
-	apiRef: ApiRef
+  columns: Column[]
+  minColumnWidth: number
+  stretchMode: StretchMode
+  children: (props: GridContainerChildrenProps) => unknown
+  apiRef: ApiRef
 }

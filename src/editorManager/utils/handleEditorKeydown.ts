@@ -9,35 +9,35 @@ import { isCaretAtEndPosition } from './isCaretAtEndPosition'
  * @param stopEditing
  */
 export function handleEditorKeydown(
-	e: React.KeyboardEvent<unknown>,
-	stopEditing: (params: StopEditingParams) => void,
+  e: React.KeyboardEvent<unknown>,
+  stopEditing: (params: StopEditingParams) => void,
 ) {
-	if (NavigationKey[e.key]) {
-		const cursorStart = (e.target as any).selectionStart
-		const cursorEnd = (e.target as any).selectionEnd
-		if (e.key === 'Tab') {
-			e.preventDefault()
-			stopEditing({ save: true })
-		}
+  if (NavigationKey[e.key]) {
+    const cursorStart = (e.target as any).selectionStart
+    const cursorEnd = (e.target as any).selectionEnd
+    if (e.key === 'Tab') {
+      e.preventDefault()
+      stopEditing({ save: true })
+    }
 
-		if (e.key === 'ArrowDown') {
-			e.preventDefault()
-			stopEditing({ save: true })
-		}
+    if (e.key === 'ArrowDown') {
+      e.preventDefault()
+      stopEditing({ save: true })
+    }
 
-		if (e.key === 'ArrowUp') {
-			e.preventDefault()
-			stopEditing({ save: true })
-		}
+    if (e.key === 'ArrowUp') {
+      e.preventDefault()
+      stopEditing({ save: true })
+    }
 
-		if (e.key === 'ArrowLeft' && cursorStart === 0) {
-			e.preventDefault()
-			stopEditing({ save: true })
-		}
+    if (e.key === 'ArrowLeft' && cursorStart === 0) {
+      e.preventDefault()
+      stopEditing({ save: true })
+    }
 
-		if (e.key === 'ArrowRight' && isCaretAtEndPosition(cursorEnd, (e.target as any).value.length)) {
-			e.preventDefault()
-			stopEditing({ save: true })
-		}
-	}
+    if (e.key === 'ArrowRight' && isCaretAtEndPosition(cursorEnd, (e.target as any).value.length)) {
+      e.preventDefault()
+      stopEditing({ save: true })
+    }
+  }
 }

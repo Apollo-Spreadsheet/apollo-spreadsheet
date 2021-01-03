@@ -8,7 +8,6 @@
   "semi": false,
   "singleQuote": true,
   "trailingComma": "all",
-  "useTabs": true,
   "printWidth": 100,
   "jsxBracketSameLine": false
 }

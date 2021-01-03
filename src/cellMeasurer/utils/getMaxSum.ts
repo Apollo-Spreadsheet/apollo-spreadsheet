@@ -1,5 +1,5 @@
 interface GeneratorFn {
-	(index: number): number
+  (index: number): number
 }
 
 /**
@@ -15,4 +15,4 @@ const generateArr = (n: number) => [...Array(n).keys()]
  * @param spanSize
  */
 export const getMaxSum = (generator: GeneratorFn, spanSize: number) =>
-	generateArr(spanSize).reduce((sum, i) => sum + generator(i), 0)
+  generateArr(spanSize).reduce((sum, i) => sum + generator(i), 0)

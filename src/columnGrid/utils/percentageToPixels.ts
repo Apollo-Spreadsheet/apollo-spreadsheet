@@ -4,4 +4,4 @@
  * @param containerWidth
  */
 export const percentageToPixels = (value: number, containerWidth: number) =>
-	(value * containerWidth) / 100
+  (value * containerWidth) / 100

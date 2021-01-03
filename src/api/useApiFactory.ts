@@ -11,49 +11,49 @@ import { useLogger } from '../logger'
  * @param apiRef
  */
 export function useApiFactory(
-	gridRootRef: React.RefObject<HTMLDivElement>,
-	apiRef: ApiRef,
-	theme?: GridTheme,
+  gridRootRef: React.RefObject<HTMLDivElement>,
+  apiRef: ApiRef,
+  theme?: GridTheme,
 ): boolean {
-	const logger = useLogger('useApiFactory')
-	const [initialised, setInit] = useState(false)
+  const logger = useLogger('useApiFactory')
+  const [initialised, setInit] = useState(false)
 
-	const publishEvent = useCallback(
-		(name: string, ...args: any[]) => {
-			apiRef.current.emit(name, ...args)
-		},
-		[apiRef],
-	)
+  const publishEvent = useCallback(
+    (name: string, ...args: any[]) => {
+      apiRef.current.emit(name, ...args)
+    },
+    [apiRef],
+  )
 
-	const subscribeEvent = useCallback(
-		(event: string, handler: (param: any) => void): (() => void) => {
-			logger.debug(`Binding ${event} event`)
-			apiRef.current.on(event, handler)
-			const api = apiRef.current
-			return () => {
-				logger.debug(`Clearing ${event} event`)
-				api.removeListener(event, handler)
-			}
-		},
-		[apiRef, logger],
-	)
+  const subscribeEvent = useCallback(
+    (event: string, handler: (param: any) => void): (() => void) => {
+      logger.debug(`Binding ${event} event`)
+      apiRef.current.on(event, handler)
+      const api = apiRef.current
+      return () => {
+        logger.debug(`Clearing ${event} event`)
+        api.removeListener(event, handler)
+      }
+    },
+    [apiRef, logger],
+  )
 
-	useEffect(() => {
-		logger.debug('Initializing grid api.')
-		apiRef.current.isInitialised = true
-		apiRef.current.rootElementRef = gridRootRef
-		apiRef.current.theme = theme
+  useEffect(() => {
+    logger.debug('Initializing grid api.')
+    apiRef.current.isInitialised = true
+    apiRef.current.rootElementRef = gridRootRef
+    apiRef.current.theme = theme
 
-		setInit(true)
-		const api = apiRef.current
+    setInit(true)
+    const api = apiRef.current
 
-		return () => {
-			logger.debug('Clearing all events listeners')
-			api.removeAllListeners()
-		}
-	}, [gridRootRef, apiRef, theme, logger])
+    return () => {
+      logger.debug('Clearing all events listeners')
+      api.removeAllListeners()
+    }
+  }, [gridRootRef, apiRef, theme, logger])
 
-	useApiExtends(apiRef, { subscribeEvent, dispatchEvent: publishEvent }, 'CoreApi')
+  useApiExtends(apiRef, { subscribeEvent, dispatchEvent: publishEvent }, 'CoreApi')
 
-	return initialised
+  return initialised
 }

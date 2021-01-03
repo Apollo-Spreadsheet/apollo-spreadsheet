@@ -5,14 +5,14 @@ import { createLoggerInstance, localStorageAvailable } from './utils'
 const forceDebug = localStorageAvailable() && window.localStorage.getItem('APOLLO_DEBUG') != null
 
 export function loggerFactory(
-	name: string,
-	logLevel: string | boolean = process.env.NODE_ENV === 'production' ? 'error' : 'warn',
+  name: string,
+  logLevel: string | boolean = process.env.NODE_ENV === 'production' ? 'error' : 'warn',
 ) {
-	if (forceDebug) {
-		return createLoggerInstance(name, 'debug')
-	}
+  if (forceDebug) {
+    return createLoggerInstance(name, 'debug')
+  }
 
-	return createLoggerInstance(name, logLevel.toString())
+  return createLoggerInstance(name, logLevel.toString())
 }
 
 /**
@@ -20,6 +20,6 @@ export function loggerFactory(
  * @param name
  */
 export function useLogger(name: string) {
-	const { current } = React.useRef<Logger>(loggerFactory(name))
-	return current
+  const { current } = React.useRef<Logger>(loggerFactory(name))
+  return current
 }

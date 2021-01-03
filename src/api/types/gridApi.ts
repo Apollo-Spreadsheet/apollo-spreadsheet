@@ -8,10 +8,10 @@ import { ColumnApi } from './columnApi'
 import { SortApi } from './sortApi'
 
 export type GridApi = CoreApi &
-	RowApi &
-	RowSelectionApi &
-	EditorManagerApi &
-	MergeCellsApi &
-	NavigationApi &
-	ColumnApi &
-	SortApi
+  RowApi &
+  RowSelectionApi &
+  EditorManagerApi &
+  MergeCellsApi &
+  NavigationApi &
+  ColumnApi &
+  SortApi

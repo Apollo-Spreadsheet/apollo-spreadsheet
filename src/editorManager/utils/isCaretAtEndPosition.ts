@@ -4,4 +4,4 @@
  * @param textLength
  */
 export const isCaretAtEndPosition = (targetPos: number, textLength: number) =>
-	targetPos === textLength
+  targetPos === textLength
