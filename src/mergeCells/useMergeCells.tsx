@@ -8,11 +8,11 @@ import { useApiExtends, ApiRef, MergeCellsApi } from '../api'
 import { useLogger } from '../logger'
 
 export interface MergedCellsHookProps {
-	mergeCells?: MergeCell[]
-	rowCount: number
-	columnCount: number
-	apiRef: ApiRef
-	initialised: boolean
+  mergeCells?: MergeCell[]
+  rowCount: number
+  columnCount: number
+  apiRef: ApiRef
+  initialised: boolean
 }
 
 /**
@@ -21,69 +21,69 @@ export interface MergedCellsHookProps {
  * @param data
  */
 export function useMergeCells({ mergeCells, rowCount, columnCount, apiRef }: MergedCellsHookProps) {
-	const logger = useLogger('useMergeCells')
-	const mergedPositions = useRef<MergePosition[]>([])
-	const mergeGroups = useRef<MergeGroup>({})
-	const mergeData = useRef<MergeCell[]>([])
-	useEffect(() => {
-		if (!mergeCells) {
-			return
-		}
-		logger.debug('Creating and validating merged cells')
-		mergeData.current = validateMergeData(mergeCells, rowCount, columnCount)
-		mergeGroups.current = createMergedGroups(mergeCells)
-		mergedPositions.current = createMergedPositions(mergeCells)
-	}, [mergeCells, rowCount, columnCount, logger])
+  const logger = useLogger('useMergeCells')
+  const mergedPositions = useRef<MergePosition[]>([])
+  const mergeGroups = useRef<MergeGroup>({})
+  const mergeData = useRef<MergeCell[]>([])
+  useEffect(() => {
+    if (!mergeCells) {
+      return
+    }
+    logger.debug('Creating and validating merged cells')
+    mergeData.current = validateMergeData(mergeCells, rowCount, columnCount)
+    mergeGroups.current = createMergedGroups(mergeCells)
+    mergedPositions.current = createMergedPositions(mergeCells)
+  }, [mergeCells, rowCount, columnCount, logger])
 
-	const isMerged = useCallback(({ rowIndex, colIndex }: NavigationCoords) => {
-		return mergedPositions.current.some(e => e.row === rowIndex && e.col === colIndex)
-	}, [])
+  const isMerged = useCallback(({ rowIndex, colIndex }: NavigationCoords) => {
+    return mergedPositions.current.some(e => e.row === rowIndex && e.col === colIndex)
+  }, [])
 
-	/**
-	 * Returns the parent of the merged position given
-	 * @param coords
-	 * @returns The parent coordinates or nothing
-	 */
-	const getMergeParentCoords = useCallback(({ rowIndex, colIndex }: NavigationCoords) => {
-		const targets = mergeData.current.filter(e => e.colIndex === colIndex)
-		if (targets.length === 0) {
-			console.error(
-				`Please review your setup, target merge column not found at getMergedPath from navigation. Given input [${rowIndex}, ${colIndex}]`,
-			)
-			return undefined
-		}
-		for (const target of targets) {
-			const rowStart = target.rowIndex
-			const rowEnd = target.rowIndex + target.rowSpan - 1
-			const isBetween = rowIndex >= rowStart && rowIndex <= rowEnd
-			if (isBetween) {
-				return { rowIndex: target.rowIndex, colIndex: target.colIndex }
-			}
-		}
+  /**
+   * Returns the parent of the merged position given
+   * @param coords
+   * @returns The parent coordinates or nothing
+   */
+  const getMergeParentCoords = useCallback(({ rowIndex, colIndex }: NavigationCoords) => {
+    const targets = mergeData.current.filter(e => e.colIndex === colIndex)
+    if (targets.length === 0) {
+      console.error(
+        `Please review your setup, target merge column not found at getMergedPath from navigation. Given input [${rowIndex}, ${colIndex}]`,
+      )
+      return undefined
+    }
+    for (const target of targets) {
+      const rowStart = target.rowIndex
+      const rowEnd = target.rowIndex + target.rowSpan - 1
+      const isBetween = rowIndex >= rowStart && rowIndex <= rowEnd
+      if (isBetween) {
+        return { rowIndex: target.rowIndex, colIndex: target.colIndex }
+      }
+    }
 
-		return undefined
-	}, [])
+    return undefined
+  }, [])
 
-	/**
-	 * Returns the col/row span of the given colIndex/rowIndex
-	 * @param coords
-	 */
-	const getSpanProperties = useCallback(
-		(coords: NavigationCoords) =>
-			mergeData.current.find(e => e.rowIndex === coords.rowIndex && e.colIndex === coords.colIndex),
-		[],
-	)
+  /**
+   * Returns the col/row span of the given colIndex/rowIndex
+   * @param coords
+   */
+  const getSpanProperties = useCallback(
+    (coords: NavigationCoords) =>
+      mergeData.current.find(e => e.rowIndex === coords.rowIndex && e.colIndex === coords.colIndex),
+    [],
+  )
 
-	const getMergedData = useCallback(() => mergeData.current, [])
-	const getMergedGroups = useCallback(() => mergeGroups.current, [])
+  const getMergedData = useCallback(() => mergeData.current, [])
+  const getMergedGroups = useCallback(() => mergeGroups.current, [])
 
-	const mergedCellsApi: MergeCellsApi = {
-		getSpanProperties,
-		isMerged,
-		getMergeParentCoords,
-		getMergedData,
-		getMergedGroups,
-	}
+  const mergedCellsApi: MergeCellsApi = {
+    getSpanProperties,
+    isMerged,
+    getMergeParentCoords,
+    getMergedData,
+    getMergedGroups,
+  }
 
-	useApiExtends(apiRef, mergedCellsApi, 'MergeCellsAPI')
+  useApiExtends(apiRef, mergedCellsApi, 'MergeCellsAPI')
 }

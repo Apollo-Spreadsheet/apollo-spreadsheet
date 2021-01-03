@@ -1,10 +1,10 @@
 import React, {
-	CSSProperties,
-	forwardRef,
-	useCallback,
-	useImperativeHandle,
-	useMemo,
-	useState,
+  CSSProperties,
+  forwardRef,
+  useCallback,
+  useImperativeHandle,
+  useMemo,
+  useState,
 } from 'react'
 import { Popover, TextareaAutosize } from '@material-ui/core'
 import { EditorProps } from '../editorProps'
@@ -14,132 +14,129 @@ import clsx from 'clsx'
 import { GRID_RESIZE, useApiEventHandler } from '../../api'
 
 const useStyles = makeStyles(() => ({
-	input: {
-		width: '100%',
-		height: '100%',
-		resize: 'none',
-		overflow: 'auto',
-		border: 0,
-		outline: 0,
-		'&:focus': {
-			border: 0,
-			outline: 0,
-		},
-	},
+  input: {
+    width: '100%',
+    height: '100%',
+    resize: 'none',
+    overflow: 'auto',
+    border: 0,
+    outline: 0,
+    '&:focus': {
+      border: 0,
+      outline: 0,
+    },
+  },
 }))
 export const TextEditor = forwardRef(
-	(
-		{
-			value,
-			stopEditing,
-			anchorRef,
-			maxLength,
-			validatorHook,
-			additionalProps,
-			apiRef,
-		}: EditorProps,
-		componentRef,
-	) => {
-		const classes = useStyles()
-		const [editingValue, setEditingValue] = useState(String(value))
+  (
+    {
+      value,
+      stopEditing,
+      anchorRef,
+      maxLength,
+      validatorHook,
+      additionalProps,
+      apiRef,
+    }: EditorProps,
+    componentRef,
+  ) => {
+    const classes = useStyles()
+    const [editingValue, setEditingValue] = useState(String(value))
 
-		const onAnchorResize = useCallback(() => {
-			stopEditing()
-		}, [stopEditing])
+    const onAnchorResize = useCallback(() => {
+      stopEditing()
+    }, [stopEditing])
 
-		useApiEventHandler(apiRef, GRID_RESIZE, onAnchorResize)
+    useApiEventHandler(apiRef, GRID_RESIZE, onAnchorResize)
 
-		useImperativeHandle(
-			componentRef,
-			() => ({
-				getValue: () => editingValue,
-			}),
-			[editingValue],
-		)
+    useImperativeHandle(
+      componentRef,
+      () => ({
+        getValue: () => editingValue,
+      }),
+      [editingValue],
+    )
 
-		const isValidValue = useMemo(() => {
-			if (!validatorHook) {
-				return true
-			}
-			return validatorHook(editingValue)
-		}, [editingValue, validatorHook])
+    const isValidValue = useMemo(() => {
+      if (!validatorHook) {
+        return true
+      }
+      return validatorHook(editingValue)
+    }, [editingValue, validatorHook])
 
-		const onTextAreaResizeMount = useCallback(
-			(ref: HTMLTextAreaElement | null) => {
-				if (!ref) {
-					return
-				}
-				// eslint-disable-next-line no-param-reassign
-				ref.selectionStart = ref.value.length
-				// eslint-disable-next-line no-param-reassign
-				ref.selectionEnd = ref.value.length
-			},
-			[],
-		)
+    const onTextAreaResizeMount = useCallback((ref: HTMLTextAreaElement | null) => {
+      if (!ref) {
+        return
+      }
+      // eslint-disable-next-line no-param-reassign
+      ref.selectionStart = ref.value.length
+      // eslint-disable-next-line no-param-reassign
+      ref.selectionEnd = ref.value.length
+    }, [])
 
-		const anchorStyle = (anchorRef as any).style as CSSProperties
+    const anchorStyle = (anchorRef as any).style as CSSProperties
 
-		function onEditorPortalClose(event: unknown, reason: 'backdropClick' | 'escapeKeyDown') {
-			//Only allow to cancel if its invalid
-			if (!isValidValue) {
-				return stopEditing({ save: false })
-			}
+    function onEditorPortalClose(event: unknown, reason: 'backdropClick' | 'escapeKeyDown') {
+      //Only allow to cancel if its invalid
+      if (!isValidValue) {
+        return stopEditing({ save: false })
+      }
 
-			if (reason === 'backdropClick') {
-				return stopEditing({ save: true })
-			}
+      if (reason === 'backdropClick') {
+        return stopEditing({ save: true })
+      }
 
-			stopEditing({ save: false })
-		}
+      stopEditing({ save: false })
+    }
 
-		return (
-			<Popover
-				id={'editor-portal'}
-				anchorEl={anchorRef}
-				open
-				elevation={0}
-				TransitionProps={{ timeout: 0 }}
-				onClose={onEditorPortalClose}
-				marginThreshold={0}
-				disableRestoreFocus
-				PaperProps={{
-					style: {
-						overflow: 'hidden',
-						zIndex: 10,
-						border: isValidValue ? anchorStyle.border : '1px solid red',
-						borderRadius: 0,
-						background: 'transparent',
-					},
-				}}
-			>
-				<div
-					id="editor-container"
-					style={{
-						width: anchorStyle.width,
-						minHeight: anchorStyle.height,
-					}}
-				>
-					<TextareaAutosize
-						{...(additionalProps?.componentProps as React.HTMLAttributes<any>)}
-						id={'apollo-textarea'}
-						value={editingValue}
-						ref={onTextAreaResizeMount}
-						onChange={e => setEditingValue(e.target.value)}
-						autoFocus
-						onKeyDown={e => handleEditorKeydown(e, stopEditing)}
-						aria-label="text apollo editor"
-						rowsMin={1}
-						maxLength={maxLength}
-						className={clsx(classes.input, additionalProps?.className)}
-						style={{
-							minHeight: anchorStyle.height,
-							...additionalProps?.style,
-						}}
-					/>
-				</div>
-			</Popover>
-		)
-	},
+    return (
+      <Popover
+        id={'editor-portal'}
+        anchorEl={anchorRef}
+        open
+        elevation={0}
+        TransitionProps={{ timeout: 0 }}
+        onClose={onEditorPortalClose}
+        marginThreshold={0}
+        disableRestoreFocus
+        PaperProps={{
+          style: {
+            overflow: 'hidden',
+            zIndex: 10,
+            border: isValidValue ? anchorStyle.border : '1px solid red',
+            borderRadius: 0,
+            background: 'transparent',
+          },
+        }}
+      >
+        <div
+          id="editor-container"
+          style={{
+            width: anchorStyle.width,
+            minHeight: anchorStyle.height,
+          }}
+        >
+          <TextareaAutosize
+            {...(additionalProps?.componentProps as React.HTMLAttributes<any>)}
+            id={'apollo-textarea'}
+            value={editingValue}
+            ref={onTextAreaResizeMount}
+            onChange={e => setEditingValue(e.target.value)}
+            autoFocus
+            onKeyDown={e => handleEditorKeydown(e, stopEditing)}
+            aria-label="text apollo editor"
+            rowsMin={1}
+            maxLength={maxLength}
+            className={clsx(classes.input, additionalProps?.className)}
+            style={{
+              minHeight: anchorStyle.height,
+              ...additionalProps?.style,
+            }}
+          />
+        </div>
+      </Popover>
+    )
+  },
 )
 
 export default TextEditor

@@ -1,10 +1,10 @@
 import React, {
-	CSSProperties,
-	forwardRef,
-	useCallback,
-	useImperativeHandle,
-	useMemo,
-	useState,
+  CSSProperties,
+  forwardRef,
+  useCallback,
+  useImperativeHandle,
+  useMemo,
+  useState,
 } from 'react'
 import { EditorProps } from '../editorProps'
 import { Popover, TextareaAutosize } from '@material-ui/core'
@@ -14,146 +14,143 @@ import clsx from 'clsx'
 import { GRID_RESIZE, useApiEventHandler } from '../../api'
 
 const useStyles = makeStyles(() => ({
-	input: {
-		width: '100%',
-		height: '100%',
-		resize: 'none',
-		overflow: 'auto',
-		border: 0,
-		outline: 0,
-		'&:focus': {
-			border: 0,
-			outline: 0,
-		},
-	},
+  input: {
+    width: '100%',
+    height: '100%',
+    resize: 'none',
+    overflow: 'auto',
+    border: 0,
+    outline: 0,
+    '&:focus': {
+      border: 0,
+      outline: 0,
+    },
+  },
 }))
 
 export const NumericEditor = forwardRef(
-	(
-		{
-			value,
-			stopEditing,
-			anchorRef,
-			maxLength,
-			validatorHook,
-			additionalProps,
-			apiRef,
-		}: EditorProps,
-		componentRef,
-	) => {
-		const classes = useStyles()
-		const [editingValue, setEditingValue] = useState<string>(
-			isNaN(Number(value)) ? '0' : String(value),
-		)
+  (
+    {
+      value,
+      stopEditing,
+      anchorRef,
+      maxLength,
+      validatorHook,
+      additionalProps,
+      apiRef,
+    }: EditorProps,
+    componentRef,
+  ) => {
+    const classes = useStyles()
+    const [editingValue, setEditingValue] = useState<string>(
+      isNaN(Number(value)) ? '0' : String(value),
+    )
 
-		const onAnchorResize = useCallback(() => {
-			stopEditing()
-		}, [stopEditing])
+    const onAnchorResize = useCallback(() => {
+      stopEditing()
+    }, [stopEditing])
 
-		useApiEventHandler(apiRef, GRID_RESIZE, onAnchorResize)
+    useApiEventHandler(apiRef, GRID_RESIZE, onAnchorResize)
 
-		useImperativeHandle(
-			componentRef,
-			() => ({
-				getValue: () => (editingValue === '' ? 0 : parseFloat(editingValue)),
-			}),
-			[editingValue],
-		)
-		const onKeyPress = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-			const regex = /^[0-9.,]+$/
-			//Only 0-9 with dot and comma
-			if (!regex.test(e.key)) {
-				e.preventDefault()
-				e.stopPropagation()
-			}
-		}
+    useImperativeHandle(
+      componentRef,
+      () => ({
+        getValue: () => (editingValue === '' ? 0 : parseFloat(editingValue)),
+      }),
+      [editingValue],
+    )
+    const onKeyPress = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+      const regex = /^[0-9.,]+$/
+      //Only 0-9 with dot and comma
+      if (!regex.test(e.key)) {
+        e.preventDefault()
+        e.stopPropagation()
+      }
+    }
 
-		const isValidValue = useMemo(() => {
-			if (validatorHook) {
-				return validatorHook(editingValue)
-			}
-			//Use default number validator
-			return !isNaN(Number(editingValue))
-		}, [editingValue, validatorHook])
+    const isValidValue = useMemo(() => {
+      if (validatorHook) {
+        return validatorHook(editingValue)
+      }
+      //Use default number validator
+      return !isNaN(Number(editingValue))
+    }, [editingValue, validatorHook])
 
-		const onTextAreaResizeMount = useCallback(
-			(ref: HTMLTextAreaElement | null) => {
-				if (!ref) {
-					return
-				}
-				// eslint-disable-next-line no-param-reassign
-				ref.selectionStart = ref.value.length
-				// eslint-disable-next-line no-param-reassign
-				ref.selectionEnd = ref.value.length
-			},
-			[],
-		)
+    const onTextAreaResizeMount = useCallback((ref: HTMLTextAreaElement | null) => {
+      if (!ref) {
+        return
+      }
+      // eslint-disable-next-line no-param-reassign
+      ref.selectionStart = ref.value.length
+      // eslint-disable-next-line no-param-reassign
+      ref.selectionEnd = ref.value.length
+    }, [])
 
-		function onEditorPortalClose(event: unknown, reason: 'backdropClick' | 'escapeKeyDown') {
-			//Only allow to cancel if its invalid
-			if (!isValidValue) {
-				return stopEditing({ save: false })
-			}
+    function onEditorPortalClose(event: unknown, reason: 'backdropClick' | 'escapeKeyDown') {
+      //Only allow to cancel if its invalid
+      if (!isValidValue) {
+        return stopEditing({ save: false })
+      }
 
-			if (reason === 'backdropClick') {
-				return stopEditing({ save: true })
-			}
+      if (reason === 'backdropClick') {
+        return stopEditing({ save: true })
+      }
 
-			stopEditing({ save: false })
-		}
+      stopEditing({ save: false })
+    }
 
-		const anchorStyle = (anchorRef as any).style as CSSProperties
-		return (
-			<Popover
-				id={'editor-portal'}
-				anchorEl={anchorRef}
-				open
-				elevation={0}
-				TransitionProps={{ timeout: 0 }}
-				onClose={onEditorPortalClose}
-				marginThreshold={0}
-				disableRestoreFocus
-				PaperProps={{
-					style: {
-						overflow: 'hidden',
-						zIndex: 10,
-						border: isValidValue ? anchorStyle.border : '1px solid red',
-						borderRadius: 0,
-					},
-				}}
-			>
-				<div
-					id="editor-container"
-					style={{
-						width: anchorStyle.width,
-						minHeight: anchorStyle.height,
-					}}
-				>
-					<TextareaAutosize
-						{...(additionalProps?.componentProps as React.HTMLAttributes<any>)}
-						id={'apollo-textarea'}
-						value={editingValue}
-						ref={onTextAreaResizeMount}
-						inputMode={'decimal'}
-						onKeyPress={onKeyPress}
-						onKeyDown={e => handleEditorKeydown(e, stopEditing)}
-						onChange={e => {
-							setEditingValue(e.target.value.replace(',', '.'))
-						}}
-						autoFocus
-						aria-label="numeric apollo editor"
-						rowsMin={1}
-						maxLength={maxLength}
-						className={clsx(classes.input, additionalProps?.className)}
-						style={{
-							minHeight: anchorStyle.height,
-							...additionalProps?.style,
-						}}
-					/>
-				</div>
-			</Popover>
-		)
-	},
+    const anchorStyle = (anchorRef as any).style as CSSProperties
+    return (
+      <Popover
+        id={'editor-portal'}
+        anchorEl={anchorRef}
+        open
+        elevation={0}
+        TransitionProps={{ timeout: 0 }}
+        onClose={onEditorPortalClose}
+        marginThreshold={0}
+        disableRestoreFocus
+        PaperProps={{
+          style: {
+            overflow: 'hidden',
+            zIndex: 10,
+            border: isValidValue ? anchorStyle.border : '1px solid red',
+            borderRadius: 0,
+          },
+        }}
+      >
+        <div
+          id="editor-container"
+          style={{
+            width: anchorStyle.width,
+            minHeight: anchorStyle.height,
+          }}
+        >
+          <TextareaAutosize
+            {...(additionalProps?.componentProps as React.HTMLAttributes<any>)}
+            id={'apollo-textarea'}
+            value={editingValue}
+            ref={onTextAreaResizeMount}
+            inputMode={'decimal'}
+            onKeyPress={onKeyPress}
+            onKeyDown={e => handleEditorKeydown(e, stopEditing)}
+            onChange={e => {
+              setEditingValue(e.target.value.replace(',', '.'))
+            }}
+            autoFocus
+            aria-label="numeric apollo editor"
+            rowsMin={1}
+            maxLength={maxLength}
+            className={clsx(classes.input, additionalProps?.className)}
+            style={{
+              minHeight: anchorStyle.height,
+              ...additionalProps?.style,
+            }}
+          />
+        </div>
+      </Popover>
+    )
+  },
 )
 
 export default NumericEditor

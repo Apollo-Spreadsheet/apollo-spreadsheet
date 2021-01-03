@@ -23,7 +23,7 @@
     "storybook": "cross-env NODE_ENV=development start-storybook -p 9001  -s ./.storybook/public",
     "tsc": "tsc -p tsconfig-build.json",
     "build": "yarn build-storybook -o ./out",
-    "format": "prettier --write \"src/**/*.ts\"",
+    "format": "prettier --check 'src/**/*{ts,tsx}' --write",
     "prettier": "pretty-quick --staged ",
     "test": "echo \\\"Test broken requires refactor\\\" ",
     "test-broken": "jest",
