@@ -4,8 +4,7 @@ import { NavigationCoords } from '../../navigation/types'
 import { EditorProps, EditorRef } from '../../editorManager'
 import { PopperProps } from '@material-ui/core/Popper/Popper'
 import { ReactDatePickerProps } from 'react-datepicker'
-import { Row } from '../../types'
-import { DynamicCallback } from '../../types/dynamic-callback'
+import { Row, DynamicCallback } from '../../types'
 
 export interface CellRendererProps<TRow = Row> {
   row: TRow
@@ -23,8 +22,22 @@ export interface CellEditorProps<TRow = Row> {
   onRefMount: (ref: EditorRef) => void
 }
 
+/**
+ * Provides custom props to the dynamic header/column renderer
+ */
+export interface ColumnRendererProps<Key = string, Metadata = any> {
+  column: Column<Key, Metadata>
+  columnIndex: string
+  /**
+   * This the final className for this content
+   */
+  className: string
+}
+
 export type ICellRenderer = (cellProps: CellRendererProps) => React.ReactNode | JSX.Element
-export type IHeaderRenderer = (column: Column) => React.ReactNode | JSX.Element
+export type IHeaderRenderer<Key = string, Metadata = any> = (
+  column: ColumnRendererProps<Key, Metadata>,
+) => React.ReactNode | JSX.Element
 export type ICellEditor = (cellProps: CellEditorProps) => React.ReactNode | JSX.Element
 
 export enum ColumnCellType {
