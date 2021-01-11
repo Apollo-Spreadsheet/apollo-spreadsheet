@@ -153,7 +153,12 @@ export const ColumnGrid = React.memo((props: ColumnGridProps) => {
 
       let children: JSX.Element | React.ReactNode = title
       if (renderer) {
-        children = renderer({ column: cell, className: headerClassName, columnIndex })
+        children = renderer({
+          column: cell,
+          className: headerClassName,
+          columnIndex,
+          apiRef: props.apiRef,
+        })
       } else if (cell.tooltip) {
         children = (
           <Tooltip title={cell.tooltip} placement={'top'} {...cell.tooltipProps}>

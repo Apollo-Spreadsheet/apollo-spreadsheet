@@ -5,6 +5,7 @@ import { EditorProps, EditorRef } from '../../editorManager'
 import { PopperProps } from '@material-ui/core/Popper/Popper'
 import { ReactDatePickerProps } from 'react-datepicker'
 import { Row, DynamicCallback } from '../../types'
+import { ApiRef } from '../../api'
 
 export interface CellRendererProps<TRow = Row> {
   row: TRow
@@ -14,6 +15,7 @@ export interface CellRendererProps<TRow = Row> {
 export interface CellEditorProps<TRow = Row> {
   row: TRow
   column: Column
+  apiRef: ApiRef
   editorProps: EditorProps
   /**
    * useImperativeHandle is required internally so it should be passed into here the api ref
