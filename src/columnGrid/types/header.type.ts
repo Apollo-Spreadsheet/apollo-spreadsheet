@@ -15,7 +15,6 @@ export interface CellRendererProps<TRow = Row> {
 export interface CellEditorProps<TRow = Row> {
   row: TRow
   column: Column
-  apiRef: ApiRef
   editorProps: EditorProps
   /**
    * useImperativeHandle is required internally so it should be passed into here the api ref
@@ -29,6 +28,7 @@ export interface CellEditorProps<TRow = Row> {
  */
 export interface ColumnRendererProps<Key = string, Metadata = any> {
   column: Column<Key, Metadata>
+  apiRef: ApiRef
   columnIndex: string
   /**
    * This the final className for this content
