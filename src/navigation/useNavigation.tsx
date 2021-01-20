@@ -303,7 +303,10 @@ export function useNavigation({
     (event: KeyboardEvent, column: Column, row: Row, currentValue: unknown) => {
       if (event.key === 'x') {
         event.preventDefault()
-        if (column.disableCellCut !== undefined && resolveDynamicOrBooleanCallback(column.disableCellCut, { row, column})) {
+        if (
+          column.disableCellCut !== undefined &&
+          resolveDynamicOrBooleanCallback(column.disableCellCut, { row, column })
+        ) {
           return
         }
         return handleCellCut(currentValue, column, row)
@@ -315,7 +318,10 @@ export function useNavigation({
 
       if (event.key === 'v') {
         event.preventDefault()
-        if (column.disableCellPaste !== undefined && resolveDynamicOrBooleanCallback(column.disableCellPaste, { row, column})) {
+        if (
+          column.disableCellPaste !== undefined &&
+          resolveDynamicOrBooleanCallback(column.disableCellPaste, { row, column })
+        ) {
           return
         }
         return handleCellPaste(column, row, currentValue)
@@ -533,7 +539,10 @@ export function useNavigation({
       //Handle cell deleting
       if ((event.key === 'Backspace' || event.key === 'Delete') && !editorState) {
         //If a dynamic callback/value is passed we resolve and in case its true we just exit
-        if (column.disableBackspace !== undefined && resolveDynamicOrBooleanCallback(column.disableBackspace, { row, column})) {
+        if (
+          column.disableBackspace !== undefined &&
+          resolveDynamicOrBooleanCallback(column.disableBackspace, { row, column })
+        ) {
           return
         }
 
