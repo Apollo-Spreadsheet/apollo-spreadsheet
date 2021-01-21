@@ -248,6 +248,7 @@ const GridWrapper = React.memo((props: GridWrapperProps) => {
       }
 
       const dynamicDragId = `${rowIndex},${columnIndex}`
+      
       const isDragDisabled =
         !props.dragAndDrop?.canDrag?.({
           row,

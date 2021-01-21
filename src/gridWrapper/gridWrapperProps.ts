@@ -9,8 +9,45 @@ import { DynamicCallback, Row, StretchMode } from '../types'
 import { ApiRef } from '../api/types'
 import { SelectionProps } from '../rowSelection'
 
+export interface DragEventCallback {
+  (args: any): void
+}
+
+export interface IDragComplete {
+  (args: any): void
+}
+
 export interface DragAndDropProps {
+  /**
+   * Invoked once the user starts dragging
+   */
+  onDragStart?: DragEventCallback
+  /**
+   * Invoked whether the drag operation stops whether
+   * its successfully or not
+   */
+  onDragEnd?: DragEventCallback
+  /**
+   * If the drag is successfully a match this callback
+   * is invoked with all the information about the drag
+   */
+  onDragComplete?: IDragComplete
+  /**
+   * Returns whether a cell can drag or not
+   */
   canDrag?: DynamicCallback<Row, boolean>
+  /**
+   * Returns whether a cell can be droppable
+   */
+  canDrop?: DynamicCallback<Row, boolean>
+  /**
+   * @todo add a mode?: 'cell' | 'row' with default as cell
+   * and the idea of row is we create a clone of all cells into a single row
+   * but this is more useful for tables rather than spreadsheets but that clone
+   * is a custom renderer on react-b-dnd clone
+   * @default cell
+   */
+  mode?: 'cell' | 'row'
 }
 
 export interface DisableSortFilterParam {

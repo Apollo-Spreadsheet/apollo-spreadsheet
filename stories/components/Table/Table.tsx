@@ -125,6 +125,8 @@ export function Table() {
 	]
 
 	const canDragHandler = useCallback(({ column }) => {
+		console.log("Can drag cinvoked for")
+		console.log({ column })
 		return column.id !== 'order'
 	}, [])
 

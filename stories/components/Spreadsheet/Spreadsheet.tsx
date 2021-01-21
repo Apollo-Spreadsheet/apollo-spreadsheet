@@ -86,15 +86,7 @@ const useStyles = makeStyles(theme => ({
 			color: '#fff',
 			borderRadius: '20px',
 		},
-	},
-	columnWithMinimize: {
-		width: '100%',
-		height: '100%',
-		display: 'flex',
-		justifyContent: 'center',
-		alignItems: 'center',
-		// transition: 'all 500ms ease-in-out'
-	},
+	}
 }))
 
 const MIN_COLUMN_WIDTH = 10
@@ -103,41 +95,6 @@ export function Spreadsheet() {
 	const { headerData: columns, data: defaultData } = useTopCase(classes.calendarClass)
 	const [data, setData] = useState(dump)
 	const apiRef = useApiRef()
-	const [columnMinimized, setColumnMinimized] = useState<string[]>([])
-
-	const headersWithTemporaryMinimize = useMemo(() => {
-		/**
-		 * @todo Use metadata to identify its minimized
-		 */
-		const updatedColumns = [...columns]
-		updatedColumns.forEach((col, i) => {
-			if (i === 3 || i > 4){
-				return
-			}
-			const isMinimized = columnMinimized.some(id => col.id === id)
-			if (isMinimized) {
-				col.cellRenderer = () => {
-					return <></>
-				}
-			}
-			col.width = isMinimized ? MIN_COLUMN_WIDTH : '15%'
-			col.renderer = () => {
-				return (
-					<div className={classes.columnWithMinimize}>
-						{!isMinimized && <p>{col.title}</p>}
-						{isMinimized ? (
-							<ToggleOnIcon
-								onClick={() => setColumnMinimized(prev => [...prev.filter(e => e !== col.id)])}
-							/>
-						) : (
-							<ToggleOffIcon onClick={() => setColumnMinimized(prev => [...prev, col.id])} />
-						)}
-					</div>
-				)
-			}
-		})
-		return updatedColumns
-	}, [columns, columnMinimized])
 
 	const mergeCellsData = useMemo(() => {
 		return createMergeCellsData(data, columns)
@@ -243,7 +200,7 @@ export function Spreadsheet() {
 			<ApolloSpreadSheet
 				className={classes.root}
 				apiRef={apiRef}
-				columns={headersWithTemporaryMinimize}
+				columns={columns}
 				rows={data}
 				onCellChange={onCellChange}
 				outsideClickDeselects
@@ -259,9 +216,13 @@ export function Spreadsheet() {
 					onHeaderIconClick,
 				}}
 				disableSort
-				// dragAndDrop={{
-				// 	canDrag: () => true,
-				// }}
+				dragAndDrop={{
+					canDrag: (params) => {
+						console.log("can drag invoked")
+						console.log({ params })
+						return true
+					},
+				}}
 			/>
 		</Box>
 	)
