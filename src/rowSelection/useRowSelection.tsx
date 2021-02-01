@@ -34,7 +34,7 @@ export function useRowSelection(apiRef: ApiRef, initialised: boolean, selection?
       logger.debug(`Selecting row ${idOrRow.toString()}`)
       //Ensure selection is enabled
       if (!selection) {
-        return logger.info(`Selection is disabled.`)
+        return logger.info('Selection is disabled.')
       }
       const _id = typeof idOrRow !== 'object' ? idOrRow : idOrRow[selection.key]
       //Find the target row in order to determinate whether we can select or not
