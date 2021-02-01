@@ -267,11 +267,7 @@ export function useEditorManager({ onCellChange, apiRef }: EditorManagerProps) {
 
       // If any valid key is pressed we override the existing text by default for the editor
       // eslint-disable-next-line no-nested-ternary
-      const value = row[column.accessor]
-        ? defaultKey
-          ? defaultKey
-          : row[column.accessor]
-        : defaultKey || ''
+      const value = row[column.accessor] ? defaultKey || row[column.accessor] : defaultKey || ''
 
       const initialValue = row[column.accessor] ?? ''
 
