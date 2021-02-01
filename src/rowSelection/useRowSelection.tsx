@@ -9,7 +9,8 @@ export const ROW_SELECTION_HEADER_ID = '__selection__'
 
 /**
  * useRowSelection is a hook that provides utility for selecting rows
- * @param rows
+ * @param apiRef
+ * @param initialised
  * @param selection
  */
 export function useRowSelection(apiRef: ApiRef, initialised: boolean, selection?: SelectionProps) {
@@ -33,7 +34,7 @@ export function useRowSelection(apiRef: ApiRef, initialised: boolean, selection?
       logger.debug(`Selecting row ${idOrRow.toString()}`)
       //Ensure selection is enabled
       if (!selection) {
-        return
+        return logger.info(`Selection is disabled.`)
       }
       const _id = typeof idOrRow !== 'object' ? idOrRow : idOrRow[selection.key]
       //Find the target row in order to determinate whether we can select or not
@@ -43,9 +44,10 @@ export function useRowSelection(apiRef: ApiRef, initialised: boolean, selection?
           `Row not found with the given key ${selection.key} on param: ${idOrRow} and extracted the id: ${_id}`,
         )
       }
+
       //If we do have the middleware and it returns false, just block
       if (selection.canSelect && !selection.canSelect(targetRow)) {
-        return
+        return logger.info(`Row id: ${_id} cannot be selected`)
       }
 
       //Check if highlight is at the selecting id otherwise we need to force it
