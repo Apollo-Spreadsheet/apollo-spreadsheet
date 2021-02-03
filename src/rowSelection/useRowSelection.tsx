@@ -44,6 +44,11 @@ export function useRowSelection(apiRef: ApiRef, initialised: boolean, selection?
       //Find the target row in order to determinate whether we can select or not
       const targetRow = apiRef.current.getRowById(String(_id))
       if (!targetRow) {
+        logger.info({
+          rows: apiRef.current.getRows(),
+          id: _id,
+          selectionKey: selectionRef.current.key,
+        })
         return logger.warn(
           `Row not found (result= ${targetRow}) with the given key ${selectionRef.current.key} 
           on param: ${idOrRow} and extracted the id: ${_id} with total rows ${apiRef.current.getRowsCount()}`,
