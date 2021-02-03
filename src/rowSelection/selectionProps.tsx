@@ -1,6 +1,6 @@
 import React from 'react'
 import { Row } from '../types'
-import { DynamicCallback } from '../types/dynamic-callback'
+import { DynamicCallback } from '../types'
 
 export interface SelectionProps {
   /**

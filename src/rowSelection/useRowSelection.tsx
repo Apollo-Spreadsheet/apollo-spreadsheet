@@ -1,7 +1,6 @@
 import { useCallback, useEffect, useRef } from 'react'
 import { SelectionProps } from './selectionProps'
-import { ApiRef, RowSelectionApi } from '../api/types'
-import { useApiExtends, ROW_SELECTION_CHANGE } from '../api'
+import { useApiExtends, ROW_SELECTION_CHANGE, RowSelectionApi, ApiRef } from '../api'
 import { Row } from '../types'
 import { useLogger } from '../logger'
 
@@ -16,6 +15,11 @@ export const ROW_SELECTION_HEADER_ID = '__selection__'
 export function useRowSelection(apiRef: ApiRef, initialised: boolean, selection?: SelectionProps) {
   const logger = useLogger('useRowSelection')
   const selectedIds = useRef<string[]>([])
+  const selectionRef = useRef<SelectionProps | undefined>(selection)
+
+  useEffect(() => {
+    selectionRef.current = selection
+  }, [selection])
 
   //Detect if a row exists in selected but not in rows
   useEffect(() => {
@@ -33,20 +37,20 @@ export function useRowSelection(apiRef: ApiRef, initialised: boolean, selection?
     (idOrRow: string | Row) => {
       logger.debug(`Selecting row ${idOrRow.toString()}`)
       //Ensure selection is enabled
-      if (!selection) {
+      if (!selectionRef.current) {
         return logger.info('Selection is disabled.')
       }
-      const _id = typeof idOrRow !== 'object' ? idOrRow : idOrRow[selection.key]
+      const _id = typeof idOrRow !== 'object' ? idOrRow : idOrRow[selectionRef.current.key]
       //Find the target row in order to determinate whether we can select or not
       const targetRow = apiRef.current.getRowById(String(_id))
       if (!targetRow) {
         return logger.warn(
-          `Row not found with the given key ${selection.key} on param: ${idOrRow} and extracted the id: ${_id}`,
+          `Row not found with the given key ${selectionRef.current.key} on param: ${idOrRow} and extracted the id: ${_id}`,
         )
       }
 
       //If we do have the middleware and it returns false, just block
-      if (selection.canSelect && !selection.canSelect(targetRow)) {
+      if (selectionRef.current.canSelect && !selectionRef.current.canSelect(targetRow)) {
         return logger.info(`Row id: ${_id} cannot be selected`)
       }
 
@@ -66,7 +70,7 @@ export function useRowSelection(apiRef: ApiRef, initialised: boolean, selection?
 
       apiRef.current.dispatchEvent(ROW_SELECTION_CHANGE)
     },
-    [logger, selection, apiRef, isRowSelected],
+    [logger, apiRef, isRowSelected],
   )
 
   const getSelectedRows = useCallback(() => {
