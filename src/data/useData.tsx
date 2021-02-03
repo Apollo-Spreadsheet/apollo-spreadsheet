@@ -31,6 +31,11 @@ export function useData({ rows, selection, initialised, apiRef }: Props) {
   const originalRowsRef = useRef<Row[]>(rows)
   const cells = useRef<GridCell[][]>([])
   const [, forceUpdate] = useState(false)
+  const selectionRef = useRef(selection)
+
+  useEffect(() => {
+    selectionRef.current = selection
+  }, [selection])
 
   const onRowsChangeHandle = useCallback(
     (params: { rows: Row[] }) => {
@@ -88,9 +93,13 @@ export function useData({ rows, selection, initialised, apiRef }: Props) {
 
   const getRowById = useCallback(
     (id: string) => {
-      return rowsRef.current.find(e => String(e[selection?.key ?? '']) === id)
+      if (!selectionRef.current || !selectionRef.current?.key) {
+        logger.warn('No selection key to getRowById')
+        return undefined
+      }
+      return rowsRef.current.find(e => String(e[selectionRef.current!.key]) === id)
     },
-    [selection?.key],
+    [],
   )
 
   const getRowsWithFilter = useCallback(
