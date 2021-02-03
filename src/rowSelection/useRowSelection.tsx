@@ -80,15 +80,15 @@ export function useRowSelection(apiRef: ApiRef, initialised: boolean, selection?
   )
 
   const getSelectedRows = useCallback(() => {
-    if (!selection) {
+    if (!selectionRef.current) {
       return []
     }
     return apiRef.current
       .getRowsWithFilter(e =>
-        selectedIds.current.some(id => String(id) === String(e[selection.key])),
+        selectedIds.current.some(id => String(id) === String(e[selectionRef.current!.key])),
       )
-      .map((e: any) => String(e[selection.key]))
-  }, [apiRef, selection])
+      .map((e: any) => String(e[selectionRef.current!.key]))
+  }, [apiRef])
 
   const rowSelectionApi: RowSelectionApi = {
     isRowSelected,
