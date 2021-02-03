@@ -99,7 +99,7 @@ export function useData({ rows, selection, initialised, apiRef }: Props) {
       }
       return rowsRef.current.find(e => String(e[selectionRef.current!.key]) === id)
     },
-    [],
+    [logger],
   )
 
   const getRowsWithFilter = useCallback(
