@@ -105,7 +105,6 @@
     "prettier": "^1.16.4",
     "pretty-quick": "^1.8.0",
     "react": "^16.13.1",
-    "react-dev-utils": "^10.2.1",
     "react-dom": "^16.13.1",
     "react-test-renderer": "^16.13.1",
     "regenerator-runtime": "^0.13.1",
