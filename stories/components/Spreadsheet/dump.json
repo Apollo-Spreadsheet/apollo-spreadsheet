@@ -1,205 +1,94 @@
 [
   {
-    "taskId":"5fa2d29d8962c300174c4add",
-    "taskContent":"T1",
-    "deliverableId":"5fa2d29d8962c300174c4ad9",
-    "deliverableBody":"",
-    "activityId":"5fa2d29d8962c300174c4adb",
-    "activityBody":"",
-    "wpId":"5fa2d29d8962c300174c4ada",
-    "wpBody":"",
-    "lok":1,
-    "order":1,
-    "startDate":"2020-11-04T09:00:09.525Z",
-    "endDate":"2020-11-04T09:00:09.525Z",
-    "materials":0,
-    "dependencies":[
-
-    ],
-    "estimatedTime":0,
-    "realTime":0,
-    "status":0,
-    "approved":0,
-    "finishDate":null,
-    "allocated":[
-
-    ],
-    "extraCells":[
-
-    ]
+    "taskId": "5fa2d29d8962c300174c4add",
+    "taskContent": "T1",
+    "deliverableId": "5fa2d29d8962c300174c4ad9",
+    "deliverableBody": "DEL 1",
+    "activityId": "5fa2d29d8962c300174c4adb",
+    "activityBody": "ACT 1",
+    "wpId": "5fa2d29d8962c300174c4ada",
+    "wpBody": "WP 1",
+    "lok": 1,
+    "order": 1,
+    "startDate": "2020-11-04T09:00:09.525Z",
+    "endDate": "2020-11-04T09:00:09.525Z",
+    "materials": 0,
+    "dependencies": [],
+    "estimatedTime": 0,
+    "realTime": 0,
+    "status": 0,
+    "approved": 0,
+    "finishDate": null,
+    "allocated": [],
+    "extraCells": []
   },
   {
-    "taskId":"5fa2d2a18962c300174c4adf",
-    "taskContent":"T2",
-    "deliverableId":"5fa2d29d8962c300174c4ad9",
-    "deliverableBody":"",
-    "activityId":"5fa2d29d8962c300174c4adb",
-    "activityBody":"",
-    "wpId":"5fa2d29d8962c300174c4ada",
-    "wpBody":"",
-    "lok":1,
-    "order":2,
-    "startDate":"2020-11-04T09:00:09.525Z",
-    "endDate":"2020-11-04T09:00:09.525Z",
-    "materials":0,
-    "dependencies":[
-
-    ],
-    "estimatedTime":0,
-    "realTime":0,
-    "status":0,
-    "approved":0,
-    "finishDate":null,
-    "allocated":[
-
-    ],
-    "extraCells":[
-
-    ]
+    "taskId": "5fa2d2a18962c300174c4adf",
+    "taskContent": "T2",
+    "deliverableId": "5fa2d29d8962c300174c4ad9",
+    "deliverableBody": "A",
+    "activityId": "5fa2d29d8962c300174c4adb",
+    "activityBody": "C",
+    "wpId": "5fa2d29d8962c300174c4ada",
+    "wpBody": "",
+    "lok": 1,
+    "order": 2,
+    "startDate": "2020-11-04T09:00:09.525Z",
+    "endDate": "2020-11-04T09:00:09.525Z",
+    "materials": 0,
+    "dependencies": [],
+    "estimatedTime": 0,
+    "realTime": 0,
+    "status": 0,
+    "approved": 0,
+    "finishDate": null,
+    "allocated": [],
+    "extraCells": []
   },
   {
-    "taskId":"5fa2d2a28962c300174c4ae0",
-    "taskContent":"T3",
-    "deliverableId":"5fa2d29d8962c300174c4ad9",
-    "deliverableBody":"",
-    "activityId":"5fa2d29d8962c300174c4adb",
-    "activityBody":"",
-    "wpId":"5fa2d29d8962c300174c4ada",
-    "wpBody":"",
-    "lok":1,
-    "order":3,
-    "startDate":"2020-11-04T09:00:09.525Z",
-    "endDate":"2020-11-04T09:00:09.525Z",
-    "materials":0,
-    "dependencies":[
-
-    ],
-    "estimatedTime":0,
-    "realTime":0,
-    "status":0,
-    "approved":0,
-    "finishDate":null,
-    "allocated":[
-
-    ],
-    "extraCells":[
-
-    ]
+    "taskId": "5fa2d2a28962c300174c4ae0",
+    "taskContent": "T3",
+    "deliverableId": "5fa2d29d8962c300174c4ad9",
+    "deliverableBody": "",
+    "activityId": "5fa2d29d8962c300174c4adb",
+    "activityBody": "",
+    "wpId": "5fa2d29d8962c300174c4ada",
+    "wpBody": "",
+    "lok": 1,
+    "order": 3,
+    "startDate": "2020-11-04T09:00:09.525Z",
+    "endDate": "2020-11-04T09:00:09.525Z",
+    "materials": 0,
+    "dependencies": [],
+    "estimatedTime": 0,
+    "realTime": 0,
+    "status": 0,
+    "approved": 0,
+    "finishDate": null,
+    "allocated": [],
+    "extraCells": []
   },
   {
-    "taskId":"5fa2d2a68962c300174c4ae6",
-    "taskContent":"T4",
-    "deliverableId":"5fa2d29d8962c300174c4ad9",
-    "deliverableBody":"",
-    "activityId":"5fa2d2a68962c300174c4ae5",
-    "activityBody":"",
-    "wpId":"5fa2d29d8962c300174c4ada",
-    "wpBody":"",
-    "lok":1,
-    "order":4,
-    "startDate":"2020-11-04T09:00:09.525Z",
-    "endDate":"2020-11-04T09:00:09.525Z",
-    "materials":0,
-    "dependencies":[
-
-    ],
-    "estimatedTime":0,
-    "realTime":0,
-    "status":0,
-    "approved":0,
-    "finishDate":null,
-    "allocated":[
-
-    ],
-    "extraCells":[
-
-    ]
-  },
-  {
-    "taskId":"5fa2d2a38962c300174c4ae2",
-    "taskContent":"T5",
-    "deliverableId":"5fa2d29d8962c300174c4ad9",
-    "deliverableBody":"",
-    "activityId":"5fa2d2a38962c300174c4ae1",
-    "activityBody":"",
-    "wpId":"5fa2d29d8962c300174c4ada",
-    "wpBody":"",
-    "lok":1,
-    "order":5,
-    "startDate":"2020-11-04T09:00:09.525Z",
-    "endDate":"2020-11-04T09:00:09.525Z",
-    "materials":0,
-    "dependencies":[
-
-    ],
-    "estimatedTime":0,
-    "realTime":0,
-    "status":0,
-    "approved":0,
-    "finishDate":null,
-    "allocated":[
-
-    ],
-    "extraCells":[
-
-    ]
-  },
-  {
-    "taskId":"5fa2d2a48962c300174c4ae3",
-    "taskContent":"T6",
-    "deliverableId":"5fa2d29d8962c300174c4ad9",
-    "deliverableBody":"",
-    "activityId":"5fa2d2a38962c300174c4ae1",
-    "activityBody":"",
-    "wpId":"5fa2d29d8962c300174c4ada",
-    "wpBody":"",
-    "lok":1,
-    "order":6,
-    "startDate":"2020-11-04T09:00:09.525Z",
-    "endDate":"2020-11-04T09:00:09.525Z",
-    "materials":0,
-    "dependencies":[
-
-    ],
-    "estimatedTime":0,
-    "realTime":0,
-    "status":0,
-    "approved":0,
-    "finishDate":null,
-    "allocated":[
-
-    ],
-    "extraCells":[
-
-    ]
-  },
-  {
-    "taskId":"5fa2d2a58962c300174c4ae4",
-    "taskContent":"T7",
-    "deliverableId":"5fa2d29d8962c300174c4ad9",
-    "deliverableBody":"",
-    "activityId":"5fa2d2a38962c300174c4ae1",
-    "activityBody":"",
-    "wpId":"5fa2d29d8962c300174c4ada",
-    "wpBody":"",
-    "lok":1,
-    "order":7,
-    "startDate":"2020-11-04T09:00:09.525Z",
-    "endDate":"2020-11-04T09:00:09.525Z",
-    "materials":0,
-    "dependencies":[
-
-    ],
-    "estimatedTime":0,
-    "realTime":0,
-    "status":0,
-    "approved":0,
-    "finishDate":null,
-    "allocated":[
-
-    ],
-    "extraCells":[
-
-    ]
+    "taskId": "5fa2d2a68962c300174c4ae6",
+    "taskContent": "T4",
+    "deliverableId": "5fa2d29d8962c300174c4ad9",
+    "deliverableBody": "",
+    "activityId": "5fa2d2a68962c300174c4ae5",
+    "activityBody": "ACT 2",
+    "wpId": "5fa2d29d8962c300174c4ada",
+    "wpBody": "",
+    "lok": 1,
+    "order": 4,
+    "startDate": "2020-11-04T09:00:09.525Z",
+    "endDate": "2020-11-04T09:00:09.525Z",
+    "materials": 0,
+    "dependencies": [],
+    "estimatedTime": 0,
+    "realTime": 0,
+    "status": 0,
+    "approved": 0,
+    "finishDate": null,
+    "allocated": [],
+    "extraCells": []
   }
 ]

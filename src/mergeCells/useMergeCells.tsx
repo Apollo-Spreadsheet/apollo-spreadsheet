@@ -52,13 +52,16 @@ export function useMergeCells({ mergeCells, rowCount, columnCount, apiRef }: Mer
       )
       return undefined
     }
-    for (const target of targets) {
+
+    //Search for the target that is between an interval of indices
+    const target = targets.find(target => {
       const rowStart = target.rowIndex
       const rowEnd = target.rowIndex + target.rowSpan - 1
-      const isBetween = rowIndex >= rowStart && rowIndex <= rowEnd
-      if (isBetween) {
-        return { rowIndex: target.rowIndex, colIndex: target.colIndex }
-      }
+      return rowIndex >= rowStart && rowIndex <= rowEnd
+    })
+
+    if (target) {
+      return { rowIndex: target.rowIndex, colIndex: target.colIndex }
     }
 
     return undefined
@@ -86,4 +89,5 @@ export function useMergeCells({ mergeCells, rowCount, columnCount, apiRef }: Mer
   }
 
   useApiExtends(apiRef, mergedCellsApi, 'MergeCellsAPI')
+  return { mergedPositions: mergedPositions.current, mergedCells: mergeData.current, isMerged }
 }

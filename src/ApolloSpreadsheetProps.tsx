@@ -3,7 +3,7 @@ import { GridContainerCommonProps } from './gridContainer'
 import { GridTheme, Row, StretchMode } from './types'
 import { KeyDownEventParams, NavigationCoords } from './navigation'
 import { SelectionProps } from './rowSelection'
-import { ApiRef } from './api/types'
+import { ApiRef } from './api'
 
 export interface ApolloSpreadsheetProps extends GridWrapperCommonProps, GridContainerCommonProps {
   theme?: GridTheme

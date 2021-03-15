@@ -57,7 +57,7 @@ export const ApolloSpreadSheet = forwardRef(
       selection: props.selection,
     })
 
-    useMergeCells({
+    const { mergedPositions, mergedCells, isMerged } = useMergeCells({
       mergeCells: props.mergeCells,
       rowCount: props.rows.length,
       columnCount: columns.length,
@@ -151,6 +151,7 @@ export const ApolloSpreadSheet = forwardRef(
             {({ scrollLeft, onScroll, getColumnWidth, width, height }) => (
               <div id="apollo-grids" className={props.className}>
                 <ColumnGrid
+                  {...props}
                   data={gridHeaders}
                   coords={coords}
                   columns={columns}
@@ -159,20 +160,14 @@ export const ApolloSpreadSheet = forwardRef(
                   getColumnWidth={getColumnWidth}
                   minRowHeight={props.minColumnHeight ?? 50}
                   scrollLeft={scrollLeft}
-                  stretchMode={props.stretchMode}
-                  nestedHeaders={props.nestedHeaders}
-                  overscanColumnCount={props.overscanColumnCount}
-                  overscanRowCount={props.overscanRowCount}
-                  disableSort={props.disableSort}
                   apiRef={apiRef}
                   sort={sort}
                 />
                 <GridWrapper
+                  {...props}
                   rows={rows}
                   data={cells}
                   coords={coords}
-                  overscanColumnCount={props.overscanColumnCount}
-                  overscanRowCount={props.overscanRowCount}
                   defaultColumnWidth={minColumnWidth}
                   width={width}
                   getColumnWidth={getColumnWidth}
@@ -182,15 +177,11 @@ export const ApolloSpreadSheet = forwardRef(
                   height={height}
                   columnCount={columns.length}
                   columns={columns}
-                  suppressNavigation={props.suppressNavigation}
-                  outsideClickDeselects={props.outsideClickDeselects}
-                  onCellChange={props.onCellChange}
                   stretchMode={props.stretchMode ?? StretchMode.All}
                   apiRef={apiRef}
-                  scrollToAlignment={props.scrollToAlignment}
-                  highlightBorderColor={props.highlightBorderColor}
-                  selection={props.selection}
-                  dragAndDrop={props.dragAndDrop}
+                  mergeCells={mergedCells}
+                  mergedPositions={mergedPositions}
+                  isMerged={isMerged}
                 />
               </div>
             )}

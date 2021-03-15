@@ -11,7 +11,7 @@ export interface MergeCellsApi {
 
   /**
    * Returns the parent of the merged position given
-   * @description Its useful for the navigation (Used internally to be careful using this without the proper
+   * @description Its useful for the navigation (Used internally so be careful using this without the proper
    * validations)
    * @param coords  The current coordinates of the merged position
    */
