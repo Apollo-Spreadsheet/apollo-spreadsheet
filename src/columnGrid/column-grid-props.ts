@@ -35,4 +35,5 @@ export interface ColumnGridProps {
    * @default 2
    */
   overscanColumnCount?: number
+  nestedRowsEnabled: boolean
 }

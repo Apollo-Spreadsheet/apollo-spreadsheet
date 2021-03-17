@@ -14,6 +14,7 @@ export function useApiFactory(
   gridRootRef: React.RefObject<HTMLDivElement>,
   apiRef: ApiRef,
   theme?: GridTheme,
+  selectionKey?: string,
 ): boolean {
   const logger = useLogger('useApiFactory')
   const [initialised, setInit] = useState(false)
@@ -43,6 +44,7 @@ export function useApiFactory(
     apiRef.current.isInitialised = true
     apiRef.current.rootElementRef = gridRootRef
     apiRef.current.theme = theme
+    apiRef.current.selectionKey = selectionKey ?? 'id'
 
     setInit(true)
     const api = apiRef.current
@@ -51,7 +53,7 @@ export function useApiFactory(
       logger.debug('Clearing all events listeners')
       api.removeAllListeners()
     }
-  }, [gridRootRef, apiRef, theme, logger])
+  }, [selectionKey, gridRootRef, apiRef, theme, logger])
 
   useApiExtends(apiRef, { subscribeEvent, dispatchEvent: publishEvent }, 'CoreApi')
 

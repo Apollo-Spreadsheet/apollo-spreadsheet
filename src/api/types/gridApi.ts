@@ -6,6 +6,7 @@ import { MergeCellsApi } from './mergeCellsApi'
 import { NavigationApi } from './navigationApi'
 import { ColumnApi } from './columnApi'
 import { SortApi } from './sortApi'
+import { NestedRowsApi } from './nestedRowsApi'
 
 export type GridApi = CoreApi &
   RowApi &
@@ -14,4 +15,5 @@ export type GridApi = CoreApi &
   MergeCellsApi &
   NavigationApi &
   ColumnApi &
-  SortApi
+  SortApi &
+  NestedRowsApi

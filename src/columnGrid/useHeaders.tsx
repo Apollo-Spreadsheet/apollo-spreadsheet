@@ -38,8 +38,6 @@ interface Props {
  * @todo Unit tests
  * @param headers
  * @param nestedHeaders
- * @param minColumnWidth
- * @param stretchMode
  */
 export function useHeaders({ columns, nestedHeaders, apiRef, selection }: Props): HeadersState {
   const logger = useLogger('useHeaders')

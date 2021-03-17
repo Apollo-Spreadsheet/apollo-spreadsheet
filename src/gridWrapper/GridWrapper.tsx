@@ -1,5 +1,9 @@
 import React, { CSSProperties, useCallback, useEffect, useMemo, useRef } from 'react'
-import { CellMeasurerCache, Grid, SectionRenderedParams } from 'react-virtualized'
+import {
+  CellMeasurerCache,
+  Grid as VirtualizedGrid,
+  SectionRenderedParams,
+} from 'react-virtualized'
 import CellMeasurer from '../cellMeasurer/CellMeasureWrapper'
 import { NavigationCoords } from '../navigation'
 import clsx from 'clsx'
@@ -9,6 +13,8 @@ import { GridWrapperProps } from './gridWrapperProps'
 import { makeStyles } from '@material-ui/core/styles'
 import { StretchMode } from '../types'
 import { useLogger } from '../logger'
+import KeyboardArrowRightIcon from '@material-ui/icons/KeyboardArrowRight'
+import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown'
 
 const useStyles = makeStyles(() => ({
   bodyContainer: {
@@ -32,7 +38,17 @@ const useStyles = makeStyles(() => ({
 }))
 
 const GridWrapper = React.memo(
-  ({ isMerged, apiRef, columns, coords, ...props }: GridWrapperProps) => {
+  ({
+    rows,
+    data,
+    getColumnWidth,
+    isMerged,
+    apiRef,
+    columns,
+    nestedRowsProps,
+    coords,
+    ...props
+  }: GridWrapperProps) => {
     const logger = useLogger('GridWrapper')
     const cache = useRef(
       new CellMeasurerCache({
@@ -45,7 +61,7 @@ const GridWrapper = React.memo(
     ).current
 
     const classes = useStyles()
-    const gridRef = useRef<Grid | null>(null)
+    const gridRef = useRef<VirtualizedGrid | null>(null)
     const recomputingTimeout = useRef<NodeJS.Timeout | undefined>(undefined)
 
     const recomputeSizes = useCallback(() => {
@@ -76,7 +92,7 @@ const GridWrapper = React.memo(
       }
       recomputingTimeout.current = setTimeout(recomputeSizes, 100)
       return recomputingCleanup
-    }, [props.data, props.width, props.height, recomputeSizes])
+    }, [data, props.width, props.height, recomputeSizes])
 
     const activeRowPathCoordinates = useMemo(() => {
       const coordinates: NavigationCoords[] = []
@@ -88,8 +104,7 @@ const GridWrapper = React.memo(
 
       //Check each temporary row coordinate
       temporaryRowCoordinates.forEach(e => {
-        //If its a merged position get the parent
-        if (isMerged(e)) {
+        if (isMerged && isMerged(e)) {
           const parent = apiRef.current.getMergeParentCoords(e)
           if (!parent) {
             console.warn(`Parent not found for coordinates: ${e}`)
@@ -122,7 +137,7 @@ const GridWrapper = React.memo(
         const isSelected = rowIndex === coords.rowIndex && columnIndex === coords.colIndex
         const navigationDisabled = columns[0][columnIndex]?.disableNavigation
         const column = columns[columnIndex]
-        const row = props.rows[rowIndex]
+        const row = rows[rowIndex]
         //Dummy zIndex is 0 and a spanned cell has 5 but a normal cell has 1
         const defaultZIndex = cell.dummy ? 0 : 1
         const zIndex = (cell.rowSpan || cell.colSpan) && !cell.dummy ? 5 : defaultZIndex
@@ -176,41 +191,106 @@ const GridWrapper = React.memo(
           }
         }
 
-        return (
-          <div
-            role={'cell'}
-            aria-colindex={columnIndex}
-            data-rowindex={rowIndex}
-            data-accessor={column.accessor}
-            data-dummy={cell.dummy}
-            className={cellClassName}
-            style={{
-              ...cellStyle,
-              justifyContent: cell?.dummy ? 'top' : 'center',
-              zIndex,
-            }}
-            ref={ref}
-          >
-            {cell.value}
-          </div>
-        )
+        const wrapper = child => {
+          return (
+            <div
+              role={'cell'}
+              aria-colindex={columnIndex}
+              data-rowindex={rowIndex}
+              data-accessor={column.accessor}
+              data-dummy={cell.dummy}
+              className={cellClassName}
+              style={{
+                ...cellStyle,
+                justifyContent: cell?.dummy ? 'top' : 'center',
+                zIndex,
+              }}
+              ref={ref}
+            >
+              {child}
+            </div>
+          )
+        }
+
+        //If nestedRows are enabled we need to render our utility
+        if (nestedRowsProps.nestedRows) {
+          const id = String(row[apiRef.current.selectionKey])
+          const depth = apiRef.current.getRowDepth(id)
+          const nestedMargin = (nestedRowsProps.nestedRowMargin ?? 10) * depth
+          //Parent collapse renders an additional layer with collapse controls
+          if (row.__children !== undefined && columnIndex === 0) {
+            const iconStyle: React.CSSProperties = {
+              cursor: 'pointer',
+              right: 0,
+              position: 'absolute',
+            }
+            const isRowExpanded = apiRef.current.isRowExpanded(id)
+            const handleCollapseClick = () => {
+              if (!id) {
+                return logger.error(
+                  `Row index ${rowIndex} does not have a key in order to toggle collapse!`,
+                )
+              }
+              apiRef.current.toggleRowExpand(id)
+            }
+
+            const renderExpandOrCollapseIcon = () => {
+              if (nestedRowsProps.iconRenderer) {
+                return nestedRowsProps.iconRenderer(handleCollapseClick, isRowExpanded)
+              }
+
+              return isRowExpanded ? (
+                <KeyboardArrowDownIcon
+                  onClick={handleCollapseClick}
+                  fontSize={'small'}
+                  style={iconStyle}
+                />
+              ) : (
+                <KeyboardArrowRightIcon
+                  onClick={handleCollapseClick}
+                  fontSize={'small'}
+                  style={iconStyle}
+                />
+              )
+            }
+
+            const component = (
+              <div style={depth > 1 ? { marginLeft: nestedMargin } : {}}>
+                {cell.value}
+                {renderExpandOrCollapseIcon()}
+              </div>
+            )
+            return wrapper(component)
+          }
+
+          //Nested rows need to be wrapped on the first cell with a marginLeft
+          if (depth > 1 && columnIndex === 0) {
+            const component = <div style={{ marginLeft: nestedMargin }}>{cell.value}</div>
+            return wrapper(component)
+          }
+        }
+
+        return wrapper(cell.value)
       },
       [
-        coords,
+        coords.rowIndex,
+        coords.colIndex,
         columns,
-        props.rows,
-        apiRef,
-        props.selection,
-        props.highlightBorderColor,
+        rows,
         isCellRowActive,
+        apiRef,
         classes.cellDefaultStyle,
         classes.disabledCell,
+        props.selection,
+        props.highlightBorderColor,
+        nestedRowsProps,
+        logger,
       ],
     )
 
     const cellRenderer = useCallback(
       ({ rowIndex, columnIndex, key, parent, style, ...otherArgs }: GridCellProps) => {
-        const cell = props.data[rowIndex]?.[columnIndex]
+        const cell = data[rowIndex]?.[columnIndex]
 
         const rendererProps: MeasurerRendererProps = {
           ...otherArgs,
@@ -218,7 +298,7 @@ const GridWrapper = React.memo(
           rowIndex,
           columnIndex,
           cell,
-          getColumnWidth: props.getColumnWidth,
+          getColumnWidth,
         }
 
         return cell ? (
@@ -234,7 +314,7 @@ const GridWrapper = React.memo(
             style={{
               ...style,
               ...cell.style,
-              width: props.getColumnWidth({
+              width: getColumnWidth({
                 index: columnIndex,
               }),
               userSelect: 'none',
@@ -243,7 +323,7 @@ const GridWrapper = React.memo(
           />
         ) : null
       },
-      [props, cache, renderCell],
+      [data, getColumnWidth, cache, renderCell],
     )
 
     const onRefMount = useCallback(instance => {
@@ -273,7 +353,7 @@ const GridWrapper = React.memo(
     )
 
     return (
-      <Grid
+      <VirtualizedGrid
         {...props}
         className={
           props.stretchMode !== StretchMode.None
@@ -284,9 +364,9 @@ const GridWrapper = React.memo(
         cellRenderer={cellRenderer}
         deferredMeasurementCache={cache}
         rowHeight={cache.rowHeight}
-        rowCount={props.rows.length}
+        rowCount={rows.length}
         columnCount={props.columnCount}
-        columnWidth={props.getColumnWidth}
+        columnWidth={getColumnWidth}
         overscanRowCount={props.overscanRowCount ?? 2}
         overscanColumnCount={props.overscanColumnCount ?? 2}
         onSectionRendered={onSectionRendered}

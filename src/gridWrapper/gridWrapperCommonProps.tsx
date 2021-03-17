@@ -12,9 +12,9 @@ export interface GridWrapperCommonProps {
   suppressNavigation?: boolean
   /** @default false **/
   outsideClickDeselects?: boolean | OutsideClickDeselectCallback
-  mergeCells: MergeCell[]
-  mergedPositions: MergePosition[]
-  isMerged: (coords: NavigationCoords) => boolean
+  mergeCells?: MergeCell[]
+  mergedPositions?: MergePosition[]
+  isMerged?: (coords: NavigationCoords) => boolean
   /**
    * Overscan count buffer for react-virtualized
    * @description Keep in mind a lower value

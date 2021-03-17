@@ -1,10 +1,9 @@
 import { formatCellValue } from './formatCellValue'
-import { GridCell } from '../gridWrapper/interfaces'
+import { GridCell, insertDummyCells } from '../gridWrapper'
 import { Checkbox } from '@material-ui/core'
-import { insertDummyCells } from '../gridWrapper/utils'
 import { SelectionProps } from '../rowSelection'
 import React from 'react'
-import { ApiRef } from '../api/types'
+import { ApiRef } from '../api'
 import { Row } from '../types'
 import { isFunctionType } from '../helpers'
 
@@ -16,8 +15,14 @@ interface CreateDataParams {
 
 export function createData({ selection, apiRef, rows }: CreateDataParams) {
   const columns = apiRef.current.getColumns()
-  const cellsList = rows.reduce((list: GridCell[][], row: Row, rowIndex) => {
+
+  /**
+   * @todo Refactor this function to small function utilities in order to make it way organized
+   */
+  const cellsList: GridCell[][] = rows.reduce((list: GridCell[][], row: Row, rowIndex) => {
     const updatedList = [...list]
+
+    //Creates the cells for the current row
     const cells = columns.reduce((_cells, column, colIndex) => {
       const isDummy = apiRef.current.isMerged({ rowIndex, colIndex })
       if (isDummy) {
@@ -59,9 +64,42 @@ export function createData({ selection, apiRef, rows }: CreateDataParams) {
       }
     }
 
+    // if (nestedRowsEnabled && row.__children !== undefined) {
+    //   const hasChildren = row.__children.length > 0
+    //   const isExpanded = apiRef.current.isRowExpanded(rowIndex)
+    //   if (hasChildren && isExpanded) {
+    //     //We need to push into updatedList after the rowIndex and create the cells for this
+    //     const createdCells = createData({
+    //       selection,
+    //       rows: row.__children,
+    //       apiRef,
+    //       nestedRowsEnabled,
+    //       depth: currentDepth + 1
+    //     })
+    //
+    //     createdCells.forEach((e, i) => {
+    //       //The parent index is the root index plus the position of the child where we should insert
+    //       childrenCells.push({
+    //         parentIndex: rowIndex + i,
+    //         cells: e
+    //       })
+    //     })
+    //   }
+    // }
+
     updatedList[rowIndex] = cells
     return updatedList
   }, [] as GridCell[][])
 
-  return insertDummyCells(cellsList as any[]) as GridCell[][]
+  //Add the children cells on the target destination
+  // childrenCells.forEach(e => {
+  //   const target = cellsList[e.parentIndex + 1]
+  //   if (target) {
+  //     cellsList.splice(e.parentIndex + 1, 0, e.cells)
+  //   } else {
+  //     cellsList[e.parentIndex + 1] = e.cells
+  //   }
+  // })
+
+  return insertDummyCells(cellsList) as GridCell[][]
 }

@@ -6,6 +6,7 @@ import { StretchMode } from '../types'
 import { ApiRef } from '../api'
 import { SelectionProps } from '../rowSelection'
 import { GridWrapperCommonProps } from './gridWrapperCommonProps'
+import { NestedRowsProps } from '../nestedRows'
 
 export interface DisableSortFilterParam {
   (column: Column): boolean
@@ -30,4 +31,5 @@ export interface GridWrapperProps<TRow = any> extends GridWrapperCommonProps {
   apiRef: ApiRef
   stretchMode: StretchMode
   selection?: SelectionProps
+  nestedRowsProps: NestedRowsProps
 }

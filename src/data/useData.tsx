@@ -8,29 +8,31 @@ import {
   DATA_CHANGED,
   ROW_SELECTION_CHANGE,
   ROWS_CHANGED,
+  COLLAPSES_CHANGED,
 } from '../api'
 
 import { createData } from './createData'
 import { Row } from '../types'
-
 import { useLogger } from '../logger'
+import { flatExpandedRows } from './flatExpandedRows'
 
 interface Props {
   rows: Row[]
   selection?: SelectionProps
   apiRef: ApiRef
   initialised: boolean
+  nestedRowsEnabled: boolean
 }
 
 /**
  * `useData` handles all the rows and cells operations of this plugin
  */
-export function useData({ rows, selection, initialised, apiRef }: Props) {
+export function useData({ rows, selection, initialised, apiRef, nestedRowsEnabled }: Props) {
   const logger = useLogger('useData')
   const rowsRef = useRef<Row[]>(rows)
   const originalRowsRef = useRef<Row[]>(rows)
-  const cells = useRef<GridCell[][]>([])
-  const [, forceUpdate] = useState(false)
+  const cellsRef = useRef<GridCell[][]>([])
+  const [cells, setCells] = useState<GridCell[][]>([])
   const selectionRef = useRef(selection)
 
   useEffect(() => {
@@ -51,8 +53,8 @@ export function useData({ rows, selection, initialised, apiRef }: Props) {
         )
       }
 
-      cells.current = updatedData
-      forceUpdate(p => !p)
+      cellsRef.current = updatedData
+      setCells(updatedData)
       apiRef.current.dispatchEvent(DATA_CHANGED, { updatedData })
     },
     [apiRef, selection, logger],
@@ -61,12 +63,14 @@ export function useData({ rows, selection, initialised, apiRef }: Props) {
   const updateRows = useCallback(
     (updatedRows: Row[]) => {
       logger.debug('Updating rows.')
-      //Only update the current rows
-      rowsRef.current = updatedRows
-      apiRef.current.dispatchEvent(ROWS_CHANGED, { rows: updatedRows })
-      onRowsChangeHandle({ rows: updatedRows })
+      //Update current rows but if nestedRows are enabled then we need to read from the original
+      rowsRef.current = nestedRowsEnabled
+        ? flatExpandedRows(originalRowsRef.current, apiRef)
+        : updatedRows
+      apiRef.current.dispatchEvent(ROWS_CHANGED, { rows: rowsRef.current })
+      onRowsChangeHandle({ rows: rowsRef.current })
     },
-    [apiRef, logger, onRowsChangeHandle],
+    [apiRef, logger, onRowsChangeHandle, nestedRowsEnabled],
   )
 
   //Refresh the data if any dependency change
@@ -84,6 +88,11 @@ export function useData({ rows, selection, initialised, apiRef }: Props) {
     logger.debug('Row selection changed.')
     onRowsChangeHandle({ rows: rowsRef.current })
   }, [logger, onRowsChangeHandle])
+
+  const onCollapsesChange = useCallback(() => {
+    logger.debug('Collapses have changed')
+    updateRows(rowsRef.current)
+  }, [logger, updateRows])
 
   const getRowAt = useCallback((index: number) => rowsRef.current[index], [])
 
@@ -118,7 +127,7 @@ export function useData({ rows, selection, initialised, apiRef }: Props) {
 
   const getOriginalRows = useCallback(() => originalRowsRef.current, [])
 
-  const getCells = useCallback(() => cells.current, [])
+  const getCells = useCallback(() => cellsRef.current, [])
 
   const rowApi: RowApi = {
     getCells,
@@ -131,7 +140,9 @@ export function useData({ rows, selection, initialised, apiRef }: Props) {
     getRowIndex,
     updateRows,
   }
+
   useApiExtends(apiRef, rowApi, 'Data API')
   useApiEventHandler(apiRef, ROW_SELECTION_CHANGE, onRowSelectionChange)
-  return { cells: cells.current, rows: rowsRef.current }
+  useApiEventHandler(apiRef, COLLAPSES_CHANGED, onCollapsesChange)
+  return { cells, rows: rowsRef.current }
 }

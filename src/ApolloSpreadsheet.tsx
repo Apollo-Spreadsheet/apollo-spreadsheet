@@ -22,6 +22,7 @@ import { useSort } from './sort/useSort'
 import { useLogger } from './logger'
 import { isFunctionType } from './helpers'
 import { useApiExtends } from './api'
+import { useNestedRows } from './nestedRows'
 
 const useStyles = makeStyles(() => ({
   root: {
@@ -44,8 +45,8 @@ export const ApolloSpreadSheet = forwardRef(
     ])
     const rootContainerRef = useRef<HTMLDivElement>(null)
     const forkedRef = useForkRef(rootContainerRef, componentRef)
-    const initialised = useApiFactory(rootContainerRef, apiRef, props.theme)
-
+    const initialised = useApiFactory(rootContainerRef, apiRef, props.theme, props.selection?.key)
+    const nestedRowsEnabled = props.nestedRows ?? false
     useEvents(rootContainerRef, apiRef)
 
     const { gridHeaders, columns } = useHeaders({
@@ -58,7 +59,7 @@ export const ApolloSpreadSheet = forwardRef(
     })
 
     const { mergedPositions, mergedCells, isMerged } = useMergeCells({
-      mergeCells: props.mergeCells,
+      mergeCells: props.mergeCells ?? [],
       rowCount: props.rows.length,
       columnCount: columns.length,
       apiRef,
@@ -70,8 +71,15 @@ export const ApolloSpreadSheet = forwardRef(
       selection: props.selection,
       apiRef,
       initialised,
+      nestedRowsEnabled,
     })
 
+    useNestedRows({
+      apiRef,
+      initialised,
+      enabled: nestedRowsEnabled,
+      defaultIds: props.defaultExpandedIds,
+    })
     const sort = useSort(apiRef)
 
     const coords = useNavigation({
@@ -93,6 +101,7 @@ export const ApolloSpreadSheet = forwardRef(
       apiRef,
       initialised,
     })
+
     const clearFocus = useCallback(() => {
       if (gridFocused) {
         logger.debug('Grid clearFocus() invoked')
@@ -162,6 +171,7 @@ export const ApolloSpreadSheet = forwardRef(
                   scrollLeft={scrollLeft}
                   apiRef={apiRef}
                   sort={sort}
+                  nestedRowsEnabled={nestedRowsEnabled}
                 />
                 <GridWrapper
                   {...props}
@@ -182,6 +192,12 @@ export const ApolloSpreadSheet = forwardRef(
                   mergeCells={mergedCells}
                   mergedPositions={mergedPositions}
                   isMerged={isMerged}
+                  nestedRowsProps={{
+                    nestedRows: nestedRowsEnabled,
+                    nestedRowMargin: props.nestedRowMargin,
+                    defaultExpandedIds: props.defaultExpandedIds,
+                    iconRenderer: props.iconRenderer,
+                  }}
                 />
               </div>
             )}

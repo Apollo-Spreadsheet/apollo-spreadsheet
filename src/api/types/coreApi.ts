@@ -36,4 +36,11 @@ export interface CoreApi extends EventEmitter {
    * Removes the focus from the grid and wipes the highlight
    */
   clearFocus(): void
+
+  /**
+   * Returns the primary key attribute of a row (must be set on selection props at key field)
+   * @todo Requires refactoring the selection.key usage to this method
+   * @default id
+   */
+  selectionKey: string
 }

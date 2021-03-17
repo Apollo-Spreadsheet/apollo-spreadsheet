@@ -124,7 +124,7 @@ export const ColumnGrid = React.memo((props: ColumnGridProps) => {
       const { title, renderer } = cell as GridHeader
       const { theme } = props.apiRef.current
       //in case its not found, we set to true
-      const isSortDisabled = headersSortDisabledMap[cell.id] ?? true
+      const isSortDisabled = props.nestedRowsEnabled ? true : headersSortDisabledMap[cell.id]
       const { sort } = props
       const { coords } = props
       const sortComponent =

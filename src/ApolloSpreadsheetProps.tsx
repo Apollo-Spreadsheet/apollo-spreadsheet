@@ -4,8 +4,12 @@ import { GridTheme, Row, StretchMode } from './types'
 import { KeyDownEventParams, NavigationCoords } from './navigation'
 import { SelectionProps } from './rowSelection'
 import { ApiRef } from './api'
+import { NestedRowsProps } from './nestedRows/nestedRowsProps'
 
-export interface ApolloSpreadsheetProps extends GridWrapperCommonProps, GridContainerCommonProps {
+export interface ApolloSpreadsheetProps
+  extends GridWrapperCommonProps,
+    GridContainerCommonProps,
+    NestedRowsProps {
   theme?: GridTheme
   /** @default { rowIndex: 0, colIndex: 0} **/
   defaultCoords?: NavigationCoords

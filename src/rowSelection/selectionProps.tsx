@@ -4,6 +4,7 @@ import { Row, DynamicCallback } from '../types'
 export interface SelectionProps {
   /**
    * Unique identifier field on the row to filter and gather uniqueness for each selection
+   * @todo Probably move to the root props
    * **/
   key: string
 
