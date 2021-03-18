@@ -8,10 +8,8 @@ import {
 } from '../api'
 import { useCallback, useEffect, useRef } from 'react'
 import { useLogger } from '../logger'
-import { getChildrenIds } from './getChildrenIds'
 import { createDepthMap } from './depth.utils'
 import { Row } from '../types'
-import { getNestedRowParentIndex } from './getNestedRowParentIndex'
 
 interface Props {
   apiRef: ApiRef
@@ -75,40 +73,15 @@ export function useNestedRows({ apiRef, enabled, initialised, defaultIds }: Prop
 
       const ids = Array.isArray(target) ? target : [target]
       logger.info(`Toggling ${ids.length} rows`)
-      //let rows: Row[] = [...apiRef.current.getRows()]
       ids.forEach(id => {
         if (expandedRowIds.current.includes(id)) {
           const updated = [...expandedRowIds.current].filter(e => e !== id)
           expandedRowIds.current = updated
-          // const row = rows.find(e => e[apiRef.current.selectionKey] === id)
-          // if (!row) {
-          // 	return logger.error(`Row id: ${id} not found in order to remove expanded children`)
-          // }
-          //	const idsToRemove = getChildrenIds(row, apiRef.current.selectionKey)
-          //	rows = rows.filter(e => !idsToRemove.some(id => id === e[apiRef.current.selectionKey]))
-          /**
-           * @todo Review if the ids affected have cell navigation selected and if so, move
-           * to the parent
-           * The last given id is the one we focus its parent
-           */
-          const parentIndex = getNestedRowParentIndex(
-            id,
-            apiRef.current.selectionKey,
-            apiRef.current.getRows(),
-          )
-          console.error({ parentIndex })
         } else {
           expandedRowIds.current = [...expandedRowIds.current, id]
-          // const row = rows.find(e => e[apiRef.current.selectionKey] === id)
-          // const rowIndex = rows.findIndex(e => e[apiRef.current.selectionKey] === id)
-          // const children = row?.__children ?? []
-          // const newRows = [...rows]
-          // newRows.splice(rowIndex + 1, 0, ...children)
-          // rows = newRows
         }
       })
 
-      //apiRef.current.updateRows(rows)
       apiRef.current.dispatchEvent(COLLAPSES_CHANGED, expandedRowIds.current)
     },
     [apiRef, enabled, logger],

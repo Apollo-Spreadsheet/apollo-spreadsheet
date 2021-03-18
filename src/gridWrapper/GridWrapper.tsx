@@ -231,6 +231,12 @@ const GridWrapper = React.memo(
                   `Row index ${rowIndex} does not have a key in order to toggle collapse!`,
                 )
               }
+
+              //Select the target row if not selected
+              if (coords.rowIndex !== rowIndex) {
+                apiRef.current.selectCell({ ...coords, rowIndex })
+              }
+
               apiRef.current.toggleRowExpand(id)
             }
 
@@ -273,8 +279,7 @@ const GridWrapper = React.memo(
         return wrapper(cell.value)
       },
       [
-        coords.rowIndex,
-        coords.colIndex,
+        coords,
         columns,
         rows,
         isCellRowActive,
