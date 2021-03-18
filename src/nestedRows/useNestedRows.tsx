@@ -8,18 +8,15 @@ import {
 } from '../api'
 import { useCallback, useEffect, useRef } from 'react'
 import { useLogger } from '../logger'
-import { createDepthMap } from './depth.utils'
+import { createDepthMap } from './createDepthMap'
 import { Row } from '../types'
+import { DepthMap } from './depth-map.interface'
 
 interface Props {
   apiRef: ApiRef
   enabled: boolean
   initialised: boolean
   defaultIds?: string[]
-}
-
-interface DepthMap {
-  [id: string]: number
 }
 
 /**
