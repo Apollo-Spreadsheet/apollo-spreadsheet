@@ -30,7 +30,7 @@ export function useNestedRows({ apiRef, enabled, initialised, defaultIds }: Prop
   const logger = useLogger('useNestedRows')
 
   //When rows changes we need to create the depth map
-  //TODO: Might be a room for improvement just doing this when the original rows change
+  //TODO: Might be a room for improvement just creating the depth map when the original rows (rows that come from props) change
   const onRowsChanged = useCallback(
     ({ rows }: { rows: Row[] }) => {
       rowsDepthMap.current = createDepthMap(
