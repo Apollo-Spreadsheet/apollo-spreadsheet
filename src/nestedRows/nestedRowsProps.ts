@@ -24,8 +24,4 @@ export interface NestedRowsProps {
    *
    * @default [] **/
   defaultExpandedIds?: string[]
-  /**
-   * @default false
-   */
-  disableCellPositionAdjustment?: boolean
 }
