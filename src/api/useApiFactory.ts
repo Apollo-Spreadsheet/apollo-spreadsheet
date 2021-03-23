@@ -9,6 +9,8 @@ import { useLogger } from '../logger'
  * Initializes a new api instance
  * @param gridRootRef
  * @param apiRef
+ * @param theme
+ * @param selectionKey
  */
 export function useApiFactory(
   gridRootRef: React.RefObject<HTMLDivElement>,
@@ -21,18 +23,19 @@ export function useApiFactory(
 
   const publishEvent = useCallback(
     (name: string, ...args: any[]) => {
+      logger.debug(`Publishing event ${name}`)
       apiRef.current.emit(name, ...args)
     },
-    [apiRef],
+    [logger, apiRef],
   )
 
   const subscribeEvent = useCallback(
     (event: string, handler: (param: any) => void): (() => void) => {
-      logger.debug(`Binding ${event} event`)
+      logger.debug(`Subscribing to event: ${event}`)
       apiRef.current.on(event, handler)
       const api = apiRef.current
       return () => {
-        logger.debug(`Clearing ${event} event`)
+        logger.debug(`Removing event listener: ${event}`)
         api.removeListener(event, handler)
       }
     },
@@ -50,7 +53,7 @@ export function useApiFactory(
     const api = apiRef.current
 
     return () => {
-      logger.debug('Clearing all events listeners')
+      logger.debug('[Unmount] Clearing all events listeners')
       api.removeAllListeners()
     }
   }, [selectionKey, gridRootRef, apiRef, theme, logger])

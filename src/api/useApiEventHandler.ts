@@ -1,5 +1,5 @@
 import { useEffect } from 'react'
-import { ApiRef } from './types/apiRef'
+import { ApiRef } from './types'
 import { useLogger } from '../logger'
 
 export function useApiEventHandler(
@@ -14,6 +14,9 @@ export function useApiEventHandler(
       return apiRef.current.subscribeEvent(eventName, handler)
     }
 
+    logger.warn(
+      `Event name or handler is missing therefore it isn't possible to subscribe. EventName: ${eventName}, Handler: ${handler}`,
+    )
     return undefined
   }, [apiRef, eventName, handler, logger])
 }
