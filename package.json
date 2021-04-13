@@ -39,11 +39,11 @@
     "react-dom": ">= 16.13.1"
   },
   "dependencies": {
-    "@xobotyi/scrollbar-width": "^1.9.5",
     "clipboardy": "^2.3.0",
     "clsx": "^1.1.1",
     "dayjs": "^1.9.1",
     "dequal": "^2.0.2",
+    "dom-helpers": "^5.2.0",
     "lodash": "^4.17.20",
     "memoize-one": "^5.1.1",
     "react-datepicker": "^3.7.0",

@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react'
 import { ROW_SELECTION_HEADER_ID } from '../rowSelection'
-import { NavigationCoords } from '../navigation'
+import { NavigationCoords } from '../keyboard'
 import { ColumnCellType, Column } from '../columnGrid'
 import TextEditor from './components/TextEditor'
 import NumericEditor from './components/NumericEditor'

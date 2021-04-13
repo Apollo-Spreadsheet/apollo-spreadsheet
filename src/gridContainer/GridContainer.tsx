@@ -1,14 +1,14 @@
 import React, { useCallback, useRef } from 'react'
 import { StretchMode } from '../types'
-import { scrollbarWidth } from '@xobotyi/scrollbar-width'
 import { AutoSizer, ScrollSync, Size } from 'react-virtualized'
-import { createColumnWidthsMapping } from '../columnGrid/utils'
+import { createColumnWidthsMapping } from '../columnGrid'
 import { ColumnWidthRecord } from '../columnGrid'
 import { makeStyles } from '@material-ui/core/styles'
 import clsx from 'clsx'
 import { useLogger } from '../logger'
 import { GRID_RESIZE } from '../api'
 import { GridContainerProps } from './GridContainerProps'
+import scrollbarSizeCalc from 'dom-helpers/scrollbarSize'
 
 const useStyles = makeStyles(() => ({
   root: {
@@ -29,7 +29,7 @@ export const GridContainer = React.memo(
     containerClassName,
   }: GridContainerProps) => {
     const logger = useLogger('GridContainer')
-    const scrollbarSize = scrollbarWidth() ?? 0
+    const scrollbarSize = scrollbarSizeCalc(true)
     const classes = useStyles()
     const gridContainerRef = useRef<HTMLDivElement | null>(null)
     const columnWidths = useRef<ColumnWidthRecord>({

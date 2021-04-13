@@ -1,22 +1,22 @@
 import React, { forwardRef, useCallback, useRef, useState } from 'react'
 import GridWrapper from './gridWrapper/GridWrapper'
 import ColumnGrid from './columnGrid/ColumnGrid'
-import { useNavigation } from './navigation/useNavigation'
-import { StretchMode } from './types/stretch-mode.enum'
-import { useMergeCells } from './mergeCells/useMergeCells'
-import { useHeaders } from './columnGrid/useHeaders'
-import { useData } from './data/useData'
-import { useRowSelection } from './rowSelection/useRowSelection'
+import { useKeyboardControls } from './keyboard/useKeyboardControls'
+import { StretchMode } from './types'
+import { useMergeCells } from './mergeCells'
+import { useHeaders } from './columnGrid'
+import { useData } from './data'
+import { useRowSelection } from './rowSelection'
 import { ClickAwayListener, useForkRef } from '@material-ui/core'
-import { useEditorManager } from './editorManager/useEditorManager'
+import { useEditorManager } from './editorManager'
 import { createPortal } from 'react-dom'
-import { GridContainer } from './gridContainer/GridContainer'
-import { useApiRef } from './api/useApiRef'
-import { useApiFactory } from './api/useApiFactory'
+import { GridContainer } from './gridContainer'
+import { useApiRef } from './api'
+import { useApiFactory } from './api'
 import { makeStyles } from '@material-ui/core/styles'
 import { useEvents } from './events/useEvents'
-import { useApiEventHandler } from './api/useApiEventHandler'
-import { CELL_CLICK, CELL_DOUBLE_CLICK } from './api/eventConstants'
+import { useApiEventHandler } from './api'
+import { CELL_CLICK, CELL_DOUBLE_CLICK } from './api'
 import { ApolloSpreadsheetProps } from './ApolloSpreadsheetProps'
 import { useSort } from './sort/useSort'
 import { useLogger } from './logger'
@@ -82,7 +82,7 @@ export const ApolloSpreadSheet = forwardRef(
     })
     const sort = useSort(apiRef)
 
-    const coords = useNavigation({
+    const coords = useKeyboardControls({
       defaultCoords: props.defaultCoords ?? {
         rowIndex: 0,
         colIndex: 0,

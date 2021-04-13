@@ -6,9 +6,9 @@ import {
   createCoordsParseWarning,
   getCellCoordinatesFromDOMElement,
   isCellElement,
-} from '../navigation/querySelector.helper'
-import { NavigationCoords } from '../navigation'
-import { CellClickOrDoubleClickEventParams } from '../navigation/types/cell-click-double-params'
+} from '../keyboard/querySelector.helper'
+import { NavigationCoords } from '../keyboard'
+import { CellClickOrDoubleClickEventParams } from '../keyboard/types/cell-click-double-params'
 
 export function useEvents(gridRootRef: React.RefObject<HTMLDivElement>, apiRef: ApiRef) {
   const logger = useLogger('useEvents')

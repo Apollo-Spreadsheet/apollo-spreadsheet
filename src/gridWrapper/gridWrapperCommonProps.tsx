@@ -3,7 +3,7 @@ import { MergeCell, MergePosition } from '../mergeCells'
 import { CellChangeParams } from '../editorManager'
 import { Alignment } from 'react-virtualized'
 import { OutsideClickDeselectCallback } from './gridWrapperProps'
-import { NavigationCoords } from '../navigation'
+import { NavigationCoords } from '../keyboard'
 
 export interface GridWrapperCommonProps {
   columns: Column[]

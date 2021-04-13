@@ -1,8 +1,8 @@
 import { StretchMode } from '../types'
 import { GridHeader, Column, NestedHeader } from './types'
-import { NavigationCoords } from '../navigation/types'
+import { NavigationCoords } from '../keyboard/types'
 import { DisableSortFilterParam } from '../gridWrapper'
-import { ApiRef } from '../api/types'
+import { ApiRef } from '../api'
 import { SortState } from '../sort/useSort'
 
 export interface ColumnGridProps {

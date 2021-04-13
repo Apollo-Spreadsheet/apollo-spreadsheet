@@ -1,6 +1,6 @@
 import React, { CSSProperties } from 'react'
 import { TooltipProps } from '@material-ui/core'
-import { NavigationCoords } from '../../navigation/types'
+import { NavigationCoords } from '../../keyboard/types'
 import { EditorProps, EditorRef } from '../../editorManager'
 import { PopperProps } from '@material-ui/core/Popper/Popper'
 import { ReactDatePickerProps } from 'react-datepicker'

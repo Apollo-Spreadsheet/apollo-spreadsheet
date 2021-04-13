@@ -12,7 +12,7 @@ import { ROW_SELECTION_HEADER_ID } from '../rowSelection'
 import { makeStyles } from '@material-ui/core/styles'
 import { isFunctionType } from '../helpers'
 import flattenDeep from 'lodash/flattenDeep'
-import { createCellQueryProperties } from '../navigation/querySelector.helper'
+import { createCellQueryProperties } from '../keyboard/querySelector.helper'
 
 type SortDisabled = boolean
 const useStyles = makeStyles(() => ({

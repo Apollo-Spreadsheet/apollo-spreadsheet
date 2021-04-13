@@ -5,7 +5,7 @@ import {
   SectionRenderedParams,
 } from 'react-virtualized'
 import CellMeasurer from '../cellMeasurer/CellMeasureWrapper'
-import { NavigationCoords } from '../navigation'
+import { NavigationCoords } from '../keyboard'
 import clsx from 'clsx'
 import { GridCellProps } from 'react-virtualized/dist/es/Grid'
 import { MeasurerRendererProps } from '../cellMeasurer'
@@ -15,7 +15,7 @@ import { StretchMode } from '../types'
 import { useLogger } from '../logger'
 import KeyboardArrowRightIcon from '@material-ui/icons/KeyboardArrowRight'
 import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown'
-import { createCellQueryProperties } from '../navigation/querySelector.helper'
+import { createCellQueryProperties } from '../keyboard/querySelector.helper'
 
 const useStyles = makeStyles(() => ({
   bodyContainer: {
