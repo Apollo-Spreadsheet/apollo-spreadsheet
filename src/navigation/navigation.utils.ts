@@ -89,7 +89,8 @@ export function isPrintableChar(keyCode: number) {
 export function isCtrlKey(keyCode: number) {
   const keys: number[] = []
 
-  if (navigator.platform.includes('Mac')) {
+  //Ensure navigator is defined due to the fact this might be rendered on SSR
+  if (navigator && navigator.platform.includes('Mac')) {
     keys.push(KEY_CODES.COMMAND_LEFT, KEY_CODES.COMMAND_RIGHT, KEY_CODES.COMMAND_FIREFOX)
   } else {
     keys.push(KEY_CODES.CONTROL)
