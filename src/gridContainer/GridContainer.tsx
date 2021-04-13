@@ -17,6 +17,8 @@ const useStyles = makeStyles(() => ({
   },
 }))
 
+const DEFAULT_SCROLLBAR_SIZE = 14
+
 export const GridContainer = React.memo(
   ({
     minColumnWidth,
@@ -29,7 +31,10 @@ export const GridContainer = React.memo(
     containerClassName,
   }: GridContainerProps) => {
     const logger = useLogger('GridContainer')
-    const scrollbarSize = scrollbarSizeCalc(true)
+    const calculatedScrollbarSize = scrollbarSizeCalc(true)
+    //Added a default scrollbar size to avoid 0 spacing and overlaps of the scrollbar to the grid
+    const scrollbarSize =
+      calculatedScrollbarSize > 0 ? calculatedScrollbarSize : DEFAULT_SCROLLBAR_SIZE
     const classes = useStyles()
     const gridContainerRef = useRef<HTMLDivElement | null>(null)
     const columnWidths = useRef<ColumnWidthRecord>({
