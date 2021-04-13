@@ -2,13 +2,12 @@ import React, { useCallback, useEffect, useRef, useState } from 'react'
 import { isIndexOutOfBoundaries, isMetaKey, isPrintableChar } from './navigation.utils'
 import { NavigationCoords } from './types'
 import { isFunctionType } from '../helpers'
-import { CellChangeParams } from '../editorManager'
+import { CellChangeParams, NavigationKey } from '../editorManager'
 import * as clipboardy from 'clipboardy'
-import { ColumnCellType, Column } from '../columnGrid/types'
+import { ColumnCellType, Column } from '../columnGrid'
 import dayjs from 'dayjs'
 import { ROW_SELECTION_HEADER_ID } from '../rowSelection'
 import { debounce, DebouncedFunc } from 'lodash'
-import { NavigationKey } from '../editorManager/enums'
 import {
   CELL_BEGIN_EDITING,
   CELL_CLICK,
@@ -220,6 +219,7 @@ export function useNavigation({
   const handleCellPaste = useCallback(
     async (column: Column, row: Row, currentValue: unknown) => {
       try {
+        logger.debug('[handleCellPaste] Reading value from clipboard')
         let text = await clipboardy.read()
         //Check the text length if passes the maxLength allowed, if so we cut
         if (column.maxLength && text.length > column.maxLength) {
@@ -266,7 +266,7 @@ export function useNavigation({
 
         return onCellChange?.({ coords, previousValue: currentValue, newValue: text, column, row })
       } catch (ex) {
-        logger.error(`handleCellPaste -> ${ex}`)
+        logger.error(`[handleCellPaste] ${ex}`)
       }
     },
     [coords, logger, onCellChange],
@@ -274,12 +274,17 @@ export function useNavigation({
 
   const handleCellCut = useCallback(
     async (currentValue: unknown, column: Column, row: Row) => {
-      await clipboardy.write(String(currentValue))
-      const newValue = getDefaultValueFromValue(currentValue)
-      if (currentValue === newValue) {
-        return
+      try {
+        logger.debug(`[handleCellCut] Cutting ${String(currentValue)} to clipboard`)
+        await clipboardy.write(String(currentValue))
+        const newValue = getDefaultValueFromValue(currentValue)
+        if (currentValue === newValue) {
+          return
+        }
+        onCellChange?.({ coords, previousValue: currentValue, newValue, column, row })
+      } catch (ex) {
+        logger.error(`[handleCellCut] ${ex}`)
       }
-      onCellChange?.({ coords, previousValue: currentValue, newValue, column, row })
     },
     [coords, onCellChange],
   )
@@ -313,7 +318,13 @@ export function useNavigation({
       }
       if (event.key === 'c') {
         event.preventDefault()
-        return clipboardy.write(String(currentValue))
+        try {
+          logger.debug(`[handlePaste] Pasting ${String(currentValue)} to clipboard`)
+          return clipboardy.write(String(currentValue))
+        } catch (ex) {
+          logger.error(`[handlePaste]: ${ex}`)
+          return
+        }
       }
 
       if (event.key === 'v') {
