@@ -94,7 +94,7 @@ export function VPD() {
         return (
           <div style={{ width: '100%', display: 'flex', justifyContent: 'center' }}>
             <Avatar style={{ backgroundColor: isOdd ? 'orange' : '' }}>
-              {(row['name'] as string).slice(0, 1).toUpperCase()}
+              {(row.name as string).slice(0, 1).toUpperCase()}
             </Avatar>
           </div>
         )
@@ -145,8 +145,8 @@ export function VPD() {
       accessor: 'status',
       width: '10%',
       cellRenderer: ({ row }: { row: any }) => {
-        const color = getStatusColor(row['status'])
-        const text = getStatusText(row['status'])
+        const color = getStatusColor(row.status)
+        const text = getStatusText(row.status)
         return <span style={{ color }}>{text}</span>
       },
     },
@@ -166,8 +166,22 @@ export function VPD() {
     },
   ]
 
+  const nestedHeaders = [
+    [
+      {
+        title: 'Project',
+        colSpan: 7,
+      },
+      {
+        title: 'Company',
+        colSpan: 2,
+        className: classes.companySpi,
+      },
+    ],
+  ]
+
   return (
-    <Box width={'98%'} height={'400px'} style={{ margin: 10 }}>
+    <Box width={'98%'} height={'400px'}>
       <ApolloSpreadSheet
         columns={headers}
         rows={rows}
@@ -176,19 +190,7 @@ export function VPD() {
         overscanRowCount={20}
         fixedRowHeight
         fixedRowWidth
-        nestedHeaders={[
-          [
-            {
-              title: 'Project',
-              colSpan: 7,
-            },
-            {
-              title: 'Company',
-              colSpan: 2,
-              className: classes.companySpi,
-            },
-          ],
-        ]}
+        nestedHeaders={nestedHeaders}
       />
     </Box>
   )
