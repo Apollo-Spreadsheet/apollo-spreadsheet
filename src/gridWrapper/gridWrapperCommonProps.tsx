@@ -39,4 +39,15 @@ export interface GridWrapperCommonProps {
    * Border for highlighted cell
    */
   highlightBorderColor?: string
+
+  /**
+   * Whether CellMeasurer will set a fixed or dynamic width
+   * @default true
+   */
+  fixedRowWidth?: boolean
+  /**
+   * Whether CellMeasurer will set a fixed or dynamic row height
+   * @default false
+   */
+  fixedRowHeight?: boolean
 }

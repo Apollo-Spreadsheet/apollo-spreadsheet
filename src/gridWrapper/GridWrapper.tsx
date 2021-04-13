@@ -55,7 +55,8 @@ const GridWrapper = React.memo(
       new CellMeasurerCache({
         defaultWidth: props.defaultColumnWidth,
         defaultHeight: props.minRowHeight,
-        fixedWidth: true,
+        fixedWidth: props.fixedRowWidth ?? true,
+        fixedHeight: props.fixedRowHeight,
         minHeight: props.minRowHeight,
         minWidth: props.defaultColumnWidth,
       }),
@@ -108,7 +109,7 @@ const GridWrapper = React.memo(
         if (isMerged && isMerged(e)) {
           const parent = apiRef.current.getMergeParentCoords(e)
           if (!parent) {
-            console.warn(`Parent not found for coordinates: ${e}`)
+            logger.warn(`Parent not found for coordinates: ${e}`)
           } else {
             coordinates.push(parent)
           }
