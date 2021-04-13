@@ -2,6 +2,13 @@ import React, { useCallback, useEffect } from 'react'
 import { ApiRef } from '../api/types'
 import { CELL_CLICK, CELL_DOUBLE_CLICK } from '../api'
 import { useLogger } from '../logger'
+import {
+  createCoordsParseWarning,
+  getCellCoordinatesFromDOMElement,
+  isCellElement,
+} from '../navigation/querySelector.helper'
+import { NavigationCoords } from '../navigation'
+import { CellClickOrDoubleClickEventParams } from '../navigation/types/cell-click-double-params'
 
 export function useEvents(gridRootRef: React.RefObject<HTMLDivElement>, apiRef: ApiRef) {
   const logger = useLogger('useEvents')
@@ -10,61 +17,38 @@ export function useEvents(gridRootRef: React.RefObject<HTMLDivElement>, apiRef: 
     [apiRef],
   )
 
-  const onClickHandler = useCallback(
-    (event: MouseEvent) => {
-      const target = event.target as HTMLElement
-      const isCell = target?.getAttribute('role') === 'cell' && !target?.getAttribute('data-dummy')
-      if (isCell) {
-        apiRef.current.dispatchEvent(CELL_CLICK, {
-          event,
-          colIndex: Number(target.getAttribute('aria-colindex') || '-1'),
-          rowIndex: Number(target.getAttribute('data-rowindex') || '-1'),
-        })
-      } else {
-        //Check if the parent is a cell
-        const isParentCell =
-          target.parentElement?.getAttribute('role') === 'cell' &&
-          !target.parentElement?.getAttribute('data-dummy')
-        if (isParentCell) {
-          apiRef.current.dispatchEvent(CELL_CLICK, {
-            event,
-            colIndex: Number(target.parentElement?.getAttribute('aria-colindex') || '-1'),
-            rowIndex: Number(target.parentElement?.getAttribute('data-rowindex') || '-1'),
-          })
-        }
+  const handleClickOrDoubleClickEvent = useCallback((event: MouseEvent) => {
+    let target = event.target as HTMLElement
+    if (!target) {
+      return logger.warn(`[onClickHandler] Target element not defined, value: ${target}`)
+    }
+    let parsedCoords: NavigationCoords | undefined
+    const isCell = isCellElement(target)
+    if (isCell) {
+      parsedCoords = getCellCoordinatesFromDOMElement(target)
+    } else {
+      //Check if the parent element is a cell
+      if (!target.parentElement || !isCellElement(target.parentElement)) {
+        return
       }
-    },
-    [apiRef],
-  )
+      parsedCoords = getCellCoordinatesFromDOMElement(target.parentElement)
+      target = target.parentElement as HTMLElement
+    }
 
-  const onDoubleClickHandler = useCallback(
-    (event: MouseEvent) => {
-      const target = event.target as HTMLElement
-      const isCell = target?.getAttribute('role') === 'cell' && !target?.getAttribute('data-dummy')
-      if (isCell) {
-        apiRef.current.dispatchEvent(CELL_DOUBLE_CLICK, {
-          event,
-          colIndex: Number(target.getAttribute('aria-colindex') || '-1'),
-          rowIndex: Number(target.getAttribute('data-rowindex') || '-1'),
-          element: target,
-        })
-      } else {
-        //Check if the parent is a cell
-        const isParentCell =
-          target.parentElement?.getAttribute('role') === 'cell' &&
-          !target.parentElement?.getAttribute('data-dummy')
-        if (isParentCell) {
-          apiRef.current.dispatchEvent(CELL_DOUBLE_CLICK, {
-            event,
-            colIndex: Number(target.parentElement?.getAttribute('aria-colindex') || '-1'),
-            rowIndex: Number(target.parentElement?.getAttribute('data-rowindex') || '-1'),
-            element: target.parentElement,
-          })
-        }
-      }
-    },
-    [apiRef],
-  )
+    if (!parsedCoords) {
+      return logger.warn(
+        `[onClickHandler] ${createCoordsParseWarning(target.parentElement as HTMLElement)}`,
+      )
+    }
+
+    const eventName = event.type === 'click' ? CELL_CLICK : CELL_DOUBLE_CLICK
+    const payload: CellClickOrDoubleClickEventParams = {
+      event,
+      element: target,
+      ...parsedCoords,
+    }
+    apiRef.current.dispatchEvent(eventName, payload)
+  }, [])
 
   useEffect(() => {
     if (gridRootRef && gridRootRef.current && apiRef.current?.isInitialised) {
@@ -72,8 +56,12 @@ export function useEvents(gridRootRef: React.RefObject<HTMLDivElement>, apiRef: 
       const keyDownHandler = createHandler('keydown')
       const gridRootElem = gridRootRef.current
 
-      gridRootRef.current.addEventListener('click', onClickHandler, { capture: true })
-      gridRootRef.current.addEventListener('dblclick', onDoubleClickHandler, { capture: true })
+      gridRootRef.current.addEventListener('click', handleClickOrDoubleClickEvent, {
+        capture: true,
+      })
+      gridRootRef.current.addEventListener('dblclick', handleClickOrDoubleClickEvent, {
+        capture: true,
+      })
 
       document.addEventListener('keydown', keyDownHandler)
 
@@ -83,11 +71,13 @@ export function useEvents(gridRootRef: React.RefObject<HTMLDivElement>, apiRef: 
 
       return () => {
         logger.debug('Clearing all events listeners')
-        gridRootElem.removeEventListener('click', onClickHandler, { capture: true })
-        gridRootElem.removeEventListener('dblclick', onDoubleClickHandler, { capture: true })
+        gridRootElem.removeEventListener('click', handleClickOrDoubleClickEvent, { capture: true })
+        gridRootElem.removeEventListener('dblclick', handleClickOrDoubleClickEvent, {
+          capture: true,
+        })
         document.removeEventListener('keydown', keyDownHandler)
         api.removeAllListeners()
       }
     }
-  }, [gridRootRef, apiRef, logger, createHandler, onClickHandler, onDoubleClickHandler])
+  }, [gridRootRef, apiRef, logger, createHandler, handleClickOrDoubleClickEvent])
 }

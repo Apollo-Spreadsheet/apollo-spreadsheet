@@ -15,6 +15,7 @@ import { StretchMode } from '../types'
 import { useLogger } from '../logger'
 import KeyboardArrowRightIcon from '@material-ui/icons/KeyboardArrowRight'
 import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown'
+import { createCellQueryProperties } from '../navigation/querySelector.helper'
 
 const useStyles = makeStyles(() => ({
   bodyContainer: {
@@ -192,21 +193,24 @@ const GridWrapper = React.memo(
         }
 
         const wrapper = child => {
+          //Add navigationProps in case its a normal cell navigable
+          const navigationProps = cell.dummy
+            ? {}
+            : createCellQueryProperties({
+                colIndex: columnIndex,
+                rowIndex,
+                role: 'cell',
+                accessor: column.accessor,
+              })
+
+          const style: CSSProperties = {
+            ...cellStyle,
+            justifyContent: cell?.dummy ? 'top' : 'center',
+            zIndex,
+          }
+
           return (
-            <div
-              role={'cell'}
-              aria-colindex={columnIndex}
-              data-rowindex={rowIndex}
-              data-accessor={column.accessor}
-              data-dummy={cell.dummy}
-              className={cellClassName}
-              style={{
-                ...cellStyle,
-                justifyContent: cell?.dummy ? 'top' : 'center',
-                zIndex,
-              }}
-              ref={ref}
-            >
+            <div {...navigationProps} className={cellClassName} style={style} ref={ref}>
               {child}
             </div>
           )
