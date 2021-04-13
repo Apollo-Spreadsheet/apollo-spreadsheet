@@ -19,7 +19,7 @@ export const createCellQueryProperties = ({
   role,
   accessor,
 }: CreateCellQueryProperties): CellQueryProperties => {
-  let properties = {
+  const properties = {
     'aria-rowindex': rowIndex,
     'aria-colindex': colIndex,
     role,

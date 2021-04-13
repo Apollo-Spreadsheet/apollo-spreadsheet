@@ -17,38 +17,41 @@ export function useEvents(gridRootRef: React.RefObject<HTMLDivElement>, apiRef: 
     [apiRef],
   )
 
-  const handleClickOrDoubleClickEvent = useCallback((event: MouseEvent) => {
-    let target = event.target as HTMLElement
-    if (!target) {
-      return logger.warn(`[onClickHandler] Target element not defined, value: ${target}`)
-    }
-    let parsedCoords: NavigationCoords | undefined
-    const isCell = isCellElement(target)
-    if (isCell) {
-      parsedCoords = getCellCoordinatesFromDOMElement(target)
-    } else {
-      //Check if the parent element is a cell
-      if (!target.parentElement || !isCellElement(target.parentElement)) {
-        return
+  const handleClickOrDoubleClickEvent = useCallback(
+    (event: MouseEvent) => {
+      let target = event.target as HTMLElement
+      if (!target) {
+        return logger.warn(`[onClickHandler] Target element not defined, value: ${target}`)
       }
-      parsedCoords = getCellCoordinatesFromDOMElement(target.parentElement)
-      target = target.parentElement as HTMLElement
-    }
+      let parsedCoords: NavigationCoords | undefined
+      const isCell = isCellElement(target)
+      if (isCell) {
+        parsedCoords = getCellCoordinatesFromDOMElement(target)
+      } else {
+        //Check if the parent element is a cell
+        if (!target.parentElement || !isCellElement(target.parentElement)) {
+          return
+        }
+        parsedCoords = getCellCoordinatesFromDOMElement(target.parentElement)
+        target = target.parentElement as HTMLElement
+      }
 
-    if (!parsedCoords) {
-      return logger.warn(
-        `[onClickHandler] ${createCoordsParseWarning(target.parentElement as HTMLElement)}`,
-      )
-    }
+      if (!parsedCoords) {
+        return logger.warn(
+          `[onClickHandler] ${createCoordsParseWarning(target.parentElement as HTMLElement)}`,
+        )
+      }
 
-    const eventName = event.type === 'click' ? CELL_CLICK : CELL_DOUBLE_CLICK
-    const payload: CellClickOrDoubleClickEventParams = {
-      event,
-      element: target,
-      ...parsedCoords,
-    }
-    apiRef.current.dispatchEvent(eventName, payload)
-  }, [])
+      const eventName = event.type === 'click' ? CELL_CLICK : CELL_DOUBLE_CLICK
+      const payload: CellClickOrDoubleClickEventParams = {
+        event,
+        element: target,
+        ...parsedCoords,
+      }
+      apiRef.current.dispatchEvent(eventName, payload)
+    },
+    [apiRef, logger],
+  )
 
   useEffect(() => {
     if (gridRootRef && gridRootRef.current && apiRef.current?.isInitialised) {

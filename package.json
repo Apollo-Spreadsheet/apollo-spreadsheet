@@ -18,8 +18,8 @@
     "dist/**/*"
   ],
   "scripts": {
-    "lint": "eslint src",
-    "lint-fix": "eslint src --fix",
+    "lint": "eslint 'src/**'",
+    "lint-fix": "eslint 'src/**' --fix",
     "storybook:dev": "cross-env NODE_ENV=development start-storybook -p 9001  -s ./.storybook/public",
     "docs:dev": "cd docs && yarn run start",
     "tsc": "tsc -p tsconfig-build.json",

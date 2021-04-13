@@ -118,7 +118,7 @@ const GridWrapper = React.memo(
         }
       })
       return coordinates
-    }, [apiRef, columns, coords, isMerged])
+    }, [apiRef, columns, coords, isMerged, logger])
 
     /**
      * Checks if the given coordinates can use the currentClassName

@@ -1,7 +1,7 @@
 import React, { forwardRef, useCallback, useRef, useState } from 'react'
 import GridWrapper from './gridWrapper/GridWrapper'
 import ColumnGrid from './columnGrid/ColumnGrid'
-import { useKeyboardControls } from './keyboard/useKeyboardControls'
+import { useKeyboardControls } from './keyboard'
 import { StretchMode } from './types'
 import { useMergeCells } from './mergeCells'
 import { useHeaders } from './columnGrid'
@@ -11,17 +11,23 @@ import { ClickAwayListener, useForkRef } from '@material-ui/core'
 import { useEditorManager } from './editorManager'
 import { createPortal } from 'react-dom'
 import { GridContainer } from './gridContainer'
-import { useApiRef } from './api'
-import { useApiFactory } from './api'
+import {
+  useApiRef,
+  useApiFactory,
+  useApiEventHandler,
+  CELL_CLICK,
+  CELL_DOUBLE_CLICK,
+  useApiExtends,
+} from './api'
+
 import { makeStyles } from '@material-ui/core/styles'
 import { useEvents } from './events/useEvents'
-import { useApiEventHandler } from './api'
-import { CELL_CLICK, CELL_DOUBLE_CLICK } from './api'
+
 import { ApolloSpreadsheetProps } from './ApolloSpreadsheetProps'
 import { useSort } from './sort/useSort'
 import { useLogger } from './logger'
 import { isFunctionType } from './helpers'
-import { useApiExtends } from './api'
+
 import { useNestedRows } from './nestedRows'
 
 const useStyles = makeStyles(() => ({
