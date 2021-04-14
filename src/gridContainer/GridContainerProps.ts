@@ -1,8 +1,11 @@
 import React from 'react'
 import { OnScrollParams } from 'react-virtualized'
-import { Column } from '../columnGrid/types'
-import { StretchMode } from '../types'
-import { ApiRef } from '../api/types'
+import {
+  ApolloColumnRowSizeProps,
+  ApolloCoreProps,
+  ApolloDataProps,
+  ApolloLayoutProps,
+} from '../ApolloSpreadsheetProps'
 
 export interface GridContainerChildrenProps {
   width: number
@@ -18,10 +21,11 @@ export interface GridContainerCommonProps {
   containerClassName?: string
 }
 
-export interface GridContainerProps extends GridContainerCommonProps {
-  columns: Column[]
-  minColumnWidth: number
-  stretchMode: StretchMode
+export interface GridContainerProps
+  extends GridContainerCommonProps,
+    Required<ApolloCoreProps>,
+    Required<Pick<ApolloLayoutProps, 'stretchMode'>>,
+    Required<Pick<ApolloColumnRowSizeProps, 'minColumnWidth'>>,
+    Pick<ApolloDataProps, 'columns'> {
   children: (props: GridContainerChildrenProps) => unknown
-  apiRef: ApiRef
 }

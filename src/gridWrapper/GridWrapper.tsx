@@ -54,12 +54,12 @@ const GridWrapper: React.FC<GridWrapperProps> = React.memo(
     const cache: CellMeasurerCache = useMemo(() => {
       const isFixedCellHeight = props.fixedRowHeight && props.rowHeight
       const options: CellMeasurerCacheParams = {
-        defaultWidth: props.defaultColumnWidth,
+        defaultWidth: props.minColumnWidth,
         defaultHeight: isFixedCellHeight ? props.rowHeight : props.minRowHeight,
         fixedWidth: props.fixedRowWidth ?? true,
         fixedHeight: props.fixedRowHeight,
         minHeight: isFixedCellHeight ? undefined : props.minRowHeight,
-        minWidth: props.defaultColumnWidth,
+        minWidth: props.minColumnWidth,
       }
       /**
        * Used to skip calculations in a faster way when we have fixed height
@@ -71,7 +71,7 @@ const GridWrapper: React.FC<GridWrapperProps> = React.memo(
 
       return new CellMeasurerCache(options)
     }, [
-      props.defaultColumnWidth,
+      props.minColumnWidth,
       props.fixedRowHeight,
       props.fixedRowWidth,
       props.minRowHeight,
@@ -79,15 +79,13 @@ const GridWrapper: React.FC<GridWrapperProps> = React.memo(
     ])
 
     const cacheRef = useRef<CellMeasurerCache>(cache)
-
     const classes = useStyles()
     const gridRef = useRef<VirtualizedGrid | null>(null)
-    const recomputingTimeout = useRef<NodeJS.Timeout | undefined>(undefined)
     const loggerRef = useRef(logger)
-    const currentCoordsRef = useRef(coords)
+    const coordsRef = useRef(coords)
 
     useEffect(() => {
-      currentCoordsRef.current = coords
+      coordsRef.current = coords
     }, [coords])
 
     useEffect(() => {
@@ -99,36 +97,25 @@ const GridWrapper: React.FC<GridWrapperProps> = React.memo(
       cacheRef.current.clearAll()
       gridRef.current?.recomputeGridSize()
 
-      //Ensure we do have a valid index range
-      if (currentCoordsRef.current.rowIndex !== -1 && currentCoordsRef.current.colIndex !== -1) {
+      //Ensure we do have a valid index range (and if so we can scroll to that cell)
+      if (coordsRef.current.rowIndex !== -1 && coordsRef.current.colIndex !== -1) {
         //When the re-computation happens the scroll position is affected and gets reset
         gridRef.current?.scrollToCell({
-          columnIndex: currentCoordsRef.current.colIndex,
-          rowIndex: currentCoordsRef.current.rowIndex,
+          columnIndex: coordsRef.current.colIndex,
+          rowIndex: coordsRef.current.rowIndex,
         })
       }
     }, [])
 
-    function recomputingCleanup() {
-      if (recomputingTimeout.current) {
-        clearTimeout(recomputingTimeout.current)
-      }
-    }
-
     /** @todo We might need to perform some benchmark tests and ensure its not spamming **/
-    // clear cache and recompute when any dependency change
     useEffect(() => {
-      if (recomputingTimeout.current) {
-        clearTimeout(recomputingTimeout.current)
-      }
-      recomputingTimeout.current = setTimeout(recomputeSizes, 100)
-      return recomputingCleanup
+      recomputeSizes()
     }, [
       //If any of those dependencies change we might need to recompute the sizes
       data,
       props.width,
       props.height,
-      props.defaultColumnWidth,
+      props.minColumnWidth,
       props.fixedRowHeight,
       props.fixedRowWidth,
       props.minRowHeight,

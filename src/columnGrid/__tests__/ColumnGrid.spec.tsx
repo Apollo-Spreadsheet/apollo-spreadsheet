@@ -16,12 +16,13 @@ describe('<ColumnGrid />', () => {
 		],
 		data: [],
 		minRowHeight: 10,
-		defaultColumnWidth: 10,
+		minColumnWidth: 10,
 		getColumnWidth: ({ index }: { index: number }) => 0,
 		width: 100,
 		scrollLeft: 0,
 		coords: { rowIndex: 0, colIndex: 0 },
-		apiRef: apiRefMock
+		apiRef: apiRefMock,
+		nestedRowsEnabled: false
 	}
 	const grid = shallow(<ColumnGrid {...props} />)
 

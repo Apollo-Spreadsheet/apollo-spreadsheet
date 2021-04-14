@@ -1,8 +1,8 @@
-import React, { forwardRef, useCallback, useEffect, useRef, useState } from 'react'
+import React, { forwardRef, useCallback, useRef, useState } from 'react'
 import GridWrapper from './gridWrapper/GridWrapper'
 import ColumnGrid from './columnGrid/ColumnGrid'
-import { NavigationCoords, useKeyboard } from './keyboard'
-import { Row, StretchMode } from './types'
+import { useKeyboard } from './keyboard'
+import { StretchMode } from './types'
 import { useMergeCells } from './mergeCells'
 import { useHeaders } from './columnGrid'
 import { useData } from './data'
@@ -36,7 +36,6 @@ const useStyles = makeStyles(() => ({
     height: '100%',
     width: '100%',
   },
-  fixedBottomContainer: {},
 }))
 
 export const ApolloSpreadSheet: React.FC<ApolloSpreadsheetProps> = forwardRef(
@@ -179,7 +178,7 @@ export const ApolloSpreadSheet: React.FC<ApolloSpreadsheetProps> = forwardRef(
                   coords={coords}
                   columns={columns}
                   width={width}
-                  defaultColumnWidth={minColumnWidth}
+                  minColumnWidth={minColumnWidth}
                   getColumnWidth={getColumnWidth}
                   minRowHeight={props.minColumnHeight ?? 50}
                   scrollLeft={scrollLeft}
@@ -192,7 +191,7 @@ export const ApolloSpreadSheet: React.FC<ApolloSpreadsheetProps> = forwardRef(
                   rows={rows}
                   data={cells}
                   coords={coords}
-                  defaultColumnWidth={minColumnWidth}
+                  minColumnWidth={minColumnWidth}
                   width={width}
                   getColumnWidth={getColumnWidth}
                   minRowHeight={props.minRowHeight ?? 50}

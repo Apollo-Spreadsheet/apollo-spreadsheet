@@ -1,39 +1,27 @@
-import { StretchMode } from '../types'
-import { GridHeader, Column, NestedHeader } from './types'
-import { NavigationCoords } from '../keyboard/types'
-import { DisableSortFilterParam } from '../gridWrapper'
-import { ApiRef } from '../api'
+import { GridHeader } from './types'
+import { NavigationCoords } from '../keyboard'
 import { SortState } from '../sort/useSort'
+import {
+  ApolloColumnRowSizeProps,
+  ApolloCoreProps,
+  ApolloDataProps,
+  ApolloLayoutProps,
+  ApolloSortProps,
+  ApolloVirtualizedProps,
+} from '../ApolloSpreadsheetProps'
 
-export interface ColumnGridProps {
-  /**
-   * Indicates if the sort is disabled globally or on a specific column
-   * @default true **/
-  disableSort?: boolean | DisableSortFilterParam
-  apiRef: ApiRef
+export interface ColumnGridProps
+  extends ApolloVirtualizedProps,
+    Pick<ApolloLayoutProps, 'stretchMode'>,
+    Pick<ApolloDataProps, 'columns' | 'nestedHeaders'>,
+    ApolloSortProps,
+    Required<ApolloCoreProps>,
+    Pick<ApolloColumnRowSizeProps, 'minRowHeight' | 'minColumnWidth'> {
   data: Array<GridHeader[]>
-  columns: Column[]
-  nestedHeaders?: Array<NestedHeader[]>
-  minRowHeight: number
   coords: NavigationCoords
-  defaultColumnWidth: number
   getColumnWidth: ({ index }: { index: number }) => number
   sort: SortState | null
   width: number
   scrollLeft: number
-  /** @default StretchMode.None  */
-  stretchMode?: StretchMode
-  /**
-   * Overscan count buffer for react-virtualized
-   * @description Keep in mind a lower value
-   * @default 2
-   */
-  overscanRowCount?: number
-  /**
-   * Overscan count buffer for react-virtualized
-   * @description Keep in mind a lower value
-   * @default 2
-   */
-  overscanColumnCount?: number
   nestedRowsEnabled: boolean
 }

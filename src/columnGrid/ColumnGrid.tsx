@@ -1,5 +1,5 @@
 import React, { useRef, useEffect, useMemo, useCallback, CSSProperties } from 'react'
-import { Grid, CellMeasurerCache } from 'react-virtualized'
+import { Grid, CellMeasurerCache, CellMeasurerCacheParams } from 'react-virtualized'
 import CellMeasurer from '../cellMeasurer/CellMeasureWrapper'
 import { GridHeader } from './types'
 import clsx from 'clsx'
@@ -13,6 +13,7 @@ import { makeStyles } from '@material-ui/core/styles'
 import { isFunctionType } from '../helpers'
 import flattenDeep from 'lodash/flattenDeep'
 import { createCellQueryProperties } from '../keyboard/utils'
+import { useLogger } from '../logger'
 
 type SortDisabled = boolean
 const useStyles = makeStyles(() => ({
@@ -53,9 +54,10 @@ const useStyles = makeStyles(() => ({
 }))
 export const ColumnGrid: React.FC<ColumnGridProps> = React.memo(props => {
   const classes = useStyles()
-  const cache = useRef(
-    new CellMeasurerCache({
-      defaultWidth: props.defaultColumnWidth,
+  const logger = useLogger('ColumnGrid')
+  const cache: CellMeasurerCache = useMemo(() => {
+    const options: CellMeasurerCacheParams = {
+      defaultWidth: props.minColumnWidth,
       defaultHeight: props.minRowHeight,
       //Width and height are fixed
       //Width is calculated on useHeaders hook
@@ -63,11 +65,22 @@ export const ColumnGrid: React.FC<ColumnGridProps> = React.memo(props => {
       fixedWidth: true,
       fixedHeight: true,
       minHeight: props.minRowHeight,
-      minWidth: props.defaultColumnWidth,
-    }),
-  ).current
-  const recomputingTimeout = useRef<NodeJS.Timeout | undefined>(undefined)
+      minWidth: props.minColumnWidth,
+    }
+    return new CellMeasurerCache(options)
+  }, [props.minColumnWidth, props.minRowHeight])
+
   const gridRef = useRef<Grid | null>(null)
+  const cacheRef = useRef<CellMeasurerCache>(cache)
+  const loggerRef = useRef(logger)
+
+  useEffect(() => {
+    loggerRef.current = logger
+  }, [logger])
+
+  useEffect(() => {
+    cacheRef.current = cache
+  }, [cache])
 
   //Stores the headers sort configuration (whether they have sort disabled or not)
   const headersSortDisabledMap = useMemo(() => {
@@ -89,23 +102,14 @@ export const ColumnGrid: React.FC<ColumnGridProps> = React.memo(props => {
 
   // clear cache and recompute when data changes OR when the container width changes
   const recomputeSizes = useCallback(() => {
-    cache.clearAll()
+    loggerRef.current.debug('Recomputing Sizes')
+    cacheRef.current?.clearAll()
     gridRef.current?.recomputeGridSize()
-  }, [cache])
-
-  function recomputingCleanup() {
-    if (recomputingTimeout.current) {
-      clearTimeout(recomputingTimeout.current)
-    }
-  }
+  }, [])
 
   // clear cache and recompute when data changes
   useEffect(() => {
-    if (recomputingTimeout.current) {
-      clearTimeout(recomputingTimeout.current)
-    }
-    recomputingTimeout.current = setTimeout(recomputeSizes, 100)
-    return recomputingCleanup
+    recomputeSizes()
   }, [props.data, props.width, recomputeSizes])
 
   function getSortIndicatorComponent(order: string | undefined) {
