@@ -22,6 +22,20 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  height: 3.2em;
+  width: 11em;
+  border-radius: 0.3em;
+  background-color: #1e2b77;
+  color: #f5f6f7;
+  font-weight: 600;
+  font-size: 1.2em;
+  text-decoration: none;
+}
+
+.buttons:hover {
+  background-color: #1e1b66;
+  color: white;
+  text-decoration: none;
 }
 
 .hero {
@@ -46,4 +60,13 @@
 .featureImage {
   height: 200px;
   width: 200px;
+}
+
+.title {
+  margin-top: 1.2em;
+  font-size: 4em;
+}
+
+.subtitle {
+  font-size: 2.1em;
 }
