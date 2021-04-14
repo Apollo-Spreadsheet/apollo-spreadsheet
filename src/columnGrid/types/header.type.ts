@@ -1,6 +1,6 @@
 import React, { CSSProperties } from 'react'
 import { TooltipProps } from '@material-ui/core'
-import { NavigationCoords } from '../../navigation/types'
+import { NavigationCoords } from '../../keyboard/types'
 import { EditorProps, EditorRef } from '../../editorManager'
 import { PopperProps } from '@material-ui/core/Popper/Popper'
 import { ReactDatePickerProps } from 'react-datepicker'
@@ -36,11 +36,11 @@ export interface ColumnRendererProps<Key = string, Metadata = any> {
   className: string
 }
 
-export type ICellRenderer = (cellProps: CellRendererProps) => React.ReactNode | JSX.Element
+export type ICellRenderer = (cellProps: CellRendererProps) => JSX.Element
 export type IHeaderRenderer<Key = string, Metadata = any> = (
   column: ColumnRendererProps<Key, Metadata>,
 ) => React.ReactNode | JSX.Element
-export type ICellEditor = (cellProps: CellEditorProps) => React.ReactNode | JSX.Element
+export type ICellEditor = (cellProps: CellEditorProps) => JSX.Element
 
 export enum ColumnCellType {
   TextArea,

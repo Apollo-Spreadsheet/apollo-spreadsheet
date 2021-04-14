@@ -1,5 +1,5 @@
 import { Column } from '../columnGrid'
-import { NavigationCoords } from '../navigation'
+import { NavigationCoords } from '../keyboard'
 import { GridCell } from './interfaces'
 import { OnScrollParams } from 'react-virtualized'
 import { StretchMode } from '../types'

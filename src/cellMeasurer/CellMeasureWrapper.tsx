@@ -59,7 +59,8 @@ function CellMeasureWrapper({
           ...rendererProps,
           style: spanningStyle,
           ref: registerChild,
-        })}
+        })
+      }
     </CellMeasurer>
   )
 }

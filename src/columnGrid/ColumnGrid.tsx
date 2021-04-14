@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useMemo, useCallback } from 'react'
+import React, { useRef, useEffect, useMemo, useCallback, CSSProperties } from 'react'
 import { Grid, CellMeasurerCache } from 'react-virtualized'
 import CellMeasurer from '../cellMeasurer/CellMeasureWrapper'
 import { GridHeader } from './types'
@@ -12,6 +12,7 @@ import { ROW_SELECTION_HEADER_ID } from '../rowSelection'
 import { makeStyles } from '@material-ui/core/styles'
 import { isFunctionType } from '../helpers'
 import flattenDeep from 'lodash/flattenDeep'
+import { createCellQueryProperties } from '../keyboard/utils'
 
 type SortDisabled = boolean
 const useStyles = makeStyles(() => ({
@@ -169,14 +170,19 @@ export const ColumnGrid = React.memo((props: ColumnGridProps) => {
 
       const isSpannerAndNested = cell.colSpan && cell.isNested && !cell.dummy
       const defaultZIndex = cell.dummy ? 0 : 1
+      const navigationProps = cell.dummy
+        ? {}
+        : createCellQueryProperties({
+            role: 'columnheader',
+            colIndex: columnIndex,
+            rowIndex,
+          })
+
       return (
         <div
           ref={ref}
-          role={'columnheader'}
+          {...navigationProps}
           className={headerClassName}
-          aria-colindex={columnIndex}
-          data-rowindex={rowIndex}
-          data-dummy={cell.dummy}
           style={{
             ...style,
             zIndex: isSpannerAndNested ? 999 : defaultZIndex,
@@ -203,7 +209,7 @@ export const ColumnGrid = React.memo((props: ColumnGridProps) => {
         return null
       }
 
-      const style = {
+      const style: CSSProperties = {
         ...args.style,
         //TODO Review this style property
         ...cell.style,

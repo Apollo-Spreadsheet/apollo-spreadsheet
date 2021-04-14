@@ -1,6 +1,5 @@
-import { NavigationCoords } from '../../navigation/types/navigation-coords.type'
-import { MergeCell } from '../../mergeCells/interfaces/merge-cell'
-import { MergeGroup } from '../../mergeCells/createMergedGroups'
+import { NavigationCoords } from '../../keyboard'
+import { MergeGroup, MergeCell } from '../../mergeCells'
 
 export interface MergeCellsApi {
   /**

@@ -35,6 +35,28 @@ Apollo does not mutate date, relies on React updates, its built using Typescript
 - Custom renderer support (allows the developer to provide his own cell/header renderer)
 - Developer friendly API
 
+## Documentation
+
+### Development
+
+All you have to do is run `yarn docs:dev` or jump into docs folder and run `yarn start`
+
+### Deployment
+
+You have to run either `yarn docs:build` or jump into docs folder and run `yarn build`
+The next step is to copy the generated build files and paste into our provider via FTP folder (OVH)
+
+## Storybook
+
+### Development
+
+All you have to do is run `yarn storybook:dev`
+
+### Deployment
+
+You have to run either `yarn storybook:build`
+The next step is to copy the generated build files and paste into our provider via FTP folder (OVH)
+
 ## Releases
 
 This plugin is under development, there are not yet any further release date

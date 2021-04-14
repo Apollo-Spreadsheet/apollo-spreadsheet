@@ -1,28 +1,35 @@
-import React, { forwardRef, useCallback, useRef, useState } from 'react'
+import React, { forwardRef, useCallback, useEffect, useRef, useState } from 'react'
 import GridWrapper from './gridWrapper/GridWrapper'
 import ColumnGrid from './columnGrid/ColumnGrid'
-import { useNavigation } from './navigation/useNavigation'
-import { StretchMode } from './types/stretch-mode.enum'
-import { useMergeCells } from './mergeCells/useMergeCells'
-import { useHeaders } from './columnGrid/useHeaders'
-import { useData } from './data/useData'
-import { useRowSelection } from './rowSelection/useRowSelection'
+import { NavigationCoords, useKeyboard } from './keyboard'
+import { StretchMode } from './types'
+import { useMergeCells } from './mergeCells'
+import { useHeaders } from './columnGrid'
+import { useData } from './data'
+import { useRowSelection } from './rowSelection'
 import { ClickAwayListener, useForkRef } from '@material-ui/core'
-import { useEditorManager } from './editorManager/useEditorManager'
+import { useEditorManager } from './editorManager'
 import { createPortal } from 'react-dom'
-import { GridContainer } from './gridContainer/GridContainer'
-import { useApiRef } from './api/useApiRef'
-import { useApiFactory } from './api/useApiFactory'
+import { GridContainer } from './gridContainer'
+import {
+  useApiRef,
+  useApiFactory,
+  useApiEventHandler,
+  CELL_CLICK,
+  CELL_DOUBLE_CLICK,
+  useApiExtends,
+  GridApi,
+} from './api'
+
 import { makeStyles } from '@material-ui/core/styles'
 import { useEvents } from './events/useEvents'
-import { useApiEventHandler } from './api/useApiEventHandler'
-import { CELL_CLICK, CELL_DOUBLE_CLICK } from './api/eventConstants'
+
 import { ApolloSpreadsheetProps } from './ApolloSpreadsheetProps'
 import { useSort } from './sort/useSort'
 import { useLogger } from './logger'
 import { isFunctionType } from './helpers'
-import { useApiExtends } from './api'
-import { useNestedRows } from './nestedRows'
+
+import { NestedRowsProps, useNestedRows } from './nestedRows'
 
 const useStyles = makeStyles(() => ({
   root: {
@@ -82,7 +89,7 @@ export const ApolloSpreadSheet = forwardRef(
     })
     const sort = useSort(apiRef)
 
-    const coords = useNavigation({
+    const coords = useKeyboard({
       defaultCoords: props.defaultCoords ?? {
         rowIndex: 0,
         colIndex: 0,
@@ -145,7 +152,14 @@ export const ApolloSpreadSheet = forwardRef(
 
     useApiEventHandler(apiRef, CELL_CLICK, onCellMouseHandler)
     useApiEventHandler(apiRef, CELL_DOUBLE_CLICK, onCellMouseHandler)
-    useApiExtends(apiRef, { clearFocus }, 'CoreApi')
+    const rootApiMethods: Partial<GridApi> = { clearFocus }
+    useApiExtends(apiRef, rootApiMethods, 'CoreApi')
+    const nestedRowsProps: NestedRowsProps = {
+      nestedRows: nestedRowsEnabled,
+      nestedRowMargin: props.nestedRowMargin,
+      defaultExpandedIds: props.defaultExpandedIds,
+      iconRenderer: props.iconRenderer,
+    }
 
     return (
       <ClickAwayListener onClickAway={onClickAway}>
@@ -192,12 +206,7 @@ export const ApolloSpreadSheet = forwardRef(
                   mergeCells={mergedCells}
                   mergedPositions={mergedPositions}
                   isMerged={isMerged}
-                  nestedRowsProps={{
-                    nestedRows: nestedRowsEnabled,
-                    nestedRowMargin: props.nestedRowMargin,
-                    defaultExpandedIds: props.defaultExpandedIds,
-                    iconRenderer: props.iconRenderer,
-                  }}
+                  nestedRowsProps={nestedRowsProps}
                 />
               </div>
             )}

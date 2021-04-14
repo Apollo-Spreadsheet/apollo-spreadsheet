@@ -5,7 +5,7 @@ import {
   SectionRenderedParams,
 } from 'react-virtualized'
 import CellMeasurer from '../cellMeasurer/CellMeasureWrapper'
-import { NavigationCoords } from '../navigation'
+import { NavigationCoords } from '../keyboard'
 import clsx from 'clsx'
 import { GridCellProps } from 'react-virtualized/dist/es/Grid'
 import { MeasurerRendererProps } from '../cellMeasurer'
@@ -15,6 +15,7 @@ import { StretchMode } from '../types'
 import { useLogger } from '../logger'
 import KeyboardArrowRightIcon from '@material-ui/icons/KeyboardArrowRight'
 import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown'
+import { createCellQueryProperties } from '../keyboard/utils'
 
 const useStyles = makeStyles(() => ({
   bodyContainer: {
@@ -54,7 +55,8 @@ const GridWrapper = React.memo(
       new CellMeasurerCache({
         defaultWidth: props.defaultColumnWidth,
         defaultHeight: props.minRowHeight,
-        fixedWidth: true,
+        fixedWidth: props.fixedRowWidth ?? true,
+        fixedHeight: props.fixedRowHeight,
         minHeight: props.minRowHeight,
         minWidth: props.defaultColumnWidth,
       }),
@@ -107,7 +109,7 @@ const GridWrapper = React.memo(
         if (isMerged && isMerged(e)) {
           const parent = apiRef.current.getMergeParentCoords(e)
           if (!parent) {
-            console.warn(`Parent not found for coordinates: ${e}`)
+            logger.warn(`Parent not found for coordinates: ${e}`)
           } else {
             coordinates.push(parent)
           }
@@ -116,7 +118,7 @@ const GridWrapper = React.memo(
         }
       })
       return coordinates
-    }, [apiRef, columns, coords, isMerged])
+    }, [apiRef, columns, coords, isMerged, logger])
 
     /**
      * Checks if the given coordinates can use the currentClassName
@@ -192,21 +194,24 @@ const GridWrapper = React.memo(
         }
 
         const wrapper = child => {
+          //Add navigationProps in case its a normal cell navigable
+          const navigationProps = cell.dummy
+            ? {}
+            : createCellQueryProperties({
+                colIndex: columnIndex,
+                rowIndex,
+                role: 'cell',
+                accessor: column.accessor,
+              })
+
+          const style: CSSProperties = {
+            ...cellStyle,
+            justifyContent: cell?.dummy ? 'top' : 'center',
+            zIndex,
+          }
+
           return (
-            <div
-              role={'cell'}
-              aria-colindex={columnIndex}
-              data-rowindex={rowIndex}
-              data-accessor={column.accessor}
-              data-dummy={cell.dummy}
-              className={cellClassName}
-              style={{
-                ...cellStyle,
-                justifyContent: cell?.dummy ? 'top' : 'center',
-                zIndex,
-              }}
-              ref={ref}
-            >
+            <div {...navigationProps} className={cellClassName} style={style} ref={ref}>
               {child}
             </div>
           )

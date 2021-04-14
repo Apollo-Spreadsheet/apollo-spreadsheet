@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react'
 import { ROW_SELECTION_HEADER_ID } from '../rowSelection'
-import { NavigationCoords } from '../navigation/types'
-import { ColumnCellType, Column } from '../columnGrid/types'
+import { NavigationCoords } from '../keyboard'
+import { ColumnCellType, Column } from '../columnGrid'
 import TextEditor from './components/TextEditor'
 import NumericEditor from './components/NumericEditor'
 import { EditorProps } from './editorProps'
@@ -229,6 +229,11 @@ export function useEditorManager({ onCellChange, apiRef }: EditorManagerProps) {
   const beginEditing = useCallback(
     ({ coords, targetElement, defaultKey }: BeginEditingParams) => {
       logger.debug(`Begin editing invoked for coords: [${coords.rowIndex},${coords.colIndex}]`)
+      console.log({
+        coords,
+        targetElement,
+        defaultKey,
+      })
       //Validate if is editing but in the same coords
       if (
         state.current?.rowIndex === coords.rowIndex &&
@@ -306,9 +311,9 @@ export function useEditorManager({ onCellChange, apiRef }: EditorManagerProps) {
     [logger, apiRef, stopEditing, getEditor],
   )
 
-  function getEditorState() {
+  const getEditorState = useCallback(() => {
     return state.current
-  }
+  }, [])
 
   const editorManagerApi: EditorManagerApi = {
     beginEditing,

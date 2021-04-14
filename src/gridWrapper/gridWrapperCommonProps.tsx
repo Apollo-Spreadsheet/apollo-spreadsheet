@@ -3,7 +3,7 @@ import { MergeCell, MergePosition } from '../mergeCells'
 import { CellChangeParams } from '../editorManager'
 import { Alignment } from 'react-virtualized'
 import { OutsideClickDeselectCallback } from './gridWrapperProps'
-import { NavigationCoords } from '../navigation'
+import { NavigationCoords } from '../keyboard'
 
 export interface GridWrapperCommonProps {
   columns: Column[]
@@ -39,4 +39,15 @@ export interface GridWrapperCommonProps {
    * Border for highlighted cell
    */
   highlightBorderColor?: string
+
+  /**
+   * Whether CellMeasurer will set a fixed or dynamic width
+   * @default true
+   */
+  fixedRowWidth?: boolean
+  /**
+   * Whether CellMeasurer will set a fixed or dynamic row height
+   * @default false
+   */
+  fixedRowHeight?: boolean
 }

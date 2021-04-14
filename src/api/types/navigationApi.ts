@@ -1,4 +1,4 @@
-import { NavigationCoords } from '../../navigation'
+import { NavigationCoords } from '../../keyboard'
 
 export interface NavigationApi {
   /**

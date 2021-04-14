@@ -74,7 +74,7 @@ export const TextEditor = forwardRef(
       ref.selectionEnd = ref.value.length
     }, [])
 
-    const anchorStyle = (anchorRef as any).style as CSSProperties
+    const anchorStyle = anchorRef ? ((anchorRef as HTMLElement).style as CSSProperties) : {}
 
     function onEditorPortalClose(event: unknown, reason: 'backdropClick' | 'escapeKeyDown') {
       //Only allow to cancel if its invalid

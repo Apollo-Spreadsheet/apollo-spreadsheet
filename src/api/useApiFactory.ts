@@ -4,6 +4,7 @@ import { useApiExtends } from './useApiExtends'
 import { ApiRef } from './types/apiRef'
 import { GridTheme } from '../types'
 import { useLogger } from '../logger'
+import { GridApi } from './types'
 
 /**
  * Initializes a new api instance
@@ -58,7 +59,8 @@ export function useApiFactory(
     }
   }, [selectionKey, gridRootRef, apiRef, theme, logger])
 
-  useApiExtends(apiRef, { subscribeEvent, dispatchEvent: publishEvent }, 'CoreApi')
+  const apiMethods: Partial<GridApi> = { subscribeEvent, dispatchEvent: publishEvent }
+  useApiExtends(apiRef, apiMethods, 'CoreApi')
 
   return initialised
 }
