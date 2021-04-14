@@ -1,5 +1,12 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react'
-import { isIndexOutOfBoundaries, isMetaKey, isPrintableChar } from './navigation.utils'
+import {
+  isIndexOutOfBoundaries,
+  isMetaKey,
+  isPrintableChar,
+  createCellQuerySelector,
+  getDefaultValueFromValue,
+  createSelectorElementNotFoundWarning,
+} from './utils'
 import { NavigationCoords } from './types'
 import { isFunctionType } from '../helpers'
 import { CellChangeParams, NavigationKey } from '../editorManager'
@@ -22,6 +29,7 @@ import {
 import { Row } from '../types'
 import { useLogger } from '../logger'
 import { resolveDynamicOrBooleanCallback } from '../helpers/resolveDynamicOrBooleanCallback'
+import { CellClickOrDoubleClickEventParams } from './types/cell-click-double-params'
 
 interface Props {
   defaultCoords: NavigationCoords
@@ -36,7 +44,7 @@ export interface KeyDownEventParams {
   event: KeyboardEvent | React.KeyboardEvent
 }
 
-export function useNavigation({
+export function useKeyboard({
   defaultCoords,
   suppressControls,
   onCellChange,
@@ -44,7 +52,7 @@ export function useNavigation({
   apiRef,
   initialised,
 }: Props): NavigationCoords {
-  const logger = useLogger('useNavigation')
+  const logger = useLogger(useKeyboard.name)
   const coordsRef = useRef<NavigationCoords>(defaultCoords)
   const [coords, setCoords] = useState<NavigationCoords>(defaultCoords)
   const delayEditorDebounce = useRef<DebouncedFunc<any> | null>(null)
@@ -56,7 +64,7 @@ export function useNavigation({
   }, [])
 
   const onRowsChanged = useCallback(
-    ({ rows }: { rows: unknown[] }) => {
+    ({ rows }: { rows: Row[] }) => {
       const target = rows[coordsRef.current.rowIndex]
       if (!target) {
         coordsRef.current = defaultCoords
@@ -80,19 +88,6 @@ export function useNavigation({
     },
     [],
   )
-
-  function getDefaultValueFromValue(value: unknown) {
-    if (Array.isArray(value)) {
-      return []
-    }
-    if (typeof value === 'string') {
-      return ''
-    }
-    if (typeof value === 'number') {
-      return 0
-    }
-    return undefined
-  }
 
   /**
    * Recursively looks for the next navigable cell
@@ -192,13 +187,12 @@ export function useNavigation({
           if (colIndex < 0 || rowIndex < 0) {
             return logger.info("Debounce couldn't start editor at negative coordinates")
           }
-          const selector = `[aria-colindex='${colIndex}'][data-rowindex='${rowIndex}'][role='cell']`
+          const selector = createCellQuerySelector({ rowIndex, colIndex })
           const target =
             targetElement ?? apiRef.current.rootElementRef?.current?.querySelector(selector)
+
           if (!target) {
-            return logger.error(
-              `Cell dom element not found on delayEditingOpen debounce with selector: ${selector}`,
-            )
+            return logger.debug(createSelectorElementNotFoundWarning({ rowIndex, colIndex }))
           }
 
           apiRef.current.beginEditing({
@@ -286,7 +280,7 @@ export function useNavigation({
         logger.error(`[handleCellCut] ${ex}`)
       }
     },
-    [coords, onCellChange],
+    [coords, logger, onCellChange],
   )
 
   const handleEditorOpenControls = useCallback(
@@ -338,7 +332,7 @@ export function useNavigation({
         return handleCellPaste(column, row, currentValue)
       }
     },
-    [handleCellCut, handleCellPaste],
+    [handleCellCut, handleCellPaste, logger],
   )
 
   /** @todo Might need to consider colSpan **/
@@ -405,7 +399,6 @@ export function useNavigation({
         if (isIndexOutOfBoundaries(nextColIndex, 0, apiRef.current.getColumnCount() - 1)) {
           return
         }
-
         //Is navigable?
         const col = apiRef.current.getColumnAt(nextColIndex)
         if (!col) {
@@ -496,14 +489,10 @@ export function useNavigation({
         return handleEditorOpenControls(event)
       }
 
-      /** @todo Extract to a util method that receives the coordinates and build up the selector to be re-used **/
-      /** @todo Add unit tests for the selector **/
-      const selector = `[aria-colindex='${coords.colIndex}'][data-rowindex='${coords.rowIndex}'][role='cell']`
+      const selector = createCellQuerySelector(coords)
       const cellElement = apiRef.current.rootElementRef?.current?.querySelector(selector)
       if (!cellElement) {
-        return logger.error(
-          `Cell DOM element not found with coordinates [${coords.rowIndex},${coords.colIndex}] using the following selector: ${selector}`,
-        )
+        return logger.debug(createSelectorElementNotFoundWarning(coords))
       }
 
       const column = apiRef.current.getColumnAt(coords.colIndex)
@@ -617,17 +606,7 @@ export function useNavigation({
   )
 
   const onCellClick = useCallback(
-    ({
-      event,
-      colIndex,
-      rowIndex,
-      element,
-    }: {
-      event: MouseEvent
-      colIndex: number
-      rowIndex: number
-      element: HTMLElement
-    }) => {
+    ({ event, colIndex, rowIndex, element }: CellClickOrDoubleClickEventParams) => {
       event.preventDefault()
       selectCell({ rowIndex, colIndex }, false, element)
     },
@@ -635,17 +614,7 @@ export function useNavigation({
   )
 
   const onCellDoubleClick = useCallback(
-    ({
-      event,
-      colIndex,
-      rowIndex,
-      element,
-    }: {
-      event: MouseEvent
-      colIndex: number
-      rowIndex: number
-      element: HTMLDivElement
-    }) => {
+    ({ event, colIndex, rowIndex, element }: CellClickOrDoubleClickEventParams) => {
       event.preventDefault()
       //Compare if the cell is equal to whats selected otherwise select it first
       if (colIndex !== coords.colIndex && rowIndex !== coords.rowIndex) {

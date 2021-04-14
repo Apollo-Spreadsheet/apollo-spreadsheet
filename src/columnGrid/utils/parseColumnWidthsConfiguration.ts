@@ -12,12 +12,7 @@ export const parseColumnWidthsConfiguration = (value: React.ReactText, container
   const isPixels = typeof value === 'string' && value.includes('px')
 
   if (isPercentage) {
-    const parsedValue = Number(
-      value
-        .toString()
-        .replace('%', '')
-        .trim(),
-    )
+    const parsedValue = Number(value.toString().replace('%', '').trim())
     if (isNaN(parsedValue)) {
       throw new Error(`${parsedValue} value is an invalid percentage value`)
     }
@@ -31,12 +26,7 @@ export const parseColumnWidthsConfiguration = (value: React.ReactText, container
   }
 
   if (isPixels) {
-    const parsedValue = Number(
-      value
-        .toString()
-        .replace('px', '')
-        .trim(),
-    )
+    const parsedValue = Number(value.toString().replace('px', '').trim())
     if (isNaN(parsedValue)) {
       throw new Error(`${parsedValue} value must be a number`)
     }

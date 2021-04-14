@@ -17,7 +17,7 @@ interface DemoRow {
 
 const generateRows = count => {
   const rows: DemoRow[] = new Array(count).fill(true).map((_, i) => ({
-    id: faker.random.number().toString(),
+    id: faker.datatype.number().toString(),
     name: faker.name.findName(),
     city: faker.address.city(),
     country: faker.address.country(),
@@ -38,7 +38,7 @@ const generateRows = count => {
       order: 555,
       __children: [
         {
-          id: faker.random.number().toString(),
+          id: faker.datatype.number().toString(),
           name: 'FIRST OF FIRST',
           city: faker.address.city(),
           country: faker.address.country(),
@@ -46,7 +46,7 @@ const generateRows = count => {
           order: 444,
           __children: [
             {
-              id: faker.random.number().toString(),
+              id: faker.datatype.number().toString(),
               name: 'FIRST OF SECOND FIRST',
               city: faker.address.city(),
               country: faker.address.country(),
@@ -58,7 +58,7 @@ const generateRows = count => {
       ],
     },
     {
-      id: faker.random.number().toString(),
+      id: faker.datatype.number().toString(),
       name: 'SECOND',
       city: faker.address.city(),
       country: faker.address.country(),
@@ -68,7 +68,7 @@ const generateRows = count => {
   ]
 
   rows.push({
-    id: faker.random.number().toString(),
+    id: faker.datatype.number().toString(),
     name: 'GGGG',
     city: faker.address.city(),
     country: faker.address.country(),
@@ -76,7 +76,7 @@ const generateRows = count => {
     order: 67777,
     __children: [
       {
-        id: faker.random.number().toString(),
+        id: faker.datatype.number().toString(),
         name: 'hjjjj',
         city: faker.address.city(),
         country: faker.address.country(),

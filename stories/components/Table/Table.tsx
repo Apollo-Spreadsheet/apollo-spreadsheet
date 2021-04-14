@@ -19,7 +19,7 @@ interface DemoRow {
 
 const generateRows = count => {
   return new Array(count).fill(true).map((_, i) => ({
-    id: faker.random.number().toString(),
+    id: faker.datatype.number().toString(),
     name: faker.name.findName(),
     city: faker.address.city(),
     country: faker.address.country(),

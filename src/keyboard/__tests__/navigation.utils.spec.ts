@@ -1,4 +1,4 @@
-import {isIndexOutOfBoundaries} from "../navigation.utils";
+import {isIndexOutOfBoundaries} from "../utils";
 
 describe('Navigation utils',  () => {
 	describe('isIndexOutOfBoundaries', () => {
