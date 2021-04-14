@@ -1,7 +1,7 @@
-import React, { forwardRef, useCallback, useRef, useState } from 'react'
+import React, { forwardRef, useCallback, useEffect, useRef, useState } from 'react'
 import GridWrapper from './gridWrapper/GridWrapper'
 import ColumnGrid from './columnGrid/ColumnGrid'
-import { useKeyboard } from './keyboard'
+import { NavigationCoords, useKeyboard } from './keyboard'
 import { StretchMode } from './types'
 import { useMergeCells } from './mergeCells'
 import { useHeaders } from './columnGrid'
@@ -18,6 +18,7 @@ import {
   CELL_CLICK,
   CELL_DOUBLE_CLICK,
   useApiExtends,
+  GridApi,
 } from './api'
 
 import { makeStyles } from '@material-ui/core/styles'
@@ -28,7 +29,7 @@ import { useSort } from './sort/useSort'
 import { useLogger } from './logger'
 import { isFunctionType } from './helpers'
 
-import { useNestedRows } from './nestedRows'
+import { NestedRowsProps, useNestedRows } from './nestedRows'
 
 const useStyles = makeStyles(() => ({
   root: {
@@ -93,7 +94,7 @@ export const ApolloSpreadSheet = forwardRef(
         rowIndex: 0,
         colIndex: 0,
       },
-      suppressControls: props.suppressNavigation || !gridFocused,
+      suppressControls: props.suppressNavigation ?? !gridFocused,
       onCellChange: props.onCellChange,
       onCreateRow: props.onCreateRow,
       apiRef,
@@ -151,7 +152,14 @@ export const ApolloSpreadSheet = forwardRef(
 
     useApiEventHandler(apiRef, CELL_CLICK, onCellMouseHandler)
     useApiEventHandler(apiRef, CELL_DOUBLE_CLICK, onCellMouseHandler)
-    useApiExtends(apiRef, { clearFocus }, 'CoreApi')
+    const rootApiMethods: Partial<GridApi> = { clearFocus }
+    useApiExtends(apiRef, rootApiMethods, 'CoreApi')
+    const nestedRowsProps: NestedRowsProps = {
+      nestedRows: nestedRowsEnabled,
+      nestedRowMargin: props.nestedRowMargin,
+      defaultExpandedIds: props.defaultExpandedIds,
+      iconRenderer: props.iconRenderer,
+    }
 
     return (
       <ClickAwayListener onClickAway={onClickAway}>
@@ -198,12 +206,7 @@ export const ApolloSpreadSheet = forwardRef(
                   mergeCells={mergedCells}
                   mergedPositions={mergedPositions}
                   isMerged={isMerged}
-                  nestedRowsProps={{
-                    nestedRows: nestedRowsEnabled,
-                    nestedRowMargin: props.nestedRowMargin,
-                    defaultExpandedIds: props.defaultExpandedIds,
-                    iconRenderer: props.iconRenderer,
-                  }}
+                  nestedRowsProps={nestedRowsProps}
                 />
               </div>
             )}

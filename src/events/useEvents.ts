@@ -65,7 +65,7 @@ export function useEvents(gridRootRef: React.RefObject<HTMLDivElement>, apiRef: 
         capture: true,
       })
 
-      gridRootRef.current.addEventListener('keydown', keyDownHandler)
+      document.addEventListener('keydown', keyDownHandler)
 
       // eslint-disable-next-line no-param-reassign
       apiRef.current.isInitialised = true
@@ -77,7 +77,7 @@ export function useEvents(gridRootRef: React.RefObject<HTMLDivElement>, apiRef: 
         gridRootElem.removeEventListener('dblclick', handleClickOrDoubleClickEvent, {
           capture: true,
         })
-        gridRootElem.removeEventListener('keydown', keyDownHandler)
+        document.removeEventListener('keydown', keyDownHandler)
         api.removeAllListeners()
       }
     }
