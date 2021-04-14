@@ -93,16 +93,12 @@ const GridWrapper: React.FC<GridWrapperProps> = React.memo(
     }, [logger])
 
     const recomputeSizes = useCallback((hasFixedRowHeight: boolean) => {
-      if (!hasFixedRowHeight) {
-        loggerRef.current.debug('Recomputing sizes.')
-        cacheRef.current.clearAll()
-        gridRef.current?.recomputeGridSize()
-      } else {
-        loggerRef.current.debug('Skipping size re-computation with fixed row height')
-      }
+      loggerRef.current.debug('Recomputing sizes.', { hasFixedRowHeight })
+      cacheRef.current.clearAll()
+      gridRef.current?.recomputeGridSize()
 
       /**
-       * @todo Review because this might be the troublecauser related to checkbox selection
+       * @todo Review because this might be the troublemaker related to checkbox selection
        */
       //Ensure we do have a valid index range (and if so we can scroll to that cell)
       if (coordsRef.current.rowIndex !== -1 && coordsRef.current.colIndex !== -1) {

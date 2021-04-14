@@ -27,6 +27,7 @@ const useStyles = makeStyles(() => ({
     },
   },
 }))
+
 export const TextEditor = forwardRef(
   (
     {
@@ -89,33 +90,40 @@ export const TextEditor = forwardRef(
       stopEditing({ save: false })
     }
 
+    const containerStyles: CSSProperties = {
+      width: anchorStyle.width,
+      minHeight: anchorStyle.height,
+    }
+
+    const PaperProps = {
+      style: {
+        overflow: 'hidden',
+        zIndex: 10,
+        border: isValidValue ? anchorStyle.border : '1px solid red',
+        borderRadius: 0,
+        background: 'transparent',
+      },
+    }
+
+    const transitionProps = { timeout: 0 }
+    /**
+     * @todo Consider re-strutting this component and create some wrapper HoC that we can re-use
+     * and use Popper instead for total positioning
+     * @todo Might be not worth using for Text/Numeric a popper/popover and just use the exact same position (top,left,right)
+     */
     return (
       <Popover
         id={'editor-portal'}
         anchorEl={anchorRef}
         open
         elevation={0}
-        TransitionProps={{ timeout: 0 }}
+        TransitionProps={transitionProps}
         onClose={onEditorPortalClose}
         marginThreshold={0}
         disableRestoreFocus
-        PaperProps={{
-          style: {
-            overflow: 'hidden',
-            zIndex: 10,
-            border: isValidValue ? anchorStyle.border : '1px solid red',
-            borderRadius: 0,
-            background: 'transparent',
-          },
-        }}
+        PaperProps={PaperProps}
       >
-        <div
-          id="editor-container"
-          style={{
-            width: anchorStyle.width,
-            minHeight: anchorStyle.height,
-          }}
-        >
+        <div id="editor-container" style={containerStyles}>
           <TextareaAutosize
             {...(additionalProps?.componentProps as React.HTMLAttributes<any>)}
             id={'apollo-textarea'}
