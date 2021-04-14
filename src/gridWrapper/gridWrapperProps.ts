@@ -13,8 +13,10 @@ import {
 } from '../ApolloSpreadsheetProps'
 import { MergePosition } from '../mergeCells'
 
-export type DisableSortFilter = (column: Column) => boolean | boolean
-export type OutsideClickDeselect = (target: HTMLElement) => boolean | boolean
+export type DisableSortFilterCallback = (column: Column) => boolean
+export type OutsideClickDeselectCallback = (target: HTMLElement) => boolean
+export type DisableSortFilter = boolean | DisableSortFilterCallback
+export type OutsideClickDeselect = boolean | OutsideClickDeselectCallback
 
 export interface GridWrapperProps
   extends Pick<ApolloDataProps, 'rows' | 'columns' | 'mergeCells'>,
