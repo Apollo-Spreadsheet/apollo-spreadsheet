@@ -51,8 +51,7 @@ const GridWrapper = React.memo(
     ...props
   }: GridWrapperProps) => {
     const logger = useLogger(GridWrapper.name)
-    /** @todo I might need to re-validate or recreate the cache cell measurer when any of this props change **/
-    const cacheParams: CellMeasurerCacheParams = useMemo(() => {
+    const cache: CellMeasurerCache = useMemo(() => {
       const isFixedCellHeight = props.fixedRowHeight && props.rowHeight
       const options: CellMeasurerCacheParams = {
         defaultWidth: props.defaultColumnWidth,
@@ -65,7 +64,7 @@ const GridWrapper = React.memo(
       if (isFixedCellHeight) {
         options.keyMapper = () => 1
       }
-      return options
+      return new CellMeasurerCache(options)
     }, [
       props.defaultColumnWidth,
       props.fixedRowHeight,
@@ -74,26 +73,36 @@ const GridWrapper = React.memo(
       props.rowHeight,
     ])
 
-    const cache = useRef(new CellMeasurerCache(cacheParams)).current
+    const cacheRef = useRef<CellMeasurerCache>(cache)
 
     const classes = useStyles()
     const gridRef = useRef<VirtualizedGrid | null>(null)
     const recomputingTimeout = useRef<NodeJS.Timeout | undefined>(undefined)
+    const loggerRef = useRef(logger)
+    const currentCoordsRef = useRef(coords)
+
+    useEffect(() => {
+      currentCoordsRef.current = coords
+    }, [coords])
+
+    useEffect(() => {
+      loggerRef.current = logger
+    }, [logger])
 
     const recomputeSizes = useCallback(() => {
-      logger.debug('Recomputing sizes.')
-      cache?.clearAll()
+      loggerRef.current.debug('Recomputing sizes.')
+      cacheRef.current.clearAll()
       gridRef.current?.recomputeGridSize()
 
       //Ensure we do have a valid index range
-      if (coords.rowIndex !== -1 && coords.colIndex !== -1) {
+      if (currentCoordsRef.current.rowIndex !== -1 && currentCoordsRef.current.colIndex !== -1) {
         //When the re-computation happens the scroll position is affected and gets reset
         gridRef.current?.scrollToCell({
-          columnIndex: coords.colIndex,
-          rowIndex: coords.rowIndex,
+          columnIndex: currentCoordsRef.current.colIndex,
+          rowIndex: currentCoordsRef.current.rowIndex,
         })
       }
-    }, [logger, cache, coords])
+    }, [])
 
     function recomputingCleanup() {
       if (recomputingTimeout.current) {
@@ -101,14 +110,26 @@ const GridWrapper = React.memo(
       }
     }
 
-    // clear cache and recompute when data changes
+    /** @todo We might need to perform some benchmark tests and ensure its not spamming **/
+    // clear cache and recompute when any dependency change
     useEffect(() => {
       if (recomputingTimeout.current) {
         clearTimeout(recomputingTimeout.current)
       }
       recomputingTimeout.current = setTimeout(recomputeSizes, 100)
       return recomputingCleanup
-    }, [data, props.width, props.height, recomputeSizes])
+    }, [
+      //If any of those dependencies change we might need to recompute the sizes
+      data,
+      props.width,
+      props.height,
+      props.defaultColumnWidth,
+      props.fixedRowHeight,
+      props.fixedRowWidth,
+      props.minRowHeight,
+      props.rowHeight,
+      recomputeSizes,
+    ])
 
     const activeRowPathCoordinates = useMemo(() => {
       const coordinates: NavigationCoords[] = []
