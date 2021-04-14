@@ -280,7 +280,7 @@ export function useKeyboard({
         logger.error(`[handleCellCut] ${ex}`)
       }
     },
-    [coords, onCellChange],
+    [coords, logger, onCellChange],
   )
 
   const handleEditorOpenControls = useCallback(
@@ -332,7 +332,7 @@ export function useKeyboard({
         return handleCellPaste(column, row, currentValue)
       }
     },
-    [handleCellCut, handleCellPaste],
+    [handleCellCut, handleCellPaste, logger],
   )
 
   /** @todo Might need to consider colSpan **/
