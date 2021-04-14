@@ -94,7 +94,7 @@ export const ApolloSpreadSheet = forwardRef(
         rowIndex: 0,
         colIndex: 0,
       },
-      suppressControls: props.suppressNavigation ?? !gridFocused,
+      suppressControls: props.suppressNavigation || !gridFocused,
       onCellChange: props.onCellChange,
       onCreateRow: props.onCreateRow,
       apiRef,
