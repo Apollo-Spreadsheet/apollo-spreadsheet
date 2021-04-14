@@ -36,11 +36,11 @@ export interface ColumnRendererProps<Key = string, Metadata = any> {
   className: string
 }
 
-export type ICellRenderer = (cellProps: CellRendererProps) => JSX.Element
+export type ICellRenderer = (cellProps: CellRendererProps) => JSX.Element | React.ReactNode
 export type IHeaderRenderer<Key = string, Metadata = any> = (
   column: ColumnRendererProps<Key, Metadata>,
 ) => React.ReactNode | JSX.Element
-export type ICellEditor = (cellProps: CellEditorProps) => JSX.Element
+export type ICellEditor = (cellProps: CellEditorProps) => JSX.Element | React.ReactNode
 
 export enum ColumnCellType {
   TextArea,
