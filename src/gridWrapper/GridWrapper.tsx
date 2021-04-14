@@ -15,7 +15,7 @@ import { StretchMode } from '../types'
 import { useLogger } from '../logger'
 import KeyboardArrowRightIcon from '@material-ui/icons/KeyboardArrowRight'
 import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown'
-import { createCellQueryProperties } from '../keyboard/querySelector.helper'
+import { createCellQueryProperties } from '../keyboard/utils'
 
 const useStyles = makeStyles(() => ({
   bodyContainer: {

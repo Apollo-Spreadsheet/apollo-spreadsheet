@@ -1,4 +1,4 @@
-import { NavigationCoords } from './types'
+import { NavigationCoords } from '../types'
 
 type CellQueryRole = 'columnheader' | 'cell'
 interface CreateCellQueryProperties extends NavigationCoords {

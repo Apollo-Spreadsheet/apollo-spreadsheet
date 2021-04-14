@@ -1,7 +1,7 @@
 import React, { forwardRef, useCallback, useRef, useState } from 'react'
 import GridWrapper from './gridWrapper/GridWrapper'
 import ColumnGrid from './columnGrid/ColumnGrid'
-import { useKeyboardControls } from './keyboard'
+import { useKeyboard } from './keyboard'
 import { StretchMode } from './types'
 import { useMergeCells } from './mergeCells'
 import { useHeaders } from './columnGrid'
@@ -88,7 +88,7 @@ export const ApolloSpreadSheet = forwardRef(
     })
     const sort = useSort(apiRef)
 
-    const coords = useKeyboardControls({
+    const coords = useKeyboard({
       defaultCoords: props.defaultCoords ?? {
         rowIndex: 0,
         colIndex: 0,

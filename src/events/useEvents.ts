@@ -1,12 +1,11 @@
 import React, { useCallback, useEffect } from 'react'
-import { ApiRef } from '../api/types'
-import { CELL_CLICK, CELL_DOUBLE_CLICK } from '../api'
+import { ApiRef, CELL_CLICK, CELL_DOUBLE_CLICK } from '../api'
 import { useLogger } from '../logger'
 import {
   createCoordsParseWarning,
   getCellCoordinatesFromDOMElement,
   isCellElement,
-} from '../keyboard/querySelector.helper'
+} from '../keyboard/utils'
 import { NavigationCoords } from '../keyboard'
 import { CellClickOrDoubleClickEventParams } from '../keyboard/types/cell-click-double-params'
 
@@ -66,7 +65,7 @@ export function useEvents(gridRootRef: React.RefObject<HTMLDivElement>, apiRef: 
         capture: true,
       })
 
-      document.addEventListener('keydown', keyDownHandler)
+      gridRootRef.current.addEventListener('keydown', keyDownHandler)
 
       // eslint-disable-next-line no-param-reassign
       apiRef.current.isInitialised = true
@@ -78,7 +77,7 @@ export function useEvents(gridRootRef: React.RefObject<HTMLDivElement>, apiRef: 
         gridRootElem.removeEventListener('dblclick', handleClickOrDoubleClickEvent, {
           capture: true,
         })
-        document.removeEventListener('keydown', keyDownHandler)
+        gridRootElem.removeEventListener('keydown', keyDownHandler)
         api.removeAllListeners()
       }
     }

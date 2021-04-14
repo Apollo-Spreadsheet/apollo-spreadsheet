@@ -1,14 +1,20 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react'
-import { isIndexOutOfBoundaries, isMetaKey, isPrintableChar } from './navigation.utils'
+import {
+  isIndexOutOfBoundaries,
+  isMetaKey,
+  isPrintableChar,
+  createCellQuerySelector,
+  getDefaultValueFromValue,
+  createSelectorElementNotFoundWarning,
+} from './utils'
 import { NavigationCoords } from './types'
 import { isFunctionType } from '../helpers'
-import { CellChangeParams } from '../editorManager'
+import { CellChangeParams, NavigationKey } from '../editorManager'
 import * as clipboardy from 'clipboardy'
-import { ColumnCellType, Column } from '../columnGrid/types'
+import { ColumnCellType, Column } from '../columnGrid'
 import dayjs from 'dayjs'
 import { ROW_SELECTION_HEADER_ID } from '../rowSelection'
 import { debounce, DebouncedFunc } from 'lodash'
-import { NavigationKey } from '../editorManager/enums'
 import {
   CELL_BEGIN_EDITING,
   CELL_CLICK,
@@ -23,12 +29,7 @@ import {
 import { Row } from '../types'
 import { useLogger } from '../logger'
 import { resolveDynamicOrBooleanCallback } from '../helpers/resolveDynamicOrBooleanCallback'
-import {
-  createCellQuerySelector,
-  createSelectorElementNotFoundWarning,
-} from './querySelector.helper'
 import { CellClickOrDoubleClickEventParams } from './types/cell-click-double-params'
-import { getDefaultValueFromValue } from './getDefaultValueFromValue.util'
 
 interface Props {
   defaultCoords: NavigationCoords
@@ -43,7 +44,7 @@ export interface KeyDownEventParams {
   event: KeyboardEvent | React.KeyboardEvent
 }
 
-export function useKeyboardControls({
+export function useKeyboard({
   defaultCoords,
   suppressControls,
   onCellChange,
@@ -51,7 +52,7 @@ export function useKeyboardControls({
   apiRef,
   initialised,
 }: Props): NavigationCoords {
-  const logger = useLogger('useKeyboardControls')
+  const logger = useLogger(useKeyboard.name)
   const coordsRef = useRef<NavigationCoords>(defaultCoords)
   const [coords, setCoords] = useState<NavigationCoords>(defaultCoords)
   const delayEditorDebounce = useRef<DebouncedFunc<any> | null>(null)
@@ -63,7 +64,7 @@ export function useKeyboardControls({
   }, [])
 
   const onRowsChanged = useCallback(
-    ({ rows }: { rows: unknown[] }) => {
+    ({ rows }: { rows: Row[] }) => {
       const target = rows[coordsRef.current.rowIndex]
       if (!target) {
         coordsRef.current = defaultCoords
