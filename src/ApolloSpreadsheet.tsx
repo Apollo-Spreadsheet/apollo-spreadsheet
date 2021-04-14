@@ -7,7 +7,7 @@ import { useMergeCells } from './mergeCells'
 import { useHeaders } from './columnGrid'
 import { useData } from './data'
 import { useRowSelection } from './rowSelection'
-import { ClickAwayListener, NoSsr, useForkRef } from '@material-ui/core'
+import { ClickAwayListener, useForkRef } from '@material-ui/core'
 import { useEditorManager } from './editorManager'
 import { createPortal } from 'react-dom'
 import { GridContainer } from './gridContainer'
@@ -163,58 +163,56 @@ export const ApolloSpreadSheet = forwardRef(
 
     return (
       <ClickAwayListener onClickAway={onClickAway}>
-        <NoSsr>
-          <div ref={forkedRef} className={classes.root}>
-            <GridContainer
-              columns={columns}
-              minColumnWidth={minColumnWidth}
-              stretchMode={props.stretchMode ?? StretchMode.All}
-              containerClassName={props.containerClassName}
-              apiRef={apiRef}
-            >
-              {({ scrollLeft, onScroll, getColumnWidth, width, height }) => (
-                <div id="apollo-grids" className={props.className}>
-                  <ColumnGrid
-                    {...props}
-                    data={gridHeaders}
-                    coords={coords}
-                    columns={columns}
-                    width={width}
-                    defaultColumnWidth={minColumnWidth}
-                    getColumnWidth={getColumnWidth}
-                    minRowHeight={props.minColumnHeight ?? 50}
-                    scrollLeft={scrollLeft}
-                    apiRef={apiRef}
-                    sort={sort}
-                    nestedRowsEnabled={nestedRowsEnabled}
-                  />
-                  <GridWrapper
-                    {...props}
-                    rows={rows}
-                    data={cells}
-                    coords={coords}
-                    defaultColumnWidth={minColumnWidth}
-                    width={width}
-                    getColumnWidth={getColumnWidth}
-                    minRowHeight={props.minRowHeight ?? 50}
-                    scrollLeft={scrollLeft}
-                    onScroll={onScroll}
-                    height={height}
-                    columnCount={columns.length}
-                    columns={columns}
-                    stretchMode={props.stretchMode ?? StretchMode.All}
-                    apiRef={apiRef}
-                    mergeCells={mergedCells}
-                    mergedPositions={mergedPositions}
-                    isMerged={isMerged}
-                    nestedRowsProps={nestedRowsProps}
-                  />
-                </div>
-              )}
-            </GridContainer>
-            {editorNode && createPortal(editorNode, document.body)}
-          </div>
-        </NoSsr>
+        <div ref={forkedRef} className={classes.root}>
+          <GridContainer
+            columns={columns}
+            minColumnWidth={minColumnWidth}
+            stretchMode={props.stretchMode ?? StretchMode.All}
+            containerClassName={props.containerClassName}
+            apiRef={apiRef}
+          >
+            {({ scrollLeft, onScroll, getColumnWidth, width, height }) => (
+              <div id="apollo-grids" className={props.className}>
+                <ColumnGrid
+                  {...props}
+                  data={gridHeaders}
+                  coords={coords}
+                  columns={columns}
+                  width={width}
+                  defaultColumnWidth={minColumnWidth}
+                  getColumnWidth={getColumnWidth}
+                  minRowHeight={props.minColumnHeight ?? 50}
+                  scrollLeft={scrollLeft}
+                  apiRef={apiRef}
+                  sort={sort}
+                  nestedRowsEnabled={nestedRowsEnabled}
+                />
+                <GridWrapper
+                  {...props}
+                  rows={rows}
+                  data={cells}
+                  coords={coords}
+                  defaultColumnWidth={minColumnWidth}
+                  width={width}
+                  getColumnWidth={getColumnWidth}
+                  minRowHeight={props.minRowHeight ?? 50}
+                  scrollLeft={scrollLeft}
+                  onScroll={onScroll}
+                  height={height}
+                  columnCount={columns.length}
+                  columns={columns}
+                  stretchMode={props.stretchMode ?? StretchMode.All}
+                  apiRef={apiRef}
+                  mergeCells={mergedCells}
+                  mergedPositions={mergedPositions}
+                  isMerged={isMerged}
+                  nestedRowsProps={nestedRowsProps}
+                />
+              </div>
+            )}
+          </GridContainer>
+          {editorNode && createPortal(editorNode, document.body)}
+        </div>
       </ClickAwayListener>
     )
   },
