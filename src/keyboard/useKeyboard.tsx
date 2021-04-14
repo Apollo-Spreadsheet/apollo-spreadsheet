@@ -213,6 +213,7 @@ export function useKeyboard({
   const handleCellPaste = useCallback(
     async (column: Column, row: Row, currentValue: unknown) => {
       try {
+        logger.debug('[handleCellPaste] Reading value from clipboard')
         let text = await clipboardy.read()
         //Check the text length if passes the maxLength allowed, if so we cut
         if (column.maxLength && text.length > column.maxLength) {
@@ -259,7 +260,7 @@ export function useKeyboard({
 
         return onCellChange?.({ coords, previousValue: currentValue, newValue: text, column, row })
       } catch (ex) {
-        logger.error(`handleCellPaste -> ${ex}`)
+        logger.error(`[handleCellPaste] ${ex}`)
       }
     },
     [coords, logger, onCellChange],
@@ -267,12 +268,17 @@ export function useKeyboard({
 
   const handleCellCut = useCallback(
     async (currentValue: unknown, column: Column, row: Row) => {
-      await clipboardy.write(String(currentValue))
-      const newValue = getDefaultValueFromValue(currentValue)
-      if (currentValue === newValue) {
-        return
+      try {
+        logger.debug(`[handleCellCut] Cutting ${String(currentValue)} to clipboard`)
+        await clipboardy.write(String(currentValue))
+        const newValue = getDefaultValueFromValue(currentValue)
+        if (currentValue === newValue) {
+          return
+        }
+        onCellChange?.({ coords, previousValue: currentValue, newValue, column, row })
+      } catch (ex) {
+        logger.error(`[handleCellCut] ${ex}`)
       }
-      onCellChange?.({ coords, previousValue: currentValue, newValue, column, row })
     },
     [coords, onCellChange],
   )
@@ -306,7 +312,13 @@ export function useKeyboard({
       }
       if (event.key === 'c') {
         event.preventDefault()
-        return clipboardy.write(String(currentValue))
+        try {
+          logger.debug(`[handlePaste] Pasting ${String(currentValue)} to clipboard`)
+          return clipboardy.write(String(currentValue))
+        } catch (ex) {
+          logger.error(`[handlePaste]: ${ex}`)
+          return
+        }
       }
 
       if (event.key === 'v') {
