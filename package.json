@@ -41,6 +41,7 @@
   "dependencies": {
     "clipboardy": "^2.3.0",
     "clsx": "^1.1.1",
+    "copy-to-clipboard": "^3.3.1",
     "dayjs": "^1.9.1",
     "dequal": "^2.0.2",
     "dom-helpers": "^5.2.0",

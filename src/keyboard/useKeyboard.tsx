@@ -10,7 +10,8 @@ import {
 import { NavigationCoords } from './types'
 import { isFunctionType } from '../helpers'
 import { NavigationKey } from '../editorManager'
-import * as clipboardy from 'clipboardy'
+import { read as readClipboard } from 'clipboardy'
+import copyToClipboard from 'copy-to-clipboard'
 import { ColumnCellType, Column } from '../columnGrid'
 import dayjs from 'dayjs'
 import { ROW_SELECTION_HEADER_ID } from '../rowSelection'
@@ -216,7 +217,7 @@ export function useKeyboard({
       const editingSource = 'paste'
       try {
         logger.debug('[handleCellPaste] Reading value from clipboard')
-        let text = await clipboardy.read()
+        let text = await readClipboard()
         //Check the text length if passes the maxLength allowed, if so we cut
         if (column.maxLength && text.length > column.maxLength) {
           text = text.slice(0, column.maxLength)
@@ -284,12 +285,18 @@ export function useKeyboard({
     async (currentValue: unknown, column: Column, row: Row) => {
       try {
         logger.debug(`[handleCellCut] Cutting ${String(currentValue)} to clipboard`)
-        await clipboardy.write(String(currentValue))
-        const newValue = getDefaultValueFromValue(currentValue)
-        if (currentValue === newValue) {
-          return
-        }
-        onCellChange?.({ coords, previousValue: currentValue, newValue, column, row }, 'cut')
+        //  await clipboardy.write(String(currentValue))
+        copyToClipboard(String(currentValue), {
+          debug: process.env.NODE_ENV === 'development',
+          onCopy: () => {
+            logger.info(`${String(currentValue)} has been copied to clipboard`)
+            const newValue = getDefaultValueFromValue(currentValue)
+            if (currentValue === newValue) {
+              return
+            }
+            onCellChange?.({ coords, previousValue: currentValue, newValue, column, row }, 'cut')
+          },
+        })
       } catch (ex) {
         logger.error(`[handleCellCut] ${ex}`)
       }
@@ -327,10 +334,16 @@ export function useKeyboard({
       if (event.key === 'c') {
         event.preventDefault()
         try {
-          logger.debug(`[handlePaste] Pasting ${String(currentValue)} to clipboard`)
-          return clipboardy.write(String(currentValue))
+          logger.debug(`[handleCopy] Pasting ${String(currentValue)} to clipboard`)
+          //return clipboardy.write(String(currentValue))
+          return copyToClipboard(String(currentValue), {
+            debug: process.env.NODE_ENV === 'development',
+            onCopy: () => {
+              logger.info(`[handleCopy] ${String(currentValue)} has been copied to clipboard`)
+            },
+          })
         } catch (ex) {
-          logger.error(`[handlePaste]: ${ex}`)
+          logger.error(`[handleCopy]: ${ex}`)
           return
         }
       }
