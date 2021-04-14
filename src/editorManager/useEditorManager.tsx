@@ -125,16 +125,19 @@ export function useEditorManager({ onCellChange, apiRef }: EditorManagerProps) {
               `Column not found at ${editorState.colIndex} when attempting to invoke onCellChange`,
             )
           } else {
-            onCellChange?.({
-              coords: {
-                rowIndex: editorState.rowIndex,
-                colIndex: editorState.colIndex,
+            onCellChange?.(
+              {
+                coords: {
+                  rowIndex: editorState.rowIndex,
+                  colIndex: editorState.colIndex,
+                },
+                previousValue: editorState.initialValue,
+                newValue,
+                row,
+                column,
               },
-              previousValue: editorState.initialValue,
-              newValue,
-              row,
-              column,
-            })
+              'editor',
+            )
           }
         }
       }
