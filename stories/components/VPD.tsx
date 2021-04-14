@@ -185,11 +185,11 @@ export function VPD() {
       <ApolloSpreadSheet
         columns={headers}
         rows={rows}
-        minColumnWidth={30}
         disableSort={disableSort}
         overscanRowCount={20}
         fixedRowHeight
         fixedRowWidth
+        rowHeight={40}
         nestedHeaders={nestedHeaders}
       />
     </Box>

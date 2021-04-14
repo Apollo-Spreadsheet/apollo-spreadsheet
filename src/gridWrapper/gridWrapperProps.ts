@@ -17,6 +17,9 @@ export interface OutsideClickDeselectCallback {
 }
 
 export interface GridWrapperProps<TRow = any> extends GridWrapperCommonProps {
+  /**
+   * Defines the min row height but if the rowHeight property is defined this will be ignored
+   */
   minRowHeight: number
   defaultColumnWidth: number
   width: number

@@ -2,7 +2,7 @@ import React, { forwardRef, useCallback, useEffect, useRef, useState } from 'rea
 import GridWrapper from './gridWrapper/GridWrapper'
 import ColumnGrid from './columnGrid/ColumnGrid'
 import { NavigationCoords, useKeyboard } from './keyboard'
-import { StretchMode } from './types'
+import { Row, StretchMode } from './types'
 import { useMergeCells } from './mergeCells'
 import { useHeaders } from './columnGrid'
 import { useData } from './data'
@@ -39,9 +39,9 @@ const useStyles = makeStyles(() => ({
   fixedBottomContainer: {},
 }))
 
-export const ApolloSpreadSheet = forwardRef(
-  (props: ApolloSpreadsheetProps, componentRef: React.Ref<HTMLDivElement>) => {
-    const logger = useLogger('ApolloSpreadSheet')
+export const ApolloSpreadSheet: React.FC<ApolloSpreadsheetProps> = forwardRef(
+  (props, componentRef: React.Ref<HTMLDivElement>) => {
+    const logger = useLogger(ApolloSpreadSheet.name)
     const classes = useStyles()
     const minColumnWidth = props.minColumnWidth ?? 30
     const [gridFocused, setGridFocused] = useState(true)

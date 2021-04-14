@@ -1,11 +1,12 @@
 import React, { CSSProperties, useCallback, useEffect, useMemo, useRef } from 'react'
 import {
   CellMeasurerCache,
+  CellMeasurerCacheParams,
   Grid as VirtualizedGrid,
   SectionRenderedParams,
 } from 'react-virtualized'
-import CellMeasurer from '../cellMeasurer/CellMeasureWrapper'
-import { NavigationCoords } from '../keyboard'
+import CellMeasureWrapper from '../cellMeasurer/CellMeasureWrapper'
+import { NavigationCoords, createCellQueryProperties } from '../keyboard'
 import clsx from 'clsx'
 import { GridCellProps } from 'react-virtualized/dist/es/Grid'
 import { MeasurerRendererProps } from '../cellMeasurer'
@@ -15,7 +16,6 @@ import { StretchMode } from '../types'
 import { useLogger } from '../logger'
 import KeyboardArrowRightIcon from '@material-ui/icons/KeyboardArrowRight'
 import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown'
-import { createCellQueryProperties } from '../keyboard/utils'
 
 const useStyles = makeStyles(() => ({
   bodyContainer: {
@@ -50,17 +50,31 @@ const GridWrapper = React.memo(
     coords,
     ...props
   }: GridWrapperProps) => {
-    const logger = useLogger('GridWrapper')
-    const cache = useRef(
-      new CellMeasurerCache({
+    const logger = useLogger(GridWrapper.name)
+    /** @todo I might need to re-validate or recreate the cache cell measurer when any of this props change **/
+    const cacheParams: CellMeasurerCacheParams = useMemo(() => {
+      const isFixedCellHeight = props.fixedRowHeight && props.rowHeight
+      const options: CellMeasurerCacheParams = {
         defaultWidth: props.defaultColumnWidth,
-        defaultHeight: props.minRowHeight,
+        defaultHeight: isFixedCellHeight ? props.rowHeight : props.minRowHeight,
         fixedWidth: props.fixedRowWidth ?? true,
         fixedHeight: props.fixedRowHeight,
-        minHeight: props.minRowHeight,
+        minHeight: isFixedCellHeight ? undefined : props.minRowHeight,
         minWidth: props.defaultColumnWidth,
-      }),
-    ).current
+      }
+      if (isFixedCellHeight) {
+        options.keyMapper = () => 1
+      }
+      return options
+    }, [
+      props.defaultColumnWidth,
+      props.fixedRowHeight,
+      props.fixedRowWidth,
+      props.minRowHeight,
+      props.rowHeight,
+    ])
+
+    const cache = useRef(new CellMeasurerCache(cacheParams)).current
 
     const classes = useStyles()
     const gridRef = useRef<VirtualizedGrid | null>(null)
@@ -68,7 +82,7 @@ const GridWrapper = React.memo(
 
     const recomputeSizes = useCallback(() => {
       logger.debug('Recomputing sizes.')
-      cache.clearAll()
+      cache?.clearAll()
       gridRef.current?.recomputeGridSize()
 
       //Ensure we do have a valid index range
@@ -310,9 +324,8 @@ const GridWrapper = React.memo(
           cell,
           getColumnWidth,
         }
-
         return cell ? (
-          <CellMeasurer
+          <CellMeasureWrapper
             cache={cache}
             columnIndex={columnIndex}
             key={key}

@@ -9,7 +9,7 @@ import {
 } from './utils'
 import { NavigationCoords } from './types'
 import { isFunctionType } from '../helpers'
-import { CellChangeParams, NavigationKey } from '../editorManager'
+import { NavigationKey } from '../editorManager'
 import * as clipboardy from 'clipboardy'
 import { ColumnCellType, Column } from '../columnGrid'
 import dayjs from 'dayjs'
@@ -30,11 +30,12 @@ import { Row } from '../types'
 import { useLogger } from '../logger'
 import { resolveDynamicOrBooleanCallback } from '../helpers/resolveDynamicOrBooleanCallback'
 import { CellClickOrDoubleClickEventParams } from './types/cell-click-double-params'
+import { ICellChangeEvent } from '../gridWrapper'
 
 interface Props {
   defaultCoords: NavigationCoords
   suppressControls: boolean
-  onCellChange?: (params: CellChangeParams) => void
+  onCellChange?: ICellChangeEvent
   onCreateRow?: (coords: NavigationCoords) => void
   apiRef: ApiRef
   initialised: boolean
@@ -212,6 +213,7 @@ export function useKeyboard({
 
   const handleCellPaste = useCallback(
     async (column: Column, row: Row, currentValue: unknown) => {
+      const editingSource = 'paste'
       try {
         logger.debug('[handleCellPaste] Reading value from clipboard')
         let text = await clipboardy.read()
@@ -222,43 +224,55 @@ export function useKeyboard({
 
         if (column.validatorHook) {
           if (column.validatorHook(text)) {
-            return onCellChange?.({
-              coords,
-              previousValue: currentValue,
-              newValue: text,
-              column,
-              row,
-            })
+            return onCellChange?.(
+              {
+                coords,
+                previousValue: currentValue,
+                newValue: text,
+                column,
+                row,
+              },
+              editingSource,
+            )
           }
           return
         }
         //Fallback is the column type
         if (column.type === ColumnCellType.Numeric) {
           if (!isNaN(Number(text))) {
-            return onCellChange?.({
-              coords,
-              previousValue: currentValue,
-              newValue: text,
-              column,
-              row,
-            })
+            return onCellChange?.(
+              {
+                coords,
+                previousValue: currentValue,
+                newValue: text,
+                column,
+                row,
+              },
+              editingSource,
+            )
           }
           return
         }
         if (column.type === ColumnCellType.Calendar) {
           if (dayjs(text, 'YYYY-MM-DD').format('YYYY-MM-DD') === text) {
-            return onCellChange?.({
-              coords,
-              previousValue: currentValue,
-              newValue: text,
-              column,
-              row,
-            })
+            return onCellChange?.(
+              {
+                coords,
+                previousValue: currentValue,
+                newValue: text,
+                column,
+                row,
+              },
+              editingSource,
+            )
           }
           return
         }
 
-        return onCellChange?.({ coords, previousValue: currentValue, newValue: text, column, row })
+        return onCellChange?.(
+          { coords, previousValue: currentValue, newValue: text, column, row },
+          editingSource,
+        )
       } catch (ex) {
         logger.error(`[handleCellPaste] ${ex}`)
       }
@@ -275,7 +289,7 @@ export function useKeyboard({
         if (currentValue === newValue) {
           return
         }
-        onCellChange?.({ coords, previousValue: currentValue, newValue, column, row })
+        onCellChange?.({ coords, previousValue: currentValue, newValue, column, row }, 'cut')
       } catch (ex) {
         logger.error(`[handleCellCut] ${ex}`)
       }
@@ -552,13 +566,16 @@ export function useKeyboard({
           return
         }
 
-        return onCellChange?.({
-          newValue,
-          previousValue: currentValue,
-          coords,
-          row,
-          column,
-        })
+        return onCellChange?.(
+          {
+            newValue,
+            previousValue: currentValue,
+            coords,
+            row,
+            column,
+          },
+          event.key === 'Backspace' ? 'backspace' : 'delete',
+        )
       }
 
       //If its numeric key and we are in numeric column, open with this key by default

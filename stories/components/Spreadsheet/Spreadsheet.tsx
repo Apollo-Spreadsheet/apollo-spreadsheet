@@ -1,18 +1,20 @@
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { Alignment } from 'react-virtualized'
+import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import { createMergeCellsData } from './createMergedCells'
-import { GridTheme } from '../../../src'
-import { CellChangeParams } from '../../../src'
-import { NavigationCoords } from '../../../src'
 import { orderBy } from 'lodash'
-import { Box, Button, Checkbox, FormControl, InputLabel, MenuItem, Select } from '@material-ui/core'
-import { ApolloSpreadSheet } from '../../../src'
-import { StretchMode } from '../../../src'
+import { Box } from '@material-ui/core'
 import { useTopCase } from './dataUseCases'
 import { makeStyles } from '@material-ui/core/styles'
-import { useApiRef } from '../../../src'
 import 'react-datepicker/dist/react-datepicker.css'
 import dump from './dump.json'
+import {
+  ApolloSpreadSheet,
+  CellChangeParams,
+  GridTheme,
+  NavigationCoords,
+  SelectionProps,
+  StretchMode,
+  useApiRef,
+} from '../../../src'
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -193,6 +195,12 @@ export function Spreadsheet() {
     setData(data.filter(e => !selectedRows.some(id => id === e.taskId)))
   }
 
+  const selection: SelectionProps = {
+    key: 'taskId',
+    checkboxClass: classes.checkBox,
+    onHeaderIconClick,
+  }
+
   return (
     <Box height={'calc(100vh - 100px)'} width={'99%'}>
       <ApolloSpreadSheet
@@ -208,11 +216,7 @@ export function Spreadsheet() {
         stretchMode={StretchMode.All}
         mergeCells={mergeCellsData}
         onCreateRow={createRow}
-        selection={{
-          key: 'taskId',
-          checkboxClass: classes.checkBox,
-          onHeaderIconClick,
-        }}
+        selection={selection}
         disableSort
       />
     </Box>

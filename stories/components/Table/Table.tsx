@@ -1,10 +1,9 @@
 import React, { useCallback, useState } from 'react'
-import { ApolloSpreadSheet, StretchMode } from '../../../src'
-import { Column } from '../../../src/columnGrid/types/header.type'
+import { ApolloSpreadSheet, StretchMode, Column, useApiRef, CellChangeParams } from '../../../src'
+
 import { AddCircle } from '@material-ui/icons'
 import { Box, IconButton } from '@material-ui/core'
-import { CellChangeParams } from '../../../src/editorManager/useEditorManager'
-import { useApiRef } from '../../../src/api/useApiRef'
+
 import faker from 'faker'
 import { makeStyles } from '@material-ui/core/styles'
 
@@ -50,7 +49,7 @@ export function Table() {
   function disableSort(header: Column) {
     return header.id === 'order'
   }
-  const onCellChange = (params: CellChangeParams) => {
+  const onCellChange = (params: CellChangeParams<DemoRow>) => {
     setRows(prev => {
       const updatedRows = [...prev]
       const header = headers[params.coords.colIndex]
@@ -141,14 +140,6 @@ export function Table() {
           cellClassName: classes.selectedCell,
         }}
         disableSort={disableSort}
-        // nestedHeaders={[
-        // 	[
-        // 		{
-        // 			title: 'Nested header example',
-        // 			colSpan: 5,
-        // 		},
-        // 	],
-        // ]}
       />
     </Box>
   )

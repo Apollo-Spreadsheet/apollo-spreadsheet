@@ -18,6 +18,7 @@ import clsx from 'clsx'
 import { useLogger } from '../logger'
 import { Row } from '../types'
 import valueEqual from 'value-equal'
+import { ICellChangeEvent } from '../gridWrapper'
 
 export interface StopEditingParams {
   /** @default true **/
@@ -38,16 +39,8 @@ export interface IEditorState {
   isPopup: boolean
 }
 
-export interface CellChangeParams<Row = unknown, ValueType = unknown> {
-  coords: NavigationCoords
-  previousValue: ValueType
-  newValue: ValueType
-  row: Row
-  column: Column
-}
-
-export interface EditorManagerProps<TRow = unknown> {
-  onCellChange?: (params: CellChangeParams<TRow>) => void
+export interface EditorManagerProps<T = Row> {
+  onCellChange?: ICellChangeEvent<T>
   apiRef: ApiRef
   initialised: boolean
 }
