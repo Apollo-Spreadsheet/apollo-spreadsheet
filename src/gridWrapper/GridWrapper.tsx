@@ -61,9 +61,14 @@ const GridWrapper = React.memo(
         minHeight: isFixedCellHeight ? undefined : props.minRowHeight,
         minWidth: props.defaultColumnWidth,
       }
+      /**
+       * Used to skip calculations in a faster way when we have fixed height
+       * @see https://github.com/bvaughn/react-virtualized/blob/master/docs/CellMeasurer.md
+       */
       if (isFixedCellHeight) {
         options.keyMapper = () => 1
       }
+
       return new CellMeasurerCache(options)
     }, [
       props.defaultColumnWidth,
