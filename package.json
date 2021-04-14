@@ -1,6 +1,6 @@
 {
   "name": "apollo-spreadsheet",
-  "version": "0.0.76",
+  "version": "0.0.77",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "description": "React excel like fast grid plugin",
@@ -48,8 +48,8 @@
     "clsx": "^1.1.1",
     "dayjs": "^1.9.1",
     "dequal": "^2.0.2",
-    "dotenv": "^8.2.0",
     "dom-helpers": "^5.2.0",
+    "dotenv": "^8.2.0",
     "lodash": "^4.17.20",
     "memoize-one": "^5.1.1",
     "react-datepicker": "^3.7.0",
