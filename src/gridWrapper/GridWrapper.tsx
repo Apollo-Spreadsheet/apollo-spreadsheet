@@ -92,11 +92,18 @@ const GridWrapper: React.FC<GridWrapperProps> = React.memo(
       loggerRef.current = logger
     }, [logger])
 
-    const recomputeSizes = useCallback(() => {
-      loggerRef.current.debug('Recomputing sizes.')
-      cacheRef.current.clearAll()
-      gridRef.current?.recomputeGridSize()
+    const recomputeSizes = useCallback((hasFixedRowHeight: boolean) => {
+      if (!hasFixedRowHeight) {
+        loggerRef.current.debug('Recomputing sizes.')
+        cacheRef.current.clearAll()
+        gridRef.current?.recomputeGridSize()
+      } else {
+        loggerRef.current.debug('Skipping size re-computation with fixed row height')
+      }
 
+      /**
+       * @todo Review because this might be the troublecauser related to checkbox selection
+       */
       //Ensure we do have a valid index range (and if so we can scroll to that cell)
       if (coordsRef.current.rowIndex !== -1 && coordsRef.current.colIndex !== -1) {
         //When the re-computation happens the scroll position is affected and gets reset
@@ -109,7 +116,7 @@ const GridWrapper: React.FC<GridWrapperProps> = React.memo(
 
     /** @todo We might need to perform some benchmark tests and ensure its not spamming **/
     useEffect(() => {
-      recomputeSizes()
+      recomputeSizes(Boolean(props.fixedRowHeight && props.rowHeight))
     }, [
       //If any of those dependencies change we might need to recompute the sizes
       data,
