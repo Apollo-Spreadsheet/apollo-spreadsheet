@@ -9,22 +9,25 @@ import styles from './styles.module.css'
 
 const features = [
   {
-    title: 'Easy to Use',
-    imageUrl: 'img/undraw_docusaurus_mountain.svg',
+    title: 'Our Spreadsheet',
+    imageUrl: 'img/apollo-spreadsheet-light.svg',
     description: (
       <>
-        Docusaurus was designed from the ground up to be easily installed and used to get your
-        website up and running quickly.
+      Apollo spreadsheet supports table and grids as it’s never been done, 
+      built using React hooks, styled-components, plus it’s fully written in Typescript!
       </>
     ),
   },
   {
-    title: 'Focus on What Matters',
-    imageUrl: 'img/undraw_docusaurus_tree.svg',
+    title: 'Why Apollo?',
+   imageUrl: 'img/undraw_docusaurus_mountain.svg',
     description: (
       <>
-        Docusaurus lets you focus on your docs, and we&apos;ll do the chores. Go ahead and move your
-        docs into the <code>docs</code> directory.
+      Apollo relies on React updates. 
+      It’s built using Typescript, it’s developer friendly, 
+      offers merge cells, immutability support, 
+      plus virtualizes the data at all cost avoiding 
+      unnecessary elements in the DOM
       </>
     ),
   },
@@ -61,7 +64,8 @@ function Home() {
 
   return (
     <Layout
-      title={`Hello from ${siteConfig.title}`}
+     // title={`Hello from ${siteConfig.title}`}
+     title={siteConfig.title}
       description="Description will go into a meta tag in <head />"
     >
       <div className={styles.hero}>

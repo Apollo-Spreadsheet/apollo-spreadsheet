@@ -1,19 +1,22 @@
+const { StylesContext } = require("@material-ui/styles");
+require('dotenv').config()
+
 module.exports = {
-  title: 'My Site',
-  tagline: 'The tagline of my site',
-  url: 'https://your-docusaurus-test-site.com',
+  title: 'Apollo Spreadsheet',
+  tagline: 'The most powerful out-of-the-box spreadsheet with full support to React',
+  url: 'https://apollo-docs.famousgadget.pt',
   baseUrl: '/',
   onBrokenLinks: 'throw',
   onBrokenMarkdownLinks: 'warn',
   favicon: 'img/favicon.ico',
-  organizationName: 'facebook', // Usually your GitHub org/user name.
-  projectName: 'docusaurus', // Usually your repo name.
+  organizationName: 'Famous Gadget', // Usually your GitHub org/user name.
+  projectName: 'apollo-spreadsheet', // Usually your repo name.
   themeConfig: {
     navbar: {
-      title: 'My Site',
+      title: 'Apollo Spreadsheet',
       logo: {
-        alt: 'My Site Logo',
-        src: 'img/logo.svg',
+        alt: 'Apollo logo',
+        src: 'img/apollo.svg',
       },
       items: [
         {
@@ -23,9 +26,11 @@ module.exports = {
           position: 'left',
         },
         {
-          href: 'https://github.com/facebook/docusaurus',
-          label: 'GitHub',
           position: 'right',
+          background: 'img/github.png',
+          label: 'GitHub',
+          href: 'https://github.com/underfisk/apollo-spreadsheet',
+          // imageUrl: 'img/github.png',
         },
       ],
     },
@@ -33,19 +38,11 @@ module.exports = {
       style: 'dark',
       links: [
         {
-          title: 'Community',
+          title: 'About Us',
           items: [
             {
-              label: 'Stack Overflow',
-              href: 'https://stackoverflow.com/questions/tagged/docusaurus',
-            },
-            {
-              label: 'Discord',
-              href: 'https://discordapp.com/invite/docusaurus',
-            },
-            {
-              label: 'Twitter',
-              href: 'https://twitter.com/docusaurus',
+              label: 'Famous Gadget',
+              href: 'https://famousgadget.pt/',
             },
           ],
         },
@@ -53,31 +50,57 @@ module.exports = {
           title: 'More',
           items: [
             {
-              label: 'Blog',
-              to: 'blog/',
+              label: 'Apollo',
+              href: 'https://apollo.famousgadget.pt/'
             },
             {
               label: 'GitHub',
-              href: 'https://github.com/facebook/docusaurus',
+              href: 'https://github.com/underfisk/apollo-spreadsheet',
+            },
+            {
+              label: 'README',
+              href: 'https://github.com/underfisk/apollo-spreadsheet#readme',
+            },
+          ],
+        },
+        {
+          title: 'Support',
+          items: [
+            {
+              label: 'GitHub Issues',
+              href: 'https://github.com/underfisk/apollo-spreadsheet/issues',
             },
           ],
         },
       ],
-      copyright: `Copyright © ${new Date().getFullYear()} My Project, Inc. Built with Docusaurus.`,
+      copyright: `Copyright © ${new Date().getFullYear()} Apollo Spreadsheet, Famous Gadget.`,
+    },
+    colorMode: {
+      defaultMode: 'dark',
+      disableSwitch: false,
+      respectPrefersColorScheme: false,
+      switchConfig: {
+        darkIcon: '🌙',
+        //lightIcon: '\u{1F602}',
+        lightIcon: '🌞',
+        lightIconStyle: {
+          marginLeft: '1px',
+        },
+      },
+    },
+    algolia: {
+      apiKey: process.env.API_KEY,
+      indexName: 'apollo-docs',
     },
   },
   presets: [
     [
-      '@docusaurus/preset-bootstrap',
+      //'@docusaurus/preset-bootstrap',
+      '@docusaurus/preset-classic',
       {
         docs: {
           sidebarPath: require.resolve('./sidebars.js'),
           editUrl: 'https://github.com/facebook/docusaurus/edit/master/website/',
-        },
-        blog: {
-          showReadingTime: true,
-          // Please change this to your repo.
-          editUrl: 'https://github.com/facebook/docusaurus/edit/master/website/blog/',
         },
       },
     ],
