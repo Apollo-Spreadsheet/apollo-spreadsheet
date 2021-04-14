@@ -8,6 +8,6 @@ import { useLogger } from '../logger'
  */
 export function useApiRef(): ApiRef {
   const logger = useLogger('useApiRef')
-  logger.debug('Initializing grid api with EventEmitter.')
+  logger.debug('Creating a new ApiRef as EventEmitter.')
   return useRef<GridApi>(new EventEmitter() as GridApi)
 }

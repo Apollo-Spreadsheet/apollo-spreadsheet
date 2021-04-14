@@ -5,8 +5,8 @@ import {
   createCoordsParseWarning,
   getCellCoordinatesFromDOMElement,
   isCellElement,
-} from '../keyboard/utils'
-import { NavigationCoords } from '../keyboard'
+  NavigationCoords,
+} from '../keyboard'
 import { CellClickOrDoubleClickEventParams } from '../keyboard/types/cell-click-double-params'
 
 export function useEvents(gridRootRef: React.RefObject<HTMLDivElement>, apiRef: ApiRef) {
@@ -78,6 +78,10 @@ export function useEvents(gridRootRef: React.RefObject<HTMLDivElement>, apiRef: 
           capture: true,
         })
         document.removeEventListener('keydown', keyDownHandler)
+        /**
+         * @todo Review the need of this
+         * i think replacing gridRootElem.removeAllListeners would make more sense
+         */
         api.removeAllListeners()
       }
     }

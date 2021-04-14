@@ -1,4 +1,4 @@
-import React, { forwardRef, useCallback, useRef, useState } from 'react'
+import React, { forwardRef, useCallback, useEffect, useRef, useState } from 'react'
 import GridWrapper from './gridWrapper/GridWrapper'
 import ColumnGrid from './columnGrid/ColumnGrid'
 import { useKeyboard } from './keyboard'
@@ -148,6 +148,14 @@ export const ApolloSpreadSheet: React.FC<ApolloSpreadsheetProps> = forwardRef(
         setGridFocused(true)
       }
     }, [gridFocused, logger])
+
+    // Clear every listener when component unmounts/apiRef changes
+    useEffect(() => {
+      const api = apiRef.current
+      return () => {
+        api.removeAllListeners()
+      }
+    }, [apiRef])
 
     useApiEventHandler(apiRef, CELL_CLICK, onCellMouseHandler)
     useApiEventHandler(apiRef, CELL_DOUBLE_CLICK, onCellMouseHandler)

@@ -77,6 +77,10 @@ export const CalendarEditor = forwardRef(
       return () => document.removeEventListener('keydown', onKeyDown)
     }, [onKeyDown, state])
 
+    const onChange = useCallback((date: Date) => {
+      setState({ value: dayjs(date), close: true })
+    }, [])
+
     return (
       <Popper
         open
@@ -94,9 +98,7 @@ export const CalendarEditor = forwardRef(
           showPopperArrow={false}
           shouldCloseOnSelect
           onClickOutside={() => stopEditing({ save: false })}
-          onChange={(date: Date) => {
-            setState({ value: dayjs(date), close: true })
-          }}
+          onChange={onChange}
           open
           inline
           selected={state.value.toDate()}

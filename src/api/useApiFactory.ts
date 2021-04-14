@@ -1,10 +1,9 @@
 /* eslint-disable no-param-reassign */
 import React, { useCallback, useEffect, useState } from 'react'
 import { useApiExtends } from './useApiExtends'
-import { ApiRef } from './types/apiRef'
+import { ApiRef, GridApi } from './types'
 import { GridTheme } from '../types'
 import { useLogger } from '../logger'
-import { GridApi } from './types'
 
 /**
  * Initializes a new api instance
@@ -47,16 +46,10 @@ export function useApiFactory(
     logger.debug('Initializing grid api.')
     apiRef.current.isInitialised = true
     apiRef.current.rootElementRef = gridRootRef
+    /** @todo Consider whether we should have a custom hook useTheme in order to delegate the update and sync **/
     apiRef.current.theme = theme
     apiRef.current.selectionKey = selectionKey ?? 'id'
-
     setInit(true)
-    const api = apiRef.current
-
-    return () => {
-      logger.debug('[Unmount] Clearing all events listeners')
-      api.removeAllListeners()
-    }
   }, [selectionKey, gridRootRef, apiRef, theme, logger])
 
   const apiMethods: Partial<GridApi> = { subscribeEvent, dispatchEvent: publishEvent }
