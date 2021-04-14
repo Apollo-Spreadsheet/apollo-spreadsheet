@@ -1,6 +1,6 @@
 {
   "name": "apollo-spreadsheet",
-  "version": "0.0.77",
+  "version": "0.0.78",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "description": "React excel like fast grid plugin",
@@ -51,12 +51,11 @@
     "value-equal": "^1.0.1"
   },
   "devDependencies": {
+    "@babel/preset-typescript": "^7.10.4",
     "@docusaurus/core": "2.0.0-alpha.49",
     "@docusaurus/preset-classic": "^2.0.0-alpha.72",
     "@docusaurus/theme-classic": "^2.0.0-alpha.72",
     "@docusaurus/theme-search-algolia": "^2.0.0-alpha.72",
-    "dotenv": "^8.2.0",
-    "@babel/preset-typescript": "^7.10.4",
     "@material-ui/core": "^4.11.0",
     "@material-ui/icons": "^4.9.1",
     "@react-theming/storybook-addon": "^1.1.1",
@@ -89,6 +88,7 @@
     "bundlesize": "^0.18.0",
     "cross-env": "^7.0.3",
     "del": "^6.0.0",
+    "dotenv": "^8.2.0",
     "enzyme": "^3.11.0",
     "enzyme-adapter-react-16": "^1.15.5",
     "enzyme-to-json": "^3.6.2",
