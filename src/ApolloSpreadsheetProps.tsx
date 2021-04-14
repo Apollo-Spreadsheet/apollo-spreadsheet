@@ -1,10 +1,10 @@
 import { DisableSortFilterParam, GridWrapperCommonProps } from './gridWrapper'
 import { GridContainerCommonProps } from './gridContainer'
 import { GridTheme, Row, StretchMode } from './types'
-import { KeyDownEventParams, NavigationCoords } from './navigation'
+import { KeyDownEventParams, NavigationCoords } from './keyboard'
 import { SelectionProps } from './rowSelection'
 import { ApiRef } from './api'
-import { NestedRowsProps } from './nestedRows/nestedRowsProps'
+import { NestedRowsProps } from './nestedRows'
 
 export interface ApolloSpreadsheetProps
   extends GridWrapperCommonProps,
