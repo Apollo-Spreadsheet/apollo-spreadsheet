@@ -41,7 +41,7 @@ const useStyles = makeStyles(() => ({
 
 export const ApolloSpreadSheet: React.FC<ApolloSpreadsheetProps> = forwardRef(
   (props, componentRef: React.Ref<HTMLDivElement>) => {
-    const logger = useLogger(ApolloSpreadSheet.name)
+    const logger = useLogger('ApolloSpreadSheet')
     const classes = useStyles()
     const minColumnWidth = props.minColumnWidth ?? 30
     const [gridFocused, setGridFocused] = useState(true)

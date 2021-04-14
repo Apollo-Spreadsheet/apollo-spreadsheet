@@ -50,7 +50,7 @@ const GridWrapper = React.memo(
     coords,
     ...props
   }: GridWrapperProps) => {
-    const logger = useLogger(GridWrapper.name)
+    const logger = useLogger('GridWrapper')
     const cache: CellMeasurerCache = useMemo(() => {
       const isFixedCellHeight = props.fixedRowHeight && props.rowHeight
       const options: CellMeasurerCacheParams = {
