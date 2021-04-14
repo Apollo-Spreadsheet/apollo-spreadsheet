@@ -38,7 +38,7 @@ const useStyles = makeStyles(() => ({
   },
 }))
 
-const GridWrapper = React.memo(
+const GridWrapper: React.FC<GridWrapperProps> = React.memo(
   ({
     rows,
     data,
@@ -49,7 +49,7 @@ const GridWrapper = React.memo(
     nestedRowsProps,
     coords,
     ...props
-  }: GridWrapperProps) => {
+  }) => {
     const logger = useLogger('GridWrapper')
     const cache: CellMeasurerCache = useMemo(() => {
       const isFixedCellHeight = props.fixedRowHeight && props.rowHeight

@@ -51,7 +51,7 @@ const useStyles = makeStyles(() => ({
     overflow: 'hidden',
   },
 }))
-export const ColumnGrid = React.memo((props: ColumnGridProps) => {
+export const ColumnGrid: React.FC<ColumnGridProps> = React.memo(props => {
   const classes = useStyles()
   const cache = useRef(
     new CellMeasurerCache({

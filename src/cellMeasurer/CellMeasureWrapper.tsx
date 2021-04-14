@@ -3,14 +3,14 @@ import { CellMeasurer } from 'react-virtualized'
 import { CellMeasureWrapperProps } from './cellMeasureWrapperProps'
 import { getMaxSum } from './utils'
 
-function CellMeasureWrapper({
+const CellMeasureWrapper: React.FC<CellMeasureWrapperProps> = ({
   rowSpan,
   colSpan,
   cellRenderer,
   rendererProps,
   style,
   ...props
-}: CellMeasureWrapperProps) {
+}) => {
   const initializeStyles = () => {
     const defaultStyle: React.CSSProperties = {
       // transform: 'translate3d(0, 0, 0)',
