@@ -1,4 +1,4 @@
-import { NavigationCoords } from '../keyboard/types/navigation-coords.type'
+import { NavigationCoords } from '../keyboard'
 
 export const MERGED_NEGATIVE_VALUES = ({ rowIndex, colIndex }: NavigationCoords) =>
   `Merged cell contains negative values, therefore it cannot be added to the collection [${rowIndex},${colIndex}]`

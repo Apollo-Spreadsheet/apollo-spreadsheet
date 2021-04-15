@@ -92,8 +92,8 @@ const GridWrapper: React.FC<GridWrapperProps> = React.memo(
       loggerRef.current = logger
     }, [logger])
 
-    const recomputeSizes = useCallback((hasFixedRowHeight: boolean) => {
-      loggerRef.current.debug('Recomputing sizes.', { hasFixedRowHeight })
+    const recomputeSizes = useCallback(() => {
+      loggerRef.current.debug('Recomputing sizes.')
       cacheRef.current.clearAll()
       gridRef.current?.recomputeGridSize()
 
@@ -112,7 +112,7 @@ const GridWrapper: React.FC<GridWrapperProps> = React.memo(
 
     /** @todo We might need to perform some benchmark tests and ensure its not spamming **/
     useEffect(() => {
-      recomputeSizes(Boolean(props.fixedRowHeight && props.rowHeight))
+      recomputeSizes()
     }, [
       //If any of those dependencies change we might need to recompute the sizes
       data,

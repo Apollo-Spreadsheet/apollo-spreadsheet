@@ -1,6 +1,7 @@
 import { EventEmitter } from 'events'
 import React from 'react'
 import { GridTheme } from '../../types'
+import { ApolloInternalEvents } from '../eventConstants'
 
 /**
  * The core API interface that is available in the grid.
@@ -24,13 +25,16 @@ export interface CoreApi extends EventEmitter {
    * @param handler
    * @returns Unsubscribe Function
    */
-  subscribeEvent: (event: string, handler: (param: any) => void) => () => void
+  subscribeEvent: (
+    event: ApolloInternalEvents | string,
+    handler: (param: any) => void,
+  ) => () => void
   /**
    * Allows to emit an event.
    * @param name
    * @param args
    */
-  dispatchEvent: (name: string, ...args: any[]) => void
+  dispatchEvent: (event: ApolloInternalEvents | string, ...args: any[]) => void
 
   /**
    * Removes the focus from the grid and wipes the highlight

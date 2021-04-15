@@ -1,15 +1,15 @@
 import { useCallback, useRef, useState } from 'react'
-import { ApiRef } from '../api/types'
-import { useApiExtends } from '../api'
+import { ApiRef, useApiExtends } from '../api'
+
 import { SortApi } from '../api/types/sortApi'
 import { orderBy } from 'lodash'
 import { useLogger } from '../logger'
 import { Row } from '../types'
-import { ColumnCellType } from '../columnGrid/types'
+import { ColumnCellType, SortOrder } from '../columnGrid'
 
 export interface SortState {
   accessor: string
-  order: 'asc' | 'desc'
+  order: SortOrder
 }
 
 export function useSort(apiRef: ApiRef) {

@@ -1,4 +1,4 @@
-import { MergeCell } from './interfaces/merge-cell'
+import { MergeCell } from './interfaces'
 
 export interface MergePosition {
   row: number

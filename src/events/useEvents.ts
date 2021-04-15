@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect } from 'react'
-import { ApiRef, CELL_CLICK, CELL_DOUBLE_CLICK } from '../api'
+import { ApiRef, ApolloInternalEvents } from '../api'
 import { useLogger } from '../logger'
 import {
   createCoordsParseWarning,
@@ -12,7 +12,8 @@ import { CellClickOrDoubleClickEventParams } from '../keyboard/types/cell-click-
 export function useEvents(gridRootRef: React.RefObject<HTMLDivElement>, apiRef: ApiRef) {
   const logger = useLogger('useEvents')
   const createHandler = useCallback(
-    (name: string) => (...args: any[]) => apiRef.current.dispatchEvent(name, ...args),
+    (name: ApolloInternalEvents | string) => (...args: any[]) =>
+      apiRef.current.dispatchEvent(name, ...args),
     [apiRef],
   )
 
@@ -41,7 +42,9 @@ export function useEvents(gridRootRef: React.RefObject<HTMLDivElement>, apiRef: 
         )
       }
 
-      const eventName = event.type === 'click' ? CELL_CLICK : CELL_DOUBLE_CLICK
+      const eventName: ApolloInternalEvents =
+        event.type === 'click' ? 'CELL_CLICK' : 'CELL_DOUBLE_CLICK'
+
       const payload: CellClickOrDoubleClickEventParams = {
         event,
         element: target,

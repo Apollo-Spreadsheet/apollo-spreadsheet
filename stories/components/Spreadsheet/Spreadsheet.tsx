@@ -92,7 +92,7 @@ const useStyles = makeStyles(theme => ({
 const MIN_COLUMN_WIDTH = 10
 export function Spreadsheet() {
   const classes = useStyles()
-  const { headerData: columns, data: defaultData } = useTopCase(classes.calendarClass)
+  const { headerData: columns } = useTopCase(classes.calendarClass)
   const [data, setData] = useState(dump)
   const apiRef = useApiRef()
 
@@ -185,7 +185,7 @@ export function Spreadsheet() {
     }
     apiRef.current.selectCell(delayedPosition)
     setDelayedPosition(null)
-  }, [delayedPosition])
+  }, [apiRef, delayedPosition])
 
   function onHeaderIconClick() {
     const selectedRows = apiRef.current?.getSelectedRowIds() ?? []

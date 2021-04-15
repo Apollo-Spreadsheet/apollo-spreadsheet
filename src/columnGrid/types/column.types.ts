@@ -1,26 +1,15 @@
 import React, { CSSProperties } from 'react'
 import { TooltipProps } from '@material-ui/core'
-import { NavigationCoords } from '../../keyboard/types'
-import { EditorProps, EditorRef } from '../../editorManager'
+import { NavigationCoords } from '../../keyboard'
 import { PopperProps } from '@material-ui/core/Popper/Popper'
 import { ReactDatePickerProps } from 'react-datepicker'
 import { Row, DynamicCallback } from '../../types'
 import { ApiRef } from '../../api'
+import { CellEditorProps } from './cellEditorProps'
 
 export interface CellRendererProps<TRow = Row> {
   row: TRow
   column: Column
-}
-
-export interface CellEditorProps<TRow = Row> {
-  row: TRow
-  column: Column
-  editorProps: EditorProps
-  /**
-   * useImperativeHandle is required internally so it should be passed into here the api ref
-   * @param ref
-   */
-  onRefMount: (ref: EditorRef) => void
 }
 
 /**
@@ -29,32 +18,36 @@ export interface CellEditorProps<TRow = Row> {
 export interface ColumnRendererProps<Key = string, Metadata = any> {
   column: Column<Key, Metadata>
   apiRef: ApiRef
-  columnIndex: string
+  columnIndex: number
   /**
    * This the final className for this content
    */
   className: string
 }
 
-export type ICellRenderer = (cellProps: CellRendererProps) => JSX.Element | React.ReactNode
-export type IHeaderRenderer<Key = string, Metadata = any> = (
+export type CellRenderer = (cellProps: CellRendererProps) => JSX.Element | React.ReactNode
+export type HeaderRenderer<Key = string, Metadata = any> = (
   column: ColumnRendererProps<Key, Metadata>,
 ) => React.ReactNode | JSX.Element
 export type ICellEditor = (cellProps: CellEditorProps) => JSX.Element | React.ReactNode
 
+/**
+ * @deprecated Must be removed soon in factor or specifying the editor
+ * and cell renderer rather than a type
+ * e.g: NumericCellRender which will format and do whatever it needs
+ * and NumericEditor which will be the inline editor
+ */
 export enum ColumnCellType {
   TextArea,
   Numeric,
   Calendar,
 }
 
-export interface IsReadOnlyCallback {
-  (coords: NavigationCoords): boolean
-}
+export type ReadOnlyCallback = (coords: NavigationCoords) => boolean
+export type ReadOnly = boolean | ReadOnlyCallback
 
-export interface DisableNavigationFn {
-  (coords: NavigationCoords): boolean
-}
+export type DisableNavigationCallback = (coords: NavigationCoords) => boolean
+export type DisableNavigation = boolean | DisableNavigationCallback
 
 export interface ComponentPropsFn<TRow = Row> {
   (row: TRow, column: Column):
@@ -62,7 +55,45 @@ export interface ComponentPropsFn<TRow = Row> {
     | Partial<ReactDatePickerProps>
 }
 
-export interface Column<Key = string, Metadata = unknown> {
+interface ColumnTooltipProps {
+  /** @default true **/
+  arrow?: boolean
+  /** @default false **/
+  open?: boolean
+  /** @default top **/
+  placement?: TooltipProps['placement']
+  PopperProps?: Partial<PopperProps>
+}
+
+interface ShouldSaveHookMiddleware<T = any> {
+  (currentValue: T, newValue: T): boolean
+}
+
+interface ValidatorHook<T = any> {
+  (value: T): boolean
+}
+
+interface KeyboardHookCallback {
+  (event: KeyboardEvent): boolean
+}
+
+/**
+ * @todo Must be reviewed
+ */
+interface ColumnEditorProps {
+  className?: string
+  style?: CSSProperties
+  componentProps?:
+    | Partial<React.HTMLAttributes<HTMLInputElement>>
+    | Partial<ReactDatePickerProps>
+    | ComponentPropsFn
+}
+
+/**
+ * `Column` definition will delegate some effects over `ApolloSpreadsheet` whether
+ * you are creating a table, grid or spreadsheet
+ */
+export interface Column<Key = string, Metadata = any> {
   id: Key
   title: string
   accessor: string
@@ -72,22 +103,14 @@ export interface Column<Key = string, Metadata = unknown> {
    * @default false
    */
   hide?: boolean
-  tooltipProps?: {
-    /** @default true **/
-    arrow?: boolean
-    /** @default false **/
-    open?: boolean
-    /** @default top **/
-    placement?: TooltipProps['placement']
-    PopperProps?: Partial<PopperProps>
-  }
+  tooltipProps?: ColumnTooltipProps
   /** @default 500 **/
   maxLength?: number
   width?: React.ReactText
   className?: string
   cellClassName?: string | DynamicCallback<Row, string>
-  readOnly?: boolean | IsReadOnlyCallback
-  disableNavigation?: boolean | DisableNavigationFn
+  readOnly?: ReadOnly
+  disableNavigation?: DisableNavigation
   /**
    * Cell value type for this column (the values are formatted accordingly)
    * NOTE: If you attempt to use the calendar editor
@@ -107,33 +130,26 @@ export interface Column<Key = string, Metadata = unknown> {
    * If the value returned is false then an error will be prompted in the cell
    * @param value
    */
-  validatorHook?: (value: unknown) => boolean
+  validatorHook?: ValidatorHook
   /**
    * Invoked before dispatching onChange event after editing and expects to return whether
    * the grid send the new value or just drop it
    * @param value
    */
-  shouldSaveHook?: (currentValue: unknown, newValue: unknown) => boolean
+  shouldSaveHook?: ShouldSaveHookMiddleware
   /**
    * Provide this hook in order to restrict which keyboard controls are allowed
    * Keep in mind there are some reserved, so this keyboard values are only while editing
    * *NOTE*: If you provide a custom editor, this hook will not run
    * @param event
    */
-  editorKeyboardHook?: (event: KeyboardEvent) => boolean
+  editorKeyboardHook?: KeyboardHookCallback
   /**
    * Provides additional props to the active editor of this column
    */
-  editorProps?: {
-    className?: string
-    style?: CSSProperties
-    componentProps?:
-      | Partial<React.HTMLAttributes<HTMLInputElement>>
-      | Partial<ReactDatePickerProps>
-      | ComponentPropsFn
-  }
-  cellRenderer?: ICellRenderer
-  renderer?: IHeaderRenderer
+  editorProps?: ColumnEditorProps
+  cellRenderer?: CellRenderer
+  renderer?: HeaderRenderer
   colSpan?: number
   /**
    * Forces to disable the backspace keydown on cells (travel like excel default behaviour)
@@ -147,34 +163,9 @@ export interface Column<Key = string, Metadata = unknown> {
    * @default undefined
    */
   delayEditorOpen?: number
+  /**
+   * This property is useful when you want to attach some extra properties/information on a column that is not
+   * going to interfere with Apollo
+   */
   metadata?: Metadata
-}
-
-/**
- * Nested headers are additional headers bottom to top that only provide a "grouping" style but this
- * kind of headers do not affect the core of the grid nor provide any feature such as renderers
- * This headers follow its parent size and can only provide a few things and they have colSpan which allow
- * to create a bigger header
- */
-export interface NestedHeader {
-  title: string
-  tooltip?: string
-  className?: string | DynamicCallback<Row, string>
-  tooltipProps?: {
-    /** @default true **/
-    arrow?: boolean
-    /** @default false **/
-    open?: boolean
-    /** @default top **/
-    placement?: TooltipProps['placement']
-  }
-  colSpan?: number
-}
-
-export interface GridHeader extends Column {
-  colSpan: number
-  isNested: boolean
-  gridType?: 'body' | 'header'
-  dummy?: boolean
-  dummyFor?: 'colSpan' | 'rowSpan'
 }

@@ -84,7 +84,7 @@ export const ApolloSpreadSheet: React.FC<ApolloSpreadsheetProps> = forwardRef(
       apiRef,
       initialised,
       enabled: nestedRowsEnabled,
-      defaultIds: props.defaultExpandedIds,
+      defaultExpandedIds: props.defaultExpandedIds,
     })
     const sort = useSort(apiRef)
 

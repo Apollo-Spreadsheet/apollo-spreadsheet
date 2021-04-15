@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react'
+import React, { useState } from 'react'
 import { ApolloSpreadSheet, StretchMode, Column, CellChangeParams, useApiRef } from '../../../src'
 import { AddCircle } from '@material-ui/icons'
 import { Box, IconButton } from '@material-ui/core'

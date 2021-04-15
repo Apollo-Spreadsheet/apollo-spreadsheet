@@ -1,8 +1,7 @@
-import { ApolloSpreadSheet, GridWrapperProps } from '../src'
+/* eslint-disable react/require-default-props */
 import React from 'react'
 import { storiesOf } from '@storybook/react'
-import { StretchMode } from '../src/types/stretch-mode.enum'
-import { Column } from '../src/columnGrid/types/header.type'
+import { StretchMode, Column, ApolloSpreadSheet } from '../src'
 import { createColumnMock } from '../src/columnGrid/__mocks__/column-mock'
 import faker from 'faker'
 import { Alignment } from 'react-virtualized'

@@ -4,6 +4,7 @@ import { useApiExtends } from './useApiExtends'
 import { ApiRef, GridApi } from './types'
 import { GridTheme } from '../types'
 import { useLogger } from '../logger'
+import { ApolloInternalEvents } from './eventConstants'
 
 /**
  * Initializes a new api instance
@@ -22,7 +23,7 @@ export function useApiFactory(
   const [initialised, setInit] = useState(false)
 
   const publishEvent = useCallback(
-    (name: string, ...args: any[]) => {
+    (name: ApolloInternalEvents | string, ...args: any[]) => {
       logger.debug(`Publishing event ${name}`)
       apiRef.current.emit(name, ...args)
     },
@@ -30,7 +31,7 @@ export function useApiFactory(
   )
 
   const subscribeEvent = useCallback(
-    (event: string, handler: (param: any) => void): (() => void) => {
+    (event: ApolloInternalEvents | string, handler: (param: any) => void): (() => void) => {
       logger.debug(`Subscribing to event: ${event}`)
       apiRef.current.on(event, handler)
       const api = apiRef.current
@@ -47,6 +48,7 @@ export function useApiFactory(
     apiRef.current.isInitialised = true
     apiRef.current.rootElementRef = gridRootRef
     /** @todo Consider whether we should have a custom hook useTheme in order to delegate the update and sync **/
+    /** @todo Theme might change and so moving it out from here would be the best decision **/
     apiRef.current.theme = theme
     apiRef.current.selectionKey = selectionKey ?? 'id'
     setInit(true)

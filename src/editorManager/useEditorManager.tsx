@@ -7,18 +7,12 @@ import NumericEditor from './components/NumericEditor'
 import { EditorProps } from './editorProps'
 import { CalendarEditor } from './components'
 import { isFunctionType } from '../helpers'
-import {
-  useApiExtends,
-  EditorManagerApi,
-  ApiRef,
-  CELL_BEGIN_EDITING,
-  CELL_STOP_EDITING,
-} from '../api'
+import { useApiExtends, EditorManagerApi } from '../api'
 import clsx from 'clsx'
 import { useLogger } from '../logger'
 import { Row } from '../types'
 import valueEqual from 'value-equal'
-import { ICellChangeEvent } from '../gridWrapper'
+import { ApolloCoreProps, ApolloCrudProps } from '../ApolloSpreadsheetProps'
 
 export interface StopEditingParams {
   /** @default true **/
@@ -39,9 +33,9 @@ export interface IEditorState {
   isPopup: boolean
 }
 
-export interface EditorManagerProps<T = Row> {
-  onCellChange?: ICellChangeEvent<T>
-  apiRef: ApiRef
+export interface EditorManagerProps
+  extends Required<ApolloCoreProps>,
+    Pick<ApolloCrudProps, 'onCellChange'> {
   initialised: boolean
 }
 
@@ -51,7 +45,7 @@ export interface BeginEditingParams {
   defaultKey?: string
 }
 
-export interface EditorRef<T = unknown> {
+export interface EditorRef<T = any> {
   getValue: () => T
 }
 
@@ -81,7 +75,7 @@ export function useEditorManager({ onCellChange, apiRef }: EditorManagerProps) {
         if (newValue === undefined) {
           state.current = null
           editorRef.current = null
-          apiRef.current.dispatchEvent(CELL_STOP_EDITING, {
+          apiRef.current.dispatchEvent('CELL_STOP_EDITING', {
             colIndex: editorState.colIndex,
             rowIndex: editorState.rowIndex,
           })
@@ -92,7 +86,7 @@ export function useEditorManager({ onCellChange, apiRef }: EditorManagerProps) {
         if (!isValid) {
           editorRef.current = null
           state.current = null
-          apiRef.current.dispatchEvent(CELL_STOP_EDITING, {
+          apiRef.current.dispatchEvent('CELL_STOP_EDITING', {
             colIndex: editorState.colIndex,
             rowIndex: editorState.rowIndex,
           })
@@ -108,7 +102,7 @@ export function useEditorManager({ onCellChange, apiRef }: EditorManagerProps) {
           ) {
             editorRef.current = null
             state.current = null
-            apiRef.current.dispatchEvent(CELL_STOP_EDITING, {
+            apiRef.current.dispatchEvent('CELL_STOP_EDITING', {
               colIndex: editorState.colIndex,
               rowIndex: editorState.rowIndex,
             })
@@ -144,7 +138,7 @@ export function useEditorManager({ onCellChange, apiRef }: EditorManagerProps) {
 
       editorRef.current = null
       state.current = null
-      apiRef.current.dispatchEvent(CELL_STOP_EDITING, {
+      apiRef.current.dispatchEvent('CELL_STOP_EDITING', {
         colIndex: editorState.colIndex,
         rowIndex: editorState.rowIndex,
       })
@@ -302,7 +296,7 @@ export function useEditorManager({ onCellChange, apiRef }: EditorManagerProps) {
       }
 
       setEditorNode(editor)
-      apiRef.current.dispatchEvent(CELL_BEGIN_EDITING, coords)
+      apiRef.current.dispatchEvent('CELL_BEGIN_EDITING', coords)
     },
     [logger, apiRef, stopEditing, getEditor],
   )

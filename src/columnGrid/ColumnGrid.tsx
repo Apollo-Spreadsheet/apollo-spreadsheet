@@ -3,17 +3,16 @@ import { Grid, CellMeasurerCache, CellMeasurerCacheParams } from 'react-virtuali
 import CellMeasurer from '../cellMeasurer/CellMeasureWrapper'
 import { GridHeader } from './types'
 import clsx from 'clsx'
-import { ColumnGridProps } from './column-grid-props'
-import { MeasurerRendererProps } from '../cellMeasurer'
+import { ColumnGridProps } from './columnGridProps'
+import { CellMeasureRendererProps, MeasurerRendererProps } from '../cellMeasurer'
 import Tooltip from '@material-ui/core/Tooltip'
-import ArrowUpwardIcon from '@material-ui/icons/ArrowUpward'
-import ArrowDownwardIcon from '@material-ui/icons/ArrowDownward'
 import { ROW_SELECTION_HEADER_ID } from '../rowSelection'
 import { makeStyles } from '@material-ui/core/styles'
 import { isFunctionType } from '../helpers'
 import flattenDeep from 'lodash/flattenDeep'
-import { createCellQueryProperties } from '../keyboard/utils'
+import { createCellQueryProperties } from '../keyboard'
 import { useLogger } from '../logger'
+import { SortIndicator } from './components'
 
 type SortDisabled = boolean
 const useStyles = makeStyles(() => ({
@@ -56,6 +55,9 @@ export const ColumnGrid: React.FC<ColumnGridProps> = React.memo(props => {
   const classes = useStyles()
   const logger = useLogger('ColumnGrid')
   const cache: CellMeasurerCache = useMemo(() => {
+    /**
+     * @todo We might provide the same layer with fixed  as we did for gridWrapper
+     */
     const options: CellMeasurerCacheParams = {
       defaultWidth: props.minColumnWidth,
       defaultHeight: props.minRowHeight,
@@ -66,7 +68,13 @@ export const ColumnGrid: React.FC<ColumnGridProps> = React.memo(props => {
       fixedHeight: true,
       minHeight: props.minRowHeight,
       minWidth: props.minColumnWidth,
+      /**
+       * @todo We might need to review if this impacts any performance overall but i think this could be a boost
+       * since we have fixed sizes therefore the calculation afterwards will likely be the same
+       */
+      keyMapper: () => 1,
     }
+
     return new CellMeasurerCache(options)
   }, [props.minColumnWidth, props.minRowHeight])
 
@@ -97,7 +105,7 @@ export const ColumnGrid: React.FC<ColumnGridProps> = React.memo(props => {
         updatedMap[cell.id] = false
       }
       return updatedMap
-    }, {} as { [colId: string]: SortDisabled })
+    }, {} as Record<string, SortDisabled>)
   }, [props])
 
   // clear cache and recompute when data changes OR when the container width changes
@@ -112,21 +120,9 @@ export const ColumnGrid: React.FC<ColumnGridProps> = React.memo(props => {
     recomputeSizes()
   }, [props.data, props.width, recomputeSizes])
 
-  function getSortIndicatorComponent(order: string | undefined) {
-    if (!order) {
-      return null
-    }
-
-    return order === 'asc' ? (
-      <ArrowUpwardIcon style={{ fontSize: '10px' }} display={'flex'} />
-    ) : (
-      <ArrowDownwardIcon style={{ fontSize: '10px' }} display={'flex'} />
-    )
-  }
-
   const headerRendererWrapper = useCallback(
-    ({ style, cell, ref, columnIndex, rowIndex }) => {
-      const { title, renderer } = cell as GridHeader
+    ({ style, cell, ref, columnIndex, rowIndex }: CellMeasureRendererProps<GridHeader>) => {
+      const { title, renderer } = cell
       const { theme } = props.apiRef.current
       //in case its not found, we set to true
       const isSortDisabled = props.nestedRowsEnabled ? true : headersSortDisabledMap[cell.id]
@@ -134,7 +130,7 @@ export const ColumnGrid: React.FC<ColumnGridProps> = React.memo(props => {
       const { coords } = props
       const sortComponent =
         isSortDisabled || cell.accessor !== sort?.accessor ? null : (
-          <div className={classes.sort}>{getSortIndicatorComponent(sort?.order)}</div>
+          <div className={classes.sort}>{<SortIndicator order={sort?.order} />}</div>
         )
 
       let headerClassName = ''
