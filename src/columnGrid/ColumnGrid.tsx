@@ -178,16 +178,12 @@ export const ColumnGrid: React.FC<ColumnGridProps> = React.memo(props => {
             rowIndex,
           })
 
+      const wrapperStyles: CSSProperties = {
+        ...style,
+        zIndex: isSpannerAndNested ? 999 : defaultZIndex,
+      }
       return (
-        <div
-          ref={ref}
-          {...navigationProps}
-          className={headerClassName}
-          style={{
-            ...style,
-            zIndex: isSpannerAndNested ? 999 : defaultZIndex,
-          }}
-        >
+        <div ref={ref} {...navigationProps} className={headerClassName} style={wrapperStyles}>
           {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events */}
           <span
             onClick={isSortDisabled ? undefined : () => props.apiRef.current.toggleSort(cell.id)}

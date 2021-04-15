@@ -1,5 +1,5 @@
 /* eslint-disable react/require-default-props */
-import React from 'react'
+import React, { CSSProperties } from 'react'
 import { storiesOf } from '@storybook/react'
 import { StretchMode, Column, ApolloSpreadSheet } from '../src'
 import { createColumnMock } from '../src/columnGrid/__mocks__/column-mock'
@@ -24,16 +24,16 @@ const ExampleTable = ({
     name: faker.name.findName(),
     country: faker.address.country(),
   }))
+  const containerStyles: CSSProperties = {
+    height: '500px',
+    width: '100%',
+    overflowY: 'hidden',
+    flex: 1,
+    display: 'flex',
+  }
+
   return (
-    <div
-      style={{
-        height: '500px',
-        width: '100%',
-        overflowY: 'hidden',
-        flex: 1,
-        display: 'flex',
-      }}
-    >
+    <div style={containerStyles}>
       <ApolloSpreadSheet
         columns={headerData}
         rows={overrideRows ?? rows}

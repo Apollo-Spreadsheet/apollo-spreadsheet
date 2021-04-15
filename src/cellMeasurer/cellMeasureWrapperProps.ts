@@ -1,6 +1,6 @@
 import React from 'react'
 import { CellMeasurerCache } from 'react-virtualized'
-import { CellMeasurerChildProps, MeasuredCellParent } from 'react-virtualized/dist/es/CellMeasurer'
+import { MeasuredCellParent } from 'react-virtualized/dist/es/CellMeasurer'
 import { GetColumnWidthFn } from '../gridWrapper'
 
 export interface MeasurerRendererProps<TCell = any> {
@@ -12,7 +12,7 @@ export interface MeasurerRendererProps<TCell = any> {
 }
 
 export interface CellMeasureRendererProps<TCell = any> extends MeasurerRendererProps<TCell> {
-  ref: CellMeasurerChildProps['registerChild']
+  ref: React.LegacyRef<any>
 }
 
 export interface CellMeasureRenderer {

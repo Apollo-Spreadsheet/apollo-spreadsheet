@@ -58,7 +58,7 @@ const CellMeasureWrapper: React.FC<CellMeasureWrapperProps> = ({
         cellRenderer({
           ...rendererProps,
           style: spanningStyle,
-          ref: registerChild,
+          ref: registerChild as React.LegacyRef<any>,
         })
       }
     </CellMeasurer>
