@@ -167,9 +167,9 @@ export const ApolloSpreadSheet: React.FC<ApolloSpreadsheetProps> = forwardRef(
     }, [apiRef])
 
     //When Apollo mounts focus the root element
-    /*useEffect(() => {
+    useEffect(() => {
       rootContainerRef.current?.focus()
-    }, [])*/
+    }, [])
 
     useApiEventHandler(apiRef, CELL_CLICK, onCellMouseHandler)
     useApiEventHandler(apiRef, CELL_DOUBLE_CLICK, onCellMouseHandler)

@@ -68,8 +68,8 @@ export function useEvents(gridRootRef: React.RefObject<HTMLDivElement>, apiRef: 
         capture: true,
       })
 
-      document.addEventListener('keydown', keyDownHandler)
-      //gridRootRef.current.addEventListener('keydown', keyDownHandler)
+      //document.addEventListener('keydown', keyDownHandler)
+      gridRootRef.current.addEventListener('keydown', keyDownHandler)
       // eslint-disable-next-line no-param-reassign
       apiRef.current.isInitialised = true
       const api = apiRef.current
@@ -80,8 +80,8 @@ export function useEvents(gridRootRef: React.RefObject<HTMLDivElement>, apiRef: 
         gridRootElem.removeEventListener('dblclick', handleClickOrDoubleClickEvent, {
           capture: true,
         })
-        //gridRootElem.removeEventListener('keydown', keyDownHandler)
-        document.removeEventListener('keydown', keyDownHandler)
+        gridRootElem.removeEventListener('keydown', keyDownHandler)
+        //document.removeEventListener('keydown', keyDownHandler)
         /**
          * @todo Review the need of this
          * i think replacing gridRootElem.removeAllListeners would make more sense
