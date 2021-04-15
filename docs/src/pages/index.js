@@ -29,12 +29,12 @@ const features = [
     ),
   },
   {
-    title: 'Powered by React',
-    imageUrl: 'img/undraw_docusaurus_react.svg',
+    title: 'Virtualization in Mind',
+    imageUrl: 'img/react-virtualized.svg',
     description: (
       <>
-        Extend or customize your website layout by reusing React. Docusaurus can be extended while
-        reusing the same header and footer.
+        With Apollo, you can have hundreds and thousend of rows without suffering any performance
+        loss or unnecessary rendering
       </>
     ),
   },
