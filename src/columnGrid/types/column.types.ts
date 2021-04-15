@@ -98,6 +98,7 @@ export interface Column<Key = string, Metadata = any> {
   title: string
   accessor: string
   tooltip?: string
+  style?: CSSProperties
   /**
    * Whether to hide this column (Might be useful for conditional rendering)
    * @default false

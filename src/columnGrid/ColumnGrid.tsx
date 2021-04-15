@@ -13,6 +13,7 @@ import flattenDeep from 'lodash/flattenDeep'
 import { createCellQueryProperties } from '../keyboard'
 import { useLogger } from '../logger'
 import { SortIndicator } from './components'
+import { GridCell } from '../gridWrapper'
 
 type SortDisabled = boolean
 const useStyles = makeStyles(() => ({
@@ -200,6 +201,7 @@ export const ColumnGrid: React.FC<ColumnGridProps> = React.memo(props => {
 
   const cellMeasurerWrapperRenderer = useCallback(
     args => {
+      /** @todo Review the typings **/
       const cell = props.data[args.rowIndex]?.[args.columnIndex] as any
       if (!cell) {
         return null
