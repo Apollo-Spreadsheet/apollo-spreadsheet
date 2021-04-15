@@ -39,6 +39,7 @@
     "react-dom": ">= 16.13.1"
   },
   "dependencies": {
+    "@welldone-software/why-did-you-render": "^6.1.1",
     "clipboardy": "^2.3.0",
     "clsx": "^1.1.1",
     "dayjs": "^1.9.1",
@@ -60,9 +61,9 @@
     "@material-ui/icons": "^4.9.1",
     "@react-theming/storybook-addon": "^1.1.1",
     "@storybook/addon-options": "~5.3.21",
-    "@storybook/addon-storysource": "~6.2.7",
-    "@storybook/addons": "~6.2.7",
-    "@storybook/react": "~6.2.7",
+    "@storybook/addon-storysource": "~6.2.8",
+    "@storybook/addons": "~6.2.8",
+    "@storybook/react": "~6.2.8",
     "@testing-library/dom": "^7.30.3",
     "@testing-library/jest-dom": "^5.11.10",
     "@testing-library/react": "^11.2.6",
