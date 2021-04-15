@@ -23,6 +23,7 @@ const useStyles = makeStyles(() => ({
   },
   cellDefaultStyle: {
     display: 'flex',
+    backgroundColor: 'white',
     boxSizing: 'border-box',
     '&:focus': {
       outline: 0,
@@ -183,7 +184,6 @@ const GridWrapper: React.FC<GridWrapperProps> = React.memo(
           cellStyle.borderRight = '0px'
           cellStyle.borderTop = '0px'
           cellStyle.borderBottom = '0px'
-          cellStyle.backgroundColor = 'white'
           cellStyle.border = props.highlightBorderColor
             ? `1px solid ${props.highlightBorderColor}`
             : '1px solid blue'
@@ -194,7 +194,6 @@ const GridWrapper: React.FC<GridWrapperProps> = React.memo(
           cellStyle.borderTop = '0px'
           cellStyle.borderBottom = '0px'
           cellStyle.border = '1px solid rgb(204, 204, 204)'
-          cellStyle.backgroundColor = 'white'
         }
 
         /**
