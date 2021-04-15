@@ -38,6 +38,11 @@ const useStyles = makeStyles(() => ({
   },
 }))
 
+/**
+ * @todo I need to ensure this is only loaded in development, seems that with
+ * process.env.NODE_ENV its not working when shipped and in Next.js applications
+ * it throws a Loadable component error
+ */
 /*
 if (process.env.NODE_ENV === 'development') {
   // eslint-disable-next-line global-require
@@ -168,11 +173,6 @@ export const ApolloSpreadSheet: React.FC<ApolloSpreadsheetProps> = forwardRef(
       }
     }, [apiRef])
 
-    //When Apollo mounts focus the root element
-    useEffect(() => {
-      rootContainerRef.current?.focus()
-    }, [])
-
     useApiEventHandler(apiRef, CELL_CLICK, onCellMouseHandler)
     useApiEventHandler(apiRef, CELL_DOUBLE_CLICK, onCellMouseHandler)
     const rootApiMethods: Partial<GridApi> = { clearFocus }
@@ -186,6 +186,7 @@ export const ApolloSpreadSheet: React.FC<ApolloSpreadsheetProps> = forwardRef(
 
     return (
       <ClickAwayListener onClickAway={onClickAway}>
+        {/** @todo Replace div using a Box with full width/height and flex **/}
         <div ref={forkedRef} className={classes.root}>
           <GridContainer
             columns={columns}
