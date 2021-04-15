@@ -183,6 +183,7 @@ const GridWrapper: React.FC<GridWrapperProps> = React.memo(
           cellStyle.borderRight = '0px'
           cellStyle.borderTop = '0px'
           cellStyle.borderBottom = '0px'
+          cellStyle.backgroundColor = 'white'
           cellStyle.border = props.highlightBorderColor
             ? `1px solid ${props.highlightBorderColor}`
             : '1px solid blue'
