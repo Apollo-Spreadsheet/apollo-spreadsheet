@@ -1,8 +1,7 @@
-import { ApolloSpreadSheet } from '../src'
+/* eslint-disable react/require-default-props */
+import { ApolloSpreadSheet, StretchMode, Column } from '../src'
 import React from 'react'
 import { storiesOf } from '@storybook/react'
-import { StretchMode } from '../src/types/stretch-mode.enum'
-import { Column } from '../src/columnGrid/types/header.type'
 import { createColumnMock } from '../src/columnGrid/__mocks__/column-mock'
 import faker from 'faker'
 
@@ -40,7 +39,7 @@ storiesOf('Stretch Modes', module)
   .add('None (default with horizontal scroll) 100x100', () => {
     const headers: Column[] = new Array(100)
       .fill(true)
-      .map((_, i) => createColumnMock({ width: 120, title: 'Col - ' + i, accessor: i.toString() }))
+      .map((_, i) => createColumnMock({ width: 120, title: `Col - ${i}`, accessor: i.toString() }))
     const overrideRows = new Array(100).fill(true).map((_, i) => {
       const row: any = {}
       headers.forEach((header, headerIndex) => {

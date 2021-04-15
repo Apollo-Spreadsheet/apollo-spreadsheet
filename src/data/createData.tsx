@@ -1,17 +1,15 @@
 import { formatCellValue } from './formatCellValue'
 import { GridCell, insertDummyCells } from '../gridWrapper'
 import { Checkbox } from '@material-ui/core'
-import { SelectionProps } from '../rowSelection'
 import React from 'react'
-import { ApiRef } from '../api'
 import { Row } from '../types'
 import { isFunctionType } from '../helpers'
+import { ApolloCoreProps, ApolloDataProps, ApolloLayoutProps } from '../ApolloSpreadsheetProps'
 
-interface CreateDataParams {
-  rows: Row[]
-  apiRef: ApiRef
-  selection?: SelectionProps
-}
+interface CreateDataParams
+  extends Pick<ApolloDataProps, 'rows'>,
+    Required<ApolloCoreProps>,
+    Pick<ApolloLayoutProps, 'selection'> {}
 
 export function createData({ selection, apiRef, rows }: CreateDataParams) {
   const columns = apiRef.current.getColumns()

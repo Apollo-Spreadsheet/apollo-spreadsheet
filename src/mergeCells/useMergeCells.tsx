@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef } from 'react'
-import { NavigationCoords } from '../keyboard/types'
+import { NavigationCoords } from '../keyboard'
 import { validateMergeData } from './validateMergeData'
 import { MergeCell } from './interfaces'
 import { createMergedPositions, MergePosition } from './createMergedPositions'

@@ -1,3 +1,5 @@
+import { IconRenderer } from './icon-renderer.type'
+
 export interface NestedRowsProps {
   /**
    * In order to use __children attribute or any other feature related to nestedRows this needs
@@ -15,7 +17,7 @@ export interface NestedRowsProps {
    * Provides a custom renderer that returns the actual DOM element that controls
    * the toggling of the row expansion
    * @default MUI Icons **/
-  iconRenderer?: (toggle: () => void, isExpanded: boolean) => JSX.Element
+  iconRenderer?: IconRenderer
   /**
    * Provides a list of row ids that will expand by default
    * NOTE: There is no guarantee to expand nested children so make sure the parent is visible

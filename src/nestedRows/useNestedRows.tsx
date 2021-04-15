@@ -1,5 +1,4 @@
 import {
-  ApiRef,
   COLLAPSES_CHANGED,
   NestedRowsApi,
   ROWS_CHANGED,
@@ -11,20 +10,20 @@ import { useLogger } from '../logger'
 import { createDepthMap } from './createDepthMap'
 import { Row } from '../types'
 import { DepthMap } from './depth-map.interface'
+import { ApolloCoreProps } from '../ApolloSpreadsheetProps'
+import { NestedRowsProps } from './nestedRowsProps'
 
-interface Props {
-  apiRef: ApiRef
+interface Props extends Required<ApolloCoreProps>, Pick<NestedRowsProps, 'defaultExpandedIds'> {
   enabled: boolean
   initialised: boolean
-  defaultIds?: string[]
 }
 
 /**
  * This hook exposes utilities and methods to interact with rows children
  */
-export function useNestedRows({ apiRef, enabled, initialised, defaultIds }: Props) {
+export function useNestedRows({ apiRef, enabled, initialised, defaultExpandedIds }: Props) {
   const expandedRowIds = useRef<string[]>([])
-  const defaultIdsRef = useRef<string[]>(defaultIds ?? [])
+  const defaultIdsRef = useRef<string[]>(defaultExpandedIds ?? [])
   const isDefaultIdsExpanded = useRef(false)
   const rowsDepthMap = useRef<DepthMap>({})
   const logger = useLogger('useNestedRows')
@@ -72,8 +71,7 @@ export function useNestedRows({ apiRef, enabled, initialised, defaultIds }: Prop
       logger.info(`Toggling ${ids.length} rows`)
       ids.forEach(id => {
         if (expandedRowIds.current.includes(id)) {
-          const updated = [...expandedRowIds.current].filter(e => e !== id)
-          expandedRowIds.current = updated
+          expandedRowIds.current = [...expandedRowIds.current].filter(e => e !== id)
         } else {
           expandedRowIds.current = [...expandedRowIds.current, id]
         }

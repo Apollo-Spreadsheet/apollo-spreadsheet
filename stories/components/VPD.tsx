@@ -1,8 +1,6 @@
-import React, { useRef, useState } from 'react'
-import { ApolloSpreadSheet, Row } from '../../src'
-import { AddCircle } from '@material-ui/icons'
-import { Avatar, Box, IconButton, LinearProgress } from '@material-ui/core'
-import { Column } from '../../src/columnGrid/types/header.type'
+import React from 'react'
+import { ApolloSpreadSheet, Row, Column } from '../../src'
+import { Avatar, Box, LinearProgress } from '@material-ui/core'
 import faker from 'faker'
 import { makeStyles } from '@material-ui/core/styles'
 

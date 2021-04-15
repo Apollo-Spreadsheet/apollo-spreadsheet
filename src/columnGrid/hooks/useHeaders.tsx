@@ -1,12 +1,12 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { Column, GridHeader, NestedHeader, ColumnWidthDictionary } from './types'
-import { StretchMode } from '../types'
-import { insertDummyCells } from '../gridWrapper/utils'
-import { ApiRef, COLUMNS_CHANGED, useApiExtends } from '../api'
-import { ColumnApi } from '../api/types/columnApi'
-import { useLogger } from '../logger'
-import { ROW_SELECTION_HEADER_ID, SelectionProps } from '../rowSelection'
-import { createSelectionColumn } from '../rowSelection/createSelectionColumn'
+import { Column, ColumnWidthDictionary, GridHeader, NestedHeader } from '../types'
+import { ColumnApi } from '../../api/types/columnApi'
+import { ROW_SELECTION_HEADER_ID, SelectionProps } from '../../rowSelection'
+import { ApiRef, COLUMNS_CHANGED, useApiExtends } from '../../api'
+import { StretchMode } from '../../types'
+import { useLogger } from '../../logger'
+import { insertDummyCells } from '../../gridWrapper'
+import { createSelectionColumn } from '../../rowSelection/createSelectionColumn'
 
 export interface ColumnWidthRecord {
   totalSize: number

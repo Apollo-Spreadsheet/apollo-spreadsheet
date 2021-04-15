@@ -28,9 +28,9 @@ import {
 } from '../api'
 import { Row } from '../types'
 import { useLogger } from '../logger'
-import { resolveDynamicOrBooleanCallback } from '../helpers/resolveDynamicOrBooleanCallback'
 import { CellClickOrDoubleClickEventParams } from './types/cell-click-double-params'
 import { ICellChangeEvent } from '../gridWrapper'
+import { resolveDynamicCallback } from '../helpers/resolveDynamicCallback'
 
 interface Props {
   defaultCoords: NavigationCoords
@@ -318,7 +318,7 @@ export function useKeyboard({
         event.preventDefault()
         if (
           column.disableCellCut !== undefined &&
-          resolveDynamicOrBooleanCallback(column.disableCellCut, { row, column })
+          resolveDynamicCallback(column.disableCellCut, { row, column })
         ) {
           return
         }
@@ -339,7 +339,7 @@ export function useKeyboard({
         event.preventDefault()
         if (
           column.disableCellPaste !== undefined &&
-          resolveDynamicOrBooleanCallback(column.disableCellPaste, { row, column })
+          resolveDynamicCallback(column.disableCellPaste, { row, column })
         ) {
           return
         }
@@ -555,7 +555,7 @@ export function useKeyboard({
         //If a dynamic callback/value is passed we resolve and in case its true we just exit
         if (
           column.disableBackspace !== undefined &&
-          resolveDynamicOrBooleanCallback(column.disableBackspace, { row, column })
+          resolveDynamicCallback(column.disableBackspace, { row, column })
         ) {
           return
         }

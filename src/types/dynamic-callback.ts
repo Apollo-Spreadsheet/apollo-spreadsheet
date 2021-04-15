@@ -1,10 +1,9 @@
-import { Row } from './row.type'
-import { Column } from '../columnGrid/types'
+import { Column } from '../columnGrid'
 
-export interface DynamicCallbackParams<TRow> {
+export interface DynamicCallbackParams<TRow = any> {
   row: TRow
   column: Column
 }
-export interface DynamicCallback<TRow = Row, TResult = unknown> {
+export interface DynamicCallback<TRow = any, TResult = any> {
   (params: DynamicCallbackParams<TRow>): TResult
 }

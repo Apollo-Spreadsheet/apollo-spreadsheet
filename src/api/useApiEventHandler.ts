@@ -1,10 +1,11 @@
 import { useEffect } from 'react'
 import { ApiRef } from './types'
 import { useLogger } from '../logger'
+import { ApolloInternalEvents } from './eventConstants'
 
 export function useApiEventHandler(
   apiRef: ApiRef,
-  eventName: string,
+  eventName: ApolloInternalEvents | string,
   handler?: (args: any) => void,
 ) {
   const logger = useLogger('useApiEventHandler')

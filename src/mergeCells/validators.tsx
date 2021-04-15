@@ -1,4 +1,4 @@
-import { MergeCell } from './interfaces/merge-cell'
+import { MergeCell } from './interfaces'
 
 export const isZeroSpan = (cell: MergeCell) => cell.rowSpan === 0 && cell.colSpan === 0
 

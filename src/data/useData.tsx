@@ -1,8 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { SelectionProps } from '../rowSelection'
-import { GridCell } from '../gridWrapper/interfaces'
-import { ApiRef, RowApi } from '../api/types'
+import { GridCell } from '../gridWrapper'
 import {
+  RowApi,
   useApiExtends,
   useApiEventHandler,
   DATA_CHANGED,
@@ -15,11 +14,12 @@ import { createData } from './createData'
 import { Row } from '../types'
 import { useLogger } from '../logger'
 import { flatExpandedRows } from './flatExpandedRows'
+import { ApolloCoreProps, ApolloDataProps, ApolloLayoutProps } from '../ApolloSpreadsheetProps'
 
-interface Props {
-  rows: Row[]
-  selection?: SelectionProps
-  apiRef: ApiRef
+interface Props
+  extends Pick<ApolloDataProps, 'rows'>,
+    Pick<ApolloLayoutProps, 'selection'>,
+    Required<ApolloCoreProps> {
   initialised: boolean
   nestedRowsEnabled: boolean
 }

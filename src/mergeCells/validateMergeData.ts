@@ -5,7 +5,7 @@ import {
   isSingleCell,
   isZeroSpan,
 } from './validators'
-import { MergeCell } from './interfaces/merge-cell'
+import { MergeCell } from './interfaces'
 import {
   MERGED_DUPLICATED,
   MERGED_NEGATIVE_VALUES,
