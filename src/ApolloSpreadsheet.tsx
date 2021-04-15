@@ -38,6 +38,15 @@ const useStyles = makeStyles(() => ({
   },
 }))
 
+if (process.env.NODE_ENV === 'development') {
+  // eslint-disable-next-line global-require
+  const whyDidYouRender = require('@welldone-software/why-did-you-render')
+  whyDidYouRender(React, {
+    trackAllPureComponents: false,
+    trackHooks: true,
+  })
+}
+
 export const ApolloSpreadSheet: React.FC<ApolloSpreadsheetProps> = forwardRef(
   (props, componentRef: React.Ref<HTMLDivElement>) => {
     const logger = useLogger('ApolloSpreadSheet')
@@ -224,5 +233,7 @@ export const ApolloSpreadSheet: React.FC<ApolloSpreadsheetProps> = forwardRef(
     )
   },
 )
+// @ts-ignore
+ApolloSpreadSheet.whyDidYouRender = true
 
 export default ApolloSpreadSheet
