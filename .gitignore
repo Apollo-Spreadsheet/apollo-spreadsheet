@@ -10,6 +10,7 @@ lerna-debug.log*
 
 #Docs
 .docusaurus
+docs/build
 
 #IDE
 .idea

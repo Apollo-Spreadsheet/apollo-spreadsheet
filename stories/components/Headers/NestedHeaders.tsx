@@ -1,37 +1,18 @@
----
-id: getting-started
-title: Getting Started
-sidebar_label: Getting Started
-slug: /
----
+import { Box, IconButton } from '@material-ui/core'
+import React, { useCallback, useMemo, useState } from 'react'
+import {
+  ApolloSpreadSheet,
+  StretchMode,
+  Column,
+  useApiRef,
+  ColumnCellType,
+  NestedHeader,
+} from '../../../src'
+// eslint-disable-next-line import/no-extraneous-dependencies
+import faker from 'faker'
+import AddCircleIcon from '@material-ui/icons/AddCircle'
 
-## Introduction
-
-Apollo spreadsheet supports tables and grids, it has been built using React hooks, styled-components, plus it’s fully written in Typescript
-
-### Installation
-
-```typescript
-npm i apollo-spreadsheet
-```
-
-or
-
-```
-yarn add apollo-spreadsheet
-```
-
-Example
-
-```typescript
-import { Box } from '@material-ui/core'
-import React, { useMemo } from 'react'
-import { Column, ColumnCellType } from 'columnGrid'
-import ApolloSpreadSheet from 'ApolloSpreadsheet'
-import { useApiRef } from 'api'
-import { StretchMode } from 'types'
-
-interface SpreadsheetRow {
+interface NestedRows {
   id: string
   order: number
   name: string
@@ -41,9 +22,29 @@ interface SpreadsheetRow {
   company: string
 }
 
-export function Spreadsheet() {
+const generateFakeData = () => {
+  const entries = 50
+  const rows: NestedRows[] = []
+  for (let i = 0; i <= entries; i++) {
+    rows.push({
+      id: faker.datatype.uuid(),
+      order: i + 1,
+      name: faker.name.findName(),
+      adress: faker.address.streetAddress(),
+      phone: faker.phone.phoneNumber(),
+      job: faker.name.jobTitle(),
+      company: faker.company.companyName(),
+    })
+  }
+  return rows
+}
+
+export function NestedHeaders() {
   const apiRef = useApiRef()
-  const [rows, setRows] = useState<SpreadsheetRow[]>([])
+
+  const [rows, setRows] = useState<NestedRows[]>(() => {
+    return generateFakeData()
+  })
 
   const onCreateRowClick = useCallback(() => {
     setRows(prev => [
@@ -63,22 +64,49 @@ export function Spreadsheet() {
     apiRef.current.selectCell({ colIndex, rowIndex: rowCount - 1 })
   }, [apiRef])
 
+  const nestedHeaders: NestedHeader[][] = useMemo(
+    () => [
+      [
+        {
+          title: '',
+          colSpan: 0,
+        },
+        {
+          title: 'Personal Data',
+          colSpan: 3,
+        },
+        {
+          title: 'Company',
+          colSpan: 2,
+        },
+      ],
+    ],
+    [],
+  )
+
   const headers: Column[] = useMemo(
     () => [
       {
         id: 'order',
         title: '',
         accessor: 'order',
-        width: '10%',
+        width: '7%',
         readOnly: true,
         disableCellCut: true,
         disableCellPaste: true,
+        renderer: () => {
+          return (
+            <IconButton onClick={onCreateRowClick}>
+              <AddCircleIcon />
+            </IconButton>
+          )
+        },
       },
       {
         id: 'name',
         title: 'Name',
         accessor: 'name',
-        width: '20%',
+        width: '10%',
       },
       {
         id: 'adress',
@@ -106,15 +134,17 @@ export function Spreadsheet() {
         width: '20%',
       },
     ],
-    [],
+    [onCreateRowClick],
   )
 
   return (
-    <Box width={'100%'} height={'calc(100vh - 100px)'}>
+    <Box width={'100%'} height={'calc(100vh - 200px)'}>
       <ApolloSpreadSheet
         apiRef={apiRef}
         minColumnWidth={10}
-        minRowHeight={30}
+        fixedRowHeight
+        fixedRowWidth
+        rowHeight={30}
         stretchMode={StretchMode.All}
         nestedHeaders={nestedHeaders}
         columns={headers}
@@ -123,22 +153,3 @@ export function Spreadsheet() {
     </Box>
   )
 }
-```
-
-### Features
-
-- Documentation
-- Lightweight
-- Supports styled-components and CSS
-- Sorting
-- Travel like Excel navigation
-- Row Selection
-- Row Grouping
-- Row and Column spanning/ Merge Cells
-- Virtualizable
-- Resizable
-- Immutable
-- Editing (comes with a Text, Numeric and Calendar editor, plus it allows you to create your own editor)
-- Exports (supports CSV, Excel and JSON) - Coming Soon
-- Custom renderer support (allows the developer to provide their own cell/header renderer)
-- Developer friendly API
