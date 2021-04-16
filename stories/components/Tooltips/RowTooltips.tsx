@@ -1,16 +1,25 @@
 import React, { useState } from 'react'
 import { ApolloSpreadSheet, StretchMode, Column, useApiRef, CellChangeParams } from '../../../src'
-
 import { AddCircle } from '@material-ui/icons'
-import { Box, IconButton } from '@material-ui/core'
-
+import { Box, IconButton, Tooltip, Typography } from '@material-ui/core'
+// eslint-disable-next-line import/no-extraneous-dependencies
 import faker from 'faker'
 import { makeStyles } from '@material-ui/core/styles'
+
+const useStyles = makeStyles(() => ({
+  selectedCell: {
+    background: '#f5f5f5',
+    color: '#4d4d4d',
+  },
+  textStyle: {
+    margin: '10px',
+  },
+}))
 
 interface DemoRow {
   id: string
   name: string
-  city: string
+  address: string
   country: string
   job: string
   order: number
@@ -20,21 +29,14 @@ const generateRows = count => {
   return new Array(count).fill(true).map((_, i) => ({
     id: faker.datatype.number().toString(),
     name: faker.name.findName(),
-    city: faker.address.city(),
+    address: faker.address.streetAddress(),
     country: faker.address.country(),
-    job: faker.company.bs(),
+    job: faker.name.jobTitle(),
     order: i + 1,
   }))
 }
-const useStyles = makeStyles(() => ({
-  cell: {},
-  selectedCell: {
-    background: '#004daa',
-    color: 'white',
-  },
-}))
 
-export function Table() {
+export function RowTooltips() {
   const classes = useStyles()
   const [rows, setRows] = useState<DemoRow[]>(generateRows(15))
   const apiRef = useApiRef()
@@ -46,28 +48,13 @@ export function Table() {
     setRows(rows.filter(e => !selectedRows.some(id => id === e.id)))
   }
 
-  function disableSort(header: Column) {
-    return header.id === 'order'
-  }
-  const onCellChange = (params: CellChangeParams<DemoRow>) => {
-    setRows(prev => {
-      const updatedRows = [...prev]
-      const header = headers[params.coords.colIndex]
-      updatedRows[params.coords.rowIndex] = {
-        ...updatedRows[params.coords.rowIndex],
-        [header?.accessor]: params.newValue,
-      }
-      return updatedRows
-    })
-  }
-
   const onCreateRowClick = () => {
     setRows(prev => [
       ...prev,
       {
         id: `r-${Math.random()}`,
         name: '',
-        city: '',
+        address: '',
         country: '',
         job: '',
         order: prev.length + 1,
@@ -102,29 +89,72 @@ export function Table() {
       title: 'Name',
       accessor: 'name',
       width: '20%',
+      cellRenderer: () => {
+        return (
+          <Tooltip title={faker.name.gender()} placement={'top'}>
+            <Typography>{faker.name.findName()}</Typography>
+          </Tooltip>
+        )
+      },
     },
     {
-      id: 'city',
-      title: 'City',
-      accessor: 'city',
-      width: '20%',
+      id: 'address',
+      title: 'Address',
+      accessor: 'address',
+      width: '25%',
+      cellRenderer: () => {
+        return (
+          <Tooltip title={faker.address.city()} placement={'top'}>
+            <Typography>{faker.address.streetAddress()}</Typography>
+          </Tooltip>
+        )
+      },
     },
     {
       id: 'country',
       title: 'Country',
       accessor: 'country',
-      width: '35%',
+      width: '25%',
+      cellRenderer: () => {
+        return (
+          <Tooltip title={faker.address.timeZone()} placement={'top'}>
+            <Typography>{faker.address.country()}</Typography>
+          </Tooltip>
+        )
+      },
     },
     {
-      id: 'org',
-      title: 'Organization',
-      accessor: 'org',
-      width: '20%',
+      id: 'job',
+      title: 'Job',
+      accessor: 'job',
+      width: '25%',
+      cellRenderer: () => {
+        return (
+          <Tooltip title={faker.name.jobArea()} placement={'top'}>
+            <Typography>{faker.name.jobTitle()}</Typography>
+          </Tooltip>
+        )
+      },
     },
   ]
 
+  const onCellChange = (params: CellChangeParams<DemoRow>) => {
+    setRows(prev => {
+      const updatedRows = [...prev]
+      const header = headers[params.coords.colIndex]
+      updatedRows[params.coords.rowIndex] = {
+        ...updatedRows[params.coords.rowIndex],
+        [header?.accessor]: params.newValue,
+      }
+      return updatedRows
+    })
+  }
+
   return (
-    <Box width={'98%'} height={'calc(100vh - 100px)'} style={{ margin: 10 }}>
+    <Box width={'100%'} height={'calc(100vh - 100px)'}>
+      <Typography className={classes.textStyle}>
+        This table uses tooltips on the rows. Hover on each input to view
+      </Typography>
       <ApolloSpreadSheet
         apiRef={apiRef}
         columns={headers}
@@ -139,7 +169,7 @@ export function Table() {
           onHeaderIconClick,
           cellClassName: classes.selectedCell,
         }}
-        disableSort={disableSort}
+        disableSort
       />
     </Box>
   )

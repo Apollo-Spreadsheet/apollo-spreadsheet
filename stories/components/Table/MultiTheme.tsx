@@ -1,13 +1,4 @@
-import {
-  Box,
-  FormControl,
-  IconButton,
-  InputLabel,
-  makeStyles,
-  MenuItem,
-  Select,
-  Theme,
-} from '@material-ui/core'
+import { Box, FormControl, InputLabel, makeStyles, MenuItem, Select } from '@material-ui/core'
 import React, { useCallback, useMemo, useState } from 'react'
 // eslint-disable-next-line import/no-extraneous-dependencies
 import faker from 'faker'
