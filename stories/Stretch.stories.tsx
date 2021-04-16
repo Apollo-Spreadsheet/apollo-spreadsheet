@@ -36,7 +36,7 @@ storiesOf('Stretch Modes', module)
     ]
     return <ExampleTable headerData={headers} stretchMode={StretchMode.None} />
   })
-  .add('None (default with horizontal scroll) 100x100', () => {
+  /*  .add('None (default with horizontal scroll) 100x100', () => {
     const headers: Column[] = new Array(100)
       .fill(true)
       .map((_, i) => createColumnMock({ width: 120, title: `Col - ${i}`, accessor: i.toString() }))
@@ -54,7 +54,7 @@ storiesOf('Stretch Modes', module)
         stretchMode={StretchMode.None}
       />
     )
-  })
+  })*/
   .add('All', () => {
     const headers: Column[] = [
       createColumnMock({ width: '20%', title: 'Id', accessor: 'id' }),
