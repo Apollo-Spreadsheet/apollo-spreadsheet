@@ -17,7 +17,7 @@ npm i apollo-spreadsheet
 
 or
 
-```
+```typescript
 yarn add apollo-spreadsheet
 ```
 
