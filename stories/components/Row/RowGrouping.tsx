@@ -1,9 +1,8 @@
 import React, { useState } from 'react'
+import { Box } from '@material-ui/core'
+import { ApolloSpreadSheet, StretchMode, Column, useApiRef, CellChangeParams } from '../../../src'
 // eslint-disable-next-line import/no-extraneous-dependencies
 import faker from 'faker'
-import { Box, IconButton } from '@material-ui/core'
-import AddCircleIcon from '@material-ui/icons/AddCircle'
-import { ApolloSpreadSheet, StretchMode, Column, useApiRef, CellChangeParams } from '../../../src'
 
 interface GroupRow {
   id: string
@@ -161,10 +160,6 @@ export function RowGrouping() {
     setRows(rows.filter(e => !selectedRows.some(id => id === e.id)))
   }
 
-  function disableSort(header: Column) {
-    return header.id === 'order'
-  }
-
   const onCreateRowClick = () => {
     setRows(prev => [
       ...prev,
@@ -193,13 +188,6 @@ export function RowGrouping() {
       disableCellCut: true,
       disableCellPaste: true,
       width: '7%',
-      renderer: () => {
-        return (
-          <IconButton onClick={onCreateRowClick}>
-            <AddCircleIcon />
-          </IconButton>
-        )
-      },
     },
     {
       id: 'name',
@@ -257,7 +245,7 @@ export function RowGrouping() {
           key: 'id',
           onHeaderIconClick,
         }}
-        disableSort={disableSort}
+        disableSort
         nestedRows
         defaultExpandedIds={['9X', '8X']}
       />
