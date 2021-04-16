@@ -9,6 +9,7 @@ import {
   ApolloSortProps,
   ApolloVirtualizedProps,
 } from '../ApolloSpreadsheetProps'
+import { OnScrollParams } from 'react-virtualized'
 
 export interface ColumnGridProps
   extends ApolloVirtualizedProps,
@@ -24,4 +25,5 @@ export interface ColumnGridProps
   width: number
   scrollLeft: number
   nestedRowsEnabled: boolean
+  onScroll?: (params: OnScrollParams) => any
 }

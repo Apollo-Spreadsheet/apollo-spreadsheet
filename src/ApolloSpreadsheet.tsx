@@ -7,7 +7,7 @@ import { useMergeCells } from './mergeCells'
 import { useHeaders } from './columnGrid'
 import { useData } from './data'
 import { useRowSelection } from './rowSelection'
-import { ClickAwayListener, useForkRef } from '@material-ui/core'
+import { Box, ClickAwayListener, useForkRef } from '@material-ui/core'
 import { useEditorManager } from './editorManager'
 import { createPortal } from 'react-dom'
 import { GridContainer } from './gridContainer'
@@ -208,6 +208,7 @@ export const ApolloSpreadSheet: React.FC<ApolloSpreadsheetProps> = forwardRef(
                   getColumnWidth={getColumnWidth}
                   minRowHeight={props.minColumnHeight ?? 50}
                   scrollLeft={scrollLeft}
+                  onScroll={onScroll}
                   apiRef={apiRef}
                   sort={sort}
                   nestedRowsEnabled={nestedRowsEnabled}

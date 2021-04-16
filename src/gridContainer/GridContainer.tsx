@@ -2,19 +2,11 @@ import React, { useCallback, useRef } from 'react'
 import { StretchMode } from '../types'
 import { AutoSizer, ScrollSync, Size } from 'react-virtualized'
 import { createColumnWidthsMapping, ColumnWidthRecord } from '../columnGrid'
-import { makeStyles } from '@material-ui/core/styles'
-import clsx from 'clsx'
 import { useLogger } from '../logger'
 import { GRID_RESIZE } from '../api'
 import { GridContainerProps } from './GridContainerProps'
 import scrollbarSizeCalc from 'dom-helpers/scrollbarSize'
-
-const useStyles = makeStyles(() => ({
-  root: {
-    height: '100%',
-    width: '100%',
-  },
-}))
+import { Box } from '@material-ui/core'
 
 const DEFAULT_SCROLLBAR_SIZE = 14
 
@@ -34,8 +26,6 @@ export const GridContainer: React.FC<GridContainerProps> = React.memo(
     //Added a default scrollbar size to avoid 0 spacing and overlaps of the scrollbar to the grid
     const scrollbarSize =
       calculatedScrollbarSize > 0 ? calculatedScrollbarSize : DEFAULT_SCROLLBAR_SIZE
-    const classes = useStyles()
-    const gridContainerRef = useRef<HTMLDivElement | null>(null)
     const columnWidths = useRef<ColumnWidthRecord>({
       totalSize: 0,
       mapping: {},
@@ -129,23 +119,20 @@ export const GridContainer: React.FC<GridContainerProps> = React.memo(
     //In case of specified width and height, allow the control to the developer
     if (height && width) {
       return (
-        <div
+        <Box
+          height={height}
+          width={width}
           id="grid-container"
-          ref={gridContainerRef}
-          className={clsx(classes.root, containerClassName)}
-          style={{ width, height, position: 'relative' }}
+          className={containerClassName}
+          position={'relative'}
         >
           {render(Number(width), Number(height))}
-        </div>
+        </Box>
       )
     }
 
     return (
-      <div
-        id="grid-container"
-        className={clsx(classes.root, containerClassName)}
-        ref={gridContainerRef}
-      >
+      <Box height={'100%'} width={'100%'} id="grid-container" className={containerClassName}>
         <AutoSizer
           disableWidth={width !== undefined}
           disableHeight={height !== undefined}
@@ -155,7 +142,7 @@ export const GridContainer: React.FC<GridContainerProps> = React.memo(
         >
           {({ width, height }) => render(width, height)}
         </AutoSizer>
-      </div>
+      </Box>
     )
   },
 )
