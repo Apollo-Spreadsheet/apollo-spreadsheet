@@ -38,6 +38,12 @@ const useStyles = makeStyles(() => ({
   },
 }))
 
+/**
+ * @todo I need to ensure this is only loaded in development, seems that with
+ * process.env.NODE_ENV its not working when shipped and in Next.js applications
+ * it throws a Loadable component error
+ */
+/*
 if (process.env.NODE_ENV === 'development') {
   // eslint-disable-next-line global-require
   const whyDidYouRender = require('@welldone-software/why-did-you-render')
@@ -46,6 +52,7 @@ if (process.env.NODE_ENV === 'development') {
     trackHooks: true,
   })
 }
+*/
 
 export const ApolloSpreadSheet: React.FC<ApolloSpreadsheetProps> = forwardRef(
   (props, componentRef: React.Ref<HTMLDivElement>) => {
@@ -166,11 +173,6 @@ export const ApolloSpreadSheet: React.FC<ApolloSpreadsheetProps> = forwardRef(
       }
     }, [apiRef])
 
-    //When Apollo mounts focus the root element
-    useEffect(() => {
-      rootContainerRef.current?.focus()
-    }, [])
-
     useApiEventHandler(apiRef, CELL_CLICK, onCellMouseHandler)
     useApiEventHandler(apiRef, CELL_DOUBLE_CLICK, onCellMouseHandler)
     const rootApiMethods: Partial<GridApi> = { clearFocus }
@@ -184,6 +186,7 @@ export const ApolloSpreadSheet: React.FC<ApolloSpreadsheetProps> = forwardRef(
 
     return (
       <ClickAwayListener onClickAway={onClickAway}>
+        {/** @todo Replace div using a Box with full width/height and flex **/}
         <div ref={forkedRef} className={classes.root}>
           <GridContainer
             columns={columns}
@@ -240,6 +243,6 @@ export const ApolloSpreadSheet: React.FC<ApolloSpreadsheetProps> = forwardRef(
   },
 )
 // @ts-ignore
-ApolloSpreadSheet.whyDidYouRender = true
+//ApolloSpreadSheet.whyDidYouRender = true
 
 export default ApolloSpreadSheet
