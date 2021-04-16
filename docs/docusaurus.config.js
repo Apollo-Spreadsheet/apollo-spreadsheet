@@ -51,7 +51,7 @@ module.exports = {
           items: [
             {
               label: 'Apollo',
-              href: 'https://apollo.famousgadget.pt/'
+              href: 'https://apollo.famousgadget.pt/',
             },
             {
               label: 'GitHub',
