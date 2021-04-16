@@ -30,7 +30,7 @@ const generateFakeData = () => {
     rows.push({
       id: faker.datatype.uuid(),
       order: i + 1,
-      name: faker.name.findName(),
+      name: faker.name.firstName(),
       country: faker.address.country(),
       address: faker.address.streetAddress(),
       email: faker.internet.email(),
@@ -90,7 +90,7 @@ export function MultiTheme() {
         id: 'order',
         title: '',
         accessor: 'order',
-        width: '5%',
+        width: '3%',
         readOnly: true,
         disableCellCut: true,
         disableCellPaste: true,
@@ -99,7 +99,7 @@ export function MultiTheme() {
         id: 'name',
         title: 'Name',
         accessor: 'name',
-        width: '20%',
+        width: '25%',
       },
       {
         id: 'country',
