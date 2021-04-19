@@ -13,6 +13,7 @@ import { useLogger } from '../logger'
 import { Row } from '../types'
 import valueEqual from 'value-equal'
 import { ApolloCoreProps, ApolloCrudProps } from '../ApolloSpreadsheetProps'
+import ReactIs from 'react-is'
 
 export interface StopEditingParams {
   /** @default true **/
@@ -194,17 +195,21 @@ export function useEditorManager({ onCellChange, apiRef }: EditorManagerProps) {
   const getEditor = useCallback(
     (row: Row, column: Column, props: EditorProps) => {
       let EditorComponent: any = TextEditor
+
       if (column.editor) {
-        EditorComponent = column.editor({ row, column, onRefMount, editorProps: props })
+        //Check the type of this editor
+        if (isFunctionType(column.editor)) {
+          EditorComponent = column.editor({ row, column, onRefMount, editorProps: props })
+        } else {
+          EditorComponent = column.editor
+        }
       } else if (column.type === ColumnCellType.Calendar) {
         EditorComponent = CalendarEditor
       } else if (column.type === ColumnCellType.Numeric) {
         EditorComponent = NumericEditor
       }
 
-      return column.editor
-        ? EditorComponent
-        : React.createElement(EditorComponent, { ...props, ref: onRefMount })
+      return React.createElement(EditorComponent, { ...props, ref: onRefMount })
     },
     [onRefMount],
   )
@@ -219,11 +224,6 @@ export function useEditorManager({ onCellChange, apiRef }: EditorManagerProps) {
   const beginEditing = useCallback(
     ({ coords, targetElement, defaultKey }: BeginEditingParams) => {
       logger.debug(`Begin editing invoked for coords: [${coords.rowIndex},${coords.colIndex}]`)
-      console.log({
-        coords,
-        targetElement,
-        defaultKey,
-      })
       //Validate if is editing but in the same coords
       if (
         state.current?.rowIndex === coords.rowIndex &&

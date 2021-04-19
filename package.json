@@ -51,6 +51,7 @@
     "lodash": "^4.17.20",
     "memoize-one": "^5.1.1",
     "react-datepicker": "^3.7.0",
+    "react-is": "^17.0.2",
     "react-virtualized": "^9.21.2",
     "value-equal": "^1.0.1"
   },
@@ -82,6 +83,7 @@
     "@types/react-beautiful-dnd": "^13.0.0",
     "@types/react-datepicker": "^3.1.8",
     "@types/react-dom": "17.0.3",
+    "@types/react-is": "^17.0.0",
     "@types/react-virtualized": "^9.21.10",
     "@types/storybook__react": "latest",
     "@typescript-eslint/eslint-plugin": "^4.22.0",

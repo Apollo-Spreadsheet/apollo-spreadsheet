@@ -29,7 +29,10 @@ export type CellRenderer = (cellProps: CellRendererProps) => JSX.Element | React
 export type HeaderRenderer<Key = string, Metadata = any> = (
   column: ColumnRendererProps<Key, Metadata>,
 ) => React.ReactNode | JSX.Element
-export type ICellEditor = (cellProps: CellEditorProps) => JSX.Element | React.ReactNode
+
+export type EditorReactComponent = JSX.Element | React.FunctionComponent | React.ReactNode
+export type EditorFactory = (cellProps: CellEditorProps) => JSX.Element
+export type ICellEditor = EditorReactComponent | EditorFactory
 
 /**
  * @deprecated Must be removed soon in factor or specifying the editor
