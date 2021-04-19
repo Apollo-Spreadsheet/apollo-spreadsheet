@@ -23,7 +23,7 @@ interface NestedRows {
 }
 
 const generateFakeData = () => {
-  const entries = 50
+  const entries = 49
   const rows: NestedRows[] = []
   for (let i = 0; i <= entries; i++) {
     rows.push({
@@ -84,7 +84,7 @@ export function NestedHeaders() {
     [],
   )
 
-  const headers: Column[] = useMemo(
+  const columns: Column[] = useMemo(
     () => [
       {
         id: 'order',
@@ -147,8 +147,9 @@ export function NestedHeaders() {
         rowHeight={30}
         stretchMode={StretchMode.All}
         nestedHeaders={nestedHeaders}
-        columns={headers}
+        columns={columns}
         rows={rows}
+        disableSort
       />
     </Box>
   )

@@ -1,41 +1,36 @@
-import { Box, IconButton, makeStyles, Theme } from '@material-ui/core'
+import { Box, IconButton } from '@material-ui/core'
 import React, { useCallback, useMemo, useState } from 'react'
 // eslint-disable-next-line import/no-extraneous-dependencies
 import faker from 'faker'
-import PersonIcon from '@material-ui/icons/Person'
-import MailIcon from '@material-ui/icons/Mail'
-import PublicIcon from '@material-ui/icons/Public'
-import { ApolloSpreadSheet, StretchMode, Column, useApiRef } from '../../../src'
+import {
+  ApolloSpreadSheet,
+  StretchMode,
+  Column,
+  useApiRef,
+  ColumnCellType,
+  CellEditorProps,
+} from '../../../src'
 import AddCircleIcon from '@material-ui/icons/AddCircle'
-
-const useStyles = makeStyles((theme: Theme) => ({
-  iconBtn: {
-    padding: 0,
-    cursor: 'default',
-    color: '#CCCCCC',
-    '&:hover': {
-      backgroundColor: 'transparent',
-    },
-  },
-}))
+import { CustomPopper } from './CustomPopper'
+import AssignmentIndIcon from '@material-ui/icons/AssignmentInd'
 
 interface CustomRows {
   id: string
   order: number
   name: string
-  country: string
+  age: number
   email: string
 }
 
 const generateFakeData = () => {
-  const entries = 49
+  const entries = 50
   const rows: CustomRows[] = []
   for (let i = 0; i <= entries; i++) {
     rows.push({
       id: faker.datatype.uuid(),
       order: i + 1,
       name: faker.name.findName(),
-      country: faker.address.country(),
+      age: faker.random.number(60),
       email: faker.internet.email(),
     })
   }
@@ -43,8 +38,7 @@ const generateFakeData = () => {
 }
 //const rows = generateFakeData()
 
-export function CustomHeaders() {
-  const classes = useStyles()
+export function Editors() {
   const apiRef = useApiRef()
   const [rows, setRows] = useState<CustomRows[]>(() => {
     return generateFakeData()
@@ -57,7 +51,7 @@ export function CustomHeaders() {
         id: `r-${Math.random()}`,
         order: prev.length + 1,
         name: '',
-        country: '',
+        age: 10,
         email: '',
       },
     ])
@@ -65,6 +59,10 @@ export function CustomHeaders() {
     const rowCount = apiRef.current.getRowsCount()
     apiRef.current.selectCell({ colIndex, rowIndex: rowCount - 1 })
   }, [apiRef])
+
+  const customEditor = useCallback(({ onRefMount, editorProps }: CellEditorProps) => {
+    return <CustomPopper ref={onRefMount} {...editorProps} />
+  }, [])
 
   const columns: Column[] = useMemo(
     () => [
@@ -86,48 +84,45 @@ export function CustomHeaders() {
       },
       {
         id: 'name',
-        title: '',
+        title: 'Client',
         accessor: 'name',
-        tooltip: 'Name',
+        tooltip: 'This editor only allows any input',
         width: '20%',
-        renderer: () => {
+        type: ColumnCellType.TextArea,
+      },
+      {
+        id: 'age',
+        title: 'Age',
+        accessor: 'age',
+        tooltip: 'This editor only allows numerical',
+        width: '5%',
+        type: ColumnCellType.Numeric,
+      },
+      {
+        id: 'custom',
+        title: 'Client Details',
+        accessor: 'custom',
+        tooltip: 'This is a custom editor',
+        width: 280,
+        editor: customEditor,
+        cellRenderer: () => {
           return (
-            <IconButton disabled className={classes.iconBtn}>
-              <PersonIcon />
+            <IconButton disabled>
+              <AssignmentIndIcon />
             </IconButton>
           )
         },
       },
       {
-        id: 'country',
-        title: '',
-        accessor: 'country',
-        tooltip: 'Country',
+        id: 'date',
+        title: 'Calendar',
+        accessor: 'date',
+        tooltip: 'Select a Date',
         width: '20%',
-        renderer: () => {
-          return (
-            <IconButton disabled className={classes.iconBtn}>
-              <PublicIcon />
-            </IconButton>
-          )
-        },
-      },
-      {
-        id: 'email',
-        title: '',
-        accessor: 'email',
-        tooltip: 'E-mail Adress',
-        width: '20%',
-        renderer: () => {
-          return (
-            <IconButton disabled className={classes.iconBtn}>
-              <MailIcon />
-            </IconButton>
-          )
-        },
+        type: ColumnCellType.Calendar,
       },
     ],
-    [classes.iconBtn, onCreateRowClick],
+    [customEditor, onCreateRowClick],
   )
 
   return (
@@ -142,7 +137,6 @@ export function CustomHeaders() {
         stretchMode={StretchMode.All}
         columns={columns}
         rows={rows}
-        disableSort
       />
     </Box>
   )
