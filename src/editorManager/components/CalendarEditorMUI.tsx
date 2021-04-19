@@ -1,3 +1,4 @@
+/*
 import React, { forwardRef, useCallback, useEffect, useImperativeHandle, useState } from 'react'
 import { EditorProps } from '../editorProps'
 import { Popper } from '@material-ui/core'
@@ -112,7 +113,7 @@ export const CalendarEditorMUI = forwardRef(
             }}
           />
         </MuiPickersUtilsProvider>
-        {/* <ReactDatePicker
+        {/!* <ReactDatePicker
           {...(additionalProps?.componentProps as ReactDatePickerProps)}
           id={'apollo-calendar'}
           autoFocus
@@ -126,8 +127,10 @@ export const CalendarEditorMUI = forwardRef(
           inline
           selected={state.value.toDate()}
           dateFormat="yyyy/MM/dd"
-        /> */}
+        /> *!/}
       </Popper>
     )
   },
 )
+*/
+export default {}
