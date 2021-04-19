@@ -2,7 +2,6 @@
 import React, { useCallback, useEffect, useState } from 'react'
 import { useApiExtends } from './useApiExtends'
 import { ApiRef, GridApi } from './types'
-import { GridTheme } from '../types'
 import { useLogger } from '../logger'
 import { ApolloInternalEvents } from './eventConstants'
 
@@ -10,13 +9,11 @@ import { ApolloInternalEvents } from './eventConstants'
  * Initializes a new api instance
  * @param gridRootRef
  * @param apiRef
- * @param theme
  * @param selectionKey
  */
 export function useApiFactory(
   gridRootRef: React.RefObject<HTMLDivElement>,
   apiRef: ApiRef,
-  theme?: GridTheme,
   selectionKey?: string,
 ): boolean {
   const logger = useLogger('useApiFactory')
@@ -47,12 +44,9 @@ export function useApiFactory(
     logger.debug('Initializing grid api.')
     apiRef.current.isInitialised = true
     apiRef.current.rootElementRef = gridRootRef
-    /** @todo Consider whether we should have a custom hook useTheme in order to delegate the update and sync **/
-    /** @todo Theme might change and so moving it out from here would be the best decision **/
-    apiRef.current.theme = theme
     apiRef.current.selectionKey = selectionKey ?? 'id'
     setInit(true)
-  }, [selectionKey, gridRootRef, apiRef, theme, logger])
+  }, [selectionKey, gridRootRef, apiRef, logger])
 
   const apiMethods: Partial<GridApi> = { subscribeEvent, dispatchEvent: publishEvent }
   useApiExtends(apiRef, apiMethods, 'CoreApi')

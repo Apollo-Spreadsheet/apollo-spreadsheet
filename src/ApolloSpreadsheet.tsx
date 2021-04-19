@@ -7,7 +7,7 @@ import { useMergeCells } from './mergeCells'
 import { useHeaders } from './columnGrid'
 import { useData } from './data'
 import { useRowSelection } from './rowSelection'
-import { Box, ClickAwayListener, useForkRef } from '@material-ui/core'
+import { ClickAwayListener, useForkRef } from '@material-ui/core'
 import { useEditorManager } from './editorManager'
 import { createPortal } from 'react-dom'
 import { GridContainer } from './gridContainer'
@@ -30,6 +30,7 @@ import { useLogger } from './logger'
 import { isFunctionType } from './helpers'
 
 import { NestedRowsProps, useNestedRows } from './nestedRows'
+import { useTheme } from './theme'
 
 const useStyles = makeStyles(() => ({
   root: {
@@ -67,9 +68,10 @@ export const ApolloSpreadSheet: React.FC<ApolloSpreadsheetProps> = forwardRef(
     ])
     const rootContainerRef = useRef<HTMLDivElement>(null)
     const forkedRef = useForkRef(rootContainerRef, componentRef)
-    const initialised = useApiFactory(rootContainerRef, apiRef, props.theme, props.selection?.key)
+    const initialised = useApiFactory(rootContainerRef, apiRef, props.selection?.key)
     const nestedRowsEnabled = props.nestedRows ?? false
     useEvents(rootContainerRef, apiRef)
+    useTheme({ apiRef, options: props.theme })
 
     const { gridHeaders, columns } = useHeaders({
       columns: props.columns,
