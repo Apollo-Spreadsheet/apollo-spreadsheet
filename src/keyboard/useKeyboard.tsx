@@ -15,17 +15,7 @@ import { ColumnCellType, Column } from '../columnGrid'
 import dayjs from 'dayjs'
 import { ROW_SELECTION_HEADER_ID } from '../rowSelection'
 import { debounce, DebouncedFunc } from 'lodash'
-import {
-  CELL_BEGIN_EDITING,
-  CELL_CLICK,
-  CELL_DOUBLE_CLICK,
-  ROWS_CHANGED,
-  useApiExtends,
-  NavigationApi,
-  ApiRef,
-  useApiEventHandler,
-  CELL_NAVIGATION_CHANGED,
-} from '../api'
+import { useApiExtends, NavigationApi, ApiRef, useApiEventHandler } from '../api'
 import { Row } from '../types'
 import { useLogger } from '../logger'
 import { CellClickOrDoubleClickEventParams } from './types/cell-click-double-params'
@@ -69,7 +59,7 @@ export function useKeyboard({
       const target = rows[coordsRef.current.rowIndex]
       if (!target) {
         coordsRef.current = defaultCoords
-        apiRef.current.dispatchEvent(CELL_NAVIGATION_CHANGED, { coords: coordsRef.current })
+        apiRef.current.dispatchEvent('CELL_NAVIGATION_CHANGED', { coords: coordsRef.current })
         setCoords(defaultCoords)
       }
     },
@@ -77,10 +67,10 @@ export function useKeyboard({
   )
 
   //Cancels the debounce if the editor is prematurely open
-  useApiEventHandler(apiRef, CELL_BEGIN_EDITING, onCellBeginEditing)
+  useApiEventHandler(apiRef, 'CELL_BEGIN_EDITING', onCellBeginEditing)
 
   //Subscribe for data changes to ensure the selected coordinates exist
-  useApiEventHandler(apiRef, ROWS_CHANGED, onRowsChanged)
+  useApiEventHandler(apiRef, 'ROWS_CHANGED', onRowsChanged)
 
   //Cleanup the debounce on unmount
   useEffect(
@@ -130,7 +120,7 @@ export function useKeyboard({
       if ((colIndex === -1 && rowIndex === -1) || force) {
         logger.debug('Force or negative -1 coordinates selected')
         coordsRef.current = { colIndex, rowIndex }
-        apiRef.current.dispatchEvent(CELL_NAVIGATION_CHANGED, { coords: coordsRef.current })
+        apiRef.current.dispatchEvent('CELL_NAVIGATION_CHANGED', { coords: coordsRef.current })
         return setCoords({ colIndex, rowIndex })
       }
 
@@ -205,7 +195,7 @@ export function useKeyboard({
       }
 
       coordsRef.current = { colIndex, rowIndex }
-      apiRef.current.dispatchEvent(CELL_NAVIGATION_CHANGED, { coords: coordsRef.current })
+      apiRef.current.dispatchEvent('CELL_NAVIGATION_CHANGED', { coords: coordsRef.current })
       setCoords({ colIndex, rowIndex })
     },
     [logger, coords, apiRef],
@@ -506,6 +496,19 @@ export function useKeyboard({
       const selector = createCellQuerySelector(coords)
       const cellElement = apiRef.current.rootElementRef?.current?.querySelector(selector)
       if (!cellElement) {
+        /**
+         * @todo Review the solution of scroll up to the selected coords
+         */
+        /*const gridRef = apiRef.current.getGridRef()
+        const scrollOfSelected = gridRef?.getOffsetForCell({
+          /!** @todo Alignment must come from props **!/
+          alignment: 'center',
+          rowIndex: coords.rowIndex,
+          columnIndex: coords.colIndex,
+        })
+        if (scrollOfSelected) {
+          return gridRef?.scrollToPosition(scrollOfSelected)
+        }*/
         return logger.debug(createSelectorElementNotFoundWarning(coords))
       }
 
@@ -647,8 +650,8 @@ export function useKeyboard({
 
   const getSelectedCoords = useCallback(() => coordsRef.current, [])
   useApiEventHandler(apiRef, 'keydown', onKeyDown)
-  useApiEventHandler(apiRef, CELL_CLICK, onCellClick)
-  useApiEventHandler(apiRef, CELL_DOUBLE_CLICK, onCellDoubleClick)
+  useApiEventHandler(apiRef, 'CELL_CLICK', onCellClick)
+  useApiEventHandler(apiRef, 'CELL_DOUBLE_CLICK', onCellDoubleClick)
   const navigationApi: NavigationApi = {
     getSelectedCoords,
     selectCell,
