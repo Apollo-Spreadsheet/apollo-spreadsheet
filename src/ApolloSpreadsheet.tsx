@@ -104,6 +104,7 @@ export const ApolloSpreadSheet: React.FC<ApolloSpreadsheetProps> = forwardRef(
       enabled: nestedRowsEnabled,
       defaultExpandedIds: props.defaultExpandedIds,
     })
+
     const sort = useSort(apiRef)
 
     const coords = useKeyboard({
@@ -188,8 +189,7 @@ export const ApolloSpreadSheet: React.FC<ApolloSpreadsheetProps> = forwardRef(
 
     return (
       <ClickAwayListener onClickAway={onClickAway}>
-        {/** @todo Replace div using a Box with full width/height and flex **/}
-        <div ref={forkedRef} className={classes.root}>
+        <div id="root-apollo" ref={forkedRef} className={classes.root}>
           <GridContainer
             columns={columns}
             minColumnWidth={minColumnWidth}

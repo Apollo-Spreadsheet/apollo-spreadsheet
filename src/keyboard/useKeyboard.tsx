@@ -193,7 +193,7 @@ export function useKeyboard({
             targetElement ?? apiRef.current.rootElementRef?.current?.querySelector(selector)
 
           if (!target) {
-            return logger.debug(createSelectorElementNotFoundWarning({ rowIndex, colIndex }))
+            return logger.warn(createSelectorElementNotFoundWarning({ rowIndex, colIndex }))
           }
 
           apiRef.current.beginEditing({

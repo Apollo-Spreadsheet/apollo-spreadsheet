@@ -35,6 +35,11 @@ export interface SelectionProps {
   cellClassName?: string | DynamicCallback<Row, string>
 
   /**
+   * @default false
+   */
+  disableNavigation?: boolean
+
+  /**
    * @default 2%
    */
   width?: React.ReactText

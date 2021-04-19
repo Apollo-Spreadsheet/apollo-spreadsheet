@@ -175,7 +175,7 @@ const GridWrapper: React.FC<GridWrapperProps> = React.memo(
         //Dummy zIndex is 0 and a spanned cell has 5 but a normal cell has 1
         const defaultZIndex = cell.dummy ? 0 : 1
         const zIndex = (cell.rowSpan || cell.colSpan) && !cell.dummy ? 5 : defaultZIndex
-        const isRowActive = isCellRowActive({ rowIndex, colIndex: columnIndex })
+        const isLineActive = isCellRowActive({ rowIndex, colIndex: columnIndex })
         const cellStyle: CSSProperties = { ...style }
 
         if (isSelected) {
@@ -209,7 +209,7 @@ const GridWrapper: React.FC<GridWrapperProps> = React.memo(
             ? column.cellClassName({ row, column })
             : column.cellClassName,
         )
-        if (isRowActive && !cell.dummy && theme?.currentRowClass) {
+        if (isLineActive && !cell.dummy && theme?.currentRowClass) {
           cellClassName = clsx(cellClassName, theme?.currentRowClass)
         }
 
