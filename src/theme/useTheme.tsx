@@ -1,6 +1,6 @@
-import { ApiRef, GridApi } from '../api'
+import { ApiRef, GridApi, ThemeApi, useApiExtends } from '../api'
 import { GridTheme } from '../types'
-import { useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { useLogger } from '../logger'
 
 interface Props {
@@ -12,6 +12,11 @@ export function useTheme({ apiRef, options }: Props): GridTheme | undefined {
   const loggerRef = useRef(logger)
   const api = useRef<GridApi>(apiRef.current)
   const [activeTheme, setActiveTheme] = useState<GridTheme | undefined>(options)
+  const themeRef = useRef<GridTheme | undefined>(activeTheme)
+
+  useEffect(() => {
+    themeRef.current = activeTheme
+  }, [activeTheme])
 
   useEffect(() => {
     api.current = apiRef.current
@@ -23,10 +28,19 @@ export function useTheme({ apiRef, options }: Props): GridTheme | undefined {
 
   useEffect(() => {
     loggerRef.current.debug('Theme options have changed')
-    api.current.theme = options
     api.current.dispatchEvent('THEME_CHANGED', options)
     setActiveTheme(options)
   }, [options])
 
+  const changeTheme = useCallback((options?: GridTheme) => {
+    setActiveTheme(options)
+  }, [])
+
+  const getTheme = useCallback(() => {
+    return themeRef.current
+  }, [])
+
+  const themeApi: ThemeApi = { changeTheme, getTheme }
+  useApiExtends(apiRef, themeApi, 'ThemeApi')
   return activeTheme
 }

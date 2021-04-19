@@ -118,7 +118,7 @@ export function MultiTheme() {
         stretchMode={StretchMode.All}
         columns={columns}
         rows={rows}
-        theme={themeRecord[activeThemeIndex].theme}
+        theme={activeThemeIndex === 3 ? undefined : themeRecord[activeThemeIndex].theme}
         highlightBorderColor={'#5984C2'}
       />
     </Box>

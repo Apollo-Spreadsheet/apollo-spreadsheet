@@ -8,10 +8,6 @@ import { ApolloInternalEvents } from '../eventConstants'
  */
 export interface CoreApi extends EventEmitter {
   /**
-   * The grid theme that is used to extend the default styling
-   */
-  theme?: GridTheme
-  /**
    * The react ref of the grid root container div element.
    */
   rootElementRef?: React.RefObject<HTMLDivElement>

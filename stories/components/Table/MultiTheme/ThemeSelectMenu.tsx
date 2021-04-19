@@ -45,6 +45,7 @@ export const ThemeSelectMenu: React.FC<Props> = memo(({ activeThemeIndex, handle
         <MenuItem value={0}>Dark Mode</MenuItem>
         <MenuItem value={1}>Light Mode</MenuItem>
         <MenuItem value={2}>Colored</MenuItem>
+        <MenuItem value={3}>Empty/No Theme</MenuItem>
       </Select>
     </FormControl>
   )
