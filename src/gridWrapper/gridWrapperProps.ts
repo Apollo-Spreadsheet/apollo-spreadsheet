@@ -12,6 +12,7 @@ import {
   ApolloVirtualizedProps,
 } from '../ApolloSpreadsheetProps'
 import { MergePosition } from '../mergeCells'
+import { GridTheme } from '../types'
 
 export type DisableSortFilterCallback = (column: Column) => boolean
 export type OutsideClickDeselectCallback = (target: HTMLElement) => boolean
@@ -39,4 +40,5 @@ export interface GridWrapperProps
   columnCount: number
   getColumnWidth: (index: Index) => number
   nestedRowsProps: NestedRowsProps
+  theme?: GridTheme
 }

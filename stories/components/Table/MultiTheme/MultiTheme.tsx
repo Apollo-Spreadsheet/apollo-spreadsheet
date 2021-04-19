@@ -1,18 +1,11 @@
-import { Box, FormControl, InputLabel, makeStyles, MenuItem, Select } from '@material-ui/core'
+import { Box } from '@material-ui/core'
 import React, { useCallback, useMemo, useState } from 'react'
-// eslint-disable-next-line import/no-extraneous-dependencies
 import faker from 'faker'
-import { ApolloSpreadSheet, StretchMode, Column, useApiRef } from '../../../src'
-import { useDarkModeTheme } from '../../theme/useDarkModeTheme'
-import { useLightModeTheme } from '../../theme/useLightModeTheme'
-import { useColoredTheme } from '../../theme/useColoredTheme'
-
-const useStyles = makeStyles(theme => ({
-  formControl: {
-    margin: theme.spacing(1),
-    minWidth: 120,
-  },
-}))
+import { ApolloSpreadSheet, StretchMode, Column, useApiRef } from '../../../../src'
+import { useDarkModeTheme } from '../../../theme/useDarkModeTheme'
+import { useLightModeTheme } from '../../../theme/useLightModeTheme'
+import { useColoredTheme } from '../../../theme/useColoredTheme'
+import { ThemeSelectMenu } from './ThemeSelectMenu'
 
 interface CustomRows {
   id: string
@@ -38,10 +31,8 @@ const generateFakeData = () => {
   }
   return rows
 }
-//const rows = generateFakeData()
 
 export function MultiTheme() {
-  const classes = useStyles()
   const apiRef = useApiRef()
   const coloredTheme = useColoredTheme()
   const darkTheme = useDarkModeTheme()
@@ -69,19 +60,10 @@ export function MultiTheme() {
     apiRef.current.selectCell({ colIndex, rowIndex: rowCount - 1 })
   }, [apiRef])
 
-  const [open, setOpen] = useState(false)
   const [activeThemeIndex, setActiveThemeIndex] = useState(0)
 
-  const handleChange = useCallback(event => {
-    setActiveThemeIndex(Number(event.target.value))
-  }, [])
-
-  const handleClose = useCallback(() => {
-    setOpen(false)
-  }, [])
-
-  const handleOpen = useCallback(() => {
-    setOpen(true)
+  const handleChange = useCallback((index: number) => {
+    setActiveThemeIndex(index)
   }, [])
 
   const columns: Column[] = useMemo(
@@ -125,22 +107,7 @@ export function MultiTheme() {
 
   return (
     <Box width={'100%'} height={'calc(100vh - 100px)'}>
-      <FormControl className={classes.formControl}>
-        <InputLabel id="demo-controlled-open-select-label">Select Theme</InputLabel>
-        <Select
-          labelId="demo-controlled-open-select-label"
-          id="demo-controlled-open-select"
-          open={open}
-          onClose={handleClose}
-          onOpen={handleOpen}
-          value={activeThemeIndex}
-          onChange={handleChange}
-        >
-          <MenuItem value={0}>Dark Mode</MenuItem>
-          <MenuItem value={1}>Light Mode</MenuItem>
-          <MenuItem value={2}>Colored</MenuItem>
-        </Select>
-      </FormControl>
+      <ThemeSelectMenu activeThemeIndex={activeThemeIndex} handleChange={handleChange} />
       <ApolloSpreadSheet
         apiRef={apiRef}
         minColumnWidth={10}

@@ -49,6 +49,7 @@ const GridWrapper: React.FC<GridWrapperProps> = React.memo(
     columns,
     nestedRowsProps,
     coords,
+    theme,
     ...props
   }) => {
     const logger = useLogger('GridWrapper')
@@ -175,7 +176,6 @@ const GridWrapper: React.FC<GridWrapperProps> = React.memo(
         const defaultZIndex = cell.dummy ? 0 : 1
         const zIndex = (cell.rowSpan || cell.colSpan) && !cell.dummy ? 5 : defaultZIndex
         const isRowActive = isCellRowActive({ rowIndex, colIndex: columnIndex })
-        const { theme } = apiRef.current
         const cellStyle: CSSProperties = { ...style }
 
         if (isSelected) {
@@ -326,6 +326,7 @@ const GridWrapper: React.FC<GridWrapperProps> = React.memo(
         props.highlightBorderColor,
         nestedRowsProps,
         logger,
+        theme,
       ],
     )
 

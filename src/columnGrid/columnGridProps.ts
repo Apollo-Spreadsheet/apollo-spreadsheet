@@ -10,6 +10,7 @@ import {
   ApolloVirtualizedProps,
 } from '../ApolloSpreadsheetProps'
 import { OnScrollParams } from 'react-virtualized'
+import { GridTheme } from '../types'
 
 export interface ColumnGridProps
   extends ApolloVirtualizedProps,
@@ -26,4 +27,5 @@ export interface ColumnGridProps
   scrollLeft: number
   nestedRowsEnabled: boolean
   onScroll?: (params: OnScrollParams) => any
+  theme?: GridTheme
 }

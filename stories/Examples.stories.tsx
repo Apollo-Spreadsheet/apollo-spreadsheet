@@ -2,7 +2,7 @@ import React from 'react'
 import { storiesOf } from '@storybook/react'
 import { Spreadsheet } from './components/Spreadsheet/Spreadsheet'
 import { VPD } from './components/VPD'
-import { MultiTheme } from './components/Table/MultiTheme'
+import { MultiTheme } from './components/Table/MultiTheme/MultiTheme'
 import { ApolloGrid } from './components/Grid/ApolloGrid'
 
 const isDevelopmentOnly = process.env.NODE_ENV === 'development'

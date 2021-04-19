@@ -14,6 +14,7 @@ import { createCellQueryProperties } from '../keyboard'
 import { useLogger } from '../logger'
 import { SortIndicator } from './components'
 import { GridCell } from '../gridWrapper'
+import api from 'simple-git/src/lib/api'
 
 type SortDisabled = boolean
 const useStyles = makeStyles(() => ({
@@ -124,11 +125,10 @@ export const ColumnGrid: React.FC<ColumnGridProps> = React.memo(props => {
   const headerRendererWrapper = useCallback(
     ({ style, cell, ref, columnIndex, rowIndex }: CellMeasureRendererProps<GridHeader>) => {
       const { title, renderer } = cell
-      const { theme } = props.apiRef.current
       //in case its not found, we set to true
       const isSortDisabled = props.nestedRowsEnabled ? true : headersSortDisabledMap[cell.id]
-      const { sort } = props
-      const { coords } = props
+      const { sort, theme, coords } = props
+
       const sortComponent =
         isSortDisabled || cell.accessor !== sort?.accessor ? null : (
           <div className={classes.sort}>{<SortIndicator order={sort?.order} />}</div>

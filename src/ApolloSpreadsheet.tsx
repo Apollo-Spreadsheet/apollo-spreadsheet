@@ -71,7 +71,7 @@ export const ApolloSpreadSheet: React.FC<ApolloSpreadsheetProps> = forwardRef(
     const initialised = useApiFactory(rootContainerRef, apiRef, props.selection?.key)
     const nestedRowsEnabled = props.nestedRows ?? false
     useEvents(rootContainerRef, apiRef)
-    useTheme({ apiRef, options: props.theme })
+    const theme = useTheme({ apiRef, options: props.theme })
 
     const { gridHeaders, columns } = useHeaders({
       columns: props.columns,
@@ -214,6 +214,7 @@ export const ApolloSpreadSheet: React.FC<ApolloSpreadsheetProps> = forwardRef(
                   apiRef={apiRef}
                   sort={sort}
                   nestedRowsEnabled={nestedRowsEnabled}
+                  theme={theme}
                 />
                 <GridWrapper
                   {...props}
@@ -235,6 +236,7 @@ export const ApolloSpreadSheet: React.FC<ApolloSpreadsheetProps> = forwardRef(
                   mergedPositions={mergedPositions}
                   isMerged={isMerged}
                   nestedRowsProps={nestedRowsProps}
+                  theme={theme}
                 />
               </div>
             )}
