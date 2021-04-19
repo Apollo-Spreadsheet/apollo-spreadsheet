@@ -8,6 +8,7 @@ import { ColumnApi } from './columnApi'
 import { SortApi } from './sortApi'
 import { NestedRowsApi } from './nestedRowsApi'
 import { ThemeApi } from './themeApi'
+import { GridWrapperApi } from './gridWrapperApi'
 
 export type GridApi = CoreApi &
   RowApi &
@@ -18,4 +19,5 @@ export type GridApi = CoreApi &
   ColumnApi &
   SortApi &
   NestedRowsApi &
-  ThemeApi
+  ThemeApi &
+  GridWrapperApi

@@ -16,6 +16,8 @@ import { StretchMode } from '../types'
 import { useLogger } from '../logger'
 import KeyboardArrowRightIcon from '@material-ui/icons/KeyboardArrowRight'
 import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown'
+import { useApiExtends } from '../api'
+import { GridWrapperApi } from '../api/types/gridWrapperApi'
 
 const useStyles = makeStyles(() => ({
   bodyContainer: {
@@ -87,29 +89,26 @@ const GridWrapper: React.FC<GridWrapperProps> = React.memo(
     const coordsRef = useRef(coords)
 
     useEffect(() => {
-      coordsRef.current = coords
-    }, [coords])
-
-    useEffect(() => {
       loggerRef.current = logger
     }, [logger])
 
     const recomputeSizes = useCallback(() => {
-      loggerRef.current.debug('Recomputing sizes.')
-      cacheRef.current.clearAll()
-      gridRef.current?.recomputeGridSize()
-
       /**
        * @todo Review because this might be the troublemaker related to checkbox selection
        */
       //Ensure we do have a valid index range (and if so we can scroll to that cell)
       if (coordsRef.current.rowIndex !== -1 && coordsRef.current.colIndex !== -1) {
         //When the re-computation happens the scroll position is affected and gets reset
+        loggerRef.current.debug('Scrolling to the selected cell')
         gridRef.current?.scrollToCell({
           columnIndex: coordsRef.current.colIndex,
           rowIndex: coordsRef.current.rowIndex,
         })
       }
+
+      loggerRef.current.debug('Recomputing sizes.')
+      cacheRef.current.clearAll()
+      gridRef.current?.recomputeGridSize()
     }, [])
 
     /** @todo We might need to perform some benchmark tests and ensure its not spamming **/
@@ -128,7 +127,13 @@ const GridWrapper: React.FC<GridWrapperProps> = React.memo(
       recomputeSizes,
     ])
 
+    const isMergeCellsEnabled = Array.isArray(props.mergeCells) && props.mergeCells.length > 0
     const activeRowPathCoordinates = useMemo(() => {
+      //Skip the heavy calculation process if its disabled
+      if (!isMergeCellsEnabled) {
+        return [] as NavigationCoords[]
+      }
+
       const coordinates: NavigationCoords[] = []
       const { rowIndex } = coords
       //Create the cell coordinates position with all columns on the active rowIndex
@@ -150,7 +155,7 @@ const GridWrapper: React.FC<GridWrapperProps> = React.memo(
         }
       })
       return coordinates
-    }, [apiRef, columns, coords, isMerged, logger])
+    }, [apiRef, columns, coords, isMergeCellsEnabled, isMerged, logger])
 
     /**
      * Checks if the given coordinates can use the currentClassName
@@ -159,11 +164,16 @@ const GridWrapper: React.FC<GridWrapperProps> = React.memo(
      */
     const isCellRowActive = useCallback(
       ({ rowIndex, colIndex }: NavigationCoords) => {
+        //Check directly on the coords
+        if (!isMergeCellsEnabled) {
+          return coords.rowIndex === rowIndex && coords.colIndex === colIndex
+        }
+
         return activeRowPathCoordinates.some(
           e => e.rowIndex === rowIndex && e.colIndex === colIndex,
         )
       },
-      [activeRowPathCoordinates],
+      [isMergeCellsEnabled, coords, activeRowPathCoordinates],
     )
 
     const renderCell = useCallback(
@@ -342,6 +352,7 @@ const GridWrapper: React.FC<GridWrapperProps> = React.memo(
           cell,
           getColumnWidth,
         }
+
         return cell ? (
           <CellMeasureWrapper
             cache={cache}
@@ -392,6 +403,13 @@ const GridWrapper: React.FC<GridWrapperProps> = React.memo(
       },
       [apiRef],
     )
+
+    const getGridRef = useCallback(() => {
+      return gridRef.current
+    }, [])
+
+    const gridWrapperApi: GridWrapperApi = { getGridRef }
+    useApiExtends(apiRef, gridWrapperApi, 'GridWrapperApi')
 
     return (
       <VirtualizedGrid

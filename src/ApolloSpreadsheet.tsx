@@ -199,7 +199,6 @@ export const ApolloSpreadSheet: React.FC<ApolloSpreadsheetProps> = forwardRef(
           >
             {({ scrollLeft, onScroll, getColumnWidth, width, height }) => (
               <div id="apollo-grids" className={props.className}>
-                {/** @todo We might have to attach onScroll in order for horizontal to work **/}
                 <ColumnGrid
                   {...props}
                   data={gridHeaders}

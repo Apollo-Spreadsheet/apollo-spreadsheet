@@ -103,14 +103,19 @@ export function useNestedRows({ apiRef, enabled, initialised, defaultExpandedIds
 
   //Load default ids
   useEffect(() => {
-    if (!isDefaultIdsExpanded.current && defaultIdsRef.current.length > 0 && initialised) {
+    if (
+      !isDefaultIdsExpanded.current &&
+      defaultIdsRef.current.length > 0 &&
+      initialised &&
+      enabled
+    ) {
       logger.info(
         `Expanded default ids: ${defaultIdsRef.current.length} on init state ${initialised}`,
       )
       isDefaultIdsExpanded.current = true
       toggleRowExpand(defaultIdsRef.current)
     }
-  }, [initialised, apiRef, toggleRowExpand, logger])
+  }, [initialised, apiRef, toggleRowExpand, logger, enabled])
 
   useApiEventHandler(apiRef, ROWS_CHANGED, onRowsChanged)
   useApiExtends(apiRef, nestedRowsApi, 'NestedRowsApi')
