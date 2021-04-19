@@ -13,8 +13,6 @@ import flattenDeep from 'lodash/flattenDeep'
 import { createCellQueryProperties } from '../keyboard'
 import { useLogger } from '../logger'
 import { SortIndicator } from './components'
-import { GridCell } from '../gridWrapper'
-import api from 'simple-git/src/lib/api'
 
 type SortDisabled = boolean
 const useStyles = makeStyles(() => ({
