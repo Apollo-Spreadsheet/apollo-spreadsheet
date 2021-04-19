@@ -272,7 +272,7 @@ export function useEditorManager({ onCellChange, apiRef }: EditorManagerProps) {
         maxLength: column.maxLength ?? 500,
         additionalProps: {
           ...column.editorProps,
-          className: clsx(apiRef.current.theme?.editorClass, column.editorProps?.className),
+          className: clsx(apiRef.current.getTheme()?.editorClass, column.editorProps?.className),
           componentProps:
             typeof column.editorProps?.componentProps === 'function'
               ? column.editorProps?.componentProps(row, column)
