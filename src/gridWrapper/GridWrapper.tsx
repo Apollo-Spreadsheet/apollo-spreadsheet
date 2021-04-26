@@ -16,8 +16,7 @@ import { StretchMode } from '../types'
 import { useLogger } from '../logger'
 import KeyboardArrowRightIcon from '@material-ui/icons/KeyboardArrowRight'
 import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown'
-import { useApiExtends } from '../api'
-import { GridWrapperApi } from '../api/types/gridWrapperApi'
+import { useApiExtends, GridWrapperApi } from '../api'
 
 const useStyles = makeStyles(() => ({
   bodyContainer: {
@@ -25,7 +24,6 @@ const useStyles = makeStyles(() => ({
   },
   cellDefaultStyle: {
     display: 'flex',
-    backgroundColor: 'white',
     boxSizing: 'border-box',
     '&:focus': {
       outline: 0,
@@ -204,6 +202,11 @@ const GridWrapper: React.FC<GridWrapperProps> = React.memo(
           cellStyle.borderTop = '0px'
           cellStyle.borderBottom = '0px'
           cellStyle.border = '1px solid rgb(204, 204, 204)'
+        }
+
+        //Add default dummy color when a cell class is not provided by default
+        if (cell.dummy && !theme?.cellClass) {
+          cellStyle.backgroundColor = 'white'
         }
 
         /**
