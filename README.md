@@ -38,30 +38,6 @@ Apollo does not mutate date, relies on React updates, its built using Typescript
 ## Documentation
 https://apollo-docs.famousgadget.pt
 
-### Development
-
-All you have to do is run `yarn docs:dev` or jump into docs folder and run `yarn start`
-
-### Deployment
-
-You have to run either `yarn docs:build` or jump into docs folder and run `yarn build`
-The next step is to copy the generated build files and paste into our provider via FTP folder (OVH)
-
 ## Storybook
+https://apollo-storybook.famousgadget.pt
 
-### Development
-
-All you have to do is run `yarn storybook:dev`
-
-### Deployment
-
-You have to run either `yarn storybook:build`
-The next step is to copy the generated build files and paste into our provider via FTP folder (OVH)
-
-## Releases
-
-This plugin is under development, there are not yet any further release date
-
-## Warning
-
-`Do not use this in production, the api may suffer some changes and there might be a lot of incoming patch versions therefore you can watch the releases and stay tune for incoming majors`
