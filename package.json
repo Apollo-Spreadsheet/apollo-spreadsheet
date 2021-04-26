@@ -5,12 +5,12 @@
   "types": "dist/index.d.ts",
   "description": "React excel like fast grid plugin",
   "homepage": "https://apollo.famousgadget.pt/",
-  "bugs": "https://github.com/underfisk/apollo-spreadsheet/issues",
-  "author": "Enigma/Underfisk",
+  "bugs": "https://github.com/Apollo-Spreadsheet/apollo-spreadsheet/issues",
+  "author": "apollo-spreadsheet",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/underfisk/apollo-spreadsheet.git"
+    "url": "https://github.com/Apollo-Spreadsheet/apollo-spreadsheet.git"
   },
   "engines": {
     "node": ">= 8"
