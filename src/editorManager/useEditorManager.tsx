@@ -2,18 +2,14 @@ import React, { useCallback, useEffect, useRef, useState } from 'react'
 import { ROW_SELECTION_HEADER_ID } from '../rowSelection'
 import { NavigationCoords } from '../keyboard'
 import { ColumnCellType, Column } from '../columnGrid'
-import TextEditor from './components/TextEditor'
-import NumericEditor from './components/NumericEditor'
 import { EditorProps } from './editorProps'
-import { CalendarEditor } from './components'
 import { isFunctionType } from '../helpers'
 import { useApiExtends, EditorManagerApi } from '../api'
 import clsx from 'clsx'
 import { useLogger } from '../logger'
-import { Row } from '../types'
 import valueEqual from 'value-equal'
 import { ApolloCoreProps, ApolloCrudProps } from '../ApolloSpreadsheetProps'
-import ReactIs from 'react-is'
+import { getEditorComponent } from './utils'
 
 export interface StopEditingParams {
   /** @default true **/
@@ -192,28 +188,6 @@ export function useEditorManager({ onCellChange, apiRef }: EditorManagerProps) {
     [validateEditorRef],
   )
 
-  const getEditor = useCallback(
-    (row: Row, column: Column, props: EditorProps) => {
-      let EditorComponent: any = TextEditor
-
-      if (column.editor) {
-        //Check the type of this editor
-        if (isFunctionType(column.editor)) {
-          EditorComponent = column.editor({ row, column, onRefMount, editorProps: props })
-        } else {
-          EditorComponent = column.editor
-        }
-      } else if (column.type === ColumnCellType.Calendar) {
-        EditorComponent = CalendarEditor
-      } else if (column.type === ColumnCellType.Numeric) {
-        EditorComponent = NumericEditor
-      }
-
-      return React.createElement(EditorComponent, { ...props, ref: onRefMount })
-    },
-    [onRefMount],
-  )
-
   /**
    * Starts editing in a given cell considering multiple configurations
    * @param   coords  NavigationCoords
@@ -283,7 +257,7 @@ export function useEditorManager({ onCellChange, apiRef }: EditorManagerProps) {
         apiRef,
       }
 
-      const editor = getEditor(row, column, editorProps)
+      const editor = getEditorComponent(row, column, editorProps, onRefMount)
       state.current = {
         node: editor,
         rowIndex: coords.rowIndex,
@@ -298,7 +272,7 @@ export function useEditorManager({ onCellChange, apiRef }: EditorManagerProps) {
       setEditorNode(editor)
       apiRef.current.dispatchEvent('CELL_BEGIN_EDITING', coords)
     },
-    [logger, apiRef, stopEditing, getEditor],
+    [logger, apiRef, stopEditing, onRefMount],
   )
 
   const getEditorState = useCallback(() => {
