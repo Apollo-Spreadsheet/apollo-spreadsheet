@@ -2,7 +2,7 @@ import React, { useRef } from 'react'
 import { renderHook, act } from '@testing-library/react-hooks'
 import { useData } from '../useData'
 import { createColumnMock } from '../../columnGrid/__mocks__/column-mock'
-import { MergeCell } from '../../mergeCells/interfaces'
+import { MergeCell } from "../../mergeCells"
 import { useMergeCells } from '../../mergeCells'
 import { useApiExtends, useApiFactory, useApiRef } from '../../api'
 import { useHeaders } from '../../columnGrid'
@@ -22,6 +22,7 @@ describe('useData hook', () => {
 	it('should mount without any data', () => {
 		const emptyRows = []
 		const { result } = renderHook(() => useData({
+			nestedRowsEnabled: false,
 			apiRef: apiRefMock,
 			rows: emptyRows,
 			initialised: true
@@ -36,6 +37,7 @@ describe('useData hook', () => {
 		})
 		const rows = [{ id: 1 }]
 		const { result } = renderHook(() => useData({
+			nestedRowsEnabled: false,
 			rows,
 			apiRef: apiRefMock,
 			initialised: apiRefMock.current.isInitialised
@@ -66,6 +68,7 @@ describe('useData hook', () => {
 		})
 
 		const { result } = renderHook(() => useData({
+			nestedRowsEnabled: false,
 			rows,
 			apiRef: apiRefLocal,
 			initialised: apiRefLocal.current.isInitialised

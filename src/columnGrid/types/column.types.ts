@@ -30,7 +30,7 @@ export type HeaderRenderer<Key = string, Metadata = any> = (
   column: ColumnRendererProps<Key, Metadata>,
 ) => JSX.Element
 
-export type EditorReactComponent = JSX.Element
+export type EditorReactComponent = JSX.Element | React.ForwardRefExoticComponent<any>
 export type EditorFactory = (cellProps: CellEditorProps) => JSX.Element
 export type ICellEditor = EditorReactComponent | EditorFactory
 

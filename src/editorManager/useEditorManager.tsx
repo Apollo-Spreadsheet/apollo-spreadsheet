@@ -258,6 +258,10 @@ export function useEditorManager({ onCellChange, apiRef }: EditorManagerProps) {
       }
 
       const editor = getEditorComponent(row, column, editorProps, onRefMount)
+      if (!editor) {
+        return logger.warn('Editor not found on active coordinates, returned undefined or null')
+      }
+
       state.current = {
         node: editor,
         rowIndex: coords.rowIndex,

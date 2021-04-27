@@ -2,12 +2,6 @@ import React from 'react'
 import PeopleIcon from '@material-ui/icons/People'
 import { ColumnCellType, Column } from '../../../src'
 
-const MyCustomEditor = React.forwardRef((props, ref) => {
-  console.error('MY CUSTOM EDITOR')
-  console.log(props)
-  return <div>hello</div>
-})
-
 export function useTopCase(calendarClass?: string) {
   const headerData: Column[] = [
     {
@@ -15,7 +9,6 @@ export function useTopCase(calendarClass?: string) {
       title: 'Deliverable',
       accessor: 'deliverableBody',
       width: '15%',
-      editor: MyCustomEditor,
     },
     {
       id: 'wp',
