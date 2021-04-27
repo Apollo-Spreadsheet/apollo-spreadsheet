@@ -1,7 +1,7 @@
-import { createColumnWidthsMapping } from '../utils/createColumnWidthsMapping'
-import { StretchMode } from '../../types/stretch-mode.enum'
-import { Column } from '../types/header.type'
+import { createColumnWidthsMapping } from "../utils"
+import { StretchMode } from "../../types"
 import { createColumnMock } from '../__mocks__/column-mock'
+import { Column } from "../types";
 
 describe('createFixedWidthMapping()', () => {
 	it('should return an empty map and total size as 0', () => {

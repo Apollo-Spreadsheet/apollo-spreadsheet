@@ -22,6 +22,7 @@ describe('useEditorManager hook', () => {
 		useHeaders({ columns: mockedColumns, apiRef: ref, initialised: true, minColumnWidth: 30 })
 		useMergeCells({ mergeCells: [], apiRef: ref, initialised: true, rowCount: 2, columnCount: 1})
 		useData({
+			nestedRowsEnabled: false,
 			apiRef: ref,
 			initialised: ref.current.isInitialised,
 			rows: [{
@@ -30,7 +31,7 @@ describe('useEditorManager hook', () => {
 			}, {
 				id: '222',
 				name: 'test',
-			}],
+			}]
 		})
 		return ref
 	})
@@ -55,12 +56,13 @@ describe('useEditorManager hook', () => {
 			useHeaders({ columns: mockedColumns, apiRef: ref, initialised: true, minColumnWidth: 30 })
 			useMergeCells({ mergeCells: [], apiRef: ref, initialised: true, rowCount: 1, columnCount: 1})
 			useData({
+				nestedRowsEnabled: false,
 				apiRef: ref,
 				initialised: ref.current.isInitialised,
 				rows: [{
 					id: '1',
 					name: 'test',
-				}],
+				}]
 			})
 			useRowSelection(ref, true, { key: 'id'})
 			return ref

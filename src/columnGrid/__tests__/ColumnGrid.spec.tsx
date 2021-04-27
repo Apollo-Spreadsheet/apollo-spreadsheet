@@ -1,10 +1,10 @@
 import { shallow } from 'enzyme'
 import ColumnGrid from '../ColumnGrid'
-import { ColumnGridProps } from '../column-grid-props'
 import React from 'react'
 import { createColumnMock } from '../__mocks__/column-mock'
 import { renderHook } from '@testing-library/react-hooks'
 import { useApiRef } from '../../api'
+import { ColumnGridProps } from "../columnGridProps";
 
 describe('<ColumnGrid />', () => {
 	const { result: { current: apiRefMock }} = renderHook(() => useApiRef())

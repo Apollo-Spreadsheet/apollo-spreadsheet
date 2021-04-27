@@ -1,4 +1,4 @@
-import { percentageToPixels } from '../utils/percentageToPixels'
+import { percentageToPixels } from "../utils"
 
 describe('percentageToPixels()', () => {
 	it('should parse to pixels according to the containerWidth', () => {

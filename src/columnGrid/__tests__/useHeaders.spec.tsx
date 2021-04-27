@@ -1,10 +1,10 @@
 import React, { useRef } from 'react'
 import { renderHook } from '@testing-library/react-hooks'
-import { useHeaders } from '../useHeaders'
 import { StretchMode } from '../../types'
 import { createColumnMock } from '../__mocks__/column-mock'
 import { GridHeader } from '../types'
 import { useApiFactory, useApiRef } from '../../api'
+import { useHeaders } from "../hooks";
 
 describe('useHeaders hook', () => {
 	const { result: { current: apiRefMock }} = renderHook(() => {
