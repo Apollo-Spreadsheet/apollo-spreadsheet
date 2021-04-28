@@ -155,9 +155,7 @@ export const ApolloSpreadSheet: React.FC<ApolloSpreadsheetProps> = forwardRef(
             )
             return clearFocus()
           }
-        }
-
-        if (props.outsideClickDeselects) {
+        } else if (props.outsideClickDeselects) {
           logger.debug('Grid outsideClickDeselects is passed as `true` value')
           clearFocus()
         }
