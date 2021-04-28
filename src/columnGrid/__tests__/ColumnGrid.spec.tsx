@@ -1,18 +1,18 @@
 import { shallow } from 'enzyme'
 import ColumnGrid from '../ColumnGrid'
 import React from 'react'
-import { createColumnMock } from '../__mocks__/column-mock'
 import { renderHook } from '@testing-library/react-hooks'
 import { useApiRef } from '../../api'
 import { ColumnGridProps } from "../columnGridProps";
+import { createColumnFixture } from "../fixtures/column.fixture";
 
 describe('<ColumnGrid />', () => {
 	const { result: { current: apiRefMock }} = renderHook(() => useApiRef())
 	const props: ColumnGridProps = {
 		sort: null,
 		columns: [
-			createColumnMock({ id: '1', width: 100, title: 'First' }),
-			createColumnMock({ id: '12', title: 'Second', tooltip: 'Test' }),
+			createColumnFixture({ id: '1', width: 100, title: 'First' }),
+			createColumnFixture({ id: '12', title: 'Second', tooltip: 'Test' }),
 		],
 		data: [],
 		minRowHeight: 10,
