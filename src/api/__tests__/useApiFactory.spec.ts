@@ -13,7 +13,6 @@ describe('useApiFactory', () => {
 		})
 		expect(result.current).toEqual(true)
 		expect(apiRefMock.current.isInitialised).toEqual(true)
-		expect(apiRefMock.current.theme).toBeUndefined()
 		expect(apiRefMock.current.rootElementRef).toEqual(mockedDivRef.current)
 	})
 
@@ -24,11 +23,10 @@ describe('useApiFactory', () => {
 		}
 		const { result: { current: apiRefMock } } = renderHook(() => useApiRef())
 		const { result } = renderHook(() => {
-			return useApiFactory(mockedDivRef.current, apiRefMock, customTheme)
+			return useApiFactory(mockedDivRef.current, apiRefMock)
 		})
 		expect(result.current).toEqual(true)
 		expect(apiRefMock.current.isInitialised).toEqual(true)
-		expect(apiRefMock.current.theme).toEqual(customTheme)
 		expect(apiRefMock.current.rootElementRef).toEqual(mockedDivRef.current)
 	})
 })

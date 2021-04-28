@@ -1,26 +1,27 @@
 import React, { useRef } from 'react'
 import { renderHook, act } from '@testing-library/react-hooks'
 import { useData } from '../useData'
-import { createColumnMock } from '../../columnGrid/__mocks__/column-mock'
 import { MergeCell } from "../../mergeCells"
 import { useMergeCells } from '../../mergeCells'
-import { useApiExtends, useApiFactory, useApiRef } from '../../api'
+import { useApiFactory, useApiRef } from '../../api'
 import { useHeaders } from '../../columnGrid'
+import { createColumnFixture } from "../../columnGrid/fixtures/column.fixture";
 
 describe('useData hook', () => {
-	const mockedColumns = [createColumnMock()]
+	const mockedColumns = [createColumnFixture()]
 	const mockedMergedCells = []
-	const { result: { current: apiRefMock }} = renderHook(() => {
-		const ref = useApiRef()
-		const divRef = useRef(document.createElement('div'))
-		useApiFactory(divRef, ref)
-		useHeaders({ columns: mockedColumns, apiRef: ref, initialised: true, minColumnWidth: 10 })
-		useMergeCells({ mergeCells: mockedMergedCells, columnCount: 1, rowCount: 0, apiRef: ref, initialised: true })
-		return ref
-	})
 
 	it('should mount without any data', () => {
 		const emptyRows = []
+		const { result: { current: apiRefMock }} = renderHook(() => {
+			const ref = useApiRef()
+			const divRef = useRef(document.createElement('div'))
+			useApiFactory(divRef, ref)
+			useHeaders({ columns: mockedColumns, apiRef: ref, initialised: true, minColumnWidth: 10 })
+			useMergeCells({ mergeCells: mockedMergedCells, columnCount: 1, rowCount: 0, apiRef: ref, initialised: true })
+			return ref
+		})
+
 		const { result } = renderHook(() => useData({
 			nestedRowsEnabled: false,
 			apiRef: apiRefMock,
@@ -32,9 +33,15 @@ describe('useData hook', () => {
 	})
 
 	it('should mount with rows (no merge cells)', () => {
-		act(() => {
-			apiRefMock.current.updateColumns([createColumnMock()])
+		const { result: { current: apiRefMock }} = renderHook(() => {
+			const ref = useApiRef()
+			const divRef = useRef(document.createElement('div'))
+			useApiFactory(divRef, ref)
+			useHeaders({ columns: mockedColumns, apiRef: ref, initialised: true, minColumnWidth: 10 })
+			useMergeCells({ mergeCells: mockedMergedCells, columnCount: 1, rowCount: 0, apiRef: ref, initialised: true })
+			return ref
 		})
+
 		const rows = [{ id: 1 }]
 		const { result } = renderHook(() => useData({
 			nestedRowsEnabled: false,
@@ -58,6 +65,7 @@ describe('useData hook', () => {
 			colSpan: 1,
 			colIndex: 0,
 		}]
+
 		const { result: { current: apiRefLocal }} = renderHook(() => {
 			const ref = useApiRef()
 			const divRef = useRef(document.createElement('div'))
@@ -74,7 +82,6 @@ describe('useData hook', () => {
 			initialised: apiRefLocal.current.isInitialised
 		}))
 
-		expect(apiRefLocal.current.getCells()).toEqual(result)
-		expect(apiRefLocal.current.getCells()).toMatchSnapshot()
+		expect(apiRefLocal.current.getCells()).toEqual(result.current.cells)
 	})
 })

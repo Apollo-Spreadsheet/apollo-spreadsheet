@@ -1,19 +1,19 @@
 import { renderHook, act } from '@testing-library/react-hooks'
 import { useEditorManager } from '../useEditorManager'
-import { createColumnMock } from '../../columnGrid/__mocks__/column-mock'
 import {  useRowSelection } from "../../rowSelection"
 import React, { useRef } from 'react'
 import { useApiFactory, useApiRef } from '../../api'
 import { useData } from '../../data'
 import { useHeaders } from '../../columnGrid'
 import { useMergeCells } from '../../mergeCells'
+import { createColumnFixture } from "../../columnGrid/fixtures/column.fixture";
 
 describe('useEditorManager hook', () => {
 	const { result: { current: apiRefMock }} = renderHook(() => {
 		const ref = useApiRef()
 		const divRef = useRef(document.createElement('div'))
 		const mockedColumns = [
-			createColumnMock({
+			createColumnFixture({
 				id: 'test',
 				accessor: 'name',
 			})
@@ -48,7 +48,7 @@ describe('useEditorManager hook', () => {
 			const divRef = useRef(document.createElement('div'))
 			useApiFactory(divRef, ref)
 			const mockedColumns = [
-				createColumnMock({
+				createColumnFixture({
 					id: 'test',
 					accessor: 'name',
 				})
