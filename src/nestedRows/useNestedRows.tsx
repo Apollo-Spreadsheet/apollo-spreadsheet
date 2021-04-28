@@ -12,6 +12,7 @@ import { Row } from '../types'
 import { DepthMap } from './depth-map.interface'
 import { ApolloCoreProps } from '../ApolloSpreadsheetProps'
 import { NestedRowsProps } from './nestedRowsProps'
+import { uniq } from 'lodash'
 
 interface Props extends Required<ApolloCoreProps>, Pick<NestedRowsProps, 'defaultExpandedIds'> {
   enabled: boolean
@@ -23,7 +24,7 @@ interface Props extends Required<ApolloCoreProps>, Pick<NestedRowsProps, 'defaul
  */
 export function useNestedRows({ apiRef, enabled, initialised, defaultExpandedIds }: Props) {
   const expandedRowIds = useRef<string[]>([])
-  const defaultIdsRef = useRef<string[]>(defaultExpandedIds ?? [])
+  const defaultIdsRef = useRef<string[]>(uniq(defaultExpandedIds) ?? [])
   const isDefaultIdsExpanded = useRef(false)
   const rowsDepthMap = useRef<DepthMap>({})
   const logger = useLogger('useNestedRows')
