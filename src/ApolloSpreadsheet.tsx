@@ -143,17 +143,22 @@ export const ApolloSpreadSheet: React.FC<ApolloSpreadsheetProps> = forwardRef(
         if (!gridFocused) {
           return
         }
-        if (
-          isFunctionType(props.outsideClickDeselects) &&
-          props.outsideClickDeselects(event.target as HTMLElement)
-        ) {
-          logger.debug('Grid click away detected.')
-          return clearFocus()
+
+        //Handle callback style
+        if (isFunctionType(props.outsideClickDeselects)) {
+          const shouldClearFocus = props.outsideClickDeselects(event.target as HTMLElement)
+          if (shouldClearFocus) {
+            logger.debug(
+              `Grid click away detected. Callback returned false on target element id: ${
+                (event.target as HTMLElement).id
+              }`,
+            )
+            return clearFocus()
+          }
         }
 
         if (props.outsideClickDeselects) {
-          logger.debug('Grid click away detected.')
-          setGridFocused(false)
+          logger.debug('Grid outsideClickDeselects is passed as `true` value')
           clearFocus()
         }
       },
