@@ -139,7 +139,7 @@ export const ApolloSpreadSheet: React.FC<ApolloSpreadsheetProps> = forwardRef(
     }, [apiRef, gridFocused, logger])
 
     const onClickAway = useCallback(
-      (event: React.MouseEvent<Document>) => {
+      (event: MouseEvent | TouchEvent) => {
         if (!gridFocused) {
           return
         }
