@@ -9,7 +9,7 @@ interface CustomRows {
   order: number
   name: string
   country: string
-  address: string
+  createdAt: Date
   email: string
 }
 
@@ -22,7 +22,7 @@ const generateFakeData = () => {
       order: i + 1,
       name: faker.name.firstName(),
       country: faker.address.country(),
-      address: faker.address.streetAddress(),
+      createdAt: new Date(),
       email: faker.internet.email(),
     })
   }
@@ -45,7 +45,7 @@ export const TestingEditors = () => {
         order: prev.length + 1,
         name: '',
         country: '',
-        address: '',
+        createdAt: new Date(),
         email: '',
       },
     ])
@@ -66,33 +66,23 @@ export const TestingEditors = () => {
         disableCellPaste: true,
       },
       {
-        id: 'name',
-        title: 'Name',
-        accessor: 'name',
-        width: '25%',
-        editorProps: {
-          style: {
-            backgroundColor: 'black',
-            color: 'white',
-          },
-          containerProps: {
-            backgroundColor: 'black',
-            color: 'white',
-          },
-        },
-      },
-      {
         id: 'country',
         title: 'Country',
         accessor: 'country',
         width: '20%',
-        type: ColumnCellType.Numeric,
       },
       {
         id: 'address',
         title: 'Address',
         accessor: 'address',
         width: '20%',
+      },
+      {
+        id: 'createdAtColumn',
+        title: 'Date For Test',
+        accessor: 'createdAt',
+        width: '25%',
+        type: ColumnCellType.Calendar,
       },
       {
         id: 'email',

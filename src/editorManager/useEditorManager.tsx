@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react'
 import { ROW_SELECTION_HEADER_ID } from '../rowSelection'
 import { NavigationCoords } from '../keyboard'
-import { ColumnCellType, Column } from '../columnGrid'
+import { ColumnCellType, Column, ColumnEditorProps, ComponentPropsType } from '../columnGrid'
 import { EditorProps } from './editorProps'
 import { isFunctionType } from '../helpers'
 import { useApiExtends, EditorManagerApi } from '../api'
@@ -240,6 +240,15 @@ export function useEditorManager({ onCellChange, apiRef }: EditorManagerProps) {
 
       const initialValue = row[column.accessor] ?? ''
 
+      let componentProps: ComponentPropsType | undefined
+      const columnEditorProps = column.editorProps
+      if (isFunctionType(columnEditorProps?.componentProps)) {
+        componentProps = columnEditorProps?.componentProps(row, column)
+      }
+      if (columnEditorProps?.componentProps) {
+        componentProps = columnEditorProps?.componentProps
+      }
+
       const editorProps: EditorProps = {
         anchorRef: targetElement,
         value,
@@ -247,10 +256,7 @@ export function useEditorManager({ onCellChange, apiRef }: EditorManagerProps) {
         additionalProps: {
           ...column.editorProps,
           className: clsx(apiRef.current.getTheme()?.editorClass, column.editorProps?.className),
-          componentProps:
-            typeof column.editorProps?.componentProps === 'function'
-              ? column.editorProps?.componentProps(row, column)
-              : column.editorProps?.componentProps,
+          componentProps,
         },
         stopEditing,
         validatorHook: column.validatorHook,

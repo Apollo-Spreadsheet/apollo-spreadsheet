@@ -1,10 +1,15 @@
-import React, { forwardRef, useCallback, useEffect, useImperativeHandle, useState } from 'react'
-import { EditorProps } from '../editorProps'
-import { Popper } from '@material-ui/core'
-import ReactDatePicker, { ReactDatePickerProps } from 'react-datepicker'
-import dayjs from 'dayjs'
+import * as React from 'react'
+import TextField from '@material-ui/core/TextField'
+import AdapterDateFns from '@material-ui/lab/AdapterDateFns'
+import LocalizationProvider from '@material-ui/lab/LocalizationProvider'
+import StaticDatePicker from '@material-ui/lab/StaticDatePicker'
 import { makeStyles } from '@material-ui/core/styles'
 import clsx from 'clsx'
+import { EditorProps } from '../editorProps'
+import { forwardRef, useCallback, useEffect, useImperativeHandle, useState } from 'react'
+import { ClickAwayListener, Popper } from '@material-ui/core'
+import dayjs from 'dayjs'
+import { StaticDatePickerProps } from '@material-ui/lab/StaticDatePicker/StaticDatePicker'
 
 const useStyles = makeStyles(() => ({
   root: {
@@ -34,77 +39,80 @@ export const CalendarEditor = forwardRef(
       }
     }, [state.close, stopEditing])
 
+    const onClickAway = useCallback(() => {
+      stopEditing({ save: false })
+    }, [stopEditing])
+
     const onKeyDown = useCallback(
       (e: KeyboardEvent) => {
-        if (e.key === 'Tab') {
-          e.preventDefault()
-          e.stopImmediatePropagation()
-        }
-
-        if (e.key === 'ArrowUp') {
-          e.preventDefault()
-          setState({ ...state, value: state.value.subtract(1, 'week') })
-        }
-
-        if (e.key === 'ArrowDown') {
-          e.preventDefault()
-          setState({ ...state, value: state.value.add(1, 'week') })
-        }
-        if (e.key === 'ArrowRight') {
-          e.preventDefault()
-          setState({ ...state, value: state.value.add(1, 'day') })
-        }
-        if (e.key === 'ArrowLeft') {
-          e.preventDefault()
-          setState({ ...state, value: state.value.subtract(1, 'day') })
-        }
-
-        if (e.key === 'Enter') {
-          e.preventDefault()
-          stopEditing({ save: true })
-        }
-
         if (e.key === 'Escape') {
           e.preventDefault()
           stopEditing({ save: false })
         }
       },
-      [state, stopEditing],
+      [stopEditing],
     )
 
     useEffect(() => {
       document.addEventListener('keydown', onKeyDown)
       return () => document.removeEventListener('keydown', onKeyDown)
-    }, [onKeyDown, state])
+    }, [onKeyDown])
 
-    const onChange = useCallback((date: Date) => {
+    const onChange = useCallback(date => {
       setState({ value: dayjs(date), close: true })
     }, [])
 
+    const popperModifiers = [
+      {
+        name: 'flip',
+        enabled: true,
+        options: {
+          altBoundary: true,
+          rootBoundary: 'document',
+          padding: 8,
+        },
+      },
+      {
+        name: 'preventOverflow',
+        enabled: true,
+        options: {
+          altAxis: true,
+          altBoundary: true,
+          tether: true,
+          rootBoundary: document,
+          padding: 8,
+        },
+      },
+      {
+        name: 'arrow',
+        enabled: false,
+      },
+    ]
+
     return (
-      <Popper
-        open
-        id={'apollo-calendar'}
-        anchorEl={anchorRef}
-        placement={'right-start'}
-        className={clsx(classes.root, additionalProps?.className)}
-      >
-        <ReactDatePicker
-          {...(additionalProps?.componentProps as ReactDatePickerProps)}
-          id={'apollo-calendar'}
-          autoFocus
-          calendarClassName={classes.calendarContainer}
-          showTimeInput={false}
-          showPopperArrow={false}
-          shouldCloseOnSelect
-          onClickOutside={() => stopEditing({ save: false })}
-          onChange={onChange}
+      <ClickAwayListener onClickAway={onClickAway}>
+        <Popper
           open
-          inline
-          selected={state.value.toDate()}
-          dateFormat="yyyy/MM/dd"
-        />
-      </Popper>
+          id={'apollo-calendar'}
+          anchorEl={anchorRef}
+          placement={'right-start'}
+          keepMounted={false}
+          className={clsx(classes.root, additionalProps?.className)}
+          modifiers={popperModifiers}
+        >
+          <LocalizationProvider dateAdapter={AdapterDateFns}>
+            <StaticDatePicker
+              {...(additionalProps?.componentProps as StaticDatePickerProps)}
+              displayStaticWrapperAs="desktop"
+              openTo="day"
+              value={value}
+              onChange={onChange}
+              renderInput={() => <div />}
+              allowKeyboardControl
+            />
+          </LocalizationProvider>
+        </Popper>
+      </ClickAwayListener>
     )
   },
 )

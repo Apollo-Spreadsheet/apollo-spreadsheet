@@ -6,6 +6,8 @@ import { ReactDatePickerProps } from 'react-datepicker'
 import { Row, DynamicCallback } from '../../types'
 import { ApiRef } from '../../api'
 import { CellEditorProps } from './cellEditorProps'
+import { KeyboardDatePickerProps } from '@material-ui/pickers'
+import { StaticDatePickerProps } from '@material-ui/lab/StaticDatePicker/StaticDatePicker'
 
 export interface CellRendererProps<TRow = Row> {
   row: TRow
@@ -55,7 +57,7 @@ export type DisableNavigation = boolean | DisableNavigationCallback
 export interface ComponentPropsFn<TRow = Row> {
   (row: TRow, column: Column):
     | Partial<React.HTMLAttributes<HTMLInputElement>>
-    | Partial<ReactDatePickerProps>
+    | Partial<StaticDatePickerProps>
 }
 
 interface ColumnTooltipProps {
@@ -80,10 +82,15 @@ interface KeyboardHookCallback {
   (event: KeyboardEvent): boolean
 }
 
+export type ComponentPropsType =
+  | Partial<React.HTMLAttributes<HTMLInputElement>>
+  | Partial<StaticDatePickerProps>
+  | ComponentPropsFn
+
 /**
  * @todo Must be reviewed
  */
-interface ColumnEditorProps {
+export interface ColumnEditorProps {
   containerProps?: Partial<PaperProps>
   /**
    * Border color when the validation hook triggers as false
@@ -97,10 +104,7 @@ interface ColumnEditorProps {
    * Provides additional styles for the input element
    */
   style?: CSSProperties
-  componentProps?:
-    | Partial<React.HTMLAttributes<HTMLInputElement>>
-    | Partial<ReactDatePickerProps>
-    | ComponentPropsFn
+  componentProps?: ComponentPropsType
 }
 
 /**

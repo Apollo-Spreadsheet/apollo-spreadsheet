@@ -6,7 +6,7 @@ import React, {
   useMemo,
   useState,
 } from 'react'
-import { PaperProps, Popover, TextareaAutosize } from '@material-ui/core'
+import { TextareaAutosize } from '@material-ui/core'
 import { EditorProps } from '../editorProps'
 import { makeStyles } from '@material-ui/core/styles'
 import { handleEditorKeydown } from '../utils'
@@ -115,7 +115,7 @@ export const TextEditor = forwardRef(
           autoFocus
           onKeyDown={onKeyDown}
           aria-label="text apollo editor"
-          rowsMin={1}
+          minRows={1}
           maxLength={maxLength}
           className={clsx(classes.input, additionalProps?.className)}
           style={additionalProps?.style}

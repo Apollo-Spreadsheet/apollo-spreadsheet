@@ -131,7 +131,7 @@ export const NumericEditor = forwardRef(
           onChange={onChange}
           autoFocus
           aria-label="numeric apollo editor"
-          rowsMin={1}
+          minRows={1}
           maxLength={maxLength}
           className={clsx(classes.input, additionalProps?.className)}
           style={additionalProps?.style}
