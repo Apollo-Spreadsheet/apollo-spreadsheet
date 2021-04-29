@@ -34,6 +34,10 @@ export const createCellQuerySelector = ({ colIndex, rowIndex }: NavigationCoords
   return `[aria-colindex="${colIndex}"][aria-rowindex="${rowIndex}"][role="cell"]`
 }
 
+export const createColumnQuerySelector = ({ colIndex, rowIndex }: NavigationCoords) => {
+  return `[aria-colindex="${colIndex}"][aria-rowindex="${rowIndex}"][role="columnheader"]`
+}
+
 export const isCellElement = (element?: Element): boolean => {
   return element?.getAttribute('role') === 'cell'
 }

@@ -4,6 +4,7 @@ import { useApiExtends } from './useApiExtends'
 import { ApiRef, GridApi } from './types'
 import { useLogger } from '../logger'
 import { ApolloInternalEvents } from './eventConstants'
+import { createCellQuerySelector, createColumnQuerySelector, NavigationCoords } from '../keyboard'
 
 /**
  * Initializes a new api instance
@@ -48,7 +49,28 @@ export function useApiFactory(
     setInit(true)
   }, [selectionKey, gridRootRef, apiRef, logger])
 
-  const apiMethods: Partial<GridApi> = { subscribeEvent, dispatchEvent: publishEvent }
+  const getCellElementByCoordinates = useCallback(
+    (coordinates: NavigationCoords) => {
+      const selector = createCellQuerySelector(coordinates)
+      return gridRootRef.current?.querySelector(selector)
+    },
+    [gridRootRef],
+  )
+
+  const getColumnElementByCoordinates = useCallback(
+    (coordinates: NavigationCoords) => {
+      const selector = createColumnQuerySelector(coordinates)
+      return gridRootRef.current?.querySelector(selector)
+    },
+    [gridRootRef],
+  )
+
+  const apiMethods: Partial<GridApi> = {
+    subscribeEvent,
+    dispatchEvent: publishEvent,
+    getCellElementByCoordinates,
+    getColumnElementByCoordinates,
+  }
   useApiExtends(apiRef, apiMethods, 'CoreApi')
 
   return initialised

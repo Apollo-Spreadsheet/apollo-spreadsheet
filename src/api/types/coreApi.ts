@@ -2,6 +2,7 @@ import { EventEmitter } from 'events'
 import React from 'react'
 import { GridTheme } from '../../types'
 import { ApolloInternalEvents } from '../eventConstants'
+import { NavigationCoords } from '../../keyboard'
 
 /**
  * The core API interface that is available in the grid.
@@ -43,4 +44,16 @@ export interface CoreApi extends EventEmitter {
    * @default id
    */
   selectionKey: string
+
+  /**
+   * Returns the cell dom node given the coordinates
+   * @param coordinates
+   */
+  getCellElementByCoordinates: (coords: NavigationCoords) => HTMLElement | null
+
+  /**
+   * Returns the cell dom node given the coordinates
+   * @param coordinates
+   */
+  getColumnElementByCoordinates: (coords: NavigationCoords) => HTMLElement | null
 }
