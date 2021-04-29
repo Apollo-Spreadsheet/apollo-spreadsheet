@@ -1,7 +1,7 @@
 import { Box } from '@material-ui/core'
 import React, { useCallback, useMemo, useState } from 'react'
 import faker from 'faker'
-import { ApolloSpreadSheet, StretchMode, useApiRef, Column } from '../../../src'
+import { ApolloSpreadSheet, Column, ColumnCellType, StretchMode, useApiRef } from '../../../src'
 import { useDarkModeTheme } from '../../theme/useDarkModeTheme'
 
 interface CustomRows {
@@ -86,6 +86,7 @@ export const TestingEditors = () => {
         title: 'Country',
         accessor: 'country',
         width: '20%',
+        type: ColumnCellType.Numeric,
       },
       {
         id: 'address',

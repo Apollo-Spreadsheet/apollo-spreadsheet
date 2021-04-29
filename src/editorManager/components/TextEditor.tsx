@@ -6,12 +6,14 @@ import React, {
   useMemo,
   useState,
 } from 'react'
-import { Popover, TextareaAutosize } from '@material-ui/core'
+import { PaperProps, Popover, TextareaAutosize } from '@material-ui/core'
 import { EditorProps } from '../editorProps'
 import { makeStyles } from '@material-ui/core/styles'
 import { handleEditorKeydown } from '../utils'
 import clsx from 'clsx'
 import { GRID_RESIZE, useApiEventHandler } from '../../api'
+import EditorContainer from './EditorContainer'
+import { createDefaultPaperProps } from './createDefaultPaperProps'
 
 const useStyles = makeStyles(() => ({
   input: {
@@ -77,33 +79,23 @@ export const TextEditor = forwardRef(
 
     const anchorStyle = anchorRef ? ((anchorRef as HTMLElement).style as CSSProperties) : {}
 
-    function onEditorPortalClose(event: unknown, reason: 'backdropClick' | 'escapeKeyDown') {
-      //Only allow to cancel if its invalid
-      if (!isValidValue) {
-        return stopEditing({ save: false })
-      }
+    const onEditorPortalClose = useCallback(
+      (event: unknown, reason: 'backdropClick' | 'escapeKeyDown') => {
+        //Only allow to cancel if its invalid
+        if (!isValidValue) {
+          return stopEditing({ save: false })
+        }
 
-      if (reason === 'backdropClick') {
-        return stopEditing({ save: true })
-      }
+        if (reason === 'backdropClick') {
+          return stopEditing({ save: true })
+        }
 
-      stopEditing({ save: false })
-    }
-
-    const PaperProps = {
-      style: {
-        ...additionalProps?.containerProps,
-        width: anchorStyle.width,
-        minHeight: anchorStyle.height,
-        overflow: 'hidden',
-        zIndex: 10,
-        border: isValidValue
-          ? anchorStyle.border
-          : `1px solid ${additionalProps?.invalidValueBorderColor}` ?? 'red',
+        stopEditing({ save: false })
       },
-    }
+      [isValidValue, stopEditing],
+    )
 
-    const transitionProps = { timeout: 0 }
+    const paperProps = createDefaultPaperProps(anchorStyle, isValidValue, additionalProps)
 
     const onKeyDown = useCallback(
       (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
@@ -113,17 +105,7 @@ export const TextEditor = forwardRef(
     )
 
     return (
-      <Popover
-        id={'editor-portal'}
-        anchorEl={anchorRef}
-        open
-        elevation={0}
-        TransitionProps={transitionProps}
-        onClose={onEditorPortalClose}
-        marginThreshold={0}
-        disableRestoreFocus
-        PaperProps={PaperProps}
-      >
+      <EditorContainer anchorEl={anchorRef} PaperProps={paperProps} onClose={onEditorPortalClose}>
         <TextareaAutosize
           {...(additionalProps?.componentProps as React.HTMLAttributes<any>)}
           id={'apollo-textarea'}
@@ -138,7 +120,7 @@ export const TextEditor = forwardRef(
           className={clsx(classes.input, additionalProps?.className)}
           style={additionalProps?.style}
         />
-      </Popover>
+      </EditorContainer>
     )
   },
 )
