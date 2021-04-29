@@ -479,11 +479,13 @@ export function useKeyboard({
       //Ensure we can proceed navigation under this core conditions
       if (!initialised || suppressControls || editorState?.isPopup) {
         return logger.info(
-          `Navigation is suppressed for key ${event.key} with the following states: ${{
+          `Navigation is suppressed for key ${
+            event.key
+          } with the following states: ${JSON.stringify({
             initialised,
             suppressControls,
             isPopup: editorState?.isPopup,
-          }}`,
+          })}`,
         )
       }
 

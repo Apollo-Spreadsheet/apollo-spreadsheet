@@ -2,8 +2,8 @@
 import { ApolloSpreadSheet, StretchMode, Column } from '../src'
 import React from 'react'
 import { storiesOf } from '@storybook/react'
-import { createColumnMock } from '../src/columnGrid/__mocks__/column-mock'
 import faker from 'faker'
+import { createColumnFixture } from '../src/columnGrid/fixtures/column.fixture'
 
 interface ExampleTableProps {
   overrideRows?: any[]
@@ -31,8 +31,8 @@ const ExampleTable = ({ headerData, stretchMode, overrideRows }: ExampleTablePro
 storiesOf('Stretch Modes', module)
   .add('None (fixed widths)', () => {
     const headers: Column[] = [
-      createColumnMock({ width: 140, title: 'Id', accessor: 'id' }),
-      createColumnMock({ width: 140, title: 'Name', accessor: 'name' }),
+      createColumnFixture({ width: 140, title: 'Id', accessor: 'id' }),
+      createColumnFixture({ width: 140, title: 'Name', accessor: 'name' }),
     ]
     return <ExampleTable headerData={headers} stretchMode={StretchMode.None} />
   })
@@ -57,17 +57,17 @@ storiesOf('Stretch Modes', module)
   })*/
   .add('All', () => {
     const headers: Column[] = [
-      createColumnMock({ width: '20%', title: 'Id', accessor: 'id' }),
-      createColumnMock({ width: '30%', title: 'Name', accessor: 'name' }),
-      createColumnMock({ width: '10%', title: 'Country', accessor: 'country' }),
+      createColumnFixture({ width: '20%', title: 'Id', accessor: 'id' }),
+      createColumnFixture({ width: '30%', title: 'Name', accessor: 'name' }),
+      createColumnFixture({ width: '10%', title: 'Country', accessor: 'country' }),
     ]
     return <ExampleTable headerData={headers} stretchMode={StretchMode.All} />
   })
   .add('Last', () => {
     const headers: Column[] = [
-      createColumnMock({ width: 50, title: 'Id', accessor: 'id' }),
-      createColumnMock({ width: 150, title: 'Name', accessor: 'name' }),
-      createColumnMock({ title: 'Country', accessor: 'country' }),
+      createColumnFixture({ width: 50, title: 'Id', accessor: 'id' }),
+      createColumnFixture({ width: 150, title: 'Name', accessor: 'name' }),
+      createColumnFixture({ title: 'Country', accessor: 'country' }),
     ]
     return <ExampleTable headerData={headers} stretchMode={StretchMode.Last} />
   })

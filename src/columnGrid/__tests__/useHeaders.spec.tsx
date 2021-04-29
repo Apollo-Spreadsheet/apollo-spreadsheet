@@ -1,10 +1,10 @@
 import React, { useRef } from 'react'
 import { renderHook } from '@testing-library/react-hooks'
 import { StretchMode } from '../../types'
-import { createColumnMock } from '../__mocks__/column-mock'
 import { GridHeader } from '../types'
 import { useApiFactory, useApiRef } from '../../api'
 import { useHeaders } from "../hooks";
+import { createColumnFixture } from "../fixtures/column.fixture";
 
 describe('useHeaders hook', () => {
 	const { result: { current: apiRefMock }} = renderHook(() => {
@@ -38,7 +38,7 @@ describe('useHeaders hook', () => {
 	})
 
 	it('should mount with a dynamic and fixed header', () => {
-		const columnsMock = [createColumnMock(), createColumnMock({ width: 200 })]
+		const columnsMock = [createColumnFixture(), createColumnFixture({ width: 200 })]
 		const expectedHeadersData: GridHeader[] = columnsMock.map(e => ({
 			...e,
 			isNested: false,
@@ -58,8 +58,8 @@ describe('useHeaders hook', () => {
 
 	it('should throw error with duplicated header ids', () => {
 		const columnsMock = [
-			createColumnMock({ id: 't1', width: 200 }),
-			createColumnMock({ id: 't1', width: 200 }),
+			createColumnFixture({ id: 't1', width: 200 }),
+			createColumnFixture({ id: 't1', width: 200 }),
 		]
 		try {
 			renderHook(() => useHeaders({
@@ -76,7 +76,7 @@ describe('useHeaders hook', () => {
 	})
 
 	it('should throw error when span is bigger than total columns', () => {
-		const columnsMock = [createColumnMock({ width: 200 })]
+		const columnsMock = [createColumnFixture({ width: 200 })]
 		try {
 			renderHook(() => useHeaders({
 				columns: columnsMock,
@@ -95,7 +95,7 @@ describe('useHeaders hook', () => {
 	})
 
 	it('should merge with nested headers', () => {
-		const columnsMock = [createColumnMock({ id: 't1', accessor: 't1', width: 200 }), createColumnMock({
+		const columnsMock = [createColumnFixture({ id: 't1', accessor: 't1', width: 200 }), createColumnFixture({
 			id: 't2',
 			accessor: 't2',
 			width: 100,

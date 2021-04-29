@@ -90,27 +90,28 @@ export const TextEditor = forwardRef(
       stopEditing({ save: false })
     }
 
-    const containerStyles: CSSProperties = {
-      width: anchorStyle.width,
-      minHeight: anchorStyle.height,
-    }
-
     const PaperProps = {
       style: {
+        ...additionalProps?.containerProps,
+        width: anchorStyle.width,
+        minHeight: anchorStyle.height,
         overflow: 'hidden',
         zIndex: 10,
-        border: isValidValue ? anchorStyle.border : '1px solid red',
-        borderRadius: 0,
-        background: 'transparent',
+        border: isValidValue
+          ? anchorStyle.border
+          : `1px solid ${additionalProps?.invalidValueBorderColor}` ?? 'red',
       },
     }
 
     const transitionProps = { timeout: 0 }
-    /**
-     * @todo Consider re-strutting this component and create some wrapper HoC that we can re-use
-     * and use Popper instead for total positioning
-     * @todo Might be not worth using for Text/Numeric a popper/popover and just use the exact same position (top,left,right)
-     */
+
+    const onKeyDown = useCallback(
+      (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+        handleEditorKeydown(e, stopEditing)
+      },
+      [stopEditing],
+    )
+
     return (
       <Popover
         id={'editor-portal'}
@@ -123,25 +124,20 @@ export const TextEditor = forwardRef(
         disableRestoreFocus
         PaperProps={PaperProps}
       >
-        <div id="editor-container" style={containerStyles}>
-          <TextareaAutosize
-            {...(additionalProps?.componentProps as React.HTMLAttributes<any>)}
-            id={'apollo-textarea'}
-            value={editingValue}
-            ref={onTextAreaResizeMount}
-            onChange={e => setEditingValue(e.target.value)}
-            autoFocus
-            onKeyDown={e => handleEditorKeydown(e, stopEditing)}
-            aria-label="text apollo editor"
-            rowsMin={1}
-            maxLength={maxLength}
-            className={clsx(classes.input, additionalProps?.className)}
-            style={{
-              minHeight: anchorStyle.height,
-              ...additionalProps?.style,
-            }}
-          />
-        </div>
+        <TextareaAutosize
+          {...(additionalProps?.componentProps as React.HTMLAttributes<any>)}
+          id={'apollo-textarea'}
+          value={editingValue}
+          ref={onTextAreaResizeMount}
+          onChange={e => setEditingValue(e.target.value)}
+          autoFocus
+          onKeyDown={onKeyDown}
+          aria-label="text apollo editor"
+          rowsMin={1}
+          maxLength={maxLength}
+          className={clsx(classes.input, additionalProps?.className)}
+          style={additionalProps?.style}
+        />
       </Popover>
     )
   },

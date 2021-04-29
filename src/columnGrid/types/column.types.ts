@@ -1,5 +1,5 @@
 import React, { CSSProperties } from 'react'
-import { TooltipProps } from '@material-ui/core'
+import { PaperProps, TooltipProps } from '@material-ui/core'
 import { NavigationCoords } from '../../keyboard'
 import { PopperProps } from '@material-ui/core/Popper/Popper'
 import { ReactDatePickerProps } from 'react-datepicker'
@@ -84,7 +84,18 @@ interface KeyboardHookCallback {
  * @todo Must be reviewed
  */
 interface ColumnEditorProps {
+  containerProps?: Partial<PaperProps>
+  /**
+   * Border color when the validation hook triggers as false
+   */
+  invalidValueBorderColor?: string
+  /**
+   * Provides a valid className to the input element
+   */
   className?: string
+  /**
+   * Provides additional styles for the input element
+   */
   style?: CSSProperties
   componentProps?:
     | Partial<React.HTMLAttributes<HTMLInputElement>>

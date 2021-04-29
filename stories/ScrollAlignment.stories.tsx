@@ -2,9 +2,9 @@
 import React, { CSSProperties } from 'react'
 import { storiesOf } from '@storybook/react'
 import { StretchMode, Column, ApolloSpreadSheet } from '../src'
-import { createColumnMock } from '../src/columnGrid/__mocks__/column-mock'
 import faker from 'faker'
 import { Alignment } from 'react-virtualized'
+import { createColumnFixture } from '../src/columnGrid/fixtures/column.fixture'
 
 interface ExampleTableProps {
   overrideRows?: any[]
@@ -48,17 +48,17 @@ const ExampleTable = ({
 storiesOf('Scroll Alignment', module)
   .add('Auto (default)', () => {
     const headers: Column[] = [
-      createColumnMock({ width: '20%', title: 'Id', accessor: 'id' }),
-      createColumnMock({ width: '30%', title: 'Name', accessor: 'name' }),
-      createColumnMock({ width: '10%', title: 'Country', accessor: 'country' }),
+      createColumnFixture({ width: '20%', title: 'Id', accessor: 'id' }),
+      createColumnFixture({ width: '30%', title: 'Name', accessor: 'name' }),
+      createColumnFixture({ width: '10%', title: 'Country', accessor: 'country' }),
     ]
     return <ExampleTable headerData={headers} stretchMode={StretchMode.All} />
   })
   .add('Center', () => {
     const headers: Column[] = [
-      createColumnMock({ width: '20%', title: 'Id', accessor: 'id' }),
-      createColumnMock({ width: '30%', title: 'Name', accessor: 'name' }),
-      createColumnMock({ width: '10%', title: 'Country', accessor: 'country' }),
+      createColumnFixture({ width: '20%', title: 'Id', accessor: 'id' }),
+      createColumnFixture({ width: '30%', title: 'Name', accessor: 'name' }),
+      createColumnFixture({ width: '10%', title: 'Country', accessor: 'country' }),
     ]
     return (
       <ExampleTable
@@ -70,9 +70,9 @@ storiesOf('Scroll Alignment', module)
   })
   .add('Start', () => {
     const headers: Column[] = [
-      createColumnMock({ width: '20%', title: 'Id', accessor: 'id' }),
-      createColumnMock({ width: '30%', title: 'Name', accessor: 'name' }),
-      createColumnMock({ width: '10%', title: 'Country', accessor: 'country' }),
+      createColumnFixture({ width: '20%', title: 'Id', accessor: 'id' }),
+      createColumnFixture({ width: '30%', title: 'Name', accessor: 'name' }),
+      createColumnFixture({ width: '10%', title: 'Country', accessor: 'country' }),
     ]
     return (
       <ExampleTable
@@ -84,9 +84,9 @@ storiesOf('Scroll Alignment', module)
   })
   .add('End', () => {
     const headers: Column[] = [
-      createColumnMock({ width: '20%', title: 'Id', accessor: 'id' }),
-      createColumnMock({ width: '30%', title: 'Name', accessor: 'name' }),
-      createColumnMock({ width: '10%', title: 'Country', accessor: 'country' }),
+      createColumnFixture({ width: '20%', title: 'Id', accessor: 'id' }),
+      createColumnFixture({ width: '30%', title: 'Name', accessor: 'name' }),
+      createColumnFixture({ width: '10%', title: 'Country', accessor: 'country' }),
     ]
     return (
       <ExampleTable headerData={headers} stretchMode={StretchMode.All} scrollToAlignment={'end'} />
