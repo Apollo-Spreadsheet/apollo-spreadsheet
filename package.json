@@ -1,6 +1,6 @@
 {
   "name": "apollo-spreadsheet",
-  "version": "1.0.9",
+  "version": "1.0.10",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "description": "React excel like fast grid plugin",
@@ -34,13 +34,13 @@
     "deploy": "yarn run clean && yarn run tsc && np"
   },
   "peerDependencies": {
-    "react": ">= 16.13.1",
-    "react-dom": ">= 16.13.1",
     "@emotion/react": "^11.1.5",
     "@emotion/styled": "^11.3.0",
     "@material-ui/core": ">= 5.0.0-alpha.32",
     "@material-ui/icons": ">= 5.0.0-alpha.29",
-    "@material-ui/lab": "^5.0.0-alpha.32"
+    "@material-ui/lab": "^5.0.0-alpha.32",
+    "react": ">= 16.13.1",
+    "react-dom": ">= 16.13.1"
   },
   "dependencies": {
     "@date-io/dayjs": "1.3.13",
@@ -58,16 +58,16 @@
     "value-equal": "^1.0.1"
   },
   "devDependencies": {
-    "@emotion/react": "^11.1.5",
-    "@emotion/styled": "^11.3.0",
-    "@material-ui/core": ">= 5.0.0-alpha.32",
-    "@material-ui/icons": ">= 5.0.0-alpha.29",
-    "@material-ui/lab": "^5.0.0-alpha.32",
     "@babel/preset-typescript": "^7.10.4",
     "@docusaurus/core": "2.0.0-alpha.49",
     "@docusaurus/preset-classic": "^2.0.0-alpha.72",
     "@docusaurus/theme-classic": "^2.0.0-alpha.72",
     "@docusaurus/theme-search-algolia": "^2.0.0-alpha.72",
+    "@emotion/react": "^11.1.5",
+    "@emotion/styled": "^11.3.0",
+    "@material-ui/core": ">= 5.0.0-alpha.32",
+    "@material-ui/icons": ">= 5.0.0-alpha.29",
+    "@material-ui/lab": "^5.0.0-alpha.32",
     "@react-theming/storybook-addon": "^1.1.1",
     "@storybook/addon-options": "~5.3.21",
     "@storybook/addon-storysource": "~6.2.8",
