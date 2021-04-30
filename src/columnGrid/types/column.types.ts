@@ -2,11 +2,9 @@ import React, { CSSProperties } from 'react'
 import { PaperProps, TooltipProps } from '@material-ui/core'
 import { NavigationCoords } from '../../keyboard'
 import { PopperProps } from '@material-ui/core/Popper/Popper'
-import { ReactDatePickerProps } from 'react-datepicker'
 import { Row, DynamicCallback } from '../../types'
 import { ApiRef } from '../../api'
 import { CellEditorProps } from './cellEditorProps'
-import { KeyboardDatePickerProps } from '@material-ui/pickers'
 import { StaticDatePickerProps } from '@material-ui/lab/StaticDatePicker/StaticDatePicker'
 
 export interface CellRendererProps<TRow = Row> {
