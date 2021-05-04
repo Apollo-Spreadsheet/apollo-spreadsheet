@@ -48,13 +48,10 @@
     "@welldone-software/why-did-you-render": "^6.1.1",
     "clipboardy": "^2.3.0",
     "clsx": "^1.1.1",
-    "dequal": "^2.0.2",
     "dom-helpers": "^5.2.0",
     "lodash": "^4.17.20",
-    "memoize-one": "^5.1.1",
     "react-is": "^17.0.2",
-    "react-virtualized": "^9.21.2",
-    "value-equal": "^1.0.1"
+    "react-virtualized": "^9.21.2"
   },
   "devDependencies": {
     "@babel/preset-typescript": "^7.10.4",
@@ -93,7 +90,6 @@
     "@types/storybook__react": "latest",
     "@typescript-eslint/eslint-plugin": "^4.22.0",
     "@typescript-eslint/parser": "^4.22.0",
-    "add": "^2.0.6",
     "babel-loader": "^8.1.0",
     "babel-preset-react-app": "^10.0.0",
     "bundlesize": "^0.18.0",
@@ -117,7 +113,6 @@
     "fs-extra": "^9.1.0",
     "jest": "^26.4.2",
     "jest-cli": "^26.6.3",
-    "jest-styled-components": "^7.0.3",
     "jsdom": "^16.5.3",
     "np": "^7.5.0",
     "plop": "^2.5.3",
@@ -131,7 +126,6 @@
     "require-reload": "^0.2.2",
     "simple-git": "^2.37.0",
     "storybook-chromatic": "^4.0.2",
-    "styled-components": "^5.2.3",
     "tarball-extract": "^0.0.6",
     "ts-jest": "^26.5.4",
     "typedoc": "^0.20.35",
