@@ -25,10 +25,13 @@ export interface ColumnRendererProps<Key = string, Metadata = any> {
   className: string
 }
 
-export type CellRenderer = (cellProps: CellRendererProps) => JSX.Element
+export type CellRenderer = (
+  cellProps: CellRendererProps,
+) => JSX.Element | React.ReactNode | React.ReactText
+
 export type HeaderRenderer<Key = string, Metadata = any> = (
   column: ColumnRendererProps<Key, Metadata>,
-) => JSX.Element
+) => JSX.Element | React.ReactNode | React.ReactText
 
 export type EditorReactComponent = JSX.Element | React.ForwardRefExoticComponent<any>
 export type EditorFactory = (cellProps: CellEditorProps) => JSX.Element
