@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react'
 import { ROW_SELECTION_HEADER_ID } from '../rowSelection'
 import { NavigationCoords } from '../keyboard'
-import { ColumnCellType, Column, ColumnEditorProps, ComponentPropsType } from '../columnGrid'
+import { ColumnCellType, Column, ComponentPropsType } from '../columnGrid'
 import { EditorProps } from './editorProps'
 import { isFunctionType } from '../helpers'
 import { useApiExtends, EditorManagerApi } from '../api'
