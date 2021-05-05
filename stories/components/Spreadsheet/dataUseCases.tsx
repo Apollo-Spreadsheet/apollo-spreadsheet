@@ -2,7 +2,7 @@ import React from 'react'
 import PeopleIcon from '@material-ui/icons/People'
 import { ColumnCellType, Column } from '../../../src'
 
-export function useTopCase(calendarClass?: string) {
+export function useTopCase() {
   const headerData: Column[] = [
     {
       id: 'deliverable',
@@ -88,9 +88,6 @@ export function useTopCase(calendarClass?: string) {
       width: '5%',
       type: ColumnCellType.Calendar,
       disableBackspace: true,
-      editorProps: {
-        className: calendarClass,
-      },
     },
     {
       id: 'endDate',
@@ -100,9 +97,6 @@ export function useTopCase(calendarClass?: string) {
       type: ColumnCellType.Calendar,
       disableBackspace: true,
       delayEditorOpen: 1000,
-      editorProps: {
-        className: calendarClass,
-      },
     },
     {
       id: 'taskControl',

@@ -50,18 +50,34 @@ const GridWrapper: React.FC<GridWrapperProps> = React.memo(
     nestedRowsProps,
     coords,
     theme,
-    ...props
+    fixedRowHeight,
+    fixedRowWidth,
+    scrollLeft,
+    selection,
+    scrollToAlignment,
+    stretchMode,
+    onScroll,
+    mergeCells,
+    overscanRowCount,
+    overscanColumnCount,
+    minRowHeight,
+    minColumnWidth,
+    columnCount,
+    height,
+    width,
+    highlightBorderColor,
+    rowHeight,
   }) => {
     const logger = useLogger('GridWrapper')
     const cache: CellMeasurerCache = useMemo(() => {
-      const isFixedCellHeight = props.fixedRowHeight && props.rowHeight
+      const isFixedCellHeight = fixedRowHeight && rowHeight
       const options: CellMeasurerCacheParams = {
-        defaultWidth: props.minColumnWidth,
-        defaultHeight: isFixedCellHeight ? props.rowHeight : props.minRowHeight,
-        fixedWidth: props.fixedRowWidth ?? true,
-        fixedHeight: props.fixedRowHeight,
-        minHeight: isFixedCellHeight ? undefined : props.minRowHeight,
-        minWidth: props.minColumnWidth,
+        defaultWidth: minColumnWidth,
+        defaultHeight: isFixedCellHeight ? rowHeight : minRowHeight,
+        fixedWidth: fixedRowWidth ?? true,
+        fixedHeight: fixedRowHeight,
+        minHeight: isFixedCellHeight ? undefined : minRowHeight,
+        minWidth: minColumnWidth,
       }
       /**
        * Used to skip calculations in a faster way when we have fixed height
@@ -72,13 +88,7 @@ const GridWrapper: React.FC<GridWrapperProps> = React.memo(
       }
 
       return new CellMeasurerCache(options)
-    }, [
-      props.minColumnWidth,
-      props.fixedRowHeight,
-      props.fixedRowWidth,
-      props.minRowHeight,
-      props.rowHeight,
-    ])
+    }, [fixedRowHeight, fixedRowWidth, minColumnWidth, minRowHeight, rowHeight])
 
     const cacheRef = useRef<CellMeasurerCache>(cache)
     const classes = useStyles()
@@ -115,17 +125,17 @@ const GridWrapper: React.FC<GridWrapperProps> = React.memo(
     }, [
       //If any of those dependencies change we might need to recompute the sizes
       data,
-      props.width,
-      props.height,
-      props.minColumnWidth,
-      props.fixedRowHeight,
-      props.fixedRowWidth,
-      props.minRowHeight,
-      props.rowHeight,
+      width,
+      height,
+      minColumnWidth,
+      fixedRowHeight,
+      fixedRowWidth,
+      minRowHeight,
+      rowHeight,
       recomputeSizes,
     ])
 
-    const isMergeCellsEnabled = Array.isArray(props.mergeCells) && props.mergeCells.length > 0
+    const isMergeCellsEnabled = Array.isArray(mergeCells) && mergeCells.length > 0
     const activeRowPathCoordinates = useMemo(() => {
       //Skip the heavy calculation process if its disabled
       if (!isMergeCellsEnabled) {
@@ -192,8 +202,8 @@ const GridWrapper: React.FC<GridWrapperProps> = React.memo(
           cellStyle.borderRight = '0px'
           cellStyle.borderTop = '0px'
           cellStyle.borderBottom = '0px'
-          cellStyle.border = props.highlightBorderColor
-            ? `1px solid ${props.highlightBorderColor}`
+          cellStyle.border = highlightBorderColor
+            ? `1px solid ${highlightBorderColor}`
             : '1px solid blue'
         } else if (!theme || (!theme.cellClass && !cell.dummy)) {
           //Bind default border and clear other borders
@@ -205,7 +215,7 @@ const GridWrapper: React.FC<GridWrapperProps> = React.memo(
         }
 
         //Add default dummy color when a cell class is not provided by default
-        if (cell.dummy && !theme?.cellClass) {
+        if (!cell.dummy && !theme?.cellClass) {
           cellStyle.backgroundColor = 'white'
         }
 
@@ -230,10 +240,10 @@ const GridWrapper: React.FC<GridWrapperProps> = React.memo(
           cellClassName = clsx(cellClassName, classes.disabledCell, theme?.disabledCellClass)
         }
 
-        if (props.selection && props.selection.cellClassName) {
-          const isRowSelected = apiRef.current.isRowSelected(row?.[props.selection.key])
+        if (selection && selection.cellClassName) {
+          const isRowSelected = apiRef.current.isRowSelected(row?.[selection.key])
           if (isRowSelected) {
-            cellClassName = clsx(cellClassName, props.selection.cellClassName)
+            cellClassName = clsx(cellClassName, selection.cellClassName)
           }
         }
 
@@ -335,8 +345,8 @@ const GridWrapper: React.FC<GridWrapperProps> = React.memo(
         apiRef,
         classes.cellDefaultStyle,
         classes.disabledCell,
-        props.selection,
-        props.highlightBorderColor,
+        selection,
+        highlightBorderColor,
         nestedRowsProps,
         logger,
         theme,
@@ -416,9 +426,8 @@ const GridWrapper: React.FC<GridWrapperProps> = React.memo(
 
     return (
       <VirtualizedGrid
-        {...props}
         className={
-          props.stretchMode !== StretchMode.None
+          stretchMode !== StretchMode.None
             ? clsx(classes.bodyContainer, classes.suppressHorizontalOverflow)
             : classes.bodyContainer
         }
@@ -427,16 +436,18 @@ const GridWrapper: React.FC<GridWrapperProps> = React.memo(
         deferredMeasurementCache={cache}
         rowHeight={cache.rowHeight}
         rowCount={rows.length}
-        columnCount={props.columnCount}
+        columnCount={columnCount}
         columnWidth={getColumnWidth}
-        overscanRowCount={props.overscanRowCount ?? 2}
-        overscanColumnCount={props.overscanColumnCount ?? 2}
+        overscanRowCount={overscanRowCount ?? 2}
+        overscanColumnCount={overscanColumnCount ?? 2}
         onSectionRendered={onSectionRendered}
         scrollToRow={coords.rowIndex}
         scrollToColumn={coords.colIndex}
-        scrollToAlignment={props.scrollToAlignment}
-        onScroll={props.onScroll}
-        scrollLeft={props.scrollLeft}
+        scrollToAlignment={scrollToAlignment}
+        onScroll={onScroll}
+        scrollLeft={scrollLeft}
+        height={height}
+        width={width}
       />
     )
   },

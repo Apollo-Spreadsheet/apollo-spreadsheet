@@ -7,7 +7,7 @@ import { useMergeCells } from './mergeCells'
 import { useHeaders } from './columnGrid'
 import { useData } from './data'
 import { useRowSelection } from './rowSelection'
-import { ClickAwayListener, useForkRef } from '@material-ui/core'
+import { Box, ClickAwayListener, useForkRef } from '@material-ui/core'
 import { useEditorManager } from './editorManager'
 import { createPortal } from 'react-dom'
 import { GridContainer } from './gridContainer'
@@ -21,7 +21,6 @@ import {
   GridApi,
 } from './api'
 
-import { makeStyles } from '@material-ui/core/styles'
 import { useEvents } from './events/useEvents'
 
 import { ApolloSpreadsheetProps } from './ApolloSpreadsheetProps'
@@ -31,13 +30,6 @@ import { isFunctionType } from './helpers'
 
 import { NestedRowsProps, useNestedRows } from './nestedRows'
 import { useTheme } from './theme'
-
-const useStyles = makeStyles(() => ({
-  root: {
-    height: '100%',
-    width: '100%',
-  },
-}))
 
 /**
  * @todo I need to ensure this is only loaded in development, seems that with
@@ -58,7 +50,6 @@ if (process.env.NODE_ENV === 'development') {
 export const ApolloSpreadSheet: React.FC<ApolloSpreadsheetProps> = forwardRef(
   (props, componentRef: React.Ref<HTMLDivElement>) => {
     const logger = useLogger('ApolloSpreadSheet')
-    const classes = useStyles()
     const minColumnWidth = props.minColumnWidth ?? 30
     const [gridFocused, setGridFocused] = useState(true)
     const defaultApiRef = useApiRef()
@@ -192,7 +183,7 @@ export const ApolloSpreadSheet: React.FC<ApolloSpreadsheetProps> = forwardRef(
 
     return (
       <ClickAwayListener onClickAway={onClickAway}>
-        <div id="root-apollo" ref={forkedRef} className={classes.root}>
+        <Box height="100%" width="100%" id="root-apollo" ref={forkedRef}>
           <GridContainer
             columns={columns}
             minColumnWidth={minColumnWidth}
@@ -244,7 +235,7 @@ export const ApolloSpreadSheet: React.FC<ApolloSpreadsheetProps> = forwardRef(
             )}
           </GridContainer>
           {editorNode && createPortal(editorNode, document.body)}
-        </div>
+        </Box>
       </ClickAwayListener>
     )
   },

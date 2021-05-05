@@ -4,7 +4,6 @@ import { orderBy } from 'lodash'
 import { Box } from '@material-ui/core'
 import { useTopCase } from './dataUseCases'
 import { makeStyles } from '@material-ui/core/styles'
-import 'react-datepicker/dist/react-datepicker.css'
 import dump from './dump.json'
 import {
   ApolloSpreadSheet,
@@ -16,7 +15,7 @@ import {
   useApiRef,
 } from '../../../src'
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles(() => ({
   root: {
     margin: 10,
   },
@@ -61,38 +60,12 @@ const useStyles = makeStyles(theme => ({
     height: '10px',
     width: '10px',
   },
-  calendarClass: {
-    color: theme.palette.type === 'dark' ? '#fff' : '#4d4d4d',
-    backgroundColor: theme.palette.type === 'dark' ? '#121212' : '#fff',
-    '& .react-datepicker__header': {
-      backgroundColor: theme.palette.type === 'dark' ? '#121212' : '#fff',
-    },
-    '& .react-datepicker__current-month, .react-datepicker-time__header, .react-datepicker-year-header': {
-      color: theme.palette.type === 'dark' ? '#fff' : '#47956A',
-    },
-    '& .react-datepicker__day-name, .react-datepicker__day, .react-datepicker__time-name': {
-      color: theme.palette.type === 'dark' ? '#fff' : '#808080',
-      borderRadius: '20px',
-      '&:hover': {
-        transform: 'scale(1.07)',
-      },
-    },
-    '& .react-datepicker__day--disabled, .react-datepicker__month-text--disabled, .react-datepicker__quarter-text--disabled': {
-      color: theme.palette.type === 'dark' ? 'black' : '#ccc',
-      cursor: 'default',
-    },
-    '& .react-datepicker__day--selected ': {
-      backgroundColor: '#77C698',
-      color: '#fff',
-      borderRadius: '20px',
-    },
-  },
 }))
 
 const MIN_COLUMN_WIDTH = 10
 export function Spreadsheet() {
   const classes = useStyles()
-  const { headerData: columns } = useTopCase(classes.calendarClass)
+  const { headerData: columns } = useTopCase()
   const [data, setData] = useState(dump)
   const apiRef = useApiRef()
 

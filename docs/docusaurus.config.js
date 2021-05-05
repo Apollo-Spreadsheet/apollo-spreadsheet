@@ -1,4 +1,3 @@
-const { StylesContext } = require("@material-ui/styles");
 require('dotenv').config()
 
 module.exports = {

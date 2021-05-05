@@ -1,6 +1,5 @@
 import * as React from 'react'
-import TextField from '@material-ui/core/TextField'
-import AdapterDateFns from '@material-ui/lab/AdapterDateFns'
+import AdapterDayjs from '@material-ui/lab/AdapterDayjs'
 import LocalizationProvider from '@material-ui/lab/LocalizationProvider'
 import StaticDatePicker from '@material-ui/lab/StaticDatePicker'
 import { makeStyles } from '@material-ui/core/styles'
@@ -89,6 +88,7 @@ export const CalendarEditor = forwardRef(
       },
     ]
 
+    const renderInput = useCallback(() => <div />, [])
     return (
       <ClickAwayListener onClickAway={onClickAway}>
         <Popper
@@ -100,14 +100,14 @@ export const CalendarEditor = forwardRef(
           className={clsx(classes.root, additionalProps?.className)}
           modifiers={popperModifiers}
         >
-          <LocalizationProvider dateAdapter={AdapterDateFns}>
+          <LocalizationProvider dateAdapter={AdapterDayjs}>
             <StaticDatePicker
               {...(additionalProps?.componentProps as StaticDatePickerProps)}
               displayStaticWrapperAs="desktop"
               openTo="day"
               value={value}
               onChange={onChange}
-              renderInput={() => <div />}
+              renderInput={renderInput}
               allowKeyboardControl
             />
           </LocalizationProvider>
