@@ -1,4 +1,4 @@
-import React, { forwardRef, useCallback, useEffect, useRef, useState } from 'react'
+import React, { forwardRef, useCallback, useEffect, useRef, useState, CSSProperties } from 'react'
 import GridWrapper from './gridWrapper/GridWrapper'
 import ColumnGrid from './columnGrid/ColumnGrid'
 import { useKeyboard } from './keyboard'
@@ -7,7 +7,7 @@ import { useMergeCells } from './mergeCells'
 import { useHeaders } from './columnGrid'
 import { useData } from './data'
 import { useRowSelection } from './rowSelection'
-import { Box, ClickAwayListener, useForkRef } from '@material-ui/core'
+import { ClickAwayListener, useForkRef } from '@material-ui/core'
 import { useEditorManager } from './editorManager'
 import { createPortal } from 'react-dom'
 import { GridContainer } from './gridContainer'
@@ -46,6 +46,8 @@ if (process.env.NODE_ENV === 'development') {
   })
 }
 */
+
+const rootDivStyle: CSSProperties = { height: '100%', width: '100%' }
 
 export const ApolloSpreadSheet: React.FC<ApolloSpreadsheetProps> = forwardRef(
   (props, componentRef: React.Ref<HTMLDivElement>) => {
@@ -183,7 +185,7 @@ export const ApolloSpreadSheet: React.FC<ApolloSpreadsheetProps> = forwardRef(
 
     return (
       <ClickAwayListener onClickAway={onClickAway}>
-        <Box height="100%" width="100%" id="root-apollo" ref={forkedRef}>
+        <div style={rootDivStyle} id="root-apollo" ref={forkedRef}>
           <GridContainer
             columns={columns}
             minColumnWidth={minColumnWidth}
@@ -235,7 +237,7 @@ export const ApolloSpreadSheet: React.FC<ApolloSpreadsheetProps> = forwardRef(
             )}
           </GridContainer>
           {editorNode && createPortal(editorNode, document.body)}
-        </Box>
+        </div>
       </ClickAwayListener>
     )
   },
