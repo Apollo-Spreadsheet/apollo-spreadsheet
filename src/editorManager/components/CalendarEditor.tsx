@@ -87,7 +87,6 @@ export const CalendarEditor = forwardRef(
         enabled: false,
       },
     ]
-    const theme = apiRef.current.getTheme()
     const renderInput = useCallback(() => <div />, [])
     return (
       <ClickAwayListener onClickAway={onClickAway}>
@@ -97,7 +96,7 @@ export const CalendarEditor = forwardRef(
           anchorEl={anchorRef}
           placement={'right-start'}
           keepMounted={false}
-          className={clsx(classes.root, theme?.editorContainerClass, additionalProps?.className)}
+          className={classes.root}
           modifiers={popperModifiers}
         >
           <LocalizationProvider dateAdapter={AdapterDayjs}>
@@ -109,7 +108,7 @@ export const CalendarEditor = forwardRef(
               onChange={onChange}
               renderInput={renderInput}
               allowKeyboardControl
-              className={theme?.editorClass}
+              className={additionalProps?.className}
             />
           </LocalizationProvider>
         </Popper>

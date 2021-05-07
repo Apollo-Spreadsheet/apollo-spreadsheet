@@ -1,3 +1,7 @@
+/**
+ * @todo Theme must construct all the flows with styling
+ * @todo Rename to ApolloTheme
+ */
 export interface GridTheme {
   /**
    * Styles the whole row where the cell is selected and
