@@ -105,7 +105,8 @@ export const NumericEditor = forwardRef(
     )
 
     const anchorStyle = (anchorRef as any).style as CSSProperties
-    const paperProps = createDefaultPaperProps(anchorStyle, isValidValue, additionalProps)
+    const theme = apiRef.current.getTheme()
+    const paperProps = createDefaultPaperProps(anchorStyle, isValidValue, additionalProps, theme)
 
     const onKeyDown = useCallback(
       (e: React.KeyboardEvent) => {

@@ -18,4 +18,8 @@ export interface GridTheme {
    * a more advanced configuration, use column/header `editorProps`
    */
   editorClass?: string
+  /**
+   * Styles the editor parent container
+   */
+  editorContainerClass?: string
 }

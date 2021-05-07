@@ -95,7 +95,8 @@ export const TextEditor = forwardRef(
       [isValidValue, stopEditing],
     )
 
-    const paperProps = createDefaultPaperProps(anchorStyle, isValidValue, additionalProps)
+    const theme = apiRef.current.getTheme()
+    const paperProps = createDefaultPaperProps(anchorStyle, isValidValue, additionalProps, theme)
 
     const onKeyDown = useCallback(
       (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
@@ -117,7 +118,7 @@ export const TextEditor = forwardRef(
           aria-label="text apollo editor"
           minRows={1}
           maxLength={maxLength}
-          className={clsx(classes.input, additionalProps?.className)}
+          className={clsx(classes.input, additionalProps?.className, theme?.editorClass)}
           style={additionalProps?.style}
         />
       </EditorContainer>

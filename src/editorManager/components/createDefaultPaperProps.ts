@@ -1,11 +1,13 @@
 import { EditorProps } from '../editorProps'
 import { PaperProps } from '@material-ui/core'
-import React from 'react'
+import React, { CSSProperties } from 'react'
+import { GridTheme } from '../../types'
 
 export const createDefaultPaperProps = (
   anchorStyle: React.CSSProperties,
   isValidValue: boolean,
   additionalProps?: EditorProps['additionalProps'],
+  theme?: GridTheme,
 ): Partial<PaperProps> => {
   let { border } = anchorStyle
   if (!isValidValue) {
@@ -16,14 +18,17 @@ export const createDefaultPaperProps = (
     }
   }
 
+  const style: CSSProperties = {
+    ...additionalProps?.containerProps,
+    width: anchorStyle.width,
+    minHeight: anchorStyle.height,
+    overflow: 'hidden',
+    zIndex: 10,
+    border,
+  }
+
   return {
-    style: {
-      ...additionalProps?.containerProps,
-      width: anchorStyle.width,
-      minHeight: anchorStyle.height,
-      overflow: 'hidden',
-      zIndex: 10,
-      border,
-    },
+    style,
+    className: theme?.editorContainerClass,
   }
 }

@@ -20,7 +20,7 @@ const useStyles = makeStyles(() => ({
 }))
 
 export const CalendarEditor = forwardRef(
-  ({ stopEditing, anchorRef, value, additionalProps }: EditorProps, componentRef) => {
+  ({ apiRef, stopEditing, anchorRef, value, additionalProps }: EditorProps, componentRef) => {
     const classes = useStyles()
     const [state, setState] = useState<{ value: dayjs.Dayjs; close: boolean }>({
       value: value ? dayjs(value) : dayjs(),
@@ -87,7 +87,7 @@ export const CalendarEditor = forwardRef(
         enabled: false,
       },
     ]
-
+    const theme = apiRef.current.getTheme()
     const renderInput = useCallback(() => <div />, [])
     return (
       <ClickAwayListener onClickAway={onClickAway}>
@@ -97,7 +97,7 @@ export const CalendarEditor = forwardRef(
           anchorEl={anchorRef}
           placement={'right-start'}
           keepMounted={false}
-          className={clsx(classes.root, additionalProps?.className)}
+          className={clsx(classes.root, theme?.editorContainerClass, additionalProps?.className)}
           modifiers={popperModifiers}
         >
           <LocalizationProvider dateAdapter={AdapterDayjs}>
@@ -109,6 +109,7 @@ export const CalendarEditor = forwardRef(
               onChange={onChange}
               renderInput={renderInput}
               allowKeyboardControl
+              className={theme?.editorClass}
             />
           </LocalizationProvider>
         </Popper>
