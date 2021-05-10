@@ -133,7 +133,8 @@ const GridWrapper: React.FC<GridWrapperProps> = React.memo(
         if (isMerged && isMerged(e)) {
           const parent = apiRef.current.getMergeParentCoords(e)
           if (!parent) {
-            logger.warn(`Parent not found for coordinates: ${e}`)
+            logger.warn(`Parent not found for coordinates`)
+            logger.info({ parent, currentCoordinate: e })
           } else {
             coordinates.push(parent)
           }

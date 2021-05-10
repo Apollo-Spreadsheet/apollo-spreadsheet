@@ -129,25 +129,6 @@ export function useKeyboard({
         return logger.debug('Coordinates given are equal to the current coordinates')
       }
 
-      //Validate boundaries
-      if (
-        isIndexOutOfBoundaries(colIndex, 0, apiRef.current.getColumnCount() - 1) ||
-        isIndexOutOfBoundaries(rowIndex, 0, apiRef.current.getRowsCount() - 1)
-      ) {
-        return logger.warn('Attempting to go out of boundaries, states result ', {
-          colIndex,
-          rowIndex,
-          columnCount: apiRef.current.getColumnCount(),
-          rowsCount: apiRef.current.getRowsCount(),
-          columnOutOfBound: isIndexOutOfBoundaries(
-            colIndex,
-            0,
-            apiRef.current.getColumnCount() - 1,
-          ),
-          rowOutOfBound: isIndexOutOfBoundaries(rowIndex, 0, apiRef.current.getRowsCount() - 1),
-        })
-      }
-
       const column = apiRef.current.getColumnAt(colIndex)
       if (!column) {
         return logger.warn(
