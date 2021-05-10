@@ -117,11 +117,12 @@ const GridWrapper: React.FC<GridWrapperProps> = React.memo(
       loggerRef.current.debug('Recomputing sizes.')
       cacheRef.current.clearAll()
       gridRef.current?.recomputeGridSize()
-    }, [])
+      ensureScrollIsAtSelectedCoordinates()
+    }, [ensureScrollIsAtSelectedCoordinates])
 
-    useApiEventHandler(apiRef, 'GRID_RESIZE', ensureScrollIsAtSelectedCoordinates)
-    useApiEventHandler(apiRef, 'ROWS_CHANGED', ensureScrollIsAtSelectedCoordinates)
-    useApiEventHandler(apiRef, 'CELL_NAVIGATION_CHANGED', ensureScrollIsAtSelectedCoordinates)
+    //useApiEventHandler(apiRef, 'GRID_RESIZE', ensureScrollIsAtSelectedCoordinates)
+    // useApiEventHandler(apiRef, 'ROWS_CHANGED', ensureScrollIsAtSelectedCoordinates)
+    // useApiEventHandler(apiRef, 'CELL_NAVIGATION_CHANGED', ensureScrollIsAtSelectedCoordinates)
 
     /** @todo We might need to perform some benchmark tests and ensure its not spamming **/
     useEffect(() => {
