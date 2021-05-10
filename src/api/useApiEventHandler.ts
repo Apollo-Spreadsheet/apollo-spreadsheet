@@ -9,6 +9,7 @@ export function useApiEventHandler(
   handler?: (args: any) => void,
 ) {
   const logger = useLogger('useApiEventHandler')
+
   useEffect(() => {
     if (handler && eventName) {
       logger.debug(`Subscribing to ${eventName} with handler reference ${handler.name}`)

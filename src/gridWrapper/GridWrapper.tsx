@@ -95,53 +95,24 @@ const GridWrapper: React.FC<GridWrapperProps> = React.memo(
     const classes = useStyles()
     const gridRef = useRef<VirtualizedGrid | null>(null)
     const loggerRef = useRef(logger)
+    const coordsRef = useRef(coords)
 
+    useEffect(() => {
+      coordsRef.current = coords
+    }, [coords])
     useEffect(() => {
       loggerRef.current = logger
     }, [logger])
-
-    const ensureScrollIsAtSelectedCoordinates = useCallback(() => {
-      const coords = apiRef.current.getSelectedCoords()
-      //Ensure we do have a valid index range (and if so we can scroll to that cell)
-      if (coords.rowIndex !== -1 && coords.colIndex !== -1) {
-        //When the re-computation happens the scroll position is affected and gets reset
-        loggerRef.current.debug(
-          `[ensureScrollIsAtSelectedCoordinates] Scrolling to the selected coordinates [${coords.rowIndex}, ${coords.colIndex}]`,
-        )
-        gridRef.current?.scrollToCell({
-          columnIndex: coords.colIndex,
-          rowIndex: coords.rowIndex,
-        })
-      }
-    }, [apiRef])
 
     const recomputeSizes = useCallback(() => {
       loggerRef.current.debug('Recomputing sizes.')
       cacheRef.current.clearAll()
       gridRef.current?.recomputeGridSize()
-      ensureScrollIsAtSelectedCoordinates()
-    }, [ensureScrollIsAtSelectedCoordinates])
+    }, [])
 
-    //useApiEventHandler(apiRef, 'GRID_RESIZE', ensureScrollIsAtSelectedCoordinates)
-    // useApiEventHandler(apiRef, 'ROWS_CHANGED', ensureScrollIsAtSelectedCoordinates)
-    // useApiEventHandler(apiRef, 'CELL_NAVIGATION_CHANGED', ensureScrollIsAtSelectedCoordinates)
-
-    /** @todo We might need to perform some benchmark tests and ensure its not spamming **/
-    /** @todo Replace using useApiEventHandler **/
-    useEffect(() => {
-      recomputeSizes()
-    }, [
-      //If any of those dependencies change we might need to recompute the sizes
-      data,
-      width,
-      height,
-      minColumnWidth,
-      fixedRowHeight,
-      fixedRowWidth,
-      minRowHeight,
-      rowHeight,
-      recomputeSizes,
-    ])
+    useApiEventHandler(apiRef, 'GRID_RESIZE', recomputeSizes)
+    useApiEventHandler(apiRef, 'DATA_CHANGED', recomputeSizes)
+    useApiEventHandler(apiRef, 'COLUMNS_CHANGED', recomputeSizes)
 
     const isMergeCellsEnabled = Array.isArray(mergeCells) && mergeCells.length > 0
     const activeRowPathCoordinates = useMemo(() => {

@@ -13,6 +13,7 @@ import flattenDeep from 'lodash/flattenDeep'
 import { createCellQueryProperties } from '../keyboard'
 import { useLogger } from '../logger'
 import { SortIndicator } from './components'
+import { useApiEventHandler } from '../api'
 
 type SortDisabled = boolean
 const useStyles = makeStyles(() => ({
@@ -133,10 +134,8 @@ export const ColumnGrid: React.FC<ColumnGridProps> = React.memo(
       gridRef.current?.recomputeGridSize()
     }, [])
 
-    // clear cache and recompute when data changes
-    useEffect(() => {
-      recomputeSizes()
-    }, [data, width, recomputeSizes])
+    useApiEventHandler(apiRef, 'DATA_CHANGED', recomputeSizes)
+    useApiEventHandler(apiRef, 'GRID_RESIZE', recomputeSizes)
 
     const headerRendererWrapper = useCallback(
       ({ style, cell, ref, columnIndex, rowIndex }: CellMeasureRendererProps<GridHeader>) => {
