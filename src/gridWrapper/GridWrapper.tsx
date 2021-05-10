@@ -16,7 +16,7 @@ import { StretchMode } from '../types'
 import { useLogger } from '../logger'
 import KeyboardArrowRightIcon from '@material-ui/icons/KeyboardArrowRight'
 import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown'
-import { useApiExtends, GridWrapperApi } from '../api'
+import { useApiExtends, GridWrapperApi, useApiEventHandler } from '../api'
 
 const useStyles = makeStyles(() => ({
   bodyContainer: {
@@ -94,30 +94,33 @@ const GridWrapper: React.FC<GridWrapperProps> = React.memo(
     const classes = useStyles()
     const gridRef = useRef<VirtualizedGrid | null>(null)
     const loggerRef = useRef(logger)
-    const coordsRef = useRef(coords)
 
     useEffect(() => {
       loggerRef.current = logger
     }, [logger])
 
-    const recomputeSizes = useCallback(() => {
-      /**
-       * @todo Review because this might be the troublemaker related to checkbox selection
-       */
+    const ensureScrollIsAtSelectedCoordinates = useCallback(() => {
+      const coords = apiRef.current.getSelectedCoords()
       //Ensure we do have a valid index range (and if so we can scroll to that cell)
-      if (coordsRef.current.rowIndex !== -1 && coordsRef.current.colIndex !== -1) {
+      if (coords.rowIndex !== -1 && coords.colIndex !== -1) {
         //When the re-computation happens the scroll position is affected and gets reset
         loggerRef.current.debug('Scrolling to the selected cell')
         gridRef.current?.scrollToCell({
-          columnIndex: coordsRef.current.colIndex,
-          rowIndex: coordsRef.current.rowIndex,
+          columnIndex: coords.colIndex,
+          rowIndex: coords.rowIndex,
         })
       }
+    }, [apiRef])
 
+    const recomputeSizes = useCallback(() => {
       loggerRef.current.debug('Recomputing sizes.')
       cacheRef.current.clearAll()
       gridRef.current?.recomputeGridSize()
     }, [])
+
+    useApiEventHandler(apiRef, 'GRID_RESIZE', ensureScrollIsAtSelectedCoordinates)
+    useApiEventHandler(apiRef, 'ROWS_CHANGED', ensureScrollIsAtSelectedCoordinates)
+    useApiEventHandler(apiRef, 'CELL_NAVIGATION_CHANGED', ensureScrollIsAtSelectedCoordinates)
 
     /** @todo We might need to perform some benchmark tests and ensure its not spamming **/
     useEffect(() => {
@@ -438,11 +441,9 @@ const GridWrapper: React.FC<GridWrapperProps> = React.memo(
         rowCount={rows.length}
         columnCount={columnCount}
         columnWidth={getColumnWidth}
-        overscanRowCount={overscanRowCount ?? 2}
-        overscanColumnCount={overscanColumnCount ?? 2}
+        overscanRowCount={overscanRowCount ?? 10}
+        overscanColumnCount={overscanColumnCount ?? 5}
         onSectionRendered={onSectionRendered}
-        scrollToRow={coords.rowIndex}
-        scrollToColumn={coords.colIndex}
         scrollToAlignment={scrollToAlignment}
         onScroll={onScroll}
         scrollLeft={scrollLeft}

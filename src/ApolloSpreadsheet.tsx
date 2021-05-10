@@ -193,48 +193,50 @@ export const ApolloSpreadSheet: React.FC<ApolloSpreadsheetProps> = forwardRef(
             containerClassName={props.containerClassName}
             apiRef={apiRef}
           >
-            {({ scrollLeft, onScroll, getColumnWidth, width, height }) => (
-              <div id="apollo-grids" className={props.className}>
-                <ColumnGrid
-                  {...props}
-                  data={gridHeaders}
-                  coords={coords}
-                  columns={columns}
-                  width={width}
-                  minColumnWidth={minColumnWidth}
-                  getColumnWidth={getColumnWidth}
-                  minRowHeight={props.minColumnHeight ?? 50}
-                  scrollLeft={scrollLeft}
-                  onScroll={onScroll}
-                  apiRef={apiRef}
-                  sort={sort}
-                  nestedRowsEnabled={nestedRowsEnabled}
-                  theme={theme}
-                />
-                <GridWrapper
-                  {...props}
-                  rows={rows}
-                  data={cells}
-                  coords={coords}
-                  minColumnWidth={minColumnWidth}
-                  width={width}
-                  getColumnWidth={getColumnWidth}
-                  minRowHeight={props.minRowHeight ?? 50}
-                  scrollLeft={scrollLeft}
-                  onScroll={onScroll}
-                  height={height}
-                  columnCount={columns.length}
-                  columns={columns}
-                  stretchMode={props.stretchMode ?? StretchMode.All}
-                  apiRef={apiRef}
-                  mergeCells={mergedCells}
-                  mergedPositions={mergedPositions}
-                  isMerged={isMerged}
-                  nestedRowsProps={nestedRowsProps}
-                  theme={theme}
-                />
-              </div>
-            )}
+            {({ scrollLeft, onScroll, getColumnWidth, width, height }) =>
+              initialised && (
+                <div id="apollo-grids" className={props.className}>
+                  <ColumnGrid
+                    {...props}
+                    data={gridHeaders}
+                    coords={coords}
+                    columns={columns}
+                    width={width}
+                    minColumnWidth={minColumnWidth}
+                    getColumnWidth={getColumnWidth}
+                    minRowHeight={props.minColumnHeight ?? 50}
+                    scrollLeft={scrollLeft}
+                    onScroll={onScroll}
+                    apiRef={apiRef}
+                    sort={sort}
+                    nestedRowsEnabled={nestedRowsEnabled}
+                    theme={theme}
+                  />
+                  <GridWrapper
+                    {...props}
+                    rows={rows}
+                    data={cells}
+                    coords={coords}
+                    minColumnWidth={minColumnWidth}
+                    width={width}
+                    getColumnWidth={getColumnWidth}
+                    minRowHeight={props.minRowHeight ?? 50}
+                    scrollLeft={scrollLeft}
+                    onScroll={onScroll}
+                    height={height}
+                    columnCount={columns.length}
+                    columns={columns}
+                    stretchMode={props.stretchMode ?? StretchMode.All}
+                    apiRef={apiRef}
+                    mergeCells={mergedCells}
+                    mergedPositions={mergedPositions}
+                    isMerged={isMerged}
+                    nestedRowsProps={nestedRowsProps}
+                    theme={theme}
+                  />
+                </div>
+              )
+            }
           </GridContainer>
           {editorNode && createPortal(editorNode, document.body)}
         </div>
