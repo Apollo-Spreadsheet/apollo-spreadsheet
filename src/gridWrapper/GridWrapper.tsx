@@ -125,6 +125,7 @@ const GridWrapper: React.FC<GridWrapperProps> = React.memo(
     // useApiEventHandler(apiRef, 'CELL_NAVIGATION_CHANGED', ensureScrollIsAtSelectedCoordinates)
 
     /** @todo We might need to perform some benchmark tests and ensure its not spamming **/
+    /** @todo Replace using useApiEventHandler **/
     useEffect(() => {
       recomputeSizes()
     }, [
