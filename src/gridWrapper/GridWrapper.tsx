@@ -105,7 +105,9 @@ const GridWrapper: React.FC<GridWrapperProps> = React.memo(
       //Ensure we do have a valid index range (and if so we can scroll to that cell)
       if (coords.rowIndex !== -1 && coords.colIndex !== -1) {
         //When the re-computation happens the scroll position is affected and gets reset
-        loggerRef.current.debug('Scrolling to the selected cell')
+        loggerRef.current.debug(
+          `[ensureScrollIsAtSelectedCoordinates] Scrolling to the selected coordinates [${coords.rowIndex}, ${coords.colIndex}]`,
+        )
         gridRef.current?.scrollToCell({
           columnIndex: coords.colIndex,
           rowIndex: coords.rowIndex,
@@ -453,6 +455,8 @@ const GridWrapper: React.FC<GridWrapperProps> = React.memo(
         height={height}
         width={width}
         noContentRenderer={noContentOverlay}
+        scrollToColumn={coords.colIndex}
+        scrollToRow={coords.rowIndex}
       />
     )
   },
