@@ -23,7 +23,11 @@ export interface GridWrapperProps
   extends Pick<ApolloDataProps, 'rows' | 'columns' | 'mergeCells'>,
     Pick<
       ApolloLayoutProps,
-      'stretchMode' | 'selection' | 'highlightBorderColor' | 'scrollToAlignment'
+      | 'stretchMode'
+      | 'selection'
+      | 'highlightBorderColor'
+      | 'scrollToAlignment'
+      | 'noContentOverlay'
     >,
     ApolloVirtualizedProps,
     Pick<ApolloCrudProps, 'onCellChange'>,

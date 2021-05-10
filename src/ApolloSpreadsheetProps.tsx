@@ -7,7 +7,8 @@ import { ApiRef } from './api'
 import { NestedRowsProps } from './nestedRows'
 import { Column, NestedHeader } from './columnGrid'
 import { MergeCell } from './mergeCells'
-import { Alignment } from 'react-virtualized'
+import { Alignment, GridProps } from 'react-virtualized'
+import { ReactNode } from 'react'
 
 export interface ApolloCrudProps {
   onCreateRow?: (coords: NavigationCoords) => void
@@ -87,6 +88,10 @@ export interface ApolloLayoutProps {
    * Use "start" to align cells to the top/left of the Grid and "end" to align bottom/right.
    */
   scrollToAlignment?: Alignment
+  /**
+   * Optional renderer to be used in place of rows when either :rowCount or :columnCount is 0.
+   */
+  noContentOverlay?: () => ReactNode
 }
 
 export interface ApolloCoreProps {

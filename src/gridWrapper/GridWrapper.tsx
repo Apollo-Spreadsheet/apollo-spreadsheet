@@ -67,6 +67,7 @@ const GridWrapper: React.FC<GridWrapperProps> = React.memo(
     width,
     highlightBorderColor,
     rowHeight,
+    noContentOverlay,
   }) => {
     const logger = useLogger('GridWrapper')
     const cache: CellMeasurerCache = useMemo(() => {
@@ -449,6 +450,7 @@ const GridWrapper: React.FC<GridWrapperProps> = React.memo(
         scrollLeft={scrollLeft}
         height={height}
         width={width}
+        noContentRenderer={noContentOverlay}
       />
     )
   },

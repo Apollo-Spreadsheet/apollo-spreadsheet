@@ -44,20 +44,73 @@ export const GridContainer: React.FC<GridContainerProps> = React.memo(
       [minColumnWidth],
     )
 
-    const calculateColumnWidths = (containerWidth: number) => {
-      const { mapping, totalSize } = createColumnWidthsMapping(
-        columns,
-        containerWidth,
-        minColumnWidth,
-        stretchMode,
-      )
+    const calculateColumnWidths = useCallback(
+      (containerWidth: number) => {
+        const { mapping, totalSize } = createColumnWidthsMapping(
+          columns,
+          containerWidth,
+          minColumnWidth,
+          stretchMode,
+        )
 
-      //Just update with the new calculated (if it was otherwise it might have been a cached result)
-      columnWidths.current = {
-        totalSize,
-        mapping,
-      }
-    }
+        //Just update with the new calculated (if it was otherwise it might have been a cached result)
+        columnWidths.current = {
+          totalSize,
+          mapping,
+        }
+      },
+      [columns, minColumnWidth, stretchMode],
+    )
+
+    const render = useCallback(
+      (containerWidth: number, containerHeight = 500) => {
+        const normalizedContainerWidth =
+          stretchMode !== StretchMode.None ? containerWidth - scrollbarSize : containerWidth
+
+        //Invoke our column builder
+        calculateColumnWidths(normalizedContainerWidth)
+
+        logger.debug({
+          containerWidth,
+          containerHeight,
+          scrollbarSize,
+          stretchMode,
+          normalizedContainerWidth,
+          columnWidths: columnWidths.current,
+          hasHorizontalScroll: stretchMode === StretchMode.None,
+        })
+
+        if (stretchMode !== StretchMode.None) {
+          return (
+            <>
+              {children({
+                width: containerWidth,
+                height: containerHeight,
+                getColumnWidth: getColumnWidthHelper,
+                scrollLeft: 0,
+              })}
+            </>
+          )
+        }
+
+        return (
+          <ScrollSync>
+            {({ onScroll, scrollLeft }) => (
+              <>
+                {children({
+                  width: containerWidth,
+                  height: containerHeight,
+                  getColumnWidth: getColumnWidthHelper,
+                  scrollLeft,
+                  onScroll,
+                })}
+              </>
+            )}
+          </ScrollSync>
+        )
+      },
+      [calculateColumnWidths, children, getColumnWidthHelper, logger, scrollbarSize, stretchMode],
+    )
 
     const onResize = useCallback(
       (info: Size) => {
@@ -69,70 +122,17 @@ export const GridContainer: React.FC<GridContainerProps> = React.memo(
       [apiRef],
     )
 
-    function render(containerWidth: number, containerHeight = 500) {
-      const normalizedContainerWidth =
-        stretchMode !== StretchMode.None ? containerWidth - scrollbarSize : containerWidth
-
-      //Invoke our column builder
-      calculateColumnWidths(normalizedContainerWidth)
-
-      logger.debug({
-        containerWidth,
-        containerHeight,
-        scrollbarSize,
-        stretchMode,
-        normalizedContainerWidth,
-        columnWidths: columnWidths.current,
-        hasHorizontalScroll: stretchMode === StretchMode.None,
-      })
-
-      if (stretchMode !== StretchMode.None) {
-        return (
-          <>
-            {children({
-              width: containerWidth,
-              height: containerHeight,
-              getColumnWidth: getColumnWidthHelper,
-              scrollLeft: 0,
-            })}
-          </>
-        )
-      }
-
-      return (
-        <ScrollSync>
-          {({ onScroll, scrollLeft }) => (
-            <>
-              {children({
-                width: containerWidth,
-                height: containerHeight,
-                getColumnWidth: getColumnWidthHelper,
-                scrollLeft,
-                onScroll,
-              })}
-            </>
-          )}
-        </ScrollSync>
-      )
-    }
-
     //In case of specified width and height, allow the control to the developer
     if (height && width) {
       return (
-        <Box
-          height={height}
-          width={width}
-          id="grid-container"
-          className={containerClassName}
-          position={'relative'}
-        >
+        <Box id={'apollo-root-fixed'} height={height} width={width} className={containerClassName}>
           {render(Number(width), Number(height))}
         </Box>
       )
     }
 
     return (
-      <Box height={'100%'} width={'100%'} id="grid-container" className={containerClassName}>
+      <Box id={'apollo-root-dynamic'} height={'100%'} width={'100%'} className={containerClassName}>
         <AutoSizer
           disableWidth={width !== undefined}
           disableHeight={height !== undefined}
