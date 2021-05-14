@@ -3,7 +3,7 @@ import { ROW_SELECTION_HEADER_ID } from '../rowSelection'
 import { NavigationCoords } from '../keyboard'
 import { ColumnCellType, Column, ComponentPropsType } from '../columnGrid'
 import { EditorProps } from './editorProps'
-import { isFunctionType } from '../helpers'
+import { coordinatesToString, isFunctionType } from '../helpers'
 import { useApiExtends, EditorManagerApi } from '../api'
 import clsx from 'clsx'
 import { useLogger } from '../logger'
@@ -56,6 +56,12 @@ export function useEditorManager({ onCellChange, apiRef }: EditorManagerProps) {
   const editorRef = useRef<EditorRef | null>()
   const state = useRef<IEditorState | null>(null)
   const [editorNode, setEditorNode] = useState<JSX.Element | null>(null)
+
+  useEffect(() => {
+    if (editorNode) {
+      apiRef.current.dispatchEvent('CELL_BEGIN_EDITING', apiRef.current.getSelectedCoords())
+    }
+  }, [editorNode, apiRef])
 
   /**
    * Closes the existing editor without saving anything
@@ -197,13 +203,13 @@ export function useEditorManager({ onCellChange, apiRef }: EditorManagerProps) {
    */
   const beginEditing = useCallback(
     ({ coords, targetElement, defaultKey }: BeginEditingParams) => {
-      logger.debug(`Begin editing invoked for coords: [${coords.rowIndex},${coords.colIndex}]`)
+      logger.debug(`Begin editing invoked for coords: ${coordinatesToString(coords)}`)
       //Validate if is editing but in the same coords
       if (
         state.current?.rowIndex === coords.rowIndex &&
         state.current?.colIndex === coords.colIndex
       ) {
-        return
+        return logger.debug(`Already editing at: ${coordinatesToString(coords)}`)
       }
       const column = apiRef.current.getColumnAt(coords.colIndex)
       if (!column) {
@@ -213,18 +219,20 @@ export function useEditorManager({ onCellChange, apiRef }: EditorManagerProps) {
       }
 
       if (column.id === ROW_SELECTION_HEADER_ID) {
-        return
+        return logger.debug(`Cannot edit row selection id: ${ROW_SELECTION_HEADER_ID}`)
       }
 
       // eslint-disable-next-line no-nested-ternary
       const isReadOnly = column.readOnly
-        ? typeof column.readOnly === 'function'
+        ? isFunctionType(column.readOnly)
           ? column.readOnly(coords)
           : column.readOnly
         : false
 
       if (isReadOnly) {
-        return
+        return logger.debug(
+          `Cell is readOnly therefore cannot edit at: ${coordinatesToString(coords)}`,
+        )
       }
 
       const row = apiRef.current.getRowAt(coords.rowIndex)
@@ -280,7 +288,6 @@ export function useEditorManager({ onCellChange, apiRef }: EditorManagerProps) {
       }
 
       setEditorNode(editor)
-      apiRef.current.dispatchEvent('CELL_BEGIN_EDITING', coords)
     },
     [logger, apiRef, stopEditing, onRefMount],
   )
