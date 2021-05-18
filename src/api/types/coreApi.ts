@@ -34,6 +34,16 @@ export interface CoreApi extends EventEmitter {
   dispatchEvent: (event: ApolloInternalEvents | string, ...args: any[]) => void
 
   /**
+   * Indicates whether the grid has focus active
+   */
+  isFocused: boolean
+
+  /**
+   * Focus the grid if its not focused yet
+   */
+  focus(): void
+
+  /**
    * Removes the focus from the grid and wipes the highlight
    */
   clearFocus(): void

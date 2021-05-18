@@ -120,9 +120,17 @@ export const ApolloSpreadSheet: React.FC<ApolloSpreadsheetProps> = forwardRef(
       initialised,
     })
 
+    const focus = useCallback(() => {
+      if (!gridFocused) {
+        logger.debug('focusing the grid with default coordinates ')
+        setGridFocused(true)
+        apiRef.current.selectCell(props.defaultCoords ?? { colIndex: 0, rowIndex: 0 })
+      }
+    }, [apiRef, gridFocused, logger, props.defaultCoords])
+
     const clearFocus = useCallback(() => {
       if (gridFocused) {
-        logger.debug('Grid clearFocus() invoked')
+        logger.debug('clearing the grid focus and selecting negative coordinates')
         setGridFocused(false)
         apiRef.current.selectCell({
           rowIndex: -1,
@@ -174,7 +182,7 @@ export const ApolloSpreadSheet: React.FC<ApolloSpreadsheetProps> = forwardRef(
 
     useApiEventHandler(apiRef, CELL_CLICK, onCellMouseHandler)
     useApiEventHandler(apiRef, CELL_DOUBLE_CLICK, onCellMouseHandler)
-    const rootApiMethods: Partial<GridApi> = { clearFocus }
+    const rootApiMethods: Partial<GridApi> = { clearFocus, focus, isFocused: gridFocused }
     useApiExtends(apiRef, rootApiMethods, 'CoreApi')
     const nestedRowsProps: NestedRowsProps = {
       nestedRows: nestedRowsEnabled,
