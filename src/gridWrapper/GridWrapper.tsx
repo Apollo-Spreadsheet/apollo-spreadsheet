@@ -431,6 +431,7 @@ const GridWrapper: React.FC<GridWrapperProps> = React.memo(
         noContentRenderer={noContentOverlay}
         scrollToColumn={coords.colIndex}
         scrollToRow={coords.rowIndex}
+        tabIndex={-1}
       />
     )
   },

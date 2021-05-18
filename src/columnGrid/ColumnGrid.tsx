@@ -290,6 +290,7 @@ export const ColumnGrid: React.FC<ColumnGridProps> = React.memo(
         autoHeight
         scrollLeft={scrollLeft}
         onScroll={onScroll}
+        tabIndex={-1}
       />
     )
   },
