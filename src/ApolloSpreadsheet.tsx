@@ -126,18 +126,14 @@ export const ApolloSpreadSheet: React.FC<ApolloSpreadsheetProps> = forwardRef(
     }, [])
 
     const focus = useCallback(() => {
-      if (!gridFocused) {
-        logger.debug('focusing the grid with default coordinates ')
-        if (!rootContainerRef.current) {
-          logger.warn('Root container reference not defined yet')
-        }
-        rootContainerRef.current?.focus()
-        setGridFocused(true)
-        apiRef.current.selectCell(props.defaultCoords ?? { colIndex: 0, rowIndex: 0 })
-      } else {
-        logger.debug('Grid is already focused')
+      logger.debug('focusing the grid with default coordinates ')
+      if (!rootContainerRef.current) {
+        logger.warn('Root container reference not defined yet')
       }
-    }, [apiRef, gridFocused, logger, props.defaultCoords])
+      rootContainerRef.current?.focus()
+      setGridFocused(true)
+      apiRef.current.selectCell(props.defaultCoords ?? { colIndex: 0, rowIndex: 0 })
+    }, [apiRef, logger, props.defaultCoords])
 
     const clearFocus = useCallback(() => {
       if (gridFocused) {
