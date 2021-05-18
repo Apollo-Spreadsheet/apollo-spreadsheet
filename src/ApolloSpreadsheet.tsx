@@ -30,6 +30,7 @@ import { isFunctionType } from './helpers'
 
 import { NestedRowsProps, useNestedRows } from './nestedRows'
 import { useTheme } from './theme'
+import { Grid as VirtualizedGrid } from 'react-virtualized/dist/es/Grid'
 
 /**
  * @todo I need to ensure this is only loaded in development, seems that with

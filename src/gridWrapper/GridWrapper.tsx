@@ -373,6 +373,7 @@ const GridWrapper: React.FC<GridWrapperProps> = React.memo(
 
     const onRefMount = useCallback(instance => {
       gridRef.current = instance
+      document.getElementById('core-grid')?.focus()
     }, [])
 
     const onSectionRendered = useCallback(
@@ -406,6 +407,7 @@ const GridWrapper: React.FC<GridWrapperProps> = React.memo(
 
     return (
       <VirtualizedGrid
+        id={'core-grid'}
         className={
           stretchMode !== StretchMode.None
             ? clsx(classes.bodyContainer, classes.suppressHorizontalOverflow)
