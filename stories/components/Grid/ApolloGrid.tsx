@@ -494,28 +494,6 @@ export function ApolloGrid() {
     return header.id === 'order'
   }
 
-  const onCreateRowClick = () => {
-    setRows(prev => [
-      ...prev,
-      {
-        id: `r-${Math.random()}`,
-        order: prev.length + 1,
-        name: '',
-        description: '',
-        car: '',
-        company: '',
-        job: '',
-        street: '',
-        state: '',
-        city: '',
-        zipCode: '',
-      },
-    ])
-    const { colIndex } = apiRef.current.getSelectedCoords()
-    const rowCount = apiRef.current.getRowsCount()
-    apiRef.current.selectCell({ colIndex, rowIndex: rowCount - 1 })
-  }
-
   const nestedHeaders: NestedHeader[][] = useMemo(
     () => [
       [
@@ -633,7 +611,6 @@ export function ApolloGrid() {
         columns={headers}
         rows={rows}
         onCellChange={onCellChange}
-        onCreateRow={onCreateRowClick}
         minColumnWidth={10}
         fixedRowHeight
         fixedRowWidth
