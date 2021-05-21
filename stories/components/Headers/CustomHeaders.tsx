@@ -41,7 +41,6 @@ const generateFakeData = () => {
   }
   return rows
 }
-//const rows = generateFakeData()
 
 export function CustomHeaders() {
   const classes = useStyles()
