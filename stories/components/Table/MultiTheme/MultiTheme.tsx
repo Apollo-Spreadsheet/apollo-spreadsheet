@@ -43,23 +43,6 @@ export function MultiTheme() {
     return generateFakeData()
   })
 
-  const onCreateRowClick = useCallback(() => {
-    setRows(prev => [
-      ...prev,
-      {
-        id: `r-${Math.random()}`,
-        order: prev.length + 1,
-        name: '',
-        country: '',
-        address: '',
-        email: '',
-      },
-    ])
-    const { colIndex } = apiRef.current.getSelectedCoords()
-    const rowCount = apiRef.current.getRowsCount()
-    apiRef.current.selectCell({ colIndex, rowIndex: rowCount - 1 })
-  }, [apiRef])
-
   const [activeThemeIndex, setActiveThemeIndex] = useState(0)
 
   const handleChange = useCallback((index: number) => {
@@ -114,7 +97,6 @@ export function MultiTheme() {
         fixedRowHeight
         fixedRowWidth
         rowHeight={30}
-        onCreateRow={onCreateRowClick}
         stretchMode={StretchMode.All}
         columns={columns}
         rows={rows}

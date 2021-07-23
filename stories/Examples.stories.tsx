@@ -8,11 +8,10 @@ import { NoContentTableExample } from './components/Table/NoContentTableExample'
 
 const isDevelopmentOnly = process.env.NODE_ENV === 'development'
 if (isDevelopmentOnly) {
-  storiesOf('Examples', module)
-    .add('Spreadsheet', () => <Spreadsheet />)
-    .add('VPD', () => <VPD />)
+  storiesOf('Examples', module).add('VPD', () => <VPD />)
 }
 storiesOf('Examples', module)
   .add('Multiple Themes', () => <MultiTheme />)
   .add('Grid', () => <ApolloGrid />)
+  .add('Spreadsheet', () => <Spreadsheet />)
   .add('No content overlay', () => <NoContentTableExample />)
