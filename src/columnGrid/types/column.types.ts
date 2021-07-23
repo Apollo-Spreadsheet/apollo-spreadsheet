@@ -10,6 +10,7 @@ import { StaticDatePickerProps } from '@material-ui/lab/StaticDatePicker/StaticD
 export interface CellRendererProps<TRow = Row> {
   row: TRow
   column: Column
+  coords: NavigationCoords
 }
 
 /**

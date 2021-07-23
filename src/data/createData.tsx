@@ -5,6 +5,7 @@ import React from 'react'
 import { Row } from '../types'
 import { isFunctionType } from '../helpers'
 import { ApolloCoreProps, ApolloDataProps, ApolloLayoutProps } from '../ApolloSpreadsheetProps'
+import { NavigationCoords } from '../keyboard'
 
 interface CreateDataParams
   extends Pick<ApolloDataProps, 'rows'>,
@@ -29,8 +30,12 @@ export function createData({ selection, apiRef, rows }: CreateDataParams) {
 
       const spanInfo = apiRef.current.getSpanProperties({ rowIndex, colIndex })
       const cellValue = row[column.accessor] !== undefined ? row[column.accessor] : ''
+      const coords: NavigationCoords = {
+        colIndex,
+        rowIndex,
+      }
       const value = column.cellRenderer
-        ? column.cellRenderer({ row, column })
+        ? column.cellRenderer({ row, column, coords })
         : formatCellValue(cellValue)
 
       _cells.push({
