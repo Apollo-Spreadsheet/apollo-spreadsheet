@@ -106,7 +106,6 @@ const GridWrapper: React.FC<GridWrapperProps> = React.memo(
 
     const recomputeSizes = useCallback(() => {
       loggerRef.current.debug('Recomputing sizes.')
-      cacheRef.current.clearAll()
       gridRef.current?.recomputeGridSize()
     }, [])
 

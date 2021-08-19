@@ -130,7 +130,6 @@ export const ColumnGrid: React.FC<ColumnGridProps> = React.memo(
     // clear cache and recompute when data changes OR when the container width changes
     const recomputeSizes = useCallback(() => {
       loggerRef.current.debug('Recomputing Sizes')
-      cacheRef.current?.clearAll()
       gridRef.current?.recomputeGridSize()
     }, [])
 
