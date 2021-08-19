@@ -106,8 +106,10 @@ const GridWrapper: React.FC<GridWrapperProps> = React.memo(
 
     const recomputeSizes = useCallback(() => {
       loggerRef.current.debug('Recomputing sizes.')
+      cacheRef.current.clear(coords.rowIndex, coords.colIndex)
+
       gridRef.current?.recomputeGridSize()
-    }, [])
+    }, [coords])
 
     useApiEventHandler(apiRef, 'GRID_RESIZE', recomputeSizes)
     useApiEventHandler(apiRef, 'DATA_CHANGED', recomputeSizes)
