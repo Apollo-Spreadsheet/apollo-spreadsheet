@@ -8,7 +8,7 @@ import React, {
 } from 'react'
 import { TextareaAutosize } from '@material-ui/core'
 import { EditorProps } from '../editorProps'
-import { makeStyles } from '@material-ui/core/styles'
+import { makeStyles } from '@material-ui/styles'
 import { handleEditorKeydown } from '../utils'
 import clsx from 'clsx'
 import { GRID_RESIZE, useApiEventHandler } from '../../api'

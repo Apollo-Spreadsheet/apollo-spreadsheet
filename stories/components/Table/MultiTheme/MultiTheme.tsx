@@ -1,5 +1,6 @@
 import { Box } from '@material-ui/core'
 import React, { useCallback, useMemo, useState } from 'react'
+// eslint-disable-next-line import/no-extraneous-dependencies
 import faker from 'faker'
 import { ApolloSpreadSheet, StretchMode, Column, useApiRef } from '../../../../src'
 import { useDarkModeTheme } from '../../../theme/useDarkModeTheme'

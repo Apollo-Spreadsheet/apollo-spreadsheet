@@ -4,7 +4,7 @@ import { AddCircle } from '@material-ui/icons'
 import { Box, IconButton, Typography } from '@material-ui/core'
 // eslint-disable-next-line import/no-extraneous-dependencies
 import faker from 'faker'
-import { makeStyles } from '@material-ui/core/styles'
+import { makeStyles } from '@material-ui/styles'
 
 const useStyles = makeStyles(() => ({
   selectedCell: {
