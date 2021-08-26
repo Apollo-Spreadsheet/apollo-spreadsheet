@@ -38,6 +38,7 @@ export const ThemeSelectMenu: React.FC<Props> = memo(({ activeThemeIndex, handle
         id="demo-controlled-open-select"
         open={open}
         variant={'standard'}
+        disableUnderline
         onClose={handleClose}
         onOpen={handleOpen}
         value={activeThemeIndex}
