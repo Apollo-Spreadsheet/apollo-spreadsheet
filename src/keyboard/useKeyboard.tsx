@@ -631,10 +631,20 @@ export function useKeyboard({
     [apiRef, selectCell, coords],
   )
 
+  const onCellSelect = useCallback(
+    ({ event, colIndex, rowIndex, element }: CellClickOrDoubleClickEventParams) => {
+      //console.log('keyboard select')
+      event.preventDefault()
+      selectCell({ rowIndex, colIndex }, false, element)
+    },
+    [selectCell],
+  )
+
   const getSelectedCoords = useCallback(() => coordsRef.current, [])
   useApiEventHandler(apiRef, 'keydown', onKeyDown)
   useApiEventHandler(apiRef, 'CELL_CLICK', onCellClick)
   useApiEventHandler(apiRef, 'CELL_DOUBLE_CLICK', onCellDoubleClick)
+  useApiEventHandler(apiRef, 'RANGE_SELECTION', onCellSelect)
   const navigationApi: NavigationApi = {
     getSelectedCoords,
     selectCell,

@@ -55,6 +55,45 @@ export function useEvents(gridRootRef: React.RefObject<HTMLDivElement>, apiRef: 
     [apiRef, logger],
   )
 
+  const handleRangeSelectionEvent = useCallback(
+    (event: MouseEvent) => {
+      console.log('range')
+      let target = event.target as HTMLElement
+      if (!target) {
+        return logger.warn(`[onClickHandler] Target element not defined, value: ${target}`)
+      }
+
+      let parsedCoords: NavigationCoords | undefined
+      const rows = apiRef.current.getRows()
+      if (rows) {
+        parsedCoords = getCellCoordinatesFromDOMElement(target)
+      } else {
+        //Check if the parent element is a cell
+        if (!target.parentElement || !isCellElement(target.parentElement)) {
+          return
+        }
+        parsedCoords = getCellCoordinatesFromDOMElement(target.parentElement)
+        target = target.parentElement as HTMLElement
+      }
+
+      if (!parsedCoords) {
+        return logger.warn(
+          `[onClickHandler] ${createCoordsParseWarning(target.parentElement as HTMLElement)}`,
+        )
+      }
+
+      const eventName: ApolloInternalEvents = 'RANGE_SELECTION'
+
+      const payload: CellClickOrDoubleClickEventParams = {
+        event,
+        element: target,
+        ...parsedCoords,
+      }
+      apiRef.current.dispatchEvent(eventName, payload)
+    },
+    [apiRef, logger],
+  )
+
   useEffect(() => {
     if (gridRootRef && gridRootRef.current && apiRef.current?.isInitialised) {
       logger.debug('Binding events listeners')
@@ -67,6 +106,9 @@ export function useEvents(gridRootRef: React.RefObject<HTMLDivElement>, apiRef: 
       gridRootRef.current.addEventListener('dblclick', handleClickOrDoubleClickEvent, {
         capture: true,
       })
+      // gridRootRef.current.addEventListener('mouseenter', handleRangeSelectionEvent, {
+      //   capture: true,
+      // })
 
       document.addEventListener('keydown', keyDownHandler)
       //gridRootRef.current.addEventListener('keydown', keyDownHandler)
@@ -80,6 +122,9 @@ export function useEvents(gridRootRef: React.RefObject<HTMLDivElement>, apiRef: 
         gridRootElem.removeEventListener('dblclick', handleClickOrDoubleClickEvent, {
           capture: true,
         })
+        // gridRootElem.removeEventListener('mouseenter', handleRangeSelectionEvent, {
+        //   capture: true,
+        // })
         //gridRootElem.removeEventListener('keydown', keyDownHandler)
         document.removeEventListener('keydown', keyDownHandler)
         /**
@@ -89,5 +134,12 @@ export function useEvents(gridRootRef: React.RefObject<HTMLDivElement>, apiRef: 
         api.removeAllListeners()
       }
     }
-  }, [gridRootRef, apiRef, logger, createHandler, handleClickOrDoubleClickEvent])
+  }, [
+    gridRootRef,
+    apiRef,
+    logger,
+    createHandler,
+    handleClickOrDoubleClickEvent,
+    handleRangeSelectionEvent,
+  ])
 }

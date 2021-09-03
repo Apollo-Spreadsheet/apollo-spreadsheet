@@ -10,6 +10,7 @@ export const GRID_RESIZE = 'GRID_RESIZE'
 export const CELL_NAVIGATION_CHANGED = 'CELL_NAVIGATION_CHANGED'
 export const COLLAPSES_CHANGED = 'COLLAPSES_CHANGED'
 export const THEME_CHANGED = 'THEME_CHANGED'
+export const RANGE_SELECTION = 'RANGE_SELECTION'
 
 /**
  * Returns the list of internal events that we should provide
@@ -28,6 +29,7 @@ export const APOLLO_INTERNAL_EVENTS = [
   CELL_NAVIGATION_CHANGED,
   COLLAPSES_CHANGED,
   THEME_CHANGED,
+  RANGE_SELECTION,
 ]
 
 type ElementType<T extends ReadonlyArray<unknown>> = T extends ReadonlyArray<infer ElementType>

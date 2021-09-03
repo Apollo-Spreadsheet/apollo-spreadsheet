@@ -167,6 +167,7 @@ const GridWrapper: React.FC<GridWrapperProps> = React.memo(
     const renderCell = useCallback(
       ({ style, cell, ref, rowIndex, columnIndex }) => {
         const isSelected = rowIndex === coords.rowIndex && columnIndex === coords.colIndex
+        const isRangeSelection = rowIndex === coords.rowIndex && columnIndex === coords.colIndex
         const navigationDisabled = columns[0][columnIndex]?.disableNavigation
         const column = columns[columnIndex]
         const row = rows[rowIndex]
@@ -185,6 +186,10 @@ const GridWrapper: React.FC<GridWrapperProps> = React.memo(
           cellStyle.border = highlightBorderColor
             ? `1px solid ${highlightBorderColor}`
             : '1px solid blue'
+        }
+        if (isRangeSelection) {
+          cellStyle.border = '1px solid #5984C2'
+          cellStyle.backgroundColor = '#DFEDEC'
         } else if (!theme || (!theme.cellClass && !cell.dummy)) {
           //Bind default border and clear other borders
           cellStyle.borderLeft = '0px'
