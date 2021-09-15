@@ -8,6 +8,7 @@ import {
   ROW_SELECTION_CHANGE,
   ROWS_CHANGED,
   COLLAPSES_CHANGED,
+  COLLAPSES_COLUMNS_CHANGED,
 } from '../api'
 
 import { createData } from './createData'
@@ -144,5 +145,7 @@ export function useData({ rows, selection, initialised, apiRef, nestedRowsEnable
   useApiExtends(apiRef, rowApi, 'Data API')
   useApiEventHandler(apiRef, ROW_SELECTION_CHANGE, onRowSelectionChange)
   useApiEventHandler(apiRef, COLLAPSES_CHANGED, onCollapsesChange)
+  useApiEventHandler(apiRef, COLLAPSES_COLUMNS_CHANGED, onCollapsesChange)
+
   return { cells, rows: rowsRef.current }
 }

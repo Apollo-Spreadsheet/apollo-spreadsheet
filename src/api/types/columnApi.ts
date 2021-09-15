@@ -12,4 +12,5 @@ export interface ColumnApi {
   getColumnById: (id: string) => Column | undefined
   getColumnIndex: (id: string) => number
   updateColumns: (columns: Column[]) => void
+  getOriginalColumns: () => Column[]
 }

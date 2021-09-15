@@ -11,6 +11,7 @@ import {
 } from '../ApolloSpreadsheetProps'
 import { OnScrollParams } from 'react-virtualized'
 import { GridTheme } from '../types'
+import { NestedColumnsProps } from '../nestedColumns/nestedColumnsProps'
 
 export interface ColumnGridProps
   extends ApolloVirtualizedProps,
@@ -21,6 +22,7 @@ export interface ColumnGridProps
     Pick<ApolloColumnRowSizeProps, 'minRowHeight' | 'minColumnWidth'> {
   data: Array<GridHeader[]>
   coords: NavigationCoords
+  nestedColumnsProps: NestedColumnsProps
   getColumnWidth: ({ index }: { index: number }) => number
   sort: SortState | null
   width: number

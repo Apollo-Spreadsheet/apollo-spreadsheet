@@ -2,11 +2,20 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import { Column, ColumnWidthDictionary, GridHeader, NestedHeader } from '../types'
 import { ColumnApi } from '../../api/types/columnApi'
 import { ROW_SELECTION_HEADER_ID, SelectionProps } from '../../rowSelection'
-import { ApiRef, COLUMNS_CHANGED, useApiExtends } from '../../api'
+import {
+  ApiRef,
+  COLLAPSES_CHANGED,
+  COLLAPSES_COLUMNS_CHANGED,
+  COLUMNS_CHANGED,
+  DATA_CHANGED,
+  useApiEventHandler,
+  useApiExtends,
+} from '../../api'
 import { StretchMode } from '../../types'
 import { useLogger } from '../../logger'
 import { insertDummyCells } from '../../gridWrapper'
 import { createSelectionColumn } from '../../rowSelection/createSelectionColumn'
+import { flatExpandedColumns } from '../../data/flatExpandedColumns'
 
 export interface ColumnWidthRecord {
   totalSize: number
@@ -30,6 +39,7 @@ interface Props {
   apiRef: ApiRef
   selection?: SelectionProps
   initialised: boolean
+  nestedColumnsEnabled: boolean
 }
 
 /**
@@ -39,11 +49,19 @@ interface Props {
  * @param headers
  * @param nestedHeaders
  */
-export function useHeaders({ columns, nestedHeaders, apiRef, selection }: Props): HeadersState {
+export function useHeaders({
+  columns,
+  nestedHeaders,
+  initialised,
+  apiRef,
+  selection,
+  nestedColumnsEnabled,
+}: Props): HeadersState {
   const logger = useLogger('useHeaders')
   const columnsRef = useRef<Column[]>(columns)
   const nestedHeadersRef = useRef<NestedHeader[][] | undefined>(nestedHeaders)
   const [gridHeaders, setGridHeaders] = useState<GridHeader[][]>([[]])
+  const originalColumnsRef = useRef<Column[]>(columns)
 
   const createGridHeaders = useCallback(
     ({
@@ -54,6 +72,7 @@ export function useHeaders({ columns, nestedHeaders, apiRef, selection }: Props)
       nestedHeaders?: Array<NestedHeader[]>
     }) => {
       logger.debug('Creating grid headers.')
+
       const newColumns = [...paramColumns.filter(e => e.hide === undefined || !e.hide)]
       //Selection column
       const selectionExists = newColumns.some(e => e.id === ROW_SELECTION_HEADER_ID)
@@ -129,24 +148,39 @@ export function useHeaders({ columns, nestedHeaders, apiRef, selection }: Props)
         )
 
         //Here we combine with headers and insert the dummy cells
+
         return setGridHeaders(insertDummyCells([...nestedTransform, transformedHeaders]))
       }
-
+      const updatedHeaders = insertDummyCells([transformedHeaders])
       //Only one level is necessary
-      setGridHeaders(insertDummyCells([transformedHeaders]))
+      setGridHeaders(updatedHeaders)
+      apiRef.current.dispatchEvent(DATA_CHANGED, { updatedHeaders })
     },
-    [columns, logger, selection],
+    [apiRef, columns.length, logger, selection],
   )
 
   const updateColumns = useCallback(
     (updatedColumns: Column[]) => {
       logger.debug('Updating columns.')
-      columnsRef.current = updatedColumns
-      createGridHeaders({ columns: updatedColumns, nestedHeaders: nestedHeadersRef.current })
-      apiRef.current.dispatchEvent(COLUMNS_CHANGED, { columns: updatedColumns })
+      columnsRef.current = nestedColumnsEnabled
+        ? flatExpandedColumns(originalColumnsRef.current, apiRef)
+        : updatedColumns
+      apiRef.current.dispatchEvent(COLUMNS_CHANGED, { columns: columnsRef.current })
+      createGridHeaders({ columns: columnsRef.current, nestedHeaders: nestedHeadersRef.current })
     },
-    [apiRef, createGridHeaders, logger],
+    [apiRef, createGridHeaders, logger, nestedColumnsEnabled],
   )
+
+  //Refresh the data if any dependency change
+  useEffect(() => {
+    //Ensure the grid api is initialized first
+    if (!initialised) {
+      return
+    }
+
+    originalColumnsRef.current = columns
+    updateColumns(columns)
+  }, [columns, updateColumns, initialised])
 
   useEffect(() => {
     columnsRef.current = columns
@@ -167,6 +201,13 @@ export function useHeaders({ columns, nestedHeaders, apiRef, selection }: Props)
     (id: string) => columnsRef.current.findIndex(e => e.id === id),
     [],
   )
+  const getOriginalColumns = useCallback(() => originalColumnsRef.current, [])
+
+  const onCollapsesChange = useCallback(() => {
+    logger.debug('Collapses have changed')
+    updateColumns(columnsRef.current)
+  }, [logger, updateColumns])
+
   const columnApi: ColumnApi = {
     getColumnAt,
     getColumnCount,
@@ -174,10 +215,11 @@ export function useHeaders({ columns, nestedHeaders, apiRef, selection }: Props)
     updateColumns,
     getColumns,
     getColumnIndex,
+    getOriginalColumns,
   }
 
   useApiExtends(apiRef, columnApi, 'ColumnApi')
-
+  useApiEventHandler(apiRef, COLLAPSES_COLUMNS_CHANGED, onCollapsesChange)
   return {
     gridHeaders,
     columns: columnsRef.current,
