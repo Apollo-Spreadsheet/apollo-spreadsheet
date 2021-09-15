@@ -11,6 +11,7 @@ import {
 } from '../ApolloSpreadsheetProps'
 import { OnScrollParams } from 'react-virtualized'
 import { GridTheme } from '../types'
+import { NestedColumnsProps } from '../nestedColumns/nestedColumnsProps'
 
 export interface ColumnGridProps
   extends ApolloVirtualizedProps,
@@ -28,4 +29,5 @@ export interface ColumnGridProps
   nestedRowsEnabled: boolean
   onScroll?: (params: OnScrollParams) => any
   theme?: GridTheme
+  nestedColumnsProps?: NestedColumnsProps
 }

@@ -9,6 +9,7 @@ import { Column, NestedHeader } from './columnGrid'
 import { MergeCell } from './mergeCells'
 import { Alignment, GridProps } from 'react-virtualized'
 import { ReactNode } from 'react'
+import { NestedColumnsProps } from './nestedColumns/nestedColumnsProps'
 
 export interface ApolloCrudProps {
   onCreateRow?: (coords: NavigationCoords) => void
@@ -125,4 +126,5 @@ export type ApolloSpreadsheetProps = ApolloCoreProps &
   ApolloNavigationProps &
   ApolloLayoutProps &
   ApolloDataProps &
-  ApolloVirtualizedProps
+  ApolloVirtualizedProps &
+  NestedColumnsProps

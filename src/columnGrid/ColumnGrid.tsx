@@ -14,6 +14,8 @@ import { createCellQueryProperties } from '../keyboard'
 import { useLogger } from '../logger'
 import { SortIndicator } from './components'
 import { useApiEventHandler } from '../api'
+import KeyboardArrowRightIcon from '@material-ui/icons/KeyboardArrowRight'
+import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown'
 
 type SortDisabled = boolean
 const useStyles = makeStyles(() => ({
@@ -62,6 +64,7 @@ export const ColumnGrid: React.FC<ColumnGridProps> = React.memo(
     coords,
     onScroll,
     columns,
+    nestedColumnsProps,
     nestedHeaders,
     nestedRowsEnabled,
     data,
@@ -136,10 +139,12 @@ export const ColumnGrid: React.FC<ColumnGridProps> = React.memo(
 
     useApiEventHandler(apiRef, 'DATA_CHANGED', recomputeSizes)
     useApiEventHandler(apiRef, 'GRID_RESIZE', recomputeSizes)
+    useApiEventHandler(apiRef, 'COLUMNS_CHANGED', recomputeSizes)
 
     const headerRendererWrapper = useCallback(
       ({ style, cell, ref, columnIndex, rowIndex }: CellMeasureRendererProps<GridHeader>) => {
         const { title, renderer } = cell
+        const column = columns[columnIndex]
         //in case its not found, we set to true
         const isSortDisabled = nestedRowsEnabled ? true : headersSortDisabledMap[cell.id]
         const sortComponent =
@@ -184,37 +189,109 @@ export const ColumnGrid: React.FC<ColumnGridProps> = React.memo(
 
         const isSpannerAndNested = cell.colSpan && cell.isNested && !cell.dummy
         const defaultZIndex = cell.dummy ? 0 : 1
-        const navigationProps = cell.dummy
-          ? {}
-          : createCellQueryProperties({
-              role: 'columnheader',
-              colIndex: columnIndex,
-              rowIndex,
-            })
 
         const wrapperStyles: CSSProperties = {
           ...style,
           zIndex: isSpannerAndNested ? 999 : defaultZIndex,
         }
-        return (
-          <div ref={ref} {...navigationProps} className={headerClassName} style={wrapperStyles}>
-            {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events */}
-            <span
-              onClick={isSortDisabled ? undefined : () => apiRef.current.toggleSort(cell.id)}
-              className={classes.contentSpan}
-            >
-              {children}
-              {sortComponent}
-            </span>
-          </div>
-        )
+
+        const wrapper = child => {
+          //Add navigationProps in case its a normal cell navigable
+          const navigationProps = cell.dummy
+            ? {}
+            : createCellQueryProperties({
+                role: 'columnheader',
+                colIndex: columnIndex,
+                rowIndex,
+              })
+
+          return (
+            <div ref={ref} {...navigationProps} className={headerClassName} style={wrapperStyles}>
+              {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events */}
+              <span
+                onClick={isSortDisabled ? undefined : () => apiRef.current.toggleSort(cell.id)}
+                className={classes.contentSpan}
+              >
+                {child}
+                {sortComponent}
+              </span>
+            </div>
+          )
+        }
+
+        if (nestedColumnsProps.nestedColumns) {
+          const id = String(column[apiRef.current.selectionKey])
+          const depth = apiRef.current.getColumnDepth(id)
+          const nestedMargin = (nestedColumnsProps.nestedColumnMargin ?? 10) * depth
+          //Parent collapse renders an additional layer with collapse controls
+          if (column.__children && rowIndex === 0) {
+            const iconStyle: React.CSSProperties = {
+              cursor: 'pointer',
+              right: 0,
+              position: 'absolute',
+            }
+            const isColumnExpanded = apiRef.current.isColumnExpanded(id)
+
+            const handleCollapseClick = () => {
+              if (!id) {
+                return logger.error(
+                  `Column index ${columnIndex} does not have a key in order to toggle collapse!`,
+                )
+              }
+
+              //Select the target column if not selected
+              if (coords.rowIndex !== columnIndex) {
+                apiRef.current.selectCell({ ...coords, colIndex: columnIndex })
+              }
+              apiRef.current.toggleColumnExpand(id)
+            }
+
+            const renderExpandOrCollapseIcon = () => {
+              if (nestedColumnsProps.iconRenderer) {
+                return nestedColumnsProps.iconRenderer(handleCollapseClick, isColumnExpanded)
+              }
+
+              return isColumnExpanded ? (
+                <KeyboardArrowRightIcon
+                  onClick={handleCollapseClick}
+                  fontSize={'small'}
+                  style={iconStyle}
+                />
+              ) : (
+                <KeyboardArrowDownIcon
+                  onClick={handleCollapseClick}
+                  fontSize={'small'}
+                  style={iconStyle}
+                />
+              )
+            }
+
+            const component = (
+              <div style={depth > 1 ? { marginLeft: nestedMargin } : {}}>
+                {children}
+                {renderExpandOrCollapseIcon()}
+              </div>
+            )
+            return wrapper(component)
+          }
+
+          //Nested columns need to be wrapped on the first cell with a marginLeft
+          if (depth > 1 && rowIndex === 0) {
+            const component = <div style={{ marginLeft: nestedMargin }}>{children}</div>
+            return wrapper(component)
+          }
+        }
+        return wrapper(children)
       },
       [
         apiRef,
         classes.contentSpan,
         classes.defaultHeader,
-        coords.colIndex,
+        columns,
+        coords,
         headersSortDisabledMap,
+        logger,
+        nestedColumnsProps,
         nestedRowsEnabled,
         sort?.accessor,
         sort?.order,
