@@ -22,7 +22,6 @@ export interface ColumnGridProps
     Pick<ApolloColumnRowSizeProps, 'minRowHeight' | 'minColumnWidth'> {
   data: Array<GridHeader[]>
   coords: NavigationCoords
-  nestedColumnsProps: NestedColumnsProps
   getColumnWidth: ({ index }: { index: number }) => number
   sort: SortState | null
   width: number
@@ -30,4 +29,5 @@ export interface ColumnGridProps
   nestedRowsEnabled: boolean
   onScroll?: (params: OnScrollParams) => any
   theme?: GridTheme
+  nestedColumnsProps?: NestedColumnsProps
 }

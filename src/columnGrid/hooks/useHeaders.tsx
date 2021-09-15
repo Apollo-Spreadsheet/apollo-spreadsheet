@@ -38,8 +38,8 @@ interface Props {
   stretchMode?: StretchMode
   apiRef: ApiRef
   selection?: SelectionProps
-  initialised: boolean
-  nestedColumnsEnabled: boolean
+  initialised?: boolean
+  nestedColumnsEnabled?: boolean
 }
 
 /**
