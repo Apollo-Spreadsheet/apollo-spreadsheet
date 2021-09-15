@@ -216,15 +216,21 @@ export function RowGrouping() {
   ]
 
   const onCellChange = (params: CellChangeParams) => {
-    setRows(prev => {
+    const updateRow = prev => {
       const updatedRows = [...prev]
       const header = headers[params.coords.colIndex]
       updatedRows.forEach(e => {
         if (e.id === (params.row as GroupRow).id) {
           e[header?.accessor] = params.newValue
         }
+        if (e.__children !== undefined) {
+          updateRow(e.__children)
+        }
       })
       return updatedRows
+    }
+    setRows(prev => {
+      return updateRow(prev)
     })
   }
 

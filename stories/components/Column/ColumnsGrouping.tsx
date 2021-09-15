@@ -202,7 +202,10 @@ export function ColumnGrouping() {
       id: 'city',
       title: 'City',
       accessor: 'city',
-      __children: [{ id: 'city2', title: 'City2', accessor: 'city2' }],
+      __children: [
+        { id: 'city2', title: 'City2', accessor: 'city2' },
+        { id: 'city3', title: 'City3', accessor: 'city3' },
+      ],
     },
     {
       id: 'country',
@@ -217,15 +220,35 @@ export function ColumnGrouping() {
   ]
 
   const onCellChange = (params: CellChangeParams) => {
-    setRows(prev => {
+    const headersWithChildren: any = []
+
+    const iterateThroughHeaders = (array: Column[]) => {
+      array.forEach(e => {
+        headersWithChildren.push(e)
+
+        if (e.__children !== undefined && apiRef.current.isColumnExpanded(e.id)) {
+          iterateThroughHeaders(e.__children)
+        }
+      })
+    }
+    iterateThroughHeaders(headers)
+    const updateRow = prev => {
       const updatedRows = [...prev]
-      const header = headers[params.coords.colIndex]
+
+      const header = headersWithChildren[params.coords.colIndex]
+
       updatedRows.forEach(e => {
         if (e.id === (params.row as GroupRow).id) {
           e[header?.accessor] = params.newValue
         }
+        if (e.__children !== undefined) {
+          updateRow(e.__children)
+        }
       })
       return updatedRows
+    }
+    setRows(prev => {
+      return updateRow(prev)
     })
   }
 

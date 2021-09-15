@@ -154,9 +154,9 @@ export function useHeaders({
       const updatedHeaders = insertDummyCells([transformedHeaders])
       //Only one level is necessary
       setGridHeaders(updatedHeaders)
-      apiRef.current.dispatchEvent(DATA_CHANGED, { updatedHeaders })
+      //apiRef.current.dispatchEvent(DATA_CHANGED, { updatedHeaders })
     },
-    [apiRef, columns.length, logger, selection],
+    [columns.length, logger, selection],
   )
 
   const updateColumns = useCallback(
@@ -183,11 +183,15 @@ export function useHeaders({
   }, [columns, updateColumns, initialised])
 
   useEffect(() => {
-    columnsRef.current = columns
-    nestedHeadersRef.current = nestedHeaders
-    createGridHeaders({ columns, nestedHeaders })
+    /**
+     * @todo the comented code has a conflict when we change the data in table (onCellChange)
+     * whenever we change a cell, it collapses the columns
+     */
+    // columnsRef.current = columns
+    // nestedHeadersRef.current = nestedHeaders
+    // createGridHeaders({ columns, nestedHeaders })
     //TODO review if this might give us trouble in case of only nested headers changing
-    apiRef.current.dispatchEvent(COLUMNS_CHANGED, { columns })
+    //apiRef.current.dispatchEvent(COLUMNS_CHANGED, { columns })
   }, [apiRef, columns, createGridHeaders, nestedHeaders])
 
   const getColumnAt = useCallback((index: number) => columnsRef.current[index], [])
@@ -217,8 +221,7 @@ export function useHeaders({
     getColumnIndex,
     getOriginalColumns,
   }
-
-  useApiExtends(apiRef, columnApi, 'ColumnApi')
+  useApiExtends(apiRef, columnApi, 'Data Api')
   useApiEventHandler(apiRef, COLLAPSES_COLUMNS_CHANGED, onCollapsesChange)
   return {
     gridHeaders,
