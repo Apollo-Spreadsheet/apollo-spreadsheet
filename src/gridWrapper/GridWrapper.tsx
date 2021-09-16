@@ -187,10 +187,12 @@ const GridWrapper: React.FC<GridWrapperProps> = React.memo(
             ? `1px solid ${highlightBorderColor}`
             : '1px solid blue'
         }
-        if (isRangeSelection) {
-          cellStyle.border = '1px solid #5984C2'
-          cellStyle.backgroundColor = '#DFEDEC'
-        } else if (!theme || (!theme.cellClass && !cell.dummy)) {
+        // if (isRangeSelection) {
+        //   cellStyle.border = '1px solid #5984C2'
+        //   cellStyle.backgroundColor = '#DFEDEC'
+        //   cellStyle.color = '#5984C2'
+        //}
+        else if (!theme || (!theme.cellClass && !cell.dummy)) {
           //Bind default border and clear other borders
           cellStyle.borderLeft = '0px'
           cellStyle.borderRight = '0px'

@@ -144,6 +144,7 @@ export function RangeSelect() {
         mergeCells={mergeCellData}
         theme={lightTheme.theme}
         highlightBorderColor={'#5984C2'}
+        rangeSelection
       />
     </Box>
   )

@@ -20,19 +20,17 @@ import {
   useApiExtends,
   GridApi,
 } from './api'
-
 import { useEvents } from './events/useEvents'
-
 import { ApolloSpreadsheetProps } from './ApolloSpreadsheetProps'
 import { useSort } from './sort/useSort'
 import { useLogger } from './logger'
 import { isFunctionType } from './helpers'
-
 import { NestedRowsProps, useNestedRows } from './nestedRows'
 import { useTheme } from './theme'
 import { Grid as VirtualizedGrid } from 'react-virtualized/dist/es/Grid'
 import { NestedColumnsProps } from './nestedColumns/nestedColumnsProps'
 import { useNestedColumns } from './nestedColumns/useNestedColumns'
+import { useRangeSelection, RangeSelectionProps } from './rangeSelection'
 
 /**
  * @todo I need to ensure this is only loaded in development, seems that with
@@ -67,6 +65,7 @@ export const ApolloSpreadSheet: React.FC<ApolloSpreadsheetProps> = forwardRef(
     const initialised = useApiFactory(rootContainerRef, apiRef, props.selection?.key)
     const nestedRowsEnabled = props.nestedRows ?? false
     const nestedColumnsEnabled = props.nestedColumns ?? false
+    const rangeSelectionEnabled = props.rangeSelection ?? false
     useEvents(rootContainerRef, apiRef)
     const theme = useTheme({ apiRef, options: props.theme })
 
@@ -108,6 +107,16 @@ export const ApolloSpreadSheet: React.FC<ApolloSpreadsheetProps> = forwardRef(
       initialised,
       enabled: nestedColumnsEnabled,
       defaultExpandedColumnsIds: props.defaultExpandedColumnsIds,
+    })
+
+    useRangeSelection({
+      defaultCoords: props.defaultCoords ?? {
+        rowIndex: 0,
+        colIndex: 0,
+      },
+      apiRef,
+      initialised,
+      enabled: rangeSelectionEnabled,
     })
 
     const sort = useSort(apiRef)
