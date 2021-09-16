@@ -7,7 +7,9 @@ import faker from 'faker'
 interface GroupRow {
   id: string
   name: string
+  name2?: string
   city: string
+  city2?: string
   country: string
   job: string
   order: number
@@ -119,6 +121,7 @@ const generateRows = count => {
       {
         id: faker.datatype.number().toString(),
         name: faker.name.findName(),
+        name2: faker.name.findName(),
         city: faker.address.city(),
         country: faker.address.country(),
         job: faker.name.jobType(),
@@ -130,6 +133,7 @@ const generateRows = count => {
     id: faker.datatype.number().toString(),
     name: faker.name.findName(),
     city: faker.address.city(),
+    city2: faker.address.city(),
     country: faker.address.country(),
     job: faker.name.jobType(),
     order: 6,
@@ -147,7 +151,7 @@ const generateRows = count => {
   return rows
 }
 
-export function RowGrouping() {
+export function ColumnGrouping() {
   const [rows, setRows] = useState<GroupRow[]>(() => {
     return generateRows(2)
   })
@@ -187,38 +191,52 @@ export function RowGrouping() {
       disableBackspace: true,
       disableCellCut: true,
       disableCellPaste: true,
-      width: '7%',
     },
     {
       id: 'name',
       title: 'Name',
       accessor: 'name',
-      width: '20%',
+      __children: [{ id: 'name2', title: 'Name2', accessor: 'name2' }],
     },
     {
       id: 'city',
       title: 'City',
       accessor: 'city',
-      width: '10%',
+      __children: [
+        { id: 'city2', title: 'City2', accessor: 'city2' },
+        { id: 'city3', title: 'City3', accessor: 'city3' },
+      ],
     },
     {
       id: 'country',
       title: 'Country',
       accessor: 'country',
-      width: '35%',
     },
     {
       id: 'job',
       title: 'Job',
       accessor: 'job',
-      width: '20%',
     },
   ]
 
   const onCellChange = (params: CellChangeParams) => {
+    const headersWithChildren: any = []
+
+    const iterateThroughHeaders = (array: Column[]) => {
+      array.forEach(e => {
+        headersWithChildren.push(e)
+
+        if (e.__children !== undefined && apiRef.current.isColumnExpanded(e.id)) {
+          iterateThroughHeaders(e.__children)
+        }
+      })
+    }
+    iterateThroughHeaders(headers)
     const updateRow = prev => {
       const updatedRows = [...prev]
-      const header = headers[params.coords.colIndex]
+
+      const header = headersWithChildren[params.coords.colIndex]
+
       updatedRows.forEach(e => {
         if (e.id === (params.row as GroupRow).id) {
           e[header?.accessor] = params.newValue
@@ -253,7 +271,7 @@ export function RowGrouping() {
         }}
         disableSort
         nestedRows
-        defaultExpandedIds={['9X', '8X']}
+        nestedColumns
       />
     </Box>
   )

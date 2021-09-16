@@ -31,6 +31,8 @@ import { isFunctionType } from './helpers'
 import { NestedRowsProps, useNestedRows } from './nestedRows'
 import { useTheme } from './theme'
 import { Grid as VirtualizedGrid } from 'react-virtualized/dist/es/Grid'
+import { NestedColumnsProps } from './nestedColumns/nestedColumnsProps'
+import { useNestedColumns } from './nestedColumns/useNestedColumns'
 
 /**
  * @todo I need to ensure this is only loaded in development, seems that with
@@ -64,6 +66,7 @@ export const ApolloSpreadSheet: React.FC<ApolloSpreadsheetProps> = forwardRef(
     const forkedRef = useForkRef(rootContainerRef, componentRef)
     const initialised = useApiFactory(rootContainerRef, apiRef, props.selection?.key)
     const nestedRowsEnabled = props.nestedRows ?? false
+    const nestedColumnsEnabled = props.nestedColumns ?? false
     useEvents(rootContainerRef, apiRef)
     const theme = useTheme({ apiRef, options: props.theme })
 
@@ -74,6 +77,7 @@ export const ApolloSpreadSheet: React.FC<ApolloSpreadsheetProps> = forwardRef(
       apiRef,
       initialised,
       selection: props.selection,
+      nestedColumnsEnabled,
     })
 
     const { mergedPositions, mergedCells, isMerged } = useMergeCells({
@@ -97,6 +101,13 @@ export const ApolloSpreadSheet: React.FC<ApolloSpreadsheetProps> = forwardRef(
       initialised,
       enabled: nestedRowsEnabled,
       defaultExpandedIds: props.defaultExpandedIds,
+    })
+
+    useNestedColumns({
+      apiRef,
+      initialised,
+      enabled: nestedColumnsEnabled,
+      defaultExpandedColumnsIds: props.defaultExpandedColumnsIds,
     })
 
     const sort = useSort(apiRef)
@@ -199,6 +210,12 @@ export const ApolloSpreadSheet: React.FC<ApolloSpreadsheetProps> = forwardRef(
       defaultExpandedIds: props.defaultExpandedIds,
       iconRenderer: props.iconRenderer,
     }
+    const nestedColumnsProps: NestedColumnsProps = {
+      nestedColumns: nestedColumnsEnabled,
+      nestedColumnMargin: props.nestedColumnMargin,
+      defaultExpandedColumnsIds: props.defaultExpandedColumnsIds,
+      iconRenderer: props.iconRenderer,
+    }
 
     return (
       <ClickAwayListener onClickAway={onClickAway}>
@@ -229,6 +246,7 @@ export const ApolloSpreadSheet: React.FC<ApolloSpreadsheetProps> = forwardRef(
                     apiRef={apiRef}
                     sort={sort}
                     nestedRowsEnabled={nestedRowsEnabled}
+                    nestedColumnsProps={nestedColumnsProps}
                     theme={theme}
                   />
                   <GridWrapper

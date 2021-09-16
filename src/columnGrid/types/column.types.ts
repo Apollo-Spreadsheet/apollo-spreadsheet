@@ -189,4 +189,9 @@ export interface Column<Key = string, Metadata = any> {
    * going to interfere with Apollo
    */
   metadata?: Metadata
+  /**
+   * Provides nested columns that might be collapsed if
+   * nestedColumns option is enabled
+   */
+  __children?: Column[]
 }
