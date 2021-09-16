@@ -5,8 +5,8 @@ module.exports = {
   tagline: 'The most powerful out-of-the-box spreadsheet with full support to React',
   url: 'https://apollo-docs.famousgadget.pt',
   baseUrl: '/',
-  onBrokenLinks: 'throw',
-  onBrokenMarkdownLinks: 'warn',
+  // onBrokenLinks: 'throw',
+  // onBrokenMarkdownLinks: 'warn',
   favicon: 'img/favicon.ico',
   organizationName: 'Famous Gadget', // Usually your GitHub org/user name.
   projectName: 'apollo-spreadsheet', // Usually your repo name.
@@ -87,10 +87,10 @@ module.exports = {
         },
       },
     },
-    algolia: {
-      apiKey: process.env.API_KEY,
-      indexName: 'apollo-docs',
-    },
+    // algolia: {
+    //   apiKey: process.env.API_KEY,
+    //   indexName: 'apollo-docs',
+    // },
   },
   presets: [
     [
