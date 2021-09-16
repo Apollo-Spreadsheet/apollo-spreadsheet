@@ -1,12 +1,13 @@
 module.exports = {
   someSidebar: {
     Apollo: ['getting-started', 'theme'],
-    Columns: ['column',
+    Columns: [
+      'column',
       {
-      Headers: ['custom-header', 'nested-header'],
-      }
+        Headers: ['custom-header', 'nested-header'],
+      },
     ],
     Editors: ['editors'],
-    Rows: ['row-grouping']
+    Rows: ['row-grouping'],
   },
 }
