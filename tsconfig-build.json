@@ -8,5 +8,15 @@
     "baseUrl": "."
   },
   "include": ["./src"],
-  "exclude": ["node_modules", "dist", "**/*.spec.ts", "**/*.spec.tsx", "stories", "cypress", ".storybook", "jest.config.js", "setupTests.ts"]
+  "exclude": [
+    "node_modules",
+    "dist",
+    "**/*.spec.ts",
+    "**/*.spec.tsx",
+    "stories",
+    "cypress",
+    ".storybook",
+    "jest.config.js",
+    "setupTests.ts"
+  ]
 }
