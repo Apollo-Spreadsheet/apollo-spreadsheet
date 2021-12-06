@@ -219,6 +219,7 @@ export const ColumnGrid: React.FC<ColumnGridProps> = React.memo(
           )
         }
 
+        // support nested column
         if (nestedColumnsProps.nestedColumns) {
           const id = String(column[apiRef.current.selectionKey])
           const depth = apiRef.current.getColumnDepth(id)
