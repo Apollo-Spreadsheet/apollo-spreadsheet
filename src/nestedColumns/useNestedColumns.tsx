@@ -12,7 +12,7 @@ import { DepthMap } from './depth-map.interface'
 import { ApolloCoreProps } from '../ApolloSpreadsheetProps'
 import { NestedColumnsProps } from './nestedColumnsProps'
 import { uniq } from 'lodash'
-import { Column } from 'columnGrid'
+import { Column } from '../columnGrid'
 
 interface Props
   extends Required<ApolloCoreProps>,

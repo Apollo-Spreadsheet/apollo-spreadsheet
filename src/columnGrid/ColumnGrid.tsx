@@ -220,10 +220,10 @@ export const ColumnGrid: React.FC<ColumnGridProps> = React.memo(
         }
 
         // support nested column
-        if (nestedColumnsProps.nestedColumns) {
+        if (nestedColumnsProps?.nestedColumns) {
           const id = String(column[apiRef.current.selectionKey])
           const depth = apiRef.current.getColumnDepth(id)
-          const nestedMargin = (nestedColumnsProps.nestedColumnMargin ?? 10) * depth
+          const nestedMargin = (nestedColumnsProps?.nestedColumnMargin ?? 10) * depth
           //Parent collapse renders an additional layer with collapse controls
           if (column.__children && rowIndex === 0) {
             const iconStyle: React.CSSProperties = {
@@ -248,8 +248,8 @@ export const ColumnGrid: React.FC<ColumnGridProps> = React.memo(
             }
 
             const renderExpandOrCollapseIcon = () => {
-              if (nestedColumnsProps.iconRenderer) {
-                return nestedColumnsProps.iconRenderer(handleCollapseClick, isColumnExpanded)
+              if (nestedColumnsProps?.iconRenderer) {
+                return nestedColumnsProps?.iconRenderer(handleCollapseClick, isColumnExpanded)
               }
 
               return isColumnExpanded ? (

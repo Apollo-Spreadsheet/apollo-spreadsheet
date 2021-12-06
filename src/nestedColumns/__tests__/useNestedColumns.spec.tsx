@@ -3,7 +3,7 @@ import { renderHook, act } from '@testing-library/react-hooks'
 import {  useApiFactory, useApiRef } from '../../api'
 import { useNestedColumns } from "../useNestedColumns";
 import api from "simple-git/src/lib/api";
-import { Column } from 'columnGrid';
+import { Column } from '../../columnGrid';
 
 describe('useNestedColumns hook', () => {
   it('should define NestedColumnsApi', () => {

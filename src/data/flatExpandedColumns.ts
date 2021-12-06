@@ -1,5 +1,5 @@
 import { ApiRef } from '../api'
-import { Column } from 'columnGrid'
+import { Column } from '../columnGrid'
 
 export const flatExpandedColumns = (columns: Column[], apiRef: ApiRef): Column[] => {
   const flattenColumn: Column[] = []

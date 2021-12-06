@@ -1,5 +1,5 @@
 import { DepthMap } from './depth-map.interface'
-import { Column } from 'columnGrid'
+import { Column } from '../columnGrid'
 
 /**
  * Recursively creates a map with the column ids -> depth level
