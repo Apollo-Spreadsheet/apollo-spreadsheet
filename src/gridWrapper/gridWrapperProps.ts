@@ -45,4 +45,5 @@ export interface GridWrapperProps
   getColumnWidth: (index: Index) => number
   nestedRowsProps: NestedRowsProps
   theme?: GridTheme
+  coreId?: string
 }

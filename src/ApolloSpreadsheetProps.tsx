@@ -119,6 +119,7 @@ export interface ApolloVirtualizedProps {
 
 export interface GetScrollPosition {
   onScroll?: (params: OnScrollParams) => any
+  coreId?: string
 }
 
 export type ApolloSpreadsheetProps = ApolloCoreProps &

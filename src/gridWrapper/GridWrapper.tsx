@@ -68,6 +68,7 @@ const GridWrapper: React.FC<GridWrapperProps> = React.memo(
     highlightBorderColor,
     rowHeight,
     noContentOverlay,
+    coreId,
   }) => {
     const logger = useLogger('GridWrapper')
     const cache: CellMeasurerCache = useMemo(() => {
@@ -165,7 +166,7 @@ const GridWrapper: React.FC<GridWrapperProps> = React.memo(
     )
 
     const renderCell = useCallback(
-      ({ style, cell, ref, rowIndex, columnIndex }) => {
+      ({ style, cell, ref, rowIndex, columnIndex, coreId }) => {
         const isSelected = rowIndex === coords.rowIndex && columnIndex === coords.colIndex
         const navigationDisabled = columns[0][columnIndex]?.disableNavigation
         const column = columns[columnIndex]
@@ -407,7 +408,7 @@ const GridWrapper: React.FC<GridWrapperProps> = React.memo(
 
     return (
       <VirtualizedGrid
-        id={'core-grid'}
+        id={coreId}
         className={
           stretchMode !== StretchMode.None
             ? clsx(classes.bodyContainer, classes.suppressHorizontalOverflow)

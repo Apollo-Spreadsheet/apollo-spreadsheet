@@ -270,6 +270,7 @@ export const ApolloSpreadSheet: React.FC<ApolloSpreadsheetProps> = forwardRef(
                     isMerged={isMerged}
                     nestedRowsProps={nestedRowsProps}
                     theme={theme}
+                    coreId={props.coreId}
                   />
                 </Box>
               )
