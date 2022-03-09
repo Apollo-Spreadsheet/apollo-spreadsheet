@@ -256,7 +256,10 @@ export function ScrollExample() {
     })
   }
   const onScroll = (e: OnScrollParams, div: string) => {
-    const elementCore = document.getElementById('core-grid') as HTMLElement
+    const elementCore =
+      div === '1'
+        ? (document.getElementById('core-grid-right') as HTMLElement)
+        : (document.getElementById('core-grid-left') as HTMLElement)
     console.log(elementCore.scrollTop)
 
     elementCore.scrollTo(0, e.scrollTop)
@@ -284,6 +287,7 @@ export function ScrollExample() {
           onScroll={e => onScroll(e, '1')}
           nestedRows
           nestedColumns
+          coreId={'core-grid-left'}
         />
       </div>
       <div style={{ margin: 0, height: '100px', width: '50%', float: 'right' }}>
@@ -306,6 +310,7 @@ export function ScrollExample() {
           onScroll={e => onScroll(e, '2')}
           nestedRows
           nestedColumns
+          coreId={'core-grid-right'}
         />
       </div>
     </div>
