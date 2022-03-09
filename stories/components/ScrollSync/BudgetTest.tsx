@@ -3,6 +3,7 @@ import { Box, Grid, makeStyles } from '@material-ui/core'
 import { ApolloSpreadSheet, StretchMode, Column, useApiRef, CellChangeParams } from '../../../src'
 // eslint-disable-next-line import/no-extraneous-dependencies
 import faker from 'faker'
+import { OnScrollParams } from 'react-virtualized'
 
 const useStyles = makeStyles(theme => ({
   scroll: {
@@ -181,6 +182,16 @@ export function BudgetTest() {
     console.log('Scrolling...')
   })
 
+  const onScroll = (e: OnScrollParams, div: string) => {
+    const elementCore =
+      div === '1'
+        ? (document.getElementById('core-grid-right') as HTMLElement)
+        : (document.getElementById('core-grid-left') as HTMLElement)
+    console.log(elementCore.scrollTop)
+
+    elementCore.scrollTo(0, e.scrollTop)
+  }
+
   return (
     <Grid container display={'inline-flex'} onScroll={handleScroll}>
       <Box
@@ -203,6 +214,8 @@ export function BudgetTest() {
           disableSort
           nestedRows
           nestedColumns
+          onScroll={e => onScroll(e, '1')}
+          coreId={'core-grid-left'}
         />
       </Box>
       <Box width={'80%'} height={'calc(100vh - 100px)'} className={classes.scroll}>
@@ -220,6 +233,8 @@ export function BudgetTest() {
           disableSort
           nestedRows
           nestedColumns
+          onScroll={e => onScroll(e, '2')}
+          coreId={'core-grid-right'}
         />
       </Box>
     </Grid>
