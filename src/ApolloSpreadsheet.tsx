@@ -248,6 +248,7 @@ export const ApolloSpreadSheet: React.FC<ApolloSpreadsheetProps> = forwardRef(
                     nestedRowsEnabled={nestedRowsEnabled}
                     nestedColumnsProps={nestedColumnsProps}
                     theme={theme}
+                    headerId={props.headerId}
                   />
                   <GridWrapper
                     {...props}

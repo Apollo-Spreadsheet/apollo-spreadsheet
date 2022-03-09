@@ -30,4 +30,5 @@ export interface ColumnGridProps
   onScroll?: (params: OnScrollParams) => any
   theme?: GridTheme
   nestedColumnsProps?: NestedColumnsProps
+  headerId?: string
 }

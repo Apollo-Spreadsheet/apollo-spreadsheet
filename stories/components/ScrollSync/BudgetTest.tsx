@@ -170,37 +170,25 @@ export function BudgetTest() {
     })
   }
 
-  const handleScroll = useCallback(() => {
-    console.log('scroll')
-  }, [])
-
-  useEffect(() => {
-    document.addEventListener('scroll', handleScroll)
-  }, [handleScroll])
-
-  window.addEventListener('scroll', event => {
-    console.log('Scrolling...')
-  })
-
   const onScroll = (e: OnScrollParams, div: string) => {
     const elementCore =
       div === '1'
         ? (document.getElementById('core-grid-right') as HTMLElement)
         : (document.getElementById('core-grid-left') as HTMLElement)
-    console.log(elementCore.scrollTop)
-
+    const header = document.getElementById('header-grid-right') as HTMLElement
+    console.log(header.scrollLeft, e.scrollLeft)
     elementCore.scrollTo(0, e.scrollTop)
+
+    header.scrollTo(e.scrollLeft, 0)
   }
 
   return (
-    <Grid container display={'inline-flex'} onScroll={handleScroll}>
+    <Grid container display={'inline-flex'}>
       <Box
         width={'20%'}
         height={'calc(100vh - 100px)'}
         style={{ marginRight: -14 }}
-        className={classes.scroll}
         ref={useScrollRef}
-        onScroll={handleScroll}
       >
         <ApolloSpreadSheet
           apiRef={apiRef}
@@ -215,10 +203,11 @@ export function BudgetTest() {
           nestedRows
           nestedColumns
           onScroll={e => onScroll(e, '1')}
+          headerId={'header-grid-left'}
           coreId={'core-grid-left'}
         />
       </Box>
-      <Box width={'80%'} height={'calc(100vh - 100px)'} className={classes.scroll}>
+      <Box width={'80%'} height={'calc(100vh - 100px)'}>
         <ApolloSpreadSheet
           apiRef={apiRef2}
           columns={headers}
@@ -234,6 +223,7 @@ export function BudgetTest() {
           nestedRows
           nestedColumns
           onScroll={e => onScroll(e, '2')}
+          headerId={'header-grid-right'}
           coreId={'core-grid-right'}
         />
       </Box>
