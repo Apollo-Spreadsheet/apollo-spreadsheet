@@ -256,13 +256,10 @@ export function ScrollExample() {
     })
   }
   const onScroll = (e: OnScrollParams, div: string) => {
-    console.log('current scroll', e.scrollTop)
-    const element =
-      div === '1'
-        ? (apiRef2.current.rootElementRef as React.RefObject<HTMLDivElement>)
-        : (apiRef.current.rootElementRef as React.RefObject<HTMLDivElement>)
-    element!.current!.scrollTop = e.scrollTop
-    console.log(element!.current!.scrollTop)
+    const elementCore = document.getElementById('core-grid') as HTMLElement
+    console.log(elementCore.scrollTop)
+
+    elementCore.scrollTo(0, e.scrollTop)
   }
 
   return (
