@@ -37,6 +37,9 @@ const useStyles = makeStyles(() => ({
   suppressHorizontalOverflow: {
     overflowX: 'hidden',
   },
+  scrollDisabled: {
+    scroll: 'none',
+  },
 }))
 
 const GridWrapper: React.FC<GridWrapperProps> = React.memo(
@@ -168,6 +171,7 @@ const GridWrapper: React.FC<GridWrapperProps> = React.memo(
       ({ style, cell, ref, rowIndex, columnIndex }) => {
         const isSelected = rowIndex === coords.rowIndex && columnIndex === coords.colIndex
         const navigationDisabled = columns[0][columnIndex]?.disableNavigation
+        const scrollDisabled = columns[0][columnIndex]?.disableScroll
         const column = columns[columnIndex]
         const row = rows[rowIndex]
         //Dummy zIndex is 0 and a spanned cell has 5 but a normal cell has 1
@@ -218,6 +222,10 @@ const GridWrapper: React.FC<GridWrapperProps> = React.memo(
 
         if (navigationDisabled && !cell.dummy && theme?.disabledCellClass) {
           cellClassName = clsx(cellClassName, classes.disabledCell, theme?.disabledCellClass)
+        }
+
+        if (scrollDisabled) {
+          cellClassName = clsx(cellClassName, classes.scrollDisabled)
         }
 
         if (selection && selection.cellClassName) {
@@ -322,14 +330,15 @@ const GridWrapper: React.FC<GridWrapperProps> = React.memo(
         columns,
         rows,
         isCellRowActive,
-        apiRef,
+        theme,
         classes.cellDefaultStyle,
         classes.disabledCell,
+        classes.scrollDisabled,
         selection,
-        highlightBorderColor,
         nestedRowsProps,
+        highlightBorderColor,
+        apiRef,
         logger,
-        theme,
       ],
     )
 

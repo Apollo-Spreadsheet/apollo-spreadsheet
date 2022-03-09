@@ -229,7 +229,7 @@ export const ApolloSpreadSheet: React.FC<ApolloSpreadsheetProps> = forwardRef(
             height={props.height}
             width={props.width}
           >
-            {({ scrollLeft, onScroll, getColumnWidth, width, height }) =>
+            {({ scrollLeft, getColumnWidth, width, height }) =>
               initialised && (
                 <Box height={height} width={width} id="apollo-grids" className={props.className}>
                   <ColumnGrid
@@ -242,7 +242,7 @@ export const ApolloSpreadSheet: React.FC<ApolloSpreadsheetProps> = forwardRef(
                     getColumnWidth={getColumnWidth}
                     minRowHeight={props.minColumnHeight ?? 50}
                     scrollLeft={scrollLeft}
-                    onScroll={onScroll}
+                    // onScroll={onScroll}
                     apiRef={apiRef}
                     sort={sort}
                     nestedRowsEnabled={nestedRowsEnabled}
@@ -259,7 +259,7 @@ export const ApolloSpreadSheet: React.FC<ApolloSpreadsheetProps> = forwardRef(
                     getColumnWidth={getColumnWidth}
                     minRowHeight={props.minRowHeight ?? 50}
                     scrollLeft={scrollLeft}
-                    onScroll={onScroll}
+                    //   onScroll={onScroll}
                     height={height}
                     columnCount={columns.length}
                     columns={columns}

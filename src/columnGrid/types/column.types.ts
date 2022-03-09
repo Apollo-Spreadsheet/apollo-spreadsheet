@@ -132,6 +132,7 @@ export interface Column<Key = string, Metadata = any> {
   cellClassName?: string | DynamicCallback<Row, string>
   readOnly?: ReadOnly
   disableNavigation?: DisableNavigation
+  disableScroll?: Boolean
   /**
    * Cell value type for this column (the values are formatted accordingly)
    * NOTE: If you attempt to use the calendar editor

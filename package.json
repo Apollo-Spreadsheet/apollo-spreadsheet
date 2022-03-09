@@ -53,6 +53,7 @@
     "dom-helpers": "^5.2.0",
     "faker": "^5.5.3",
     "lodash": "^4.17.21",
+    "react-scroll-sync": "^0.9.0",
     "react-is": "^17.0.2",
     "react-virtualized": "^9.22.3",
     "value-equal": "^1.0.1"
