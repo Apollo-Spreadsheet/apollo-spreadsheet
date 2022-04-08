@@ -48,9 +48,6 @@ const useStyles = makeStyles(() => ({
     width: '100%',
     height: '100%',
   },
-  disableScroll: {
-    overflow: 'hidden',
-  },
 }))
 
 export const ColumnGrid: React.FC<ColumnGridProps> = React.memo(
@@ -62,7 +59,7 @@ export const ColumnGrid: React.FC<ColumnGridProps> = React.memo(
     apiRef,
     theme,
     coords,
-    onScroll,
+    onScrollHeader,
     columns,
     nestedColumnsProps,
     nestedHeaders,
@@ -73,6 +70,7 @@ export const ColumnGrid: React.FC<ColumnGridProps> = React.memo(
     scrollLeft,
     disableSort,
     sort,
+    headerId,
   }) => {
     const classes = useStyles()
     const logger = useLogger('ColumnGrid')
@@ -353,7 +351,8 @@ export const ColumnGrid: React.FC<ColumnGridProps> = React.memo(
 
     return (
       <Grid
-        className={clsx(classes.headerContainer, classes.disableScroll)}
+        className={clsx(classes.headerContainer)}
+        id={headerId}
         ref={onRefMount}
         cellRenderer={cellMeasurerWrapperRenderer}
         deferredMeasurementCache={cache}
@@ -366,8 +365,7 @@ export const ColumnGrid: React.FC<ColumnGridProps> = React.memo(
         columnWidth={getColumnWidth}
         height={100} //Its going to be ignored due to autoHeight
         autoHeight
-        scrollLeft={scrollLeft}
-        onScroll={onScroll}
+        onScroll={onScrollHeader}
         tabIndex={-1}
       />
     )

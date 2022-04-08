@@ -7,7 +7,7 @@ import { ApiRef } from './api'
 import { NestedRowsProps } from './nestedRows'
 import { Column, NestedHeader } from './columnGrid'
 import { MergeCell } from './mergeCells'
-import { Alignment, GridProps } from 'react-virtualized'
+import { Alignment, GridProps, OnScrollParams } from 'react-virtualized'
 import { ReactNode } from 'react'
 import { NestedColumnsProps } from './nestedColumns/nestedColumnsProps'
 
@@ -117,6 +117,15 @@ export interface ApolloVirtualizedProps {
   overscanColumnCount?: number
 }
 
+export interface GetScrollPosition {
+  /**
+   * unique id of the Table, (necessary for the scroll) **/
+  id?: string
+  /**
+   * array of table ids that scroll when current table scrolls, (necessary for the scroll) **/
+  connectToIds?: string[]
+}
+
 export type ApolloSpreadsheetProps = ApolloCoreProps &
   GridContainerCommonProps &
   NestedRowsProps &
@@ -127,4 +136,5 @@ export type ApolloSpreadsheetProps = ApolloCoreProps &
   ApolloLayoutProps &
   ApolloDataProps &
   ApolloVirtualizedProps &
-  NestedColumnsProps
+  NestedColumnsProps &
+  GetScrollPosition
