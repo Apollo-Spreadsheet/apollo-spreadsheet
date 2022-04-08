@@ -365,7 +365,6 @@ export const ColumnGrid: React.FC<ColumnGridProps> = React.memo(
         columnWidth={getColumnWidth}
         height={100} //Its going to be ignored due to autoHeight
         autoHeight
-        // scrollLeft={scrollLeft}
         onScroll={onScrollHeader}
         tabIndex={-1}
       />
