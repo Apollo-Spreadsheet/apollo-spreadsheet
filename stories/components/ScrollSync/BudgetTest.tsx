@@ -62,6 +62,7 @@ export function BudgetTest() {
   })
   const apiRef = useApiRef()
   const apiRef2 = useApiRef()
+
   const useScrollRef = useRef()
   const classes = useStyles()
   const onHeaderIconClick = () => {
@@ -170,26 +171,9 @@ export function BudgetTest() {
     })
   }
 
-  const onScroll = (e: OnScrollParams, div: string) => {
-    const elementCore =
-      div === '1'
-        ? (document.getElementById('core-grid-right') as HTMLElement)
-        : (document.getElementById('core-grid-left') as HTMLElement)
-    const header = document.getElementById('header-grid-right') as HTMLElement
-    console.log(header.scrollLeft, e.scrollLeft)
-    elementCore.scrollTo(0, e.scrollTop)
-
-    header.scrollTo(e.scrollLeft, 0)
-  }
-
   return (
     <Grid container display={'inline-flex'}>
-      <Box
-        width={'20%'}
-        height={'calc(100vh - 100px)'}
-        style={{ marginRight: -14 }}
-        ref={useScrollRef}
-      >
+      <Box width={'20%'} height={'calc(100vh - 100px)'} style={{ marginRight: -14 }}>
         <ApolloSpreadSheet
           apiRef={apiRef}
           columns={firstHeader}
@@ -202,9 +186,8 @@ export function BudgetTest() {
           disableSort
           nestedRows
           nestedColumns
-          onScroll={e => onScroll(e, '1')}
-          headerId={'header-grid-left'}
-          coreId={'core-grid-left'}
+          id={'grid1'}
+          connectToIds={['grid2']}
         />
       </Box>
       <Box width={'80%'} height={'calc(100vh - 100px)'}>
@@ -222,9 +205,8 @@ export function BudgetTest() {
           disableSort
           nestedRows
           nestedColumns
-          onScroll={e => onScroll(e, '2')}
-          headerId={'header-grid-right'}
-          coreId={'core-grid-right'}
+          id={'grid2'}
+          connectToIds={['grid1']}
         />
       </Box>
     </Grid>

@@ -33,6 +33,7 @@ import { useTheme } from './theme'
 import { Grid as VirtualizedGrid } from 'react-virtualized/dist/es/Grid'
 import { NestedColumnsProps } from './nestedColumns/nestedColumnsProps'
 import { useNestedColumns } from './nestedColumns/useNestedColumns'
+import { OnScrollParams } from 'react-virtualized'
 
 /**
  * @todo I need to ensure this is only loaded in development, seems that with
@@ -217,6 +218,42 @@ export const ApolloSpreadSheet: React.FC<ApolloSpreadsheetProps> = forwardRef(
       iconRenderer: props.iconRenderer,
     }
 
+    const onScrollTable = useCallback(
+      (e: OnScrollParams) => {
+        if (props?.id) {
+          const header = document.getElementById(`header-${props?.id}`) as HTMLElement
+          if (!header) {
+            return console.warn('The element does not exist on page')
+          }
+          header.scrollTo(e.scrollLeft, header.scrollTop)
+        }
+
+        if (props?.connectToIds && props?.connectToIds?.length > 0) {
+          props.connectToIds.map((element: string) => {
+            const elementCore = document.getElementById(`core-${element}`) as HTMLElement
+            if (!elementCore) {
+              return console.warn('The element does not exist on page')
+            }
+            elementCore.scrollTo(elementCore.scrollLeft, e.scrollTop)
+            return elementCore
+          })
+        }
+      },
+      [props.connectToIds, props?.id],
+    )
+    const onScrollHeader = useCallback(
+      (e: OnScrollParams) => {
+        if (props?.id) {
+          const elementCore = document.getElementById(`core-${props?.id}`) as HTMLElement
+          if (!elementCore) {
+            return console.warn('The element does not exist on page')
+          }
+          elementCore.scrollTo(e.scrollLeft, elementCore.scrollTop)
+        }
+      },
+      [props?.id],
+    )
+
     return (
       <ClickAwayListener onClickAway={onClickAway}>
         <div style={rootDivStyle} id="root-apollo" ref={forkedRef}>
@@ -242,13 +279,13 @@ export const ApolloSpreadSheet: React.FC<ApolloSpreadsheetProps> = forwardRef(
                     getColumnWidth={getColumnWidth}
                     minRowHeight={props.minColumnHeight ?? 50}
                     scrollLeft={scrollLeft}
-                    onScroll={props.onScroll}
+                    onScrollHeader={props?.id ? onScrollHeader : () => null}
                     apiRef={apiRef}
                     sort={sort}
                     nestedRowsEnabled={nestedRowsEnabled}
                     nestedColumnsProps={nestedColumnsProps}
                     theme={theme}
-                    headerId={props.headerId}
+                    headerId={`header-${props?.id}`}
                   />
                   <GridWrapper
                     {...props}
@@ -260,7 +297,7 @@ export const ApolloSpreadSheet: React.FC<ApolloSpreadsheetProps> = forwardRef(
                     getColumnWidth={getColumnWidth}
                     minRowHeight={props.minRowHeight ?? 50}
                     scrollLeft={scrollLeft}
-                    onScroll={props.onScroll}
+                    onScroll={props?.id ? onScrollTable : () => null}
                     height={height}
                     columnCount={columns.length}
                     columns={columns}
@@ -271,7 +308,7 @@ export const ApolloSpreadSheet: React.FC<ApolloSpreadsheetProps> = forwardRef(
                     isMerged={isMerged}
                     nestedRowsProps={nestedRowsProps}
                     theme={theme}
-                    coreId={props.coreId}
+                    coreId={`core-${props?.id}`}
                   />
                 </Box>
               )

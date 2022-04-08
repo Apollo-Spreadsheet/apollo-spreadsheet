@@ -59,7 +59,7 @@ export const ColumnGrid: React.FC<ColumnGridProps> = React.memo(
     apiRef,
     theme,
     coords,
-    onScroll,
+    onScrollHeader,
     columns,
     nestedColumnsProps,
     nestedHeaders,
@@ -366,7 +366,7 @@ export const ColumnGrid: React.FC<ColumnGridProps> = React.memo(
         height={100} //Its going to be ignored due to autoHeight
         autoHeight
         // scrollLeft={scrollLeft}
-        onScroll={onScroll}
+        onScroll={onScrollHeader}
         tabIndex={-1}
       />
     )

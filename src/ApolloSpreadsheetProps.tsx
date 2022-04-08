@@ -118,9 +118,12 @@ export interface ApolloVirtualizedProps {
 }
 
 export interface GetScrollPosition {
-  onScroll?: (params: OnScrollParams) => any
-  coreId?: string
-  headerId?: string
+  /**
+   * unique id of the Table, (necessary for the scroll) **/
+  id?: string
+  /**
+   * array of table ids that scroll when current table scrolls, (necessary for the scroll) **/
+  connectToIds?: string[]
 }
 
 export type ApolloSpreadsheetProps = ApolloCoreProps &
