@@ -25,7 +25,7 @@ export const getEditorComponent = (
     const editorType = String((column.editor as any).$$typeof)
     const isForwardRefComponent = editorType.includes('react.forward_ref')
     if (isForwardRefComponent) {
-      const forwardedEditor = (column.editor as unknown) as React.ForwardRefExoticComponent<any>
+      const forwardedEditor = column.editor as unknown as React.ForwardRefExoticComponent<any>
       return React.createElement(forwardedEditor, {
         ...editorProps,
         ref: onRefMount,

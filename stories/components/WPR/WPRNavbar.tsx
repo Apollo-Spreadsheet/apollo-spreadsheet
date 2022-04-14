@@ -1,23 +1,10 @@
-import {
-  makeStyles,
-  Box,
-  Grid,
-  Typography,
-  Tooltip,
-  IconButton,
-  useMediaQuery,
-  useTheme,
-  Tabs,
-  tabsClasses,
-  Tab,
-} from '@material-ui/core'
+import { Box, Grid, Typography, useMediaQuery, useTheme, Tabs, Tab, Theme } from '@mui/material'
+import { makeStyles } from '@mui/styles'
 import React, { memo, useMemo, useState, useCallback } from 'react'
-import NavigateBeforeIcon from '@material-ui/icons/NavigateBefore'
-import NavigateNextIcon from '@material-ui/icons/NavigateNext'
 
 export const WPR_NAVBAR_HEIGHT = '40px'
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme: Theme) => ({
   navbarContainer: {
     borderBottom: `2px solid #cccccc`,
   },

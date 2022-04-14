@@ -7,12 +7,11 @@ import {
   CellChangeParams,
   ColumnCellType,
 } from '../../../src'
-import { Box, IconButton } from '@material-ui/core'
+import { Box, IconButton } from '@mui/material'
 // eslint-disable-next-line import/no-extraneous-dependencies
-import faker from 'faker'
-import { makeStyles } from '@material-ui/core/styles'
+import { makeStyles } from '@mui/styles'
 import WprNavbar from './WPRNavbar'
-import AddCircleIcon from '@material-ui/icons/AddCircle'
+import AddCircleIcon from '@mui/icons-material/AddCircle'
 
 const useStyles = makeStyles(() => ({
   selectedCell: {

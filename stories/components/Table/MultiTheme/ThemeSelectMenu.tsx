@@ -1,7 +1,8 @@
-import { Box, FormControl, InputLabel, makeStyles, MenuItem, Select } from '@material-ui/core'
+import { FormControl, InputLabel, MenuItem, Select, Theme } from '@mui/material'
 import React, { memo, useCallback, useState } from 'react'
+import { makeStyles } from '@mui/styles'
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme: Theme) => ({
   formControl: {
     margin: theme.spacing(1),
     minWidth: 120,

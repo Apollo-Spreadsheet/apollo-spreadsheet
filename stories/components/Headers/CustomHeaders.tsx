@@ -1,12 +1,13 @@
-import { Box, IconButton, makeStyles, Theme } from '@material-ui/core'
+import { Box, IconButton, Theme } from '@mui/material'
 import React, { useCallback, useMemo, useState } from 'react'
 // eslint-disable-next-line import/no-extraneous-dependencies
 import faker from 'faker'
-import PersonIcon from '@material-ui/icons/Person'
-import MailIcon from '@material-ui/icons/Mail'
-import PublicIcon from '@material-ui/icons/Public'
+import PersonIcon from '@mui/icons-material/Person'
+import MailIcon from '@mui/icons-material/Mail'
+import PublicIcon from '@mui/icons-material/Public'
 import { ApolloSpreadSheet, StretchMode, Column, useApiRef } from '../../../src'
-import AddCircleIcon from '@material-ui/icons/AddCircle'
+import AddCircleIcon from '@mui/icons-material/AddCircle'
+import { makeStyles } from '@mui/styles'
 
 const useStyles = makeStyles((theme: Theme) => ({
   iconBtn: {

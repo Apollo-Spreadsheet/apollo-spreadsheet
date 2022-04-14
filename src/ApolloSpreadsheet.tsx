@@ -7,7 +7,7 @@ import { useMergeCells } from './mergeCells'
 import { useHeaders } from './columnGrid'
 import { useData } from './data'
 import { useRowSelection } from './rowSelection'
-import { Box, ClickAwayListener, useForkRef } from '@material-ui/core'
+import { Box, ClickAwayListener, useForkRef } from '@mui/material'
 import { useEditorManager } from './editorManager'
 import { createPortal } from 'react-dom'
 import { GridContainer } from './gridContainer'
@@ -20,17 +20,13 @@ import {
   useApiExtends,
   GridApi,
 } from './api'
-
 import { useEvents } from './events/useEvents'
-
 import { ApolloSpreadsheetProps } from './ApolloSpreadsheetProps'
 import { useSort } from './sort/useSort'
 import { useLogger } from './logger'
 import { isFunctionType } from './helpers'
-
 import { NestedRowsProps, useNestedRows } from './nestedRows'
 import { useTheme } from './theme'
-import { Grid as VirtualizedGrid } from 'react-virtualized/dist/es/Grid'
 import { NestedColumnsProps } from './nestedColumns/nestedColumnsProps'
 import { useNestedColumns } from './nestedColumns/useNestedColumns'
 import { OnScrollParams } from 'react-virtualized'
@@ -59,10 +55,10 @@ export const ApolloSpreadSheet: React.FC<ApolloSpreadsheetProps> = forwardRef(
     const minColumnWidth = props.minColumnWidth ?? 30
     const [gridFocused, setGridFocused] = useState(true)
     const defaultApiRef = useApiRef()
-    const apiRef = React.useMemo(() => (!props.apiRef ? defaultApiRef : props.apiRef), [
-      props.apiRef,
-      defaultApiRef,
-    ])
+    const apiRef = React.useMemo(
+      () => (!props.apiRef ? defaultApiRef : props.apiRef),
+      [props.apiRef, defaultApiRef],
+    )
     const rootContainerRef = useRef<HTMLDivElement>(null)
     const forkedRef = useForkRef(rootContainerRef, componentRef)
     const initialised = useApiFactory(rootContainerRef, apiRef, props.selection?.key)
