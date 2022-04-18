@@ -59,11 +59,11 @@ export interface CoreApi extends EventEmitter {
    * Returns the cell dom node given the coordinates
    * @param coordinates
    */
-  getCellElementByCoordinates: (coords: NavigationCoords) => HTMLElement | null
+  getCellElementByCoordinates: (coords: NavigationCoords) => Element | null | undefined
 
   /**
    * Returns the cell dom node given the coordinates
    * @param coordinates
    */
-  getColumnElementByCoordinates: (coords: NavigationCoords) => HTMLElement | null
+  getColumnElementByCoordinates: (coords: NavigationCoords) => Element | null | undefined
 }

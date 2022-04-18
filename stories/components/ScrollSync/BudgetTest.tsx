@@ -1,11 +1,11 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react'
-import { Box, Grid, makeStyles } from '@material-ui/core'
+import React, { useRef, useState } from 'react'
+import { Box, Grid, Theme } from '@mui/material'
 import { ApolloSpreadSheet, StretchMode, Column, useApiRef, CellChangeParams } from '../../../src'
 // eslint-disable-next-line import/no-extraneous-dependencies
 import faker from 'faker'
-import { OnScrollParams } from 'react-virtualized'
+import { makeStyles } from '@mui/styles'
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme: Theme) => ({
   scroll: {
     overflow: 'hidden',
     overflowY: 'hidden',

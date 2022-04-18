@@ -6,9 +6,9 @@ import React, {
   useMemo,
   useState,
 } from 'react'
-import { TextareaAutosize } from '@material-ui/core'
+import { TextareaAutosize } from '@mui/material'
 import { EditorProps } from '../editorProps'
-import { makeStyles } from '@material-ui/styles'
+import { makeStyles } from '@mui/styles'
 import { handleEditorKeydown } from '../utils'
 import clsx from 'clsx'
 import { GRID_RESIZE, useApiEventHandler } from '../../api'

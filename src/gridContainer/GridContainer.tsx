@@ -6,7 +6,7 @@ import { useLogger } from '../logger'
 import { GRID_RESIZE } from '../api'
 import { GridContainerProps } from './GridContainerProps'
 import scrollbarSizeCalc from 'dom-helpers/scrollbarSize'
-import { Box } from '@material-ui/core'
+import { Box } from '@mui/material'
 
 const DEFAULT_SCROLLBAR_SIZE = 14
 
@@ -94,19 +94,21 @@ export const GridContainer: React.FC<GridContainerProps> = React.memo(
         }
 
         return (
-          <ScrollSync>
-            {({ onScroll, scrollLeft }) => (
-              <>
-                {children({
-                  width: containerWidth,
-                  height: containerHeight,
-                  getColumnWidth: getColumnWidthHelper,
-                  scrollLeft,
-                  onScroll,
-                })}
-              </>
-            )}
-          </ScrollSync>
+          <>
+            <ScrollSync>
+              {({ onScroll, scrollLeft }) => (
+                <>
+                  {children({
+                    width: containerWidth,
+                    height: containerHeight,
+                    getColumnWidth: getColumnWidthHelper,
+                    scrollLeft,
+                    onScroll,
+                  })}
+                </>
+              )}
+            </ScrollSync>
+          </>
         )
       },
       [calculateColumnWidths, children, getColumnWidthHelper, logger, scrollbarSize, stretchMode],

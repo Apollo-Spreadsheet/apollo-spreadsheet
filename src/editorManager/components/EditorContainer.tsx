@@ -1,11 +1,12 @@
 import React, { memo } from 'react'
-import { Popover, PopoverProps } from '@material-ui/core'
+import { Popover, PopoverProps } from '@mui/material'
 
 interface EditorContainerProps {
   anchorEl: PopoverProps['anchorEl']
   marginThreshold?: PopoverProps['marginThreshold']
   PaperProps?: PopoverProps['PaperProps']
   onClose: PopoverProps['onClose']
+  children: any
 }
 
 export const EditorContainer: React.FC<EditorContainerProps> = memo(

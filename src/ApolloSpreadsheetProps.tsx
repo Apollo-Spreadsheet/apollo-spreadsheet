@@ -7,7 +7,7 @@ import { ApiRef } from './api'
 import { NestedRowsProps } from './nestedRows'
 import { Column, NestedHeader } from './columnGrid'
 import { MergeCell } from './mergeCells'
-import { Alignment, GridProps, OnScrollParams } from 'react-virtualized'
+import { Alignment } from 'react-virtualized'
 import { ReactNode } from 'react'
 import { NestedColumnsProps } from './nestedColumns/nestedColumnsProps'
 

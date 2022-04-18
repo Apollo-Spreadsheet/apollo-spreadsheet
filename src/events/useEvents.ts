@@ -12,8 +12,9 @@ import { CellClickOrDoubleClickEventParams } from '../keyboard/types/cell-click-
 export function useEvents(gridRootRef: React.RefObject<HTMLDivElement>, apiRef: ApiRef) {
   const logger = useLogger('useEvents')
   const createHandler = useCallback(
-    (name: ApolloInternalEvents | string) => (...args: any[]) =>
-      apiRef.current.dispatchEvent(name, ...args),
+    (name: ApolloInternalEvents | string) =>
+      (...args: any[]) =>
+        apiRef.current.dispatchEvent(name, ...args),
     [apiRef],
   )
 

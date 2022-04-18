@@ -1,21 +1,21 @@
 import React, { useRef, useEffect, useMemo, useCallback, CSSProperties } from 'react'
-import { Grid, CellMeasurerCache, CellMeasurerCacheParams } from 'react-virtualized'
+import { CellMeasurerCache, CellMeasurerCacheParams, Grid } from 'react-virtualized'
 import CellMeasurer from '../cellMeasurer/CellMeasureWrapper'
 import { GridHeader } from './types'
 import clsx from 'clsx'
 import { ColumnGridProps } from './columnGridProps'
 import { CellMeasureRendererProps, MeasurerRendererProps } from '../cellMeasurer'
-import Tooltip from '@material-ui/core/Tooltip'
+import Tooltip from '@mui/material/Tooltip'
 import { ROW_SELECTION_HEADER_ID } from '../rowSelection'
-import { makeStyles } from '@material-ui/styles'
+import { makeStyles } from '@mui/styles'
 import { isFunctionType } from '../helpers'
 import flattenDeep from 'lodash/flattenDeep'
 import { createCellQueryProperties } from '../keyboard'
 import { useLogger } from '../logger'
 import { SortIndicator } from './components'
 import { useApiEventHandler } from '../api'
-import KeyboardArrowRightIcon from '@material-ui/icons/KeyboardArrowRight'
-import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown'
+import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight'
+import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown'
 
 type SortDisabled = boolean
 const useStyles = makeStyles(() => ({
@@ -350,24 +350,26 @@ export const ColumnGrid: React.FC<ColumnGridProps> = React.memo(
     }, [])
 
     return (
-      <Grid
-        className={clsx(classes.headerContainer)}
-        id={headerId}
-        ref={onRefMount}
-        cellRenderer={cellMeasurerWrapperRenderer}
-        deferredMeasurementCache={cache}
-        rowHeight={cache.rowHeight}
-        rowCount={rowCount}
-        columnCount={columns.length}
-        overscanRowCount={overscanRowCount ?? 2}
-        overscanColumnCount={overscanColumnCount ?? 2}
-        width={width}
-        columnWidth={getColumnWidth}
-        height={100} //Its going to be ignored due to autoHeight
-        autoHeight
-        onScroll={onScrollHeader}
-        tabIndex={-1}
-      />
+      <>
+        <Grid
+          className={clsx(classes.headerContainer)}
+          id={headerId}
+          ref={onRefMount}
+          cellRenderer={cellMeasurerWrapperRenderer}
+          deferredMeasurementCache={cache}
+          rowHeight={cache.rowHeight}
+          rowCount={rowCount}
+          columnCount={columns.length}
+          overscanRowCount={overscanRowCount ?? 2}
+          overscanColumnCount={overscanColumnCount ?? 2}
+          width={width}
+          columnWidth={getColumnWidth}
+          height={100} //Its going to be ignored due to autoHeight
+          autoHeight
+          onScroll={onScrollHeader}
+          tabIndex={-1}
+        />
+      </>
     )
   },
 )

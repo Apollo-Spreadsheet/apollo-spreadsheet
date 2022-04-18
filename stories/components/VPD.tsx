@@ -1,9 +1,9 @@
 import React from 'react'
 import { ApolloSpreadSheet, Row, Column } from '../../src'
-import { Avatar, Box, LinearProgress } from '@material-ui/core'
+import { Avatar, Box, LinearProgress } from '@mui/material'
 // eslint-disable-next-line import/no-extraneous-dependencies
 import faker from 'faker'
-import { makeStyles } from '@material-ui/styles'
+import { makeStyles } from '@mui/styles'
 
 interface VpdRow {
   id: string

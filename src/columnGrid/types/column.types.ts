@@ -1,11 +1,11 @@
 import React, { CSSProperties } from 'react'
-import { PaperProps, TooltipProps } from '@material-ui/core'
+import { PaperProps, TooltipProps } from '@mui/material'
 import { NavigationCoords } from '../../keyboard'
-import { PopperProps } from '@material-ui/core/Popper/Popper'
+import { PopperProps } from '@mui/material/Popper/Popper'
 import { Row, DynamicCallback } from '../../types'
 import { ApiRef } from '../../api'
 import { CellEditorProps } from './cellEditorProps'
-import { StaticDatePickerProps } from '@material-ui/lab/StaticDatePicker/StaticDatePicker'
+import { StaticDatePickerProps } from '@mui/lab'
 
 export interface CellRendererProps<TRow = Row> {
   row: TRow
