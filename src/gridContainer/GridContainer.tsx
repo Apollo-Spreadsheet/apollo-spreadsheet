@@ -94,19 +94,21 @@ export const GridContainer: React.FC<GridContainerProps> = React.memo(
         }
 
         return (
-          <ScrollSync>
-            {({ onScroll, scrollLeft }) => (
-              <>
-                {children({
-                  width: containerWidth,
-                  height: containerHeight,
-                  getColumnWidth: getColumnWidthHelper,
-                  scrollLeft,
-                  onScroll,
-                })}
-              </>
-            )}
-          </ScrollSync>
+          <>
+            <ScrollSync>
+              {({ onScroll, scrollLeft }) => (
+                <>
+                  {children({
+                    width: containerWidth,
+                    height: containerHeight,
+                    getColumnWidth: getColumnWidthHelper,
+                    scrollLeft,
+                    onScroll,
+                  })}
+                </>
+              )}
+            </ScrollSync>
+          </>
         )
       },
       [calculateColumnWidths, children, getColumnWidthHelper, logger, scrollbarSize, stretchMode],

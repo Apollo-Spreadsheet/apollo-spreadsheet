@@ -166,7 +166,7 @@ const GridWrapper: React.FC<GridWrapperProps> = React.memo(
     )
 
     const renderCell = useCallback(
-      ({ style, cell, ref, rowIndex, columnIndex, coreId }) => {
+      ({ style, cell, ref, rowIndex, columnIndex }) => {
         const isSelected = rowIndex === coords.rowIndex && columnIndex === coords.colIndex
         const navigationDisabled = columns[0][columnIndex]?.disableNavigation
         const column = columns[columnIndex]
@@ -407,33 +407,35 @@ const GridWrapper: React.FC<GridWrapperProps> = React.memo(
     useApiExtends(apiRef, gridWrapperApi, 'GridWrapperApi')
 
     return (
-      <VirtualizedGrid
-        id={coreId}
-        className={
-          stretchMode !== StretchMode.None
-            ? clsx(classes.bodyContainer, classes.suppressHorizontalOverflow)
-            : classes.bodyContainer
-        }
-        ref={onRefMount}
-        cellRenderer={cellRenderer}
-        deferredMeasurementCache={cache}
-        rowHeight={cache.rowHeight}
-        rowCount={rows.length}
-        columnCount={columnCount}
-        columnWidth={getColumnWidth}
-        overscanRowCount={overscanRowCount ?? 10}
-        overscanColumnCount={overscanColumnCount ?? 5}
-        onSectionRendered={onSectionRendered}
-        scrollToAlignment={scrollToAlignment}
-        onScroll={onScroll}
-        scrollLeft={scrollLeft}
-        height={height}
-        width={width}
-        noContentRenderer={noContentOverlay}
-        scrollToColumn={coords.colIndex}
-        scrollToRow={coords.rowIndex}
-        tabIndex={-1}
-      />
+      <>
+        <VirtualizedGrid
+          id={coreId}
+          className={
+            stretchMode !== StretchMode.None
+              ? clsx(classes.bodyContainer, classes.suppressHorizontalOverflow)
+              : classes.bodyContainer
+          }
+          ref={onRefMount}
+          cellRenderer={cellRenderer}
+          deferredMeasurementCache={cache}
+          rowHeight={cache.rowHeight}
+          rowCount={rows.length}
+          columnCount={columnCount}
+          columnWidth={getColumnWidth}
+          overscanRowCount={overscanRowCount ?? 10}
+          overscanColumnCount={overscanColumnCount ?? 5}
+          onSectionRendered={onSectionRendered}
+          scrollToAlignment={scrollToAlignment}
+          onScroll={onScroll}
+          scrollLeft={scrollLeft}
+          height={height}
+          width={width}
+          noContentRenderer={noContentOverlay}
+          scrollToColumn={coords.colIndex}
+          scrollToRow={coords.rowIndex}
+          tabIndex={-1}
+        />
+      </>
     )
   },
 )

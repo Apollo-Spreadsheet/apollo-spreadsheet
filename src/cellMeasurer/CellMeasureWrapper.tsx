@@ -53,15 +53,17 @@ const CellMeasureWrapper: React.FC<CellMeasureWrapperProps> = ({
 
   const spanningStyle = initializeStyles()
   return (
-    <CellMeasurer {...props}>
-      {({ registerChild }) =>
-        cellRenderer({
-          ...rendererProps,
-          style: spanningStyle,
-          ref: registerChild as React.LegacyRef<any>,
-        })
-      }
-    </CellMeasurer>
+    <>
+      <CellMeasurer {...props}>
+        {({ registerChild }) =>
+          cellRenderer({
+            ...rendererProps,
+            style: spanningStyle,
+            ref: registerChild as React.LegacyRef<any>,
+          })
+        }
+      </CellMeasurer>
+    </>
   )
 }
 

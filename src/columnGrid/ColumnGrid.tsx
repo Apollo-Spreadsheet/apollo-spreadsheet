@@ -1,5 +1,5 @@
 import React, { useRef, useEffect, useMemo, useCallback, CSSProperties } from 'react'
-import { Grid, CellMeasurerCache, CellMeasurerCacheParams } from 'react-virtualized'
+import { CellMeasurerCache, CellMeasurerCacheParams, Grid } from 'react-virtualized'
 import CellMeasurer from '../cellMeasurer/CellMeasureWrapper'
 import { GridHeader } from './types'
 import clsx from 'clsx'
@@ -350,24 +350,26 @@ export const ColumnGrid: React.FC<ColumnGridProps> = React.memo(
     }, [])
 
     return (
-      <Grid
-        className={clsx(classes.headerContainer)}
-        id={headerId}
-        ref={onRefMount}
-        cellRenderer={cellMeasurerWrapperRenderer}
-        deferredMeasurementCache={cache}
-        rowHeight={cache.rowHeight}
-        rowCount={rowCount}
-        columnCount={columns.length}
-        overscanRowCount={overscanRowCount ?? 2}
-        overscanColumnCount={overscanColumnCount ?? 2}
-        width={width}
-        columnWidth={getColumnWidth}
-        height={100} //Its going to be ignored due to autoHeight
-        autoHeight
-        onScroll={onScrollHeader}
-        tabIndex={-1}
-      />
+      <>
+        <Grid
+          className={clsx(classes.headerContainer)}
+          id={headerId}
+          ref={onRefMount}
+          cellRenderer={cellMeasurerWrapperRenderer}
+          deferredMeasurementCache={cache}
+          rowHeight={cache.rowHeight}
+          rowCount={rowCount}
+          columnCount={columns.length}
+          overscanRowCount={overscanRowCount ?? 2}
+          overscanColumnCount={overscanColumnCount ?? 2}
+          width={width}
+          columnWidth={getColumnWidth}
+          height={100} //Its going to be ignored due to autoHeight
+          autoHeight
+          onScroll={onScrollHeader}
+          tabIndex={-1}
+        />
+      </>
     )
   },
 )

@@ -6,6 +6,7 @@ interface EditorContainerProps {
   marginThreshold?: PopoverProps['marginThreshold']
   PaperProps?: PopoverProps['PaperProps']
   onClose: PopoverProps['onClose']
+  children: any
 }
 
 export const EditorContainer: React.FC<EditorContainerProps> = memo(
