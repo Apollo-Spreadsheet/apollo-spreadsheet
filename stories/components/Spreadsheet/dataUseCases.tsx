@@ -1,5 +1,5 @@
 import React from 'react'
-import PeopleIcon from '@mui/icons-material/People'
+import PeopleIcon from '@material-ui/icons/People'
 import { ColumnCellType, Column } from '../../../src'
 
 export function useTopCase() {

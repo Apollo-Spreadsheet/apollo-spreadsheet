@@ -1,5 +1,5 @@
 import React, { memo } from 'react'
-import { Popover, PopoverProps } from '@mui/material'
+import { Popover, PopoverProps } from '@material-ui/core'
 
 interface EditorContainerProps {
   anchorEl: PopoverProps['anchorEl']

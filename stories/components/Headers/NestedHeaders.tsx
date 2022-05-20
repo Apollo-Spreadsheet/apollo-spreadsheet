@@ -1,4 +1,4 @@
-import { Box, IconButton } from '@mui/material'
+import { Box, IconButton } from '@material-ui/core'
 import React, { useCallback, useMemo, useState } from 'react'
 import {
   ApolloSpreadSheet,
@@ -10,7 +10,7 @@ import {
 } from '../../../src'
 // eslint-disable-next-line import/no-extraneous-dependencies
 import faker from 'faker'
-import AddCircleIcon from '@mui/icons-material/AddCircle'
+import AddCircleIcon from '@material-ui/icons/AddCircle'
 
 interface NestedRows {
   id: string

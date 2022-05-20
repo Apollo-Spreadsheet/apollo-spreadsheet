@@ -1,5 +1,5 @@
 import { EditorProps } from '../editorProps'
-import { PaperProps } from '@mui/material'
+import { PaperProps } from '@material-ui/core'
 import React, { CSSProperties } from 'react'
 import { GridTheme } from '../../types'
 

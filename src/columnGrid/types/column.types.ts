@@ -1,11 +1,11 @@
 import React, { CSSProperties } from 'react'
-import { PaperProps, TooltipProps } from '@mui/material'
+import { PaperProps, TooltipProps } from '@material-ui/core'
 import { NavigationCoords } from '../../keyboard'
-import { PopperProps } from '@mui/material/Popper/Popper'
+import { PopperProps } from '@material-ui/core/Popper/Popper'
 import { Row, DynamicCallback } from '../../types'
 import { ApiRef } from '../../api'
 import { CellEditorProps } from './cellEditorProps'
-import { StaticDatePickerProps } from '@mui/lab'
+//import { StaticDatePickerProps } from '@material-ui/lab/StaticDatePicker/StaticDatePicker'
 
 export interface CellRendererProps<TRow = Row> {
   row: TRow
@@ -57,9 +57,8 @@ export type DisableNavigationCallback = (coords: NavigationCoords) => boolean
 export type DisableNavigation = boolean | DisableNavigationCallback
 
 export interface ComponentPropsFn<TRow = Row> {
-  (row: TRow, column: Column):
-    | Partial<React.HTMLAttributes<HTMLInputElement>>
-    | Partial<StaticDatePickerProps>
+  (row: TRow, column: Column): Partial<React.HTMLAttributes<HTMLInputElement>>
+  //| Partial<StaticDatePickerProps>
 }
 
 interface ColumnTooltipProps {
@@ -86,7 +85,7 @@ interface KeyboardHookCallback {
 
 export type ComponentPropsType =
   | Partial<React.HTMLAttributes<HTMLInputElement>>
-  | Partial<StaticDatePickerProps>
+  //| Partial<StaticDatePickerProps>
   | ComponentPropsFn
 
 /**
@@ -136,7 +135,8 @@ export interface Column<Key = string, Metadata = any> {
    * Cell value type for this column (the values are formatted accordingly)
    * NOTE: If you attempt to use the calendar editor
    * you must `import 'react-datepicker/dist/react-datepicker.css'` on your application
-   * This does not come by default due to SSR frameworks such as Next.js,
+   * This does import { StaticDatePicker } from '@mui/lab';
+not come by default due to SSR frameworks such as Next.js,
    * in order to support them we have to rely on the integration
    * @default   Text and editor TextAreaEditor
    */

@@ -6,7 +6,7 @@ import { useLogger } from '../logger'
 import { GRID_RESIZE } from '../api'
 import { GridContainerProps } from './GridContainerProps'
 import scrollbarSizeCalc from 'dom-helpers/scrollbarSize'
-import { Box } from '@mui/material'
+import { Box } from '@material-ui/core'
 
 const DEFAULT_SCROLLBAR_SIZE = 14
 

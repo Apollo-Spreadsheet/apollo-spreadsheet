@@ -1,4 +1,4 @@
-import { Box } from '@mui/material'
+import { Box } from '@material-ui/core'
 import React, { useCallback, useMemo, useState } from 'react'
 // eslint-disable-next-line import/no-extraneous-dependencies
 import faker from 'faker'

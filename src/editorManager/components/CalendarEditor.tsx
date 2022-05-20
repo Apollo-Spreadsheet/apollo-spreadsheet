@@ -1,12 +1,10 @@
 import * as React from 'react'
-import AdapterDayjs from '@mui/lab/AdapterDayjs'
-import LocalizationProvider from '@mui/lab/LocalizationProvider'
-import { makeStyles } from '@mui/styles'
+import { makeStyles } from '@material-ui/styles'
 import { EditorProps } from '../editorProps'
 import { forwardRef, useCallback, useEffect, useImperativeHandle, useState } from 'react'
-import { ClickAwayListener, Popper } from '@mui/material'
+import { ClickAwayListener, Popper } from '@material-ui/core'
 import dayjs from 'dayjs'
-import { StaticDatePicker, StaticDatePickerProps } from '@mui/lab'
+import { DatePicker } from '@material-ui/pickers'
 
 const useStyles = makeStyles(() => ({
   root: {
@@ -97,18 +95,16 @@ export const CalendarEditor = forwardRef(
           className={classes.root}
           modifiers={popperModifiers}
         >
-          <LocalizationProvider dateAdapter={AdapterDayjs}>
-            <StaticDatePicker
-              {...(additionalProps?.componentProps as StaticDatePickerProps)}
-              displayStaticWrapperAs="desktop"
-              openTo="day"
-              value={value}
-              onChange={onChange}
-              renderInput={renderInput}
-              className={additionalProps?.className}
-              //allowKeyboardControl
-            />
-          </LocalizationProvider>
+          <DatePicker
+            //{...additionalProps?.componentProps}
+            //displayStaticWrapperAs="desktop"
+            //openTo="day"
+            value={value}
+            onChange={onChange}
+            //renderInput={renderInput}
+            className={additionalProps?.className}
+            //allowKeyboardControl
+          />
         </Popper>
       </ClickAwayListener>
     )
