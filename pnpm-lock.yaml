@@ -15,7 +15,7 @@ specifiers:
   '@material-ui/lab': 4.0.0-alpha.61
   '@material-ui/pickers': ^3.3.10
   '@material-ui/styles': ^4.11.5
-  '@react-theming/storybook-addon': ^1.1.5
+  '@react-theming/storybook-addon': ^1.1.4
   '@storybook/addon-controls': ^6.5.2
   '@storybook/addon-storysource': 6.5.3
   '@storybook/addon-viewport': 6.5.3
@@ -762,7 +762,7 @@ packages:
       '@babel/core': ^7.0.0-0
     dependencies:
       '@babel/core': 7.12.9
-      '@babel/helper-plugin-utils': 7.10.4
+      '@babel/helper-plugin-utils': 7.17.12
       '@babel/plugin-syntax-object-rest-spread': 7.8.3_@babel+core@7.12.9
       '@babel/plugin-transform-parameters': 7.17.12_@babel+core@7.12.9
 
@@ -10438,7 +10438,7 @@ packages:
       vue-template-compiler:
         optional: true
     dependencies:
-      '@babel/code-frame': 7.10.4
+      '@babel/code-frame': 7.16.7
       chalk: 2.4.2
       eslint: 7.32.0
       micromatch: 3.1.10
@@ -10466,7 +10466,7 @@ packages:
       vue-template-compiler:
         optional: true
     dependencies:
-      '@babel/code-frame': 7.10.4
+      '@babel/code-frame': 7.16.7
       chalk: 2.4.2
       eslint: 7.32.0
       micromatch: 3.1.10
