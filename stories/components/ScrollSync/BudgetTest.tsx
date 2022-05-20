@@ -1,9 +1,9 @@
 import React, { useRef, useState } from 'react'
-import { Box, Grid, Theme } from '@mui/material'
+import { Box, Grid, Theme } from '@material-ui/core'
 import { ApolloSpreadSheet, StretchMode, Column, useApiRef, CellChangeParams } from '../../../src'
 // eslint-disable-next-line import/no-extraneous-dependencies
 import faker from 'faker'
-import { makeStyles } from '@mui/styles'
+import { makeStyles } from '@material-ui/core/styles'
 
 const useStyles = makeStyles((theme: Theme) => ({
   scroll: {
@@ -172,7 +172,7 @@ export function BudgetTest() {
   }
 
   return (
-    <Grid container display={'inline-flex'}>
+    <Grid container style={{ display: 'inline-flex' }}>
       <Box width={'20%'} height={'calc(100vh - 100px)'} style={{ marginRight: -14 }}>
         <ApolloSpreadSheet
           apiRef={apiRef}

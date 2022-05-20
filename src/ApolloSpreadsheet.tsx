@@ -7,7 +7,7 @@ import { useMergeCells } from './mergeCells'
 import { useHeaders } from './columnGrid'
 import { useData } from './data'
 import { useRowSelection } from './rowSelection'
-import { Box, ClickAwayListener, useForkRef } from '@mui/material'
+import { Box, ClickAwayListener, useForkRef } from '@material-ui/core'
 import { useEditorManager } from './editorManager'
 import { createPortal } from 'react-dom'
 import { GridContainer } from './gridContainer'
@@ -157,7 +157,7 @@ export const ApolloSpreadSheet: React.FC<ApolloSpreadsheetProps> = forwardRef(
     }, [apiRef, gridFocused, logger])
 
     const onClickAway = useCallback(
-      (event: MouseEvent | TouchEvent) => {
+      (event: React.MouseEvent<Document, MouseEvent>) => {
         if (!gridFocused) {
           return
         }
