@@ -1,5 +1,5 @@
-import { Box, Grid, Typography, useMediaQuery, useTheme, Tabs, Tab, Theme } from '@mui/material'
-import { makeStyles } from '@mui/styles'
+import { Box, Grid, Typography, useMediaQuery, useTheme, Tabs, Tab, Theme } from '@material-ui/core'
+import { makeStyles } from '@material-ui/core/styles'
 import React, { memo, useMemo, useState, useCallback } from 'react'
 
 export const WPR_NAVBAR_HEIGHT = '40px'
@@ -9,7 +9,7 @@ const useStyles = makeStyles((theme: Theme) => ({
     borderBottom: `2px solid #cccccc`,
   },
   pageTitle: {
-    color: theme.palette.mode === 'dark' ? '#e6e6e6' : '#4d4d4d',
+    color: theme.palette.type === 'dark' ? '#e6e6e6' : '#4d4d4d',
     fontWeight: 700,
     fontSize: 13,
     cursor: 'default',
@@ -18,7 +18,7 @@ const useStyles = makeStyles((theme: Theme) => ({
     alignItems: 'center',
     justifyContent: 'center',
     display: 'inline-flex',
-    backgroundColor: theme.palette.mode === 'dark' ? '#424242' : '#efefef',
+    backgroundColor: theme.palette.type === 'dark' ? '#424242' : '#efefef',
     textAlign: 'center',
     borderRadius: '5px',
     [theme.breakpoints.down('md')]: {
@@ -26,7 +26,7 @@ const useStyles = makeStyles((theme: Theme) => ({
     },
   },
   dateTitle: {
-    color: theme.palette.mode === 'dark' ? '#e6e6e6' : '#4d4d4d',
+    color: theme.palette.type === 'dark' ? '#e6e6e6' : '#4d4d4d',
     cursor: 'default',
     justifyContent: 'center',
     display: 'flex',
@@ -76,7 +76,7 @@ const useStyles = makeStyles((theme: Theme) => ({
     marginTop: 10,
     width: '100%',
     fontWeight: 600,
-    color: theme.palette.mode === 'dark' ? '#e6e6e6' : '#4d4d4d',
+    color: theme.palette.type === 'dark' ? '#e6e6e6' : '#4d4d4d',
   },
   normalTab: {
     fontSize: '12px',
@@ -167,7 +167,7 @@ export const WprNavbar: React.FC<Props> = memo(({ handleNamespaceSelection }) =>
             {isSmallViewport && <Typography className={classes.pageTitle}>{'WPR n '}</Typography>}
           </Grid>
           <Grid item xs={8} className={classes.gridAlign}>
-            <Tabs
+            {/* <Tabs
               className={classes.tabs}
               value={activeTab}
               onChange={handleChangeTab}
@@ -186,7 +186,7 @@ export const WprNavbar: React.FC<Props> = memo(({ handleNamespaceSelection }) =>
                   onClick={() => handleNamespaceSelection(e.name)}
                 />
               ))}
-            </Tabs>
+            </Tabs> */}
             {/* <Tooltip title={'View Previous'} placement="top">
                 <span>
                   <IconButton aria-label="previous" onClick={onNavigateBackClick}>

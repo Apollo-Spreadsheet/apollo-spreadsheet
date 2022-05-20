@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { makeStyles } from '@material-ui/styles'
+import { makeStyles } from '@material-ui/core/styles'
 import { EditorProps } from '../editorProps'
 import { forwardRef, useCallback, useEffect, useImperativeHandle, useState } from 'react'
 import { ClickAwayListener, Popper } from '@material-ui/core'
