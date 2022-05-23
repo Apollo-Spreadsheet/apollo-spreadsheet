@@ -50,7 +50,7 @@
     "@material-ui/styles": "^4.11.5",
     "@storybook/addon-controls": "^6.5.2",
     "@storybook/addon-viewport": "6.5.3",
-    "@storybook/react": "^6.0.0",
+    "@storybook/react": "6.4.0-alpha.30",
     "@storybook/theming": "^5.0.0 || ^6.0.0",
     "@types/faker": "^5.5.1",
     "chromatic": "^6.5.4",
@@ -64,6 +64,7 @@
     "react-is": "^17.0.2",
     "react-virtualized": "^9.22.3",
     "require-from-string": "^2.0.2",
+    "tslib": "^2.4.0",
     "value-equal": "^1.0.1"
   },
   "devDependencies": {
@@ -91,7 +92,7 @@
     "@types/react": "^17.0.0",
     "@types/react-beautiful-dnd": "^13.0.0",
     "@types/react-datepicker": "^3.1.8",
-    "@types/react-dom": "17.0.3",
+    "@types/react-dom": "17.0.0",
     "@types/react-is": "^17.0.0",
     "@types/react-virtualized": "9.21.8",
     "@typescript-eslint/eslint-plugin": "^4.22.0",
