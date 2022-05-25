@@ -1,9 +1,9 @@
-import React from 'react'
+import React, { useCallback } from 'react'
 import { ApolloSpreadSheet, Row, Column } from '../../src'
-import { Avatar, Box, LinearProgress } from '@material-ui/core'
+import { Avatar, Box, LinearProgress } from '@mui/material'
 // eslint-disable-next-line import/no-extraneous-dependencies
 import faker from 'faker'
-import { makeStyles } from '@material-ui/core/styles'
+import { makeStyles } from '@mui/styles'
 
 interface VpdRow {
   id: string
@@ -73,9 +73,10 @@ const useStyles = makeStyles(() => ({
 
 export function VPD() {
   const classes = useStyles()
-  function disableSort(header: Column) {
-    return header.id === 'avatar'
-  }
+
+  const disableSort = useCallback((header: Column) => {
+    return header.id === 'order'
+  }, [])
 
   const headers: Column[] = [
     {
@@ -87,7 +88,7 @@ export function VPD() {
       disableCellCut: true,
       disableCellPaste: true,
       width: '3%',
-      cellRenderer: ({ row }: { row: Row }) => {
+      cellRenderer: ({ row }) => {
         const index = rows.findIndex(e => e.id === row.id)
         const isOdd = index % 2 === 0
         return (
@@ -110,7 +111,7 @@ export function VPD() {
       title: 'Progress',
       accessor: 'progress',
       width: '40%',
-      cellRenderer: ({ row }: { row: any }) => {
+      cellRenderer: ({ row }) => {
         const index = rows.findIndex(e => e.id === row.id)
         const isOdd = index % 2 === 0
         return (
@@ -143,7 +144,7 @@ export function VPD() {
       title: 'Status',
       accessor: 'status',
       width: '10%',
-      cellRenderer: ({ row }: { row: any }) => {
+      cellRenderer: ({ row }) => {
         const color = getStatusColor(row.status)
         const text = getStatusText(row.status)
         return <span style={{ color }}>{text}</span>

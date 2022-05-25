@@ -1,10 +1,10 @@
 import * as React from 'react'
-import { makeStyles } from '@material-ui/core/styles'
+import { makeStyles } from '@mui/styles'
 import { EditorProps } from '../editorProps'
 import { forwardRef, useCallback, useEffect, useImperativeHandle, useState } from 'react'
-import { ClickAwayListener, Popper } from '@material-ui/core'
+import { ClickAwayListener, Popper } from '@mui/material'
 import dayjs from 'dayjs'
-import { DatePicker } from '@material-ui/pickers'
+import { DatePicker } from '@mui/lab'
 
 const useStyles = makeStyles(() => ({
   root: {
@@ -101,7 +101,7 @@ export const CalendarEditor = forwardRef(
             //openTo="day"
             value={value}
             onChange={onChange}
-            //renderInput={renderInput}
+            renderInput={renderInput}
             className={additionalProps?.className}
             //allowKeyboardControl
           />

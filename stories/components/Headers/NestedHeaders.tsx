@@ -1,5 +1,6 @@
-import { Box, IconButton } from '@material-ui/core'
+import { Box, IconButton } from '@mui/material'
 import React, { useCallback, useMemo, useState } from 'react'
+import AddCircleIcon from '@mui/icons-material/AddCircle'
 import {
   ApolloSpreadSheet,
   StretchMode,
@@ -10,7 +11,6 @@ import {
 } from '../../../src'
 // eslint-disable-next-line import/no-extraneous-dependencies
 import faker from 'faker'
-import AddCircleIcon from '@material-ui/icons/AddCircle'
 
 interface NestedRows {
   id: string

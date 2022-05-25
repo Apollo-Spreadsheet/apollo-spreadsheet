@@ -7,7 +7,7 @@ import { useMergeCells } from './mergeCells'
 import { useHeaders } from './columnGrid'
 import { useData } from './data'
 import { useRowSelection } from './rowSelection'
-import { Box, ClickAwayListener, Grid, useForkRef } from '@material-ui/core'
+import { Box, ClickAwayListener, useForkRef } from '@mui/material'
 import { useEditorManager } from './editorManager'
 import { createPortal } from 'react-dom'
 import { GridContainer } from './gridContainer'
@@ -157,7 +157,7 @@ export const ApolloSpreadSheet: React.FC<ApolloSpreadsheetProps> = forwardRef(
     }, [apiRef, gridFocused, logger])
 
     const onClickAway = useCallback(
-      (event: React.MouseEvent<Document, MouseEvent>) => {
+      (event: MouseEvent | TouchEvent) => {
         if (!gridFocused) {
           return
         }
@@ -264,7 +264,7 @@ export const ApolloSpreadSheet: React.FC<ApolloSpreadsheetProps> = forwardRef(
           >
             {({ scrollLeft, onScroll, getColumnWidth, width, height }) =>
               initialised && (
-                <Grid style={{ height, width }} id="apollo-grids" className={props.className}>
+                <Box height={height} width={width} id="apollo-grids" className={props.className}>
                   <ColumnGrid
                     {...props}
                     data={gridHeaders}
@@ -306,7 +306,7 @@ export const ApolloSpreadSheet: React.FC<ApolloSpreadsheetProps> = forwardRef(
                     theme={theme}
                     coreId={`core-${props?.id}`}
                   />
-                </Grid>
+                </Box>
               )
             }
           </GridContainer>

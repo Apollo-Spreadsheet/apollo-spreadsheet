@@ -1,7 +1,6 @@
 import React, { CSSProperties } from 'react'
-import { PaperProps, TooltipProps } from '@material-ui/core'
+import { PaperProps, PopperProps, TooltipProps } from '@mui/material'
 import { NavigationCoords } from '../../keyboard'
-import { PopperProps } from '@material-ui/core/Popper/Popper'
 import { Row, DynamicCallback } from '../../types'
 import { ApiRef } from '../../api'
 import { CellEditorProps } from './cellEditorProps'

@@ -6,16 +6,16 @@ import React, {
   useMemo,
   useState,
 } from 'react'
-import { TextareaAutosize } from '@material-ui/core'
+import { TextareaAutosize, Theme } from '@mui/material'
 import { EditorProps } from '../editorProps'
-import { makeStyles } from '@material-ui/core/styles'
+import { makeStyles } from '@mui/styles'
 import { handleEditorKeydown } from '../utils'
 import clsx from 'clsx'
 import { GRID_RESIZE, useApiEventHandler } from '../../api'
 import EditorContainer from './EditorContainer'
 import { createDefaultPaperProps } from './createDefaultPaperProps'
 
-const useStyles = makeStyles(() => ({
+const useStyles = makeStyles((theme: Theme) => ({
   input: {
     width: '100%',
     height: '100%',
