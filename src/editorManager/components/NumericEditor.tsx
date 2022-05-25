@@ -7,15 +7,15 @@ import React, {
   useState,
 } from 'react'
 import { EditorProps } from '../editorProps'
-import { TextareaAutosize } from '@material-ui/core'
-import { makeStyles } from '@material-ui/core/styles'
+import { TextareaAutosize, Theme } from '@mui/material'
+import { makeStyles } from '@mui/styles'
 import { handleEditorKeydown } from '../utils'
 import clsx from 'clsx'
 import { GRID_RESIZE, useApiEventHandler } from '../../api'
 import { createDefaultPaperProps } from './createDefaultPaperProps'
 import EditorContainer from './EditorContainer'
 
-const useStyles = makeStyles(() => ({
+const useStyles = makeStyles((theme: Theme) => ({
   input: {
     width: '100%',
     height: '100%',

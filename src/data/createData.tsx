@@ -1,6 +1,6 @@
 import { formatCellValue } from './formatCellValue'
 import { GridCell, insertDummyCells } from '../gridWrapper'
-import { Checkbox } from '@material-ui/core'
+import { Checkbox } from '@mui/material'
 import React from 'react'
 import { Row } from '../types'
 import { isFunctionType } from '../helpers'

@@ -1,9 +1,9 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import { createMergeCellsData } from './createMergedCells'
 import { orderBy } from 'lodash'
-import { Box } from '@material-ui/core'
+import { Box } from '@mui/material'
 import { useTopCase } from './dataUseCases'
-import { makeStyles } from '@material-ui/core/styles'
+import { makeStyles } from '@mui/styles'
 import dump from './dump.json'
 import {
   ApolloSpreadSheet,

@@ -1,8 +1,8 @@
 import React, { useState } from 'react'
-import { Box, Grid } from '@material-ui/core'
 import { ApolloSpreadSheet, StretchMode, Column, useApiRef, CellChangeParams } from '../../../src'
 // eslint-disable-next-line import/no-extraneous-dependencies
 import faker from 'faker'
+import { Box } from '@mui/material'
 
 interface GroupRow {
   id: string
@@ -235,8 +235,7 @@ export function RowGrouping() {
   }
 
   return (
-    // <Box width={'100%'} height={'calc(100vh - 100px)'}>
-    <Grid style={{ width: '100%', height: 'calc(100vh - 100px)' }}>
+    <Box width={'100%'} height={'calc(100vh - 100px)'}>
       <ApolloSpreadSheet
         apiRef={apiRef}
         columns={headers}
@@ -256,6 +255,6 @@ export function RowGrouping() {
         nestedRows
         defaultExpandedIds={['9X', '8X']}
       />
-    </Grid>
+    </Box>
   )
 }

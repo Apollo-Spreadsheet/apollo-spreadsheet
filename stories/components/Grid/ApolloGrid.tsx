@@ -1,7 +1,7 @@
-import React, { useMemo, useState } from 'react'
+import React, { useCallback, useMemo, useState } from 'react'
 // eslint-disable-next-line import/no-extraneous-dependencies
 import faker from 'faker'
-import { Box } from '@material-ui/core'
+import { Box } from '@mui/material'
 import {
   ApolloSpreadSheet,
   StretchMode,
@@ -490,9 +490,9 @@ export function ApolloGrid() {
     setRows(rows.filter(e => !selectedRows.some(id => id === e.id)))
   }
 
-  function disableSort(header: Column) {
+  const disableSort = useCallback((header: Column) => {
     return header.id === 'order'
-  }
+  }, [])
 
   const nestedHeaders: NestedHeader[][] = useMemo(
     () => [

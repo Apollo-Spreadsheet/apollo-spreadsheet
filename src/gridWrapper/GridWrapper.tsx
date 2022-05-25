@@ -11,14 +11,15 @@ import clsx from 'clsx'
 import { GridCellProps } from 'react-virtualized/dist/es/Grid'
 import { MeasurerRendererProps } from '../cellMeasurer'
 import { GridWrapperProps } from './gridWrapperProps'
-import { makeStyles } from '@material-ui/core/styles'
+import { makeStyles } from '@mui/styles'
 import { StretchMode } from '../types'
 import { useLogger } from '../logger'
-import KeyboardArrowRightIcon from '@material-ui/icons/KeyboardArrowRight'
-import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown'
+import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight'
+import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown'
 import { useApiExtends, GridWrapperApi, useApiEventHandler } from '../api'
+import { Theme } from '@mui/material'
 
-const useStyles = makeStyles(() => ({
+const useStyles = makeStyles((theme: Theme) => ({
   bodyContainer: {
     outline: 'none',
   },

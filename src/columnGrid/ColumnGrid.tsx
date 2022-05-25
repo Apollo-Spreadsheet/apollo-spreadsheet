@@ -5,20 +5,22 @@ import { GridHeader } from './types'
 import clsx from 'clsx'
 import { ColumnGridProps } from './columnGridProps'
 import { CellMeasureRendererProps, MeasurerRendererProps } from '../cellMeasurer'
-import Tooltip from '@material-ui/core/Tooltip'
+import Tooltip from '@mui/material/Tooltip'
 import { ROW_SELECTION_HEADER_ID } from '../rowSelection'
-import { makeStyles } from '@material-ui/core/styles'
+import { makeStyles } from '@mui/styles'
 import { isFunctionType } from '../helpers'
 import flattenDeep from 'lodash/flattenDeep'
 import { createCellQueryProperties } from '../keyboard'
 import { useLogger } from '../logger'
 import { SortIndicator } from './components'
 import { useApiEventHandler } from '../api'
-import KeyboardArrowRightIcon from '@material-ui/icons/KeyboardArrowRight'
-import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown'
+import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight'
+import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown'
+import { Theme } from '@mui/material'
 
 type SortDisabled = boolean
-const useStyles = makeStyles(() => ({
+
+const useStyles = makeStyles((theme: Theme) => ({
   defaultHeader: {
     display: 'flex',
     justifyContent: 'center',

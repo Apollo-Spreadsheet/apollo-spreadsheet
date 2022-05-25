@@ -1,10 +1,10 @@
 import React, { useState } from 'react'
 import { ApolloSpreadSheet, StretchMode, Column, useApiRef, CellChangeParams } from '../../../src'
-import { AddCircle } from '@material-ui/icons'
-import { Box, IconButton, Typography } from '@material-ui/core'
+import AddCircle from '@mui/icons-material/AddCircle'
+import { Box, IconButton, Typography } from '@mui/material'
 // eslint-disable-next-line import/no-extraneous-dependencies
 import faker from 'faker'
-import { makeStyles } from '@material-ui/core/styles'
+import { makeStyles } from '@mui/styles'
 
 const useStyles = makeStyles(() => ({
   selectedCell: {

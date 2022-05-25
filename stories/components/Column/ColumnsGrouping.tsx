@@ -1,8 +1,8 @@
 import React, { useState } from 'react'
-import { Box, Grid } from '@material-ui/core'
 import { ApolloSpreadSheet, StretchMode, Column, useApiRef, CellChangeParams } from '../../../src'
 // eslint-disable-next-line import/no-extraneous-dependencies
 import faker from 'faker'
+import { Box } from '@mui/material'
 
 interface GroupRow {
   id: string
@@ -21,8 +21,8 @@ const generateRows = count => {
     id: faker.datatype.number().toString(),
     name: faker.name.findName(),
     city: faker.address.city(),
+    job: faker.name.jobTitle(),
     country: faker.address.country(),
-    job: faker.name.jobType(),
     order: i + 1,
   }))
 
@@ -253,8 +253,7 @@ export function ColumnGrouping() {
   }
 
   return (
-    //  <Box width={'100%'} height={'calc(100vh - 100px)'}>
-    <Grid style={{ width: '100%', height: 'calc(100vh - 100px)' }}>
+    <Box width={'100%'} height={'calc(100vh - 100px)'}>
       <ApolloSpreadSheet
         apiRef={apiRef}
         columns={headers}
@@ -274,6 +273,6 @@ export function ColumnGrouping() {
         nestedRows
         nestedColumns
       />
-    </Grid>
+    </Box>
   )
 }

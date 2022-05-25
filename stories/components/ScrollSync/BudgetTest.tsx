@@ -1,9 +1,9 @@
 import React, { useRef, useState } from 'react'
-import { Box, Grid, Theme } from '@material-ui/core'
+import { Box, Grid, Theme } from '@mui/material'
 import { ApolloSpreadSheet, StretchMode, Column, useApiRef, CellChangeParams } from '../../../src'
 // eslint-disable-next-line import/no-extraneous-dependencies
 import faker from 'faker'
-import { makeStyles } from '@material-ui/core/styles'
+import { makeStyles } from '@mui/material/styles'
 
 const useStyles = makeStyles((theme: Theme) => ({
   scroll: {
@@ -62,9 +62,6 @@ export function BudgetTest() {
   })
   const apiRef = useApiRef()
   const apiRef2 = useApiRef()
-
-  const useScrollRef = useRef()
-  const classes = useStyles()
   const onHeaderIconClick = () => {
     const selectedRows = apiRef.current?.getSelectedRowIds() ?? []
     if (selectedRows.length === 0) {

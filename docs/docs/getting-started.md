@@ -24,7 +24,7 @@ yarn add apollo-spreadsheet
 Example
 
 ```typescript
-import { Box } from '@material-ui/core'
+import { Box } from '@mui/material'
 import React, { useMemo } from 'react'
 import { Column, ColumnCellType } from 'columnGrid'
 import ApolloSpreadSheet from 'ApolloSpreadsheet'

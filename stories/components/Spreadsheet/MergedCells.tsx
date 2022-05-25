@@ -1,5 +1,5 @@
 import React, { memo, useMemo, useState } from 'react'
-import { Box } from '@material-ui/core'
+import { Box } from '@mui/material'
 import { ApolloSpreadSheet, StretchMode, Column, useApiRef, MergeCell } from '../../../src'
 // eslint-disable-next-line import/no-extraneous-dependencies
 import faker from 'faker'
