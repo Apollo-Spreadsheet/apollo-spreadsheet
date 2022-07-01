@@ -5,6 +5,7 @@ import { VPD } from './components/VPD'
 import { MultiTheme } from './components/Table/MultiTheme/MultiTheme'
 import { ApolloGrid } from './components/Grid/ApolloGrid'
 import { NoContentTableExample } from './components/Table/NoContentTableExample'
+import { Financial } from './components/Budget/P&L'
 
 const isDevelopmentOnly = process.env.NODE_ENV === 'development'
 if (isDevelopmentOnly) {
@@ -15,3 +16,4 @@ storiesOf('Examples', module)
   .add('Grid', () => <ApolloGrid />)
   .add('Spreadsheet', () => <Spreadsheet />)
   .add('No content overlay', () => <NoContentTableExample />)
+  .add('P&L', () => <Financial />)
