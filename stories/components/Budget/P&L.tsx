@@ -317,7 +317,7 @@ export function Financial() {
       </Box>
       <Box width={'80%'} height={'calc(80vh - 100px)'}>
         <ApolloSpreadSheet
-          apiRef={apiRef4}
+          apiRef={apiRef2}
           columns={headerTwo}
           rows={rows}
           minColumnWidth={10}
