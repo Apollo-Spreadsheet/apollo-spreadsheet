@@ -31,35 +31,27 @@ interface SingleRow {
   order: number
 }
 
-const generateRows = count => {
-  return new Array(count).fill(true).map((_, i) => ({
-    id: faker.datatype.number().toString(),
-    name: faker.name.findName(),
-    name2: faker.name.findName(),
-    name3: faker.name.findName(),
-    city: faker.address.city(),
-    city2: faker.address.city(),
-    city3: faker.address.city(),
-    city4: faker.address.city(),
-    country: faker.address.country(),
-    job: faker.name.jobType(),
-    //  order: i + 1,
-  }))
-}
-
-const generateFirstRows = count => {
-  return new Array(count).fill(true).map((_, i) => ({
-    order: i + 1,
-  }))
-}
-
 export function BudgetTest() {
-  const [firstRows, setFirstRows] = useState<SingleRow[]>(() => {
-    return generateFirstRows(30)
-  })
-  const [rows, setRows] = useState<GroupRow[]>(() => {
-    return generateRows(30)
-  })
+  const [firstRows, setFirstRows] = useState<SingleRow[]>(
+    new Array(30).fill(true).map((_, i) => ({
+      order: i + 1,
+    })),
+  )
+  const [rows, setRows] = useState<GroupRow[]>(
+    new Array(30).fill(true).map((_, i) => ({
+      id: faker.datatype.number().toString(),
+      name: faker.name.findName(),
+      name2: faker.name.findName(),
+      name3: faker.name.findName(),
+      city: faker.address.city(),
+      city2: faker.address.city(),
+      city3: faker.address.city(),
+      city4: faker.address.city(),
+      country: faker.address.country(),
+      job: faker.name.jobType(),
+      //  order: i + 1,
+    })),
+  )
   const apiRef = useApiRef()
   const apiRef2 = useApiRef()
   const onHeaderIconClick = () => {

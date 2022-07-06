@@ -55,10 +55,10 @@ export const ApolloSpreadSheet: React.FC<ApolloSpreadsheetProps> = forwardRef(
     const minColumnWidth = props.minColumnWidth ?? 30
     const [gridFocused, setGridFocused] = useState(true)
     const defaultApiRef = useApiRef()
-    const apiRef = React.useMemo(
-      () => (!props.apiRef ? defaultApiRef : props.apiRef),
-      [props.apiRef, defaultApiRef],
-    )
+    const apiRef = React.useMemo(() => (!props.apiRef ? defaultApiRef : props.apiRef), [
+      props.apiRef,
+      defaultApiRef,
+    ])
     const rootContainerRef = useRef<HTMLDivElement>(null)
     const forkedRef = useForkRef(rootContainerRef, componentRef)
     const initialised = useApiFactory(rootContainerRef, apiRef, props.selection?.key)
@@ -228,14 +228,14 @@ export const ApolloSpreadSheet: React.FC<ApolloSpreadsheetProps> = forwardRef(
           props.connectToIds.map((element: string) => {
             const elementCore = document.getElementById(`core-${element}`) as HTMLElement
             if (!elementCore) {
-              return console.warn('The element does not exist on page')
+              return console.warn(`The element ${element} does not exist on page`)
             }
-            elementCore.scrollTo(elementCore.scrollLeft, e.scrollTop)
+            elementCore.scrollTo(e.scrollLeft, e.scrollTop)
             return elementCore
           })
         }
       },
-      [props.connectToIds, props?.id],
+      [props],
     )
     const onScrollHeader = useCallback(
       (e: OnScrollParams) => {

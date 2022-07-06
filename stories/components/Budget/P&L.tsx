@@ -291,7 +291,7 @@ export function Financial() {
           disableSort
           nestedColumns
           id={'grid2'}
-          connectToIds={['grid1']}
+          connectToIds={['grid1', 'grid4']}
           containerClassName={useTheme.containerClass}
           theme={useTheme.theme}
         />
@@ -309,8 +309,8 @@ export function Financial() {
           disableSort
           nestedRows
           nestedColumns
-          id={'grid1'}
-          connectToIds={['grid2']}
+          id={'grid3'}
+          connectToIds={['grid4']}
           containerClassName={useTheme.containerClass}
           theme={useTheme.theme}
         />
@@ -328,8 +328,8 @@ export function Financial() {
           disableSort
           //nestedRows
           nestedColumns
-          id={'grid2'}
-          connectToIds={['grid1']}
+          id={'grid4'}
+          connectToIds={['grid3', 'grid2']}
           containerClassName={useTheme.containerClass}
           theme={useTheme.theme}
         />
