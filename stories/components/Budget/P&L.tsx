@@ -1,21 +1,10 @@
-import React, { useCallback, useEffect, useState } from 'react'
-import { ApolloSpreadSheet, StretchMode, Column, useApiRef, CellChangeParams } from '../../../src'
+import React, { useCallback, useState } from 'react'
+import { ApolloSpreadSheet, StretchMode, Column, useApiRef } from '../../../src'
 // eslint-disable-next-line import/no-extraneous-dependencies
 import faker from 'faker'
 import { Box, Grid } from '@mui/material'
 import dayjs from 'dayjs'
 import { useLightModeTheme } from '../../theme/useLightModeTheme'
-
-interface GroupRowFirst {
-  id: string
-  subtotals: string
-  units: string
-  structure: string
-  currency: string
-  year: string
-  year1: string
-  order: number
-}
 
 interface GroupRow {
   id: string
@@ -27,19 +16,6 @@ interface GroupRow {
   year1: string
   order: number
   __children?: GroupRow[]
-}
-
-const generateRowsFirst = count => {
-  return new Array(count).fill(true).map((_, i) => ({
-    id: faker.datatype.number().toString(),
-    subtotals: faker.address.country(),
-    units: faker.name.jobType(),
-    structure: faker.finance.amount(),
-    currency: faker.finance.currencySymbol(),
-    year: faker.phone.phoneNumber(),
-    year1: faker.random.alphaNumeric(),
-    order: i + 1,
-  }))
 }
 
 const generateRows = count => {
@@ -204,10 +180,6 @@ const generateRows = count => {
 }
 
 export function Financial() {
-  const [rowsFirst, setRowsFirst] = useState<GroupRowFirst[]>(() => {
-    return generateRowsFirst(5)
-  })
-
   const [rows, setRows] = useState<GroupRow[]>(() => {
     return generateRows(2)
   })
