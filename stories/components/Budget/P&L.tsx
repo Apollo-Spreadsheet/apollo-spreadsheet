@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import { ApolloSpreadSheet, StretchMode, Column, useApiRef, CellChangeParams } from '../../../src'
 // eslint-disable-next-line import/no-extraneous-dependencies
 import faker from 'faker'
@@ -6,25 +6,51 @@ import { Box, Grid } from '@mui/material'
 import dayjs from 'dayjs'
 import { useLightModeTheme } from '../../theme/useLightModeTheme'
 
-interface GroupRow {
+interface GroupRowFirst {
   id: string
-  name: string
   subtotals: string
   units: string
-  name2?: string
-  city: string
-  city2?: string
+  structure: string
+  currency: string
+  year: string
+  year1: string
+  order: number
+}
+
+interface GroupRow {
+  id: string
+  subtotals: string
+  units: string
+  structure: string
+  currency: string
+  year: string
+  year1: string
   order: number
   __children?: GroupRow[]
+}
+
+const generateRowsFirst = count => {
+  return new Array(count).fill(true).map((_, i) => ({
+    id: faker.datatype.number().toString(),
+    subtotals: faker.address.country(),
+    units: faker.name.jobType(),
+    structure: faker.finance.amount(),
+    currency: faker.finance.currencySymbol(),
+    year: faker.phone.phoneNumber(),
+    year1: faker.random.alphaNumeric(),
+    order: i + 1,
+  }))
 }
 
 const generateRows = count => {
   const rows: GroupRow[] = new Array(count).fill(true).map((_, i) => ({
     id: faker.datatype.number().toString(),
-    name: faker.name.findName(),
-    city: faker.address.city(),
     subtotals: faker.address.country(),
     units: faker.name.jobType(),
+    structure: faker.finance.amount(),
+    currency: faker.finance.currencySymbol(),
+    year: faker.phone.phoneNumber(),
+    year1: faker.random.alphaNumeric(),
     order: i + 1,
   }))
 
@@ -33,42 +59,52 @@ const generateRows = count => {
   rows[1].__children = [
     {
       id: '8X',
-      name: faker.name.findName(),
-      city: faker.address.city(),
       subtotals: faker.address.country(),
       units: faker.name.jobType(),
+      structure: faker.finance.amount(),
+      currency: faker.finance.currencySymbol(),
+      year: faker.phone.phoneNumber(),
+      year1: faker.random.alphaNumeric(),
       order: 2.1,
       __children: [
         {
           id: faker.datatype.number().toString(),
-          name: faker.name.findName(),
-          city: faker.address.city(),
           subtotals: faker.address.country(),
           units: faker.name.jobType(),
+          structure: faker.finance.amount(),
+          currency: faker.finance.currencySymbol(),
+          year: faker.phone.phoneNumber(),
+          year1: faker.random.alphaNumeric(),
           order: 2.2,
           __children: [
             {
               id: faker.datatype.number().toString(),
-              name: faker.name.findName(),
-              city: faker.address.city(),
               subtotals: faker.address.country(),
               units: faker.name.jobType(),
+              structure: faker.finance.amount(),
+              currency: faker.finance.currencySymbol(),
+              year: faker.phone.phoneNumber(),
+              year1: faker.random.alphaNumeric(),
               order: 2.3,
             },
             {
               id: faker.datatype.number().toString(),
-              name: faker.name.findName(),
-              city: faker.address.city(),
               subtotals: faker.address.country(),
               units: faker.name.jobType(),
+              structure: faker.finance.amount(),
+              currency: faker.finance.currencySymbol(),
+              year: faker.phone.phoneNumber(),
+              year1: faker.random.alphaNumeric(),
               order: 2.4,
             },
             {
               id: faker.datatype.number().toString(),
-              name: faker.name.findName(),
-              city: faker.address.city(),
               subtotals: faker.address.country(),
               units: faker.name.jobType(),
+              structure: faker.finance.amount(),
+              currency: faker.finance.currencySymbol(),
+              year: faker.phone.phoneNumber(),
+              year1: faker.random.alphaNumeric(),
               order: 2.5,
             },
           ],
@@ -78,74 +114,88 @@ const generateRows = count => {
   ]
   rows.push({
     id: faker.datatype.number().toString(),
-    name: faker.name.findName(),
-    city: faker.address.city(),
     subtotals: faker.address.country(),
     units: faker.name.jobType(),
+    structure: faker.finance.amount(),
+    currency: faker.finance.currencySymbol(),
+    year: faker.phone.phoneNumber(),
+    year1: faker.random.alphaNumeric(),
     order: 3,
     __children: [
       {
         id: faker.datatype.number().toString(),
-        name: faker.name.findName(),
-        city: faker.address.city(),
         subtotals: faker.address.country(),
         units: faker.name.jobType(),
+        structure: faker.finance.amount(),
+        currency: faker.finance.currencySymbol(),
+        year: faker.phone.phoneNumber(),
+        year1: faker.random.alphaNumeric(),
         order: 3.1,
       },
     ],
   })
   rows.push({
     id: faker.datatype.number().toString(),
-    name: faker.name.findName(),
-    city: faker.address.city(),
     subtotals: faker.address.country(),
     units: faker.name.jobType(),
+    structure: faker.finance.amount(),
+    currency: faker.finance.currencySymbol(),
+    year: faker.phone.phoneNumber(),
+    year1: faker.random.alphaNumeric(),
     order: 4,
     __children: [
       {
         id: faker.datatype.number().toString(),
-        name: faker.name.findName(),
-        city: faker.address.city(),
         subtotals: faker.address.country(),
         units: faker.name.jobType(),
+        structure: faker.finance.amount(),
+        currency: faker.finance.currencySymbol(),
+        year: faker.phone.phoneNumber(),
+        year1: faker.random.alphaNumeric(),
         order: 4.1,
       },
     ],
   })
   rows.push({
     id: faker.datatype.number().toString(),
-    name: faker.name.findName(),
-    city: faker.address.city(),
     subtotals: faker.address.country(),
     units: faker.name.jobType(),
+    structure: faker.finance.amount(),
+    currency: faker.finance.currencySymbol(),
+    year: faker.phone.phoneNumber(),
+    year1: faker.random.alphaNumeric(),
     order: 5,
     __children: [
       {
         id: faker.datatype.number().toString(),
-        name: faker.name.findName(),
-        name2: faker.name.findName(),
-        city: faker.address.city(),
         subtotals: faker.address.country(),
         units: faker.name.jobType(),
+        structure: faker.finance.amount(),
+        currency: faker.finance.currencySymbol(),
+        year: faker.phone.phoneNumber(),
+        year1: faker.random.alphaNumeric(),
         order: 5.1,
       },
     ],
   })
   rows.push({
     id: faker.datatype.number().toString(),
-    name: faker.name.findName(),
-    city: faker.address.city(),
-    city2: faker.address.city(),
     subtotals: faker.address.country(),
     units: faker.name.jobType(),
+    structure: faker.finance.amount(),
+    currency: faker.finance.currencySymbol(),
+    year: faker.phone.phoneNumber(),
+    year1: faker.random.alphaNumeric(),
     order: 6,
     __children: [
       {
         id: faker.datatype.number().toString(),
-        name: faker.name.findName(),
-        city: faker.address.city(),
         subtotals: faker.address.country(),
         units: faker.name.jobType(),
+        structure: faker.finance.amount(),
+        currency: faker.finance.currencySymbol(),
+        year: faker.phone.phoneNumber(),
+        year1: faker.random.alphaNumeric(),
         order: 6.1,
       },
     ],
@@ -154,6 +204,10 @@ const generateRows = count => {
 }
 
 export function Financial() {
+  const [rowsFirst, setRowsFirst] = useState<GroupRowFirst[]>(() => {
+    return generateRowsFirst(5)
+  })
+
   const [rows, setRows] = useState<GroupRow[]>(() => {
     return generateRows(2)
   })
@@ -197,7 +251,7 @@ export function Financial() {
       id: 'year',
       title: year.toString(),
       accessor: 'year',
-      width: 60,
+      width: 90,
       __children: [
         { id: `${year}-01`, title: `Jan ${yearFormat}`, accessor: `${year}-01`, width: 50 },
         { id: `${year}-02`, title: `Fev ${yearFormat}`, accessor: `${year}-02`, width: 50 },
@@ -214,10 +268,10 @@ export function Financial() {
       ],
     },
     {
-      id: 'year+1',
+      id: 'year1',
       title: year1.toString(),
-      accessor: 'year+1',
-      width: 60,
+      accessor: 'year1',
+      width: 90,
       __children: [
         { id: `${year1}-01`, title: `Jan ${year1Format}`, accessor: `${year}-01`, width: 50 },
         { id: `${year1}-02`, title: `Fev ${year1Format}`, accessor: `${year}-02`, width: 50 },
@@ -235,28 +289,55 @@ export function Financial() {
     },
   ]
 
-  const headerFour: Column[] = [
+  const headerThree: Column[] = [
     {
-      id: 'subtotals',
+      id: 'structure',
       title: 'Project Structure',
-      accessor: 'subtotals',
+      accessor: 'structure',
       readOnly: true,
       disableBackspace: true,
       disableCellCut: true,
       disableCellPaste: true,
-      width: 150,
+      width: 120,
     },
     {
-      id: 'units',
+      id: 'currency',
       title: '€',
-      accessor: 'units',
+      accessor: 'currency',
       readOnly: true,
       disableBackspace: true,
       disableCellCut: true,
       disableCellPaste: true,
-      width: 150,
+      width: 120,
     },
   ]
+
+  const getExpandedColumns = useCallback(
+    (columns: string) => {
+      if (apiRef2?.current && apiRef4?.current) {
+        apiRef2.current.toggleColumnExpand(columns)
+      }
+    },
+    [apiRef2, apiRef4],
+  )
+
+  const getExpandedColumnsTwo = useCallback(
+    (columns: string) => {
+      if (apiRef2?.current && apiRef4?.current) {
+        apiRef4.current.toggleColumnExpand(columns)
+      }
+    },
+    [apiRef2, apiRef4],
+  )
+
+  const getExpandedRows = useCallback(
+    (row: string) => {
+      if (apiRef3?.current) {
+        apiRef4.current.toggleRowExpand(row)
+      }
+    },
+    [apiRef3, apiRef4],
+  )
 
   return (
     <Grid container display={'inline-flex'}>
@@ -294,12 +375,13 @@ export function Financial() {
           connectToIds={['grid1', 'grid4']}
           containerClassName={useTheme.containerClass}
           theme={useTheme.theme}
+          onColumnCollapseChange={getExpandedColumnsTwo}
         />
       </Box>
       <Box width={'20%'} height={'calc(80vh - 100px)'} style={{ marginRight: -14 }}>
         <ApolloSpreadSheet
           apiRef={apiRef3}
-          columns={headerOne}
+          columns={headerThree}
           rows={rows}
           minColumnWidth={10}
           fixedRowHeight
@@ -313,11 +395,12 @@ export function Financial() {
           connectToIds={['grid4']}
           containerClassName={useTheme.containerClass}
           theme={useTheme.theme}
+          onRowCollapseChange={getExpandedRows}
         />
       </Box>
       <Box width={'80%'} height={'calc(80vh - 100px)'}>
         <ApolloSpreadSheet
-          apiRef={apiRef2}
+          apiRef={apiRef4}
           columns={headerTwo}
           rows={rows}
           minColumnWidth={10}
@@ -326,12 +409,14 @@ export function Financial() {
           rowHeight={30}
           stretchMode={StretchMode.None}
           disableSort
-          //nestedRows
+          nestedRows
           nestedColumns
           id={'grid4'}
           connectToIds={['grid3', 'grid2']}
           containerClassName={useTheme.containerClass}
           theme={useTheme.theme}
+          onColumnCollapseChange={getExpandedColumns}
+          displayCollapseIcon={false}
         />
       </Box>
     </Grid>

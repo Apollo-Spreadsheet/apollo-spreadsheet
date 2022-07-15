@@ -55,10 +55,10 @@ export const ApolloSpreadSheet: React.FC<ApolloSpreadsheetProps> = forwardRef(
     const minColumnWidth = props.minColumnWidth ?? 30
     const [gridFocused, setGridFocused] = useState(true)
     const defaultApiRef = useApiRef()
-    const apiRef = React.useMemo(() => (!props.apiRef ? defaultApiRef : props.apiRef), [
-      props.apiRef,
-      defaultApiRef,
-    ])
+    const apiRef = React.useMemo(
+      () => (!props.apiRef ? defaultApiRef : props.apiRef),
+      [props.apiRef, defaultApiRef],
+    )
     const rootContainerRef = useRef<HTMLDivElement>(null)
     const forkedRef = useForkRef(rootContainerRef, componentRef)
     const initialised = useApiFactory(rootContainerRef, apiRef, props.selection?.key)
@@ -276,6 +276,7 @@ export const ApolloSpreadSheet: React.FC<ApolloSpreadsheetProps> = forwardRef(
                     minRowHeight={props.minColumnHeight ?? 50}
                     scrollLeft={scrollLeft}
                     onScrollHeader={props?.id ? onScrollHeader : () => null}
+                    onColumnCollapse={props?.onColumnCollapseChange}
                     apiRef={apiRef}
                     sort={sort}
                     nestedRowsEnabled={nestedRowsEnabled}
@@ -302,6 +303,8 @@ export const ApolloSpreadSheet: React.FC<ApolloSpreadsheetProps> = forwardRef(
                     mergeCells={mergedCells}
                     mergedPositions={mergedPositions}
                     isMerged={isMerged}
+                    onRowCollapse={props?.onRowCollapseChange}
+                    displayCollapseIcon={props?.displayCollapseIcon}
                     nestedRowsProps={nestedRowsProps}
                     theme={theme}
                     coreId={`core-${props?.id}`}

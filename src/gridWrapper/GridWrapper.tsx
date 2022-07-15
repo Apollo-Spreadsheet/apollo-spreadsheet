@@ -69,6 +69,8 @@ const GridWrapper: React.FC<GridWrapperProps> = React.memo(
     highlightBorderColor,
     rowHeight,
     noContentOverlay,
+    onRowCollapse,
+    displayCollapseIcon = true,
     coreId,
   }) => {
     const logger = useLogger('GridWrapper')
@@ -279,6 +281,10 @@ const GridWrapper: React.FC<GridWrapperProps> = React.memo(
               }
 
               apiRef.current.toggleRowExpand(id)
+
+              if (onRowCollapse) {
+                onRowCollapse(id)
+              }
             }
 
             const renderExpandOrCollapseIcon = () => {
@@ -304,7 +310,7 @@ const GridWrapper: React.FC<GridWrapperProps> = React.memo(
             const component = (
               <div style={depth > 1 ? { marginLeft: nestedMargin } : {}}>
                 {cell.value}
-                {renderExpandOrCollapseIcon()}
+                {displayCollapseIcon ? renderExpandOrCollapseIcon() : null}
               </div>
             )
             return wrapper(component)
@@ -324,14 +330,16 @@ const GridWrapper: React.FC<GridWrapperProps> = React.memo(
         columns,
         rows,
         isCellRowActive,
-        apiRef,
+        theme,
         classes.cellDefaultStyle,
         classes.disabledCell,
         selection,
-        highlightBorderColor,
         nestedRowsProps,
+        highlightBorderColor,
+        apiRef,
+        displayCollapseIcon,
+        onRowCollapse,
         logger,
-        theme,
       ],
     )
 
