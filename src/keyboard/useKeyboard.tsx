@@ -42,12 +42,12 @@ export function useKeyboard({
   onCreateRow,
   apiRef,
   initialised,
-}: Props): NavigationCoords {
+}: Props): { coords: NavigationCoords; wasClicked: boolean } {
   const logger = useLogger(useKeyboard.name)
   const coordsRef = useRef<NavigationCoords>(defaultCoords)
   const [coords, setCoords] = useState<NavigationCoords>(defaultCoords)
   const delayEditorDebounce = useRef<DebouncedFunc<any> | null>(null)
-
+  const [wasClicked, setWasCliked] = useState<boolean>(false)
   const onCellBeginEditing = useCallback(() => {
     if (delayEditorDebounce.current) {
       delayEditorDebounce.current.cancel()
@@ -456,6 +456,7 @@ export function useKeyboard({
 
   const onKeyDown = useCallback(
     (event: KeyboardEvent) => {
+      setWasCliked(false)
       const editorState = apiRef.current.getEditorState()
       //Ensure we can proceed navigation under this core conditions
       if (!initialised || suppressControls || editorState?.isPopup) {
@@ -611,6 +612,7 @@ export function useKeyboard({
   const onCellClick = useCallback(
     ({ event, colIndex, rowIndex, element }: CellClickOrDoubleClickEventParams) => {
       event.preventDefault()
+      setWasCliked(true)
       selectCell({ rowIndex, colIndex }, false, element)
     },
     [selectCell],
@@ -619,6 +621,7 @@ export function useKeyboard({
   const onCellDoubleClick = useCallback(
     ({ event, colIndex, rowIndex, element }: CellClickOrDoubleClickEventParams) => {
       event.preventDefault()
+      setWasCliked(true)
       //Compare if the cell is equal to whats selected otherwise select it first
       if (colIndex !== coords.colIndex && rowIndex !== coords.rowIndex) {
         selectCell({ rowIndex, colIndex }, false, element)
@@ -640,5 +643,5 @@ export function useKeyboard({
     selectCell,
   }
   useApiExtends(apiRef, navigationApi, 'NavigationApi')
-  return coords
+  return { coords, wasClicked }
 }

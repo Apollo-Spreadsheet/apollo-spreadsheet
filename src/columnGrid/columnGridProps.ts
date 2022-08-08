@@ -29,6 +29,7 @@ export interface ColumnGridProps
   nestedRowsEnabled: boolean
   scroll?: (params: OnScrollParams) => any
   onScrollHeader?: (params: OnScrollParams) => any
+  onColumnCollapse?: (params: string) => any
   theme?: GridTheme
   nestedColumnsProps?: NestedColumnsProps
   headerId?: string

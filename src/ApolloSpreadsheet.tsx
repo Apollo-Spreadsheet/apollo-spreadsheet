@@ -109,7 +109,7 @@ export const ApolloSpreadSheet: React.FC<ApolloSpreadsheetProps> = forwardRef(
 
     const sort = useSort(apiRef)
 
-    const coords = useKeyboard({
+    const { coords, wasClicked } = useKeyboard({
       defaultCoords: props.defaultCoords ?? {
         rowIndex: 0,
         colIndex: 0,
@@ -228,14 +228,14 @@ export const ApolloSpreadSheet: React.FC<ApolloSpreadsheetProps> = forwardRef(
           props.connectToIds.map((element: string) => {
             const elementCore = document.getElementById(`core-${element}`) as HTMLElement
             if (!elementCore) {
-              return console.warn('The element does not exist on page')
+              return console.warn(`The element ${element} does not exist on page`)
             }
-            elementCore.scrollTo(elementCore.scrollLeft, e.scrollTop)
+            elementCore.scrollTo(e.scrollLeft, e.scrollTop)
             return elementCore
           })
         }
       },
-      [props.connectToIds, props?.id],
+      [props],
     )
     const onScrollHeader = useCallback(
       (e: OnScrollParams) => {
@@ -249,6 +249,11 @@ export const ApolloSpreadSheet: React.FC<ApolloSpreadsheetProps> = forwardRef(
       },
       [props?.id],
     )
+    React.useEffect(() => {
+      if (props?.getSelectedCoords && wasClicked && coords) {
+        props?.getSelectedCoords(coords)
+      }
+    }, [coords, props, wasClicked])
 
     return (
       <ClickAwayListener onClickAway={onClickAway}>
@@ -276,6 +281,7 @@ export const ApolloSpreadSheet: React.FC<ApolloSpreadsheetProps> = forwardRef(
                     minRowHeight={props.minColumnHeight ?? 50}
                     scrollLeft={scrollLeft}
                     onScrollHeader={props?.id ? onScrollHeader : () => null}
+                    onColumnCollapse={props?.onColumnCollapseChange}
                     apiRef={apiRef}
                     sort={sort}
                     nestedRowsEnabled={nestedRowsEnabled}
@@ -302,6 +308,8 @@ export const ApolloSpreadSheet: React.FC<ApolloSpreadsheetProps> = forwardRef(
                     mergeCells={mergedCells}
                     mergedPositions={mergedPositions}
                     isMerged={isMerged}
+                    onRowCollapse={props?.onRowCollapseChange}
+                    displayCollapseIcon={props?.displayCollapseIcon}
                     nestedRowsProps={nestedRowsProps}
                     theme={theme}
                     coreId={`core-${props?.id}`}

@@ -14,6 +14,8 @@ import { NestedColumnsProps } from './nestedColumns/nestedColumnsProps'
 export interface ApolloCrudProps {
   onCreateRow?: (coords: NavigationCoords) => void
   onCellChange?: ICellChangeEvent<any>
+  onColumnCollapseChange?: (column: string) => void
+  onRowCollapseChange?: (row: string) => void
 }
 
 export interface ApolloColumnRowSizeProps {
@@ -59,6 +61,7 @@ export interface ApolloNavigationProps {
   onKeyDown?: (params: KeyDownEventParams) => void
   /** @default false **/
   suppressNavigation?: boolean
+  getSelectedCoords?: (coords: NavigationCoords) => void
 }
 
 export interface ApolloSortProps {
@@ -93,6 +96,10 @@ export interface ApolloLayoutProps {
    * Optional renderer to be used in place of rows when either :rowCount or :columnCount is 0.
    */
   noContentOverlay?: () => ReactNode
+  /**
+   * Toggle icon display in Collapses
+   */
+  displayCollapseIcon?: boolean
 }
 
 export interface ApolloCoreProps {

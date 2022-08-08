@@ -46,4 +46,6 @@ export interface GridWrapperProps
   nestedRowsProps: NestedRowsProps
   theme?: GridTheme
   coreId?: string
+  onRowCollapse?: (params: string) => any
+  displayCollapseIcon?: boolean
 }

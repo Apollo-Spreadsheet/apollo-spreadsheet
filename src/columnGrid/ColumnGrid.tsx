@@ -62,6 +62,7 @@ export const ColumnGrid: React.FC<ColumnGridProps> = React.memo(
     theme,
     coords,
     onScrollHeader,
+    onColumnCollapse,
     columns,
     nestedColumnsProps,
     nestedHeaders,
@@ -245,6 +246,9 @@ export const ColumnGrid: React.FC<ColumnGridProps> = React.memo(
                 apiRef.current.selectCell({ ...coords, colIndex: columnIndex })
               }
               apiRef.current.toggleColumnExpand(id)
+              if (onColumnCollapse) {
+                onColumnCollapse(id)
+              }
             }
 
             const renderExpandOrCollapseIcon = () => {
@@ -294,6 +298,7 @@ export const ColumnGrid: React.FC<ColumnGridProps> = React.memo(
         logger,
         nestedColumnsProps,
         nestedRowsEnabled,
+        onColumnCollapse,
         sort?.accessor,
         sort?.order,
         theme?.currentColumnClass,
