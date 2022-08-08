@@ -1,5 +1,5 @@
 import React, { useCallback, useState } from 'react'
-import { ApolloSpreadSheet, StretchMode, Column, useApiRef } from '../../../src'
+import { ApolloSpreadSheet, StretchMode, Column, useApiRef, NavigationCoords } from '../../../src'
 // eslint-disable-next-line import/no-extraneous-dependencies
 import faker from 'faker'
 import { Box, Grid } from '@mui/material'
@@ -311,6 +311,144 @@ export function Financial() {
     [apiRef3, apiRef4],
   )
 
+  const [firstTableSelectedRows, setFirstTableSelectedRows] = useState({ rowIndex: 0, colIndex: 0 })
+  const [secondTableSelectedRows, setSecondTableSelectedRows] = useState({
+    rowIndex: 0,
+    colIndex: 0,
+  })
+  const [thirdsTableSelectedRows, setThirdTableSelectedRows] = useState({
+    rowIndex: 0,
+    colIndex: 0,
+  })
+  const [fourthTableSelectedRows, setFourthTableSelectedRows] = useState({
+    rowIndex: 0,
+    colIndex: 0,
+  })
+
+  const getSelectedCoords = useCallback((coords: NavigationCoords) => {
+    //console.log({ coords })
+  }, [])
+
+  const getSelectedCoords1 = useCallback(
+    (coords: NavigationCoords) => {
+      if (
+        apiRef2?.current &&
+        apiRef?.current &&
+        (firstTableSelectedRows.colIndex !== coords.colIndex ||
+          firstTableSelectedRows.rowIndex !== coords.rowIndex)
+      ) {
+        setFirstTableSelectedRows(coords)
+        const newCoords =
+          secondTableSelectedRows.colIndex !== -1
+            ? { ...secondTableSelectedRows, rowIndex: coords.rowIndex }
+            : { colIndex: 0, rowIndex: coords.rowIndex }
+        apiRef2.current.selectCell(newCoords, true)
+        setSecondTableSelectedRows(newCoords)
+        setThirdTableSelectedRows({ colIndex: -1, rowIndex: -1 })
+        apiRef3.current.selectCell({ colIndex: -1, rowIndex: -1 }, true)
+        setFourthTableSelectedRows({ colIndex: -1, rowIndex: -1 })
+        apiRef4.current.selectCell({ colIndex: -1, rowIndex: -1 }, true)
+      }
+    },
+    [apiRef, apiRef2, apiRef3, apiRef4, firstTableSelectedRows, secondTableSelectedRows],
+  )
+
+  const getSelectedCoords2 = useCallback(
+    (coords: NavigationCoords) => {
+      if (
+        apiRef2?.current &&
+        apiRef?.current &&
+        (secondTableSelectedRows.colIndex !== coords.colIndex ||
+          secondTableSelectedRows.rowIndex !== coords.rowIndex)
+      ) {
+        setSecondTableSelectedRows(coords)
+        const newCoords =
+          firstTableSelectedRows.colIndex !== -1
+            ? { ...firstTableSelectedRows, rowIndex: coords.rowIndex }
+            : { colIndex: 0, rowIndex: coords.rowIndex }
+        apiRef.current.selectCell(newCoords, true)
+        setFirstTableSelectedRows(newCoords)
+        setThirdTableSelectedRows({ colIndex: -1, rowIndex: -1 })
+        apiRef3.current.selectCell({ colIndex: -1, rowIndex: -1 }, true)
+        setFourthTableSelectedRows({ colIndex: -1, rowIndex: -1 })
+        apiRef4.current.selectCell({ colIndex: -1, rowIndex: -1 }, true)
+      }
+    },
+    [
+      apiRef,
+      apiRef2,
+      apiRef3,
+      apiRef4,
+      firstTableSelectedRows,
+      secondTableSelectedRows.colIndex,
+      secondTableSelectedRows.rowIndex,
+    ],
+  )
+
+  const getSelectedCoords3 = useCallback(
+    (coords: NavigationCoords) => {
+      if (
+        apiRef3?.current &&
+        apiRef4?.current &&
+        (thirdsTableSelectedRows.colIndex !== coords.colIndex ||
+          thirdsTableSelectedRows.rowIndex !== coords.rowIndex)
+      ) {
+        setThirdTableSelectedRows(coords)
+        const newCoords =
+          fourthTableSelectedRows.colIndex !== -1
+            ? { ...fourthTableSelectedRows, rowIndex: coords.rowIndex }
+            : { colIndex: 0, rowIndex: coords.rowIndex }
+        apiRef4.current.selectCell(newCoords, true)
+        setFourthTableSelectedRows(newCoords)
+        setFirstTableSelectedRows({ colIndex: -1, rowIndex: -1 })
+        apiRef.current.selectCell({ colIndex: -1, rowIndex: -1 }, true)
+        setSecondTableSelectedRows({ colIndex: -1, rowIndex: -1 })
+        apiRef2.current.selectCell({ colIndex: -1, rowIndex: -1 }, true)
+      }
+    },
+    [
+      apiRef,
+      apiRef2,
+      apiRef3,
+      apiRef4,
+      fourthTableSelectedRows,
+      thirdsTableSelectedRows.colIndex,
+      thirdsTableSelectedRows.rowIndex,
+    ],
+  )
+
+  const getSelectedCoords4 = useCallback(
+    (coords: NavigationCoords) => {
+      if (
+        apiRef3?.current &&
+        apiRef4?.current &&
+        (fourthTableSelectedRows.colIndex !== coords.colIndex ||
+          fourthTableSelectedRows.rowIndex !== coords.rowIndex)
+      ) {
+        setFourthTableSelectedRows(coords)
+        const newCoords =
+          thirdsTableSelectedRows.colIndex !== -1
+            ? { ...thirdsTableSelectedRows, rowIndex: coords.rowIndex }
+            : { colIndex: 0, rowIndex: coords.rowIndex }
+        apiRef3.current.selectCell(newCoords, true)
+        setThirdTableSelectedRows(newCoords)
+        setFirstTableSelectedRows({ colIndex: -1, rowIndex: -1 })
+        apiRef.current.selectCell({ colIndex: -1, rowIndex: -1 }, true)
+        setSecondTableSelectedRows({ colIndex: -1, rowIndex: -1 })
+        apiRef2.current.selectCell({ colIndex: -1, rowIndex: -1 }, true)
+      }
+    },
+    [
+      apiRef,
+      apiRef2,
+      apiRef3,
+      apiRef4,
+      fourthTableSelectedRows.colIndex,
+      fourthTableSelectedRows.rowIndex,
+      thirdsTableSelectedRows,
+    ],
+  )
+
   return (
     <Grid container display={'inline-flex'}>
       <Box width={'20%'} height={'200px'} style={{ marginRight: -14 }}>
@@ -329,6 +467,9 @@ export function Financial() {
           connectToIds={['grid2']}
           containerClassName={useTheme.containerClass}
           theme={useTheme.theme}
+          getSelectedCoords={getSelectedCoords1}
+          suppressNavigation
+          defaultCoords={{ rowIndex: -1, colIndex: -1 }}
         />
       </Box>
       <Box width={'80%'} height={'200px'}>
@@ -348,6 +489,9 @@ export function Financial() {
           containerClassName={useTheme.containerClass}
           theme={useTheme.theme}
           onColumnCollapseChange={getExpandedColumnsTwo}
+          getSelectedCoords={getSelectedCoords2}
+          suppressNavigation
+          defaultCoords={{ rowIndex: -1, colIndex: -1 }}
         />
       </Box>
       <Box width={'20%'} height={'calc(80vh - 100px)'} style={{ marginRight: -14 }}>
@@ -368,6 +512,9 @@ export function Financial() {
           containerClassName={useTheme.containerClass}
           theme={useTheme.theme}
           onRowCollapseChange={getExpandedRows}
+          getSelectedCoords={getSelectedCoords3}
+          suppressNavigation
+          defaultCoords={{ rowIndex: -1, colIndex: -1 }}
         />
       </Box>
       <Box width={'80%'} height={'calc(80vh - 100px)'}>
@@ -389,6 +536,9 @@ export function Financial() {
           theme={useTheme.theme}
           onColumnCollapseChange={getExpandedColumns}
           displayCollapseIcon={false}
+          getSelectedCoords={getSelectedCoords4}
+          suppressNavigation
+          defaultCoords={{ rowIndex: -1, colIndex: -1 }}
         />
       </Box>
     </Grid>

@@ -179,7 +179,6 @@ const GridWrapper: React.FC<GridWrapperProps> = React.memo(
         const zIndex = (cell.rowSpan || cell.colSpan) && !cell.dummy ? 5 : defaultZIndex
         const isLineActive = isCellRowActive({ rowIndex, colIndex: columnIndex })
         const cellStyle: CSSProperties = { ...style }
-
         if (isSelected) {
           //Ensure there are no other borders
           cellStyle.borderLeft = '0px'

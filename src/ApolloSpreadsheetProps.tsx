@@ -61,6 +61,7 @@ export interface ApolloNavigationProps {
   onKeyDown?: (params: KeyDownEventParams) => void
   /** @default false **/
   suppressNavigation?: boolean
+  getSelectedCoords?: (coords: NavigationCoords) => void
 }
 
 export interface ApolloSortProps {

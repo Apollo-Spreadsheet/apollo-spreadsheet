@@ -109,7 +109,7 @@ export const ApolloSpreadSheet: React.FC<ApolloSpreadsheetProps> = forwardRef(
 
     const sort = useSort(apiRef)
 
-    const coords = useKeyboard({
+    const { coords, wasClicked } = useKeyboard({
       defaultCoords: props.defaultCoords ?? {
         rowIndex: 0,
         colIndex: 0,
@@ -249,6 +249,11 @@ export const ApolloSpreadSheet: React.FC<ApolloSpreadsheetProps> = forwardRef(
       },
       [props?.id],
     )
+    React.useEffect(() => {
+      if (props?.getSelectedCoords && wasClicked && coords) {
+        props?.getSelectedCoords(coords)
+      }
+    }, [coords, props, wasClicked])
 
     return (
       <ClickAwayListener onClickAway={onClickAway}>
