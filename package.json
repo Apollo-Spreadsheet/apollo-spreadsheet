@@ -1,6 +1,6 @@
 {
   "name": "apollo-spreadsheet",
-  "version": "1.0.48",
+  "version": "1.0.49",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "description": "React excel like fast grid plugin",
