@@ -47,5 +47,5 @@ export interface GridWrapperProps
   theme?: GridTheme
   coreId?: string
   onRowCollapse?: (params: string) => any
-  // displayCollapseIcon?: boolean
+  displayCollapseIcon?: boolean
 }

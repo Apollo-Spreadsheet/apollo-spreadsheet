@@ -94,6 +94,10 @@ export interface ApolloLayoutProps {
    * Optional renderer to be used in place of rows when either :rowCount or :columnCount is 0.
    */
   noContentOverlay?: () => ReactNode
+  /**
+   * Toggle icon display in Collapses
+   */
+  displayCollapseIcon?: boolean
 }
 
 export interface ApolloCoreProps {
