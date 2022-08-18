@@ -511,7 +511,7 @@ export function Financial() {
           connectToIds={['grid4']}
           containerClassName={useTheme.containerClass}
           theme={useTheme.theme}
-          // onRowCollapseChange={getExpandedRows}
+          onRowCollapseChange={getExpandedRows}
           getSelectedCoords={getSelectedCoords3}
           suppressNavigation
           defaultCoords={{ rowIndex: -1, colIndex: -1 }}

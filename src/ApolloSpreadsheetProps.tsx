@@ -15,6 +15,7 @@ export interface ApolloCrudProps {
   onCreateRow?: (coords: NavigationCoords) => void
   onCellChange?: ICellChangeEvent<any>
   onColumnCollapseChange?: (column: string) => void
+  onRowCollapseChange?: (row: string) => void
 }
 
 export interface ApolloColumnRowSizeProps {
