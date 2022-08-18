@@ -535,7 +535,7 @@ export function Financial() {
           containerClassName={useTheme.containerClass}
           theme={useTheme.theme}
           //onColumnCollapseChange={getExpandedColumns}
-          // displayCollapseIcon={false}
+          displayCollapseIcon={false}
           getSelectedCoords={getSelectedCoords4}
           suppressNavigation
           defaultCoords={{ rowIndex: -1, colIndex: -1 }}
