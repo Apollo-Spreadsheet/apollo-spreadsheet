@@ -488,7 +488,7 @@ export function Financial() {
           connectToIds={['grid1', 'grid4']}
           containerClassName={useTheme.containerClass}
           theme={useTheme.theme}
-          onColumnCollapseChange={getExpandedColumnsTwo}
+          //onColumnCollapseChange={getExpandedColumnsTwo}
           getSelectedCoords={getSelectedCoords2}
           suppressNavigation
           defaultCoords={{ rowIndex: -1, colIndex: -1 }}
@@ -511,7 +511,7 @@ export function Financial() {
           connectToIds={['grid4']}
           containerClassName={useTheme.containerClass}
           theme={useTheme.theme}
-          onRowCollapseChange={getExpandedRows}
+          // onRowCollapseChange={getExpandedRows}
           getSelectedCoords={getSelectedCoords3}
           suppressNavigation
           defaultCoords={{ rowIndex: -1, colIndex: -1 }}
@@ -534,8 +534,8 @@ export function Financial() {
           connectToIds={['grid3', 'grid2']}
           containerClassName={useTheme.containerClass}
           theme={useTheme.theme}
-          onColumnCollapseChange={getExpandedColumns}
-          displayCollapseIcon={false}
+          //onColumnCollapseChange={getExpandedColumns}
+          // displayCollapseIcon={false}
           getSelectedCoords={getSelectedCoords4}
           suppressNavigation
           defaultCoords={{ rowIndex: -1, colIndex: -1 }}
