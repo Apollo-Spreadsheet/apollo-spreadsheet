@@ -14,6 +14,7 @@ import { NestedColumnsProps } from './nestedColumns/nestedColumnsProps'
 export interface ApolloCrudProps {
   onCreateRow?: (coords: NavigationCoords) => void
   onCellChange?: ICellChangeEvent<any>
+  onColumnCollapseChange?: (column: string) => void
 }
 
 export interface ApolloColumnRowSizeProps {

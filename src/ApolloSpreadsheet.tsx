@@ -281,7 +281,7 @@ export const ApolloSpreadSheet: React.FC<ApolloSpreadsheetProps> = forwardRef(
                     minRowHeight={props.minColumnHeight ?? 50}
                     scrollLeft={scrollLeft}
                     onScrollHeader={props?.id ? onScrollHeader : () => null}
-                    //onColumnCollapse={props?.onColumnCollapseChange}
+                    onColumnCollapse={props?.onColumnCollapseChange}
                     apiRef={apiRef}
                     sort={sort}
                     nestedRowsEnabled={nestedRowsEnabled}
