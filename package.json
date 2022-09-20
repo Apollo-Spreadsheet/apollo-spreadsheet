@@ -35,18 +35,17 @@
   },
   "peerDependencies": {
     "@date-io/dayjs": ">= 2.10.8",
-    "@emotion/react": ">= 11.1.5",
-    "@emotion/styled": ">= 11.3.0",
+    "@emotion/react": "^11.10.0",
+    "@emotion/styled": "^11.10.0",
     "dayjs": ">= 1.10.4",
     "react": "^17.0.0",
     "react-dom": "^17.0.0"
   },
   "dependencies": {
     "@babel/core": ">=7.11.5 <8.0.0",
-    "@mui/icons-material": "^5.6.1",
-    "@mui/lab": "^5.0.0-alpha.77",
-    "@mui/material": "^5.6.1",
-    "@mui/styles": "^5.6.1",
+    "@mui/icons-material": "^5.8.4",
+    "@mui/lab": "^5.0.0-alpha.95",
+    "@mui/material": "^5.10.5",
     "@storybook/addon-controls": "^6.5.2",
     "@storybook/addon-viewport": "6.5.3",
     "@storybook/react": "6.4.0-alpha.30",
@@ -63,6 +62,7 @@
     "react-is": "^17.0.2",
     "react-virtualized": "^9.22.3",
     "require-from-string": "^2.0.2",
+    "storybook-css-modules-preset": "^1.1.1",
     "tslib": "^2.4.0",
     "value-equal": "^1.0.1"
   },

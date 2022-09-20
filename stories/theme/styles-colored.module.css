@@ -1,0 +1,30 @@
+.container {
+  height: 100%;
+  width: 100%;
+}
+.currentRowClass {
+  font-weight: 500;
+  color: #6e75f8;
+  background-color: #eaeafe;
+}
+.currentColumnClass {
+  font-weight: 700;
+}
+.headerClass {
+  background: #f6f7f9 !important;
+  color: #4d4d4d;
+  border: none;
+  border-top: '0.3px solid #A2ACB2';
+  font-weight: 500;
+  font-size: 14px;
+}
+.cellClass {
+  border: 1.5px solid white;
+  box-shadow: 0 0px 4px 0 rgba(0, 0, 0, 0.08);
+  background-color: #f3f3fe;
+  color: #2d2d2d;
+  font-size: 14px;
+}
+.disabledCellClass {
+  opacity: 0.6;
+}

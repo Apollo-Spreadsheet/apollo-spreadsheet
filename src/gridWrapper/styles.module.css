@@ -1,0 +1,23 @@
+.bodyContainer {
+  width: 100%;
+  height: 100%;
+}
+.grid {
+  outline: none;
+}
+.suppressHorizontalOverflow {
+  overflow-x: hidden;
+}
+
+.cellDefaultStyle {
+  display: flex;
+  box-sizing: border-box;
+}
+.cellDefaultStyle:focus {
+  outline: 0;
+  border: 0;
+}
+.disabledCell {
+  cursor: default;
+  pointer-events: none;
+}

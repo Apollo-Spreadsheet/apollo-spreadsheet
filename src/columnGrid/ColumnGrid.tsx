@@ -7,7 +7,6 @@ import { ColumnGridProps } from './columnGridProps'
 import { CellMeasureRendererProps, MeasurerRendererProps } from '../cellMeasurer'
 import Tooltip from '@mui/material/Tooltip'
 import { ROW_SELECTION_HEADER_ID } from '../rowSelection'
-import { makeStyles } from '@mui/styles'
 import { isFunctionType } from '../helpers'
 import flattenDeep from 'lodash/flattenDeep'
 import { createCellQueryProperties } from '../keyboard'
@@ -16,41 +15,31 @@ import { SortIndicator } from './components'
 import { useApiEventHandler } from '../api'
 import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight'
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown'
-import { Theme } from '@mui/material'
+import styles from './styles.module.css'
 
 type SortDisabled = boolean
 
-const useStyles = makeStyles((theme: Theme) => ({
-  defaultHeader: {
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-    height: '100%',
-    width: '100%',
-    boxSizing: 'border-box',
-    background: '#efefef',
-    cursor: 'default',
-    border: '1px solid #ccc',
+const defaultHeader = {
+  display: 'flex',
+  justifyContent: 'center',
+  alignItems: 'center',
+  height: '100%',
+  width: '100%',
+  boxSizing: 'border-box',
+  background: '#efefef',
+  cursor: 'default',
+  border: '1px solid #ccc',
+}
+const headerContainer = {
+  outline: 'none',
+  position: 'sticky !important' as any,
+  top: 0,
+  zIndex: 1,
+  'scrollbar-width': 'none',
+  '&::-webkit-scrollbar': {
+    display: 'none',
   },
-  headerContainer: {
-    outline: 'none',
-    position: 'sticky !important' as any,
-    top: 0,
-    zIndex: 1,
-    'scrollbar-width': 'none',
-    '&::-webkit-scrollbar': {
-      display: 'none',
-    },
-  },
-  contentSpan: {
-    textAlign: 'center',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    width: '100%',
-    height: '100%',
-  },
-}))
+}
 
 export const ColumnGrid: React.FC<ColumnGridProps> = React.memo(
   ({
@@ -75,7 +64,6 @@ export const ColumnGrid: React.FC<ColumnGridProps> = React.memo(
     sort,
     headerId,
   }) => {
-    const classes = useStyles()
     const logger = useLogger('ColumnGrid')
     const cache: CellMeasurerCache = useMemo(() => {
       /**
@@ -141,7 +129,6 @@ export const ColumnGrid: React.FC<ColumnGridProps> = React.memo(
     useApiEventHandler(apiRef, 'DATA_CHANGED', recomputeSizes)
     useApiEventHandler(apiRef, 'GRID_RESIZE', recomputeSizes)
     useApiEventHandler(apiRef, 'COLUMNS_CHANGED', recomputeSizes)
-
     const headerRendererWrapper = useCallback(
       ({ style, cell, ref, columnIndex, rowIndex }: CellMeasureRendererProps<GridHeader>) => {
         const { title, renderer } = cell
@@ -156,7 +143,7 @@ export const ColumnGrid: React.FC<ColumnGridProps> = React.memo(
         let headerClassName = ''
         if (!cell.dummy && cell.isNested) {
           headerClassName = clsx(
-            classes.defaultHeader,
+            defaultHeader,
             theme?.headerClass,
             theme?.nestedHeaderClass,
             cell.className,
@@ -164,7 +151,7 @@ export const ColumnGrid: React.FC<ColumnGridProps> = React.memo(
         }
 
         if (!cell.dummy && !cell.isNested) {
-          headerClassName = clsx(classes.defaultHeader, theme?.headerClass, cell.className)
+          headerClassName = clsx(defaultHeader, theme?.headerClass, cell.className)
         }
 
         //If the cell is selected we set the column as selected too
@@ -211,7 +198,7 @@ export const ColumnGrid: React.FC<ColumnGridProps> = React.memo(
               {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events */}
               <span
                 onClick={isSortDisabled ? undefined : () => apiRef.current.toggleSort(cell.id)}
-                className={classes.contentSpan}
+                className={styles.contentSpan}
               >
                 {child}
                 {sortComponent}
@@ -290,8 +277,6 @@ export const ColumnGrid: React.FC<ColumnGridProps> = React.memo(
       },
       [
         apiRef,
-        classes.contentSpan,
-        classes.defaultHeader,
         columns,
         coords,
         headersSortDisabledMap,
@@ -355,10 +340,9 @@ export const ColumnGrid: React.FC<ColumnGridProps> = React.memo(
     const onRefMount = useCallback(instance => {
       gridRef.current = instance
     }, [])
-
     return (
       <Grid
-        className={clsx(classes.headerContainer)}
+        className={clsx(headerContainer)}
         id={headerId}
         ref={onRefMount}
         cellRenderer={cellMeasurerWrapperRenderer}

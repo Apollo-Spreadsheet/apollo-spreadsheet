@@ -2,19 +2,8 @@ import React, { useCallback, useState } from 'react'
 import { ApolloSpreadSheet, StretchMode, Column, useApiRef, CellChangeParams } from '../../../src'
 import AddCircle from '@mui/icons-material/AddCircle'
 import { Box, IconButton, Typography } from '@mui/material'
-// eslint-disable-next-line import/no-extraneous-dependencies
 import faker from 'faker'
-import { makeStyles } from '@mui/styles'
-
-const useStyles = makeStyles(() => ({
-  selectedCell: {
-    background: '#f5f5f5',
-    color: '#4d4d4d',
-  },
-  textStyle: {
-    margin: '10px',
-  },
-}))
+import styles from './styles.module.css'
 
 interface DemoRow {
   id: string
@@ -37,7 +26,6 @@ const generateRows = count => {
 }
 
 export function TableSort() {
-  const classes = useStyles()
   const [rows, setRows] = useState<DemoRow[]>(generateRows(15))
   const apiRef = useApiRef()
   const onHeaderIconClick = () => {
@@ -125,12 +113,9 @@ export function TableSort() {
       return updatedRows
     })
   }
-
   return (
     <Box width={'100%'} height={'calc(100vh - 100px)'}>
-      <Typography className={classes.textStyle}>
-        This table uses sort. Click on the header to test it
-      </Typography>
+      <h2 className={styles.textStyle}>This table uses sort. Click on the header to test it</h2>
       <ApolloSpreadSheet
         apiRef={apiRef}
         columns={headers}
@@ -143,7 +128,7 @@ export function TableSort() {
         selection={{
           key: 'id',
           onHeaderIconClick,
-          cellClassName: classes.selectedCell,
+          cellClassName: styles.selectedCell,
         }}
         disableSort={disableSort}
       />

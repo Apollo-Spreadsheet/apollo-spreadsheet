@@ -3,7 +3,7 @@ import { ApolloSpreadSheet, Row, Column } from '../../src'
 import { Avatar, Box, LinearProgress } from '@mui/material'
 // eslint-disable-next-line import/no-extraneous-dependencies
 import faker from 'faker'
-import { makeStyles } from '@mui/styles'
+import './styles.css'
 
 interface VpdRow {
   id: string
@@ -65,15 +65,7 @@ function getStatusText(status: number) {
   }
 }
 
-const useStyles = makeStyles(() => ({
-  companySpi: {
-    borderLeft: '2px solid black !important' as any,
-  },
-}))
-
 export function VPD() {
-  const classes = useStyles()
-
   const disableSort = useCallback((header: Column) => {
     return header.id === 'order'
   }, [])
@@ -155,8 +147,8 @@ export function VPD() {
       title: 'SPI',
       accessor: 'spi',
       width: '5%',
-      className: classes.companySpi,
-      cellClassName: classes.companySpi,
+      className: 'companySpi',
+      cellClassName: 'companySpi',
     },
     {
       id: 'companyCpi',
@@ -175,7 +167,7 @@ export function VPD() {
       {
         title: 'Company',
         colSpan: 2,
-        className: classes.companySpi,
+        className: 'companySpi',
       },
     ],
   ]

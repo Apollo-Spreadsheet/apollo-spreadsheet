@@ -7,18 +7,7 @@ import MailIcon from '@mui/icons-material/Mail'
 import PublicIcon from '@mui/icons-material/Public'
 import { ApolloSpreadSheet, StretchMode, Column, useApiRef } from '../../../src'
 import AddCircleIcon from '@mui/icons-material/AddCircle'
-import { makeStyles } from '@mui/styles'
-
-const useStyles = makeStyles((theme: Theme) => ({
-  iconBtn: {
-    padding: 0,
-    cursor: 'default',
-    color: '#CCCCCC',
-    '&:hover': {
-      backgroundColor: 'transparent',
-    },
-  },
-}))
+import './styles.css'
 
 interface CustomRows {
   id: string
@@ -44,7 +33,6 @@ const generateFakeData = () => {
 }
 
 export function CustomHeaders() {
-  const classes = useStyles()
   const apiRef = useApiRef()
   const [rows, setRows] = useState<CustomRows[]>(() => {
     return generateFakeData()
@@ -92,7 +80,7 @@ export function CustomHeaders() {
         width: '20%',
         renderer: () => {
           return (
-            <IconButton disabled className={classes.iconBtn}>
+            <IconButton disabled className={'iconBtn'}>
               <PersonIcon />
             </IconButton>
           )
@@ -106,7 +94,7 @@ export function CustomHeaders() {
         width: '20%',
         renderer: () => {
           return (
-            <IconButton disabled className={classes.iconBtn}>
+            <IconButton disabled className={'iconBtn'}>
               <PublicIcon />
             </IconButton>
           )
@@ -120,14 +108,14 @@ export function CustomHeaders() {
         width: '20%',
         renderer: () => {
           return (
-            <IconButton disabled className={classes.iconBtn}>
+            <IconButton disabled className={'iconBtn'}>
               <MailIcon />
             </IconButton>
           )
         },
       },
     ],
-    [classes.iconBtn, onCreateRowClick],
+    [onCreateRowClick],
   )
 
   return (

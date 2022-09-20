@@ -1,20 +1,12 @@
 import { FormControl, InputLabel, MenuItem, Select, Theme } from '@mui/material'
 import React, { memo, useCallback, useState } from 'react'
-import { makeStyles } from '@mui/styles'
-
-const useStyles = makeStyles((theme: Theme) => ({
-  formControl: {
-    // margin: theme.spacing(1),
-    minWidth: 120,
-  },
-}))
+import './styles.css'
 
 interface Props {
   activeThemeIndex: number
   handleChange: (index: number) => void
 }
 export const ThemeSelectMenu: React.FC<Props> = memo(({ activeThemeIndex, handleChange }) => {
-  const classes = useStyles()
   const [open, setOpen] = useState(false)
   const handleClose = useCallback(() => {
     setOpen(false)
@@ -32,7 +24,7 @@ export const ThemeSelectMenu: React.FC<Props> = memo(({ activeThemeIndex, handle
   )
 
   return (
-    <FormControl className={classes.formControl}>
+    <FormControl className={'formControl'}>
       <InputLabel id="demo-controlled-open-select-label">Select Theme</InputLabel>
       <Select
         labelId="demo-controlled-open-select-label"

@@ -451,7 +451,7 @@ export function Financial() {
 
   return (
     <Grid container display={'inline-flex'}>
-      <Box width={'20%'} height={'200px'} style={{ marginRight: -14 }}>
+      <Box width={'20%'} height={`${rows.length * 30}px`} style={{ marginRight: -14 }}>
         <ApolloSpreadSheet
           apiRef={apiRef}
           columns={headerOne}
@@ -472,7 +472,7 @@ export function Financial() {
           defaultCoords={{ rowIndex: -1, colIndex: -1 }}
         />
       </Box>
-      <Box width={'80%'} height={'200px'}>
+      <Box width={'80%'} height={`${rows.length * 30}px`}>
         <ApolloSpreadSheet
           apiRef={apiRef2}
           columns={headerTwo}
@@ -494,7 +494,7 @@ export function Financial() {
           defaultCoords={{ rowIndex: -1, colIndex: -1 }}
         />
       </Box>
-      <Box width={'20%'} height={'calc(80vh - 100px)'} style={{ marginRight: -14 }}>
+      <Box width={'20%'} height={`200px`} style={{ marginRight: -14 }}>
         <ApolloSpreadSheet
           apiRef={apiRef3}
           columns={headerThree}
@@ -517,7 +517,7 @@ export function Financial() {
           defaultCoords={{ rowIndex: -1, colIndex: -1 }}
         />
       </Box>
-      <Box width={'80%'} height={'calc(80vh - 100px)'}>
+      <Box width={'80%'} height={`200pxpx`}>
         <ApolloSpreadSheet
           apiRef={apiRef4}
           columns={headerTwo}

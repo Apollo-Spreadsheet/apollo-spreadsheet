@@ -4,17 +4,7 @@ import AddCircle from '@mui/icons-material/AddCircle'
 import { Box, IconButton, Tooltip, Typography } from '@mui/material'
 // eslint-disable-next-line import/no-extraneous-dependencies
 import faker from 'faker'
-import { makeStyles } from '@mui/styles'
-
-const useStyles = makeStyles(() => ({
-  selectedCell: {
-    background: '#f5f5f5',
-    color: '#4d4d4d',
-  },
-  textStyle: {
-    margin: '10px',
-  },
-}))
+import './styles.css'
 
 interface DemoRow {
   id: string
@@ -37,7 +27,6 @@ const generateRows = count => {
 }
 
 export function RowTooltips() {
-  const classes = useStyles()
   const [rows, setRows] = useState<DemoRow[]>(generateRows(15))
   const apiRef = useApiRef()
   const onHeaderIconClick = () => {
@@ -152,7 +141,7 @@ export function RowTooltips() {
 
   return (
     <Box width={'100%'} height={'calc(100vh - 100px)'}>
-      <Typography className={classes.textStyle}>
+      <Typography className={'textStyle'}>
         This table uses tooltips on the rows. Hover on each input to view
       </Typography>
       <ApolloSpreadSheet
@@ -167,7 +156,7 @@ export function RowTooltips() {
         selection={{
           key: 'id',
           onHeaderIconClick,
-          cellClassName: classes.selectedCell,
+          cellClassName: 'selectedCell',
         }}
         disableSort
       />

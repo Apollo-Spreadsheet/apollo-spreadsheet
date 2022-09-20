@@ -3,7 +3,6 @@ import { createMergeCellsData } from './createMergedCells'
 import { orderBy } from 'lodash'
 import { Box } from '@mui/material'
 import { useTopCase } from './dataUseCases'
-import { makeStyles } from '@mui/styles'
 import dump from './dump.json'
 import {
   ApolloSpreadSheet,
@@ -14,57 +13,10 @@ import {
   StretchMode,
   useApiRef,
 } from '../../../src'
-
-const useStyles = makeStyles(() => ({
-  root: {
-    margin: 10,
-  },
-  currentColumnClass: {
-    color: '#225890',
-  },
-  currentColumnClassDark: {
-    color: 'blue',
-  },
-  currentRowClass: {
-    color: '#225890',
-  },
-  currentRowClassDark: {
-    color: 'blue',
-  },
-  headerClass: {
-    background: 'white',
-    border: 'none',
-    fontWeight: 700,
-    fontSize: '11px',
-  },
-  headerClassDark: {
-    background: 'white !important' as any,
-    border: 'none !important' as any,
-    fontWeight: 700,
-    fontSize: '14px',
-  },
-  rowClass: {
-    border: '1px solid white',
-    backgroundColor: '#E6EFED',
-    fontSize: '13px',
-  },
-  rowClassDark: {
-    border: '1px solid white',
-    backgroundColor: 'black',
-    color: 'white',
-  },
-  disabledCellClass: {
-    opacity: '0.6',
-  },
-  checkBox: {
-    height: '10px',
-    width: '10px',
-  },
-}))
+import styles from './styles.module.css'
 
 const MIN_COLUMN_WIDTH = 10
 export function Spreadsheet() {
-  const classes = useStyles()
   const { headerData: columns } = useTopCase()
   const [data, setData] = useState(dump)
   const apiRef = useApiRef()
@@ -74,11 +26,11 @@ export function Spreadsheet() {
   }, [data, columns])
 
   const customTheme: GridTheme = {
-    currentColumnClass: classes.currentColumnClass,
-    currentRowClass: classes.currentRowClass,
-    headerClass: classes.headerClass,
-    disabledCellClass: classes.disabledCellClass,
-    cellClass: classes.rowClass,
+    currentColumnClass: styles.currentColumnClass,
+    currentRowClass: styles.CurrentRowClass,
+    headerClass: styles.headerClass,
+    disabledCellClass: styles.disabledCellClass,
+    cellClass: styles.rowClass,
   }
 
   const onCellChange = useCallback(
@@ -98,7 +50,7 @@ export function Spreadsheet() {
 
   const [delayedPosition, setDelayedPosition] = useState<NavigationCoords | null>(null)
 
-  function createRow(coords: NavigationCoords) {
+  const createRow = (coords: NavigationCoords) => {
     const mergedCellInfo = mergeCellsData.find(
       e => e.rowIndex === coords.rowIndex && e.colIndex === coords.colIndex,
     )
@@ -170,14 +122,14 @@ export function Spreadsheet() {
 
   const selection: SelectionProps = {
     key: 'taskId',
-    checkboxClass: classes.checkBox,
+    checkboxClass: styles.checkBox,
     onHeaderIconClick,
   }
 
   return (
     <Box height={'calc(100vh - 100px)'} width={'99%'}>
       <ApolloSpreadSheet
-        className={classes.root}
+        className={styles.root}
         apiRef={apiRef}
         columns={columns}
         rows={data}

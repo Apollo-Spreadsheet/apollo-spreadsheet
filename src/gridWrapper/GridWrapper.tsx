@@ -11,34 +11,12 @@ import clsx from 'clsx'
 import { GridCellProps } from 'react-virtualized/dist/es/Grid'
 import { MeasurerRendererProps } from '../cellMeasurer'
 import { GridWrapperProps } from './gridWrapperProps'
-import { makeStyles } from '@mui/styles'
 import { StretchMode } from '../types'
 import { useLogger } from '../logger'
 import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight'
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown'
 import { useApiExtends, GridWrapperApi, useApiEventHandler } from '../api'
-import { Theme } from '@mui/material'
-
-const useStyles = makeStyles((theme: Theme) => ({
-  bodyContainer: {
-    outline: 'none',
-  },
-  cellDefaultStyle: {
-    display: 'flex',
-    boxSizing: 'border-box',
-    '&:focus': {
-      outline: 0,
-      border: 0,
-    },
-  },
-  disabledCell: {
-    cursor: 'default', //no clickable action for this cell
-    pointerEvents: 'none', //no events for this cell
-  },
-  suppressHorizontalOverflow: {
-    overflowX: 'hidden',
-  },
-}))
+import styles from './styles.module.css'
 
 const GridWrapper: React.FC<GridWrapperProps> = React.memo(
   ({
@@ -96,7 +74,6 @@ const GridWrapper: React.FC<GridWrapperProps> = React.memo(
     }, [fixedRowHeight, fixedRowWidth, minColumnWidth, minRowHeight, rowHeight])
 
     const cacheRef = useRef<CellMeasurerCache>(cache)
-    const classes = useStyles()
     const gridRef = useRef<VirtualizedGrid | null>(null)
     const loggerRef = useRef(logger)
     const coordsRef = useRef(coords)
@@ -209,7 +186,7 @@ const GridWrapper: React.FC<GridWrapperProps> = React.memo(
          * of the parent because there is none visible
          * */
         let cellClassName = clsx(
-          classes.cellDefaultStyle,
+          styles.cellDefaultStyle,
           theme?.cellClass,
           typeof column.cellClassName === 'function'
             ? column.cellClassName({ row, column })
@@ -220,7 +197,7 @@ const GridWrapper: React.FC<GridWrapperProps> = React.memo(
         }
 
         if (navigationDisabled && !cell.dummy && theme?.disabledCellClass) {
-          cellClassName = clsx(cellClassName, classes.disabledCell, theme?.disabledCellClass)
+          cellClassName = clsx(cellClassName, styles.disabledCell, theme?.disabledCellClass)
         }
 
         if (selection && selection.cellClassName) {
@@ -330,8 +307,6 @@ const GridWrapper: React.FC<GridWrapperProps> = React.memo(
         rows,
         isCellRowActive,
         theme,
-        classes.cellDefaultStyle,
-        classes.disabledCell,
         selection,
         nestedRowsProps,
         highlightBorderColor,
@@ -413,15 +388,14 @@ const GridWrapper: React.FC<GridWrapperProps> = React.memo(
 
     const gridWrapperApi: GridWrapperApi = { getGridRef }
     useApiExtends(apiRef, gridWrapperApi, 'GridWrapperApi')
-
     return (
       <>
         <VirtualizedGrid
           id={coreId}
           className={
             stretchMode !== StretchMode.None
-              ? clsx(classes.bodyContainer, classes.suppressHorizontalOverflow)
-              : classes.bodyContainer
+              ? clsx(styles.bodyContainer, styles.suppressHorizontalOverflow)
+              : clsx(styles.bodyContainer)
           }
           ref={onRefMount}
           cellRenderer={cellRenderer}
@@ -435,7 +409,7 @@ const GridWrapper: React.FC<GridWrapperProps> = React.memo(
           onSectionRendered={onSectionRendered}
           scrollToAlignment={scrollToAlignment}
           onScroll={onScroll}
-          scrollLeft={scrollLeft}
+          //scrollLeft={scrollLeft}
           height={height}
           width={width}
           noContentRenderer={noContentOverlay}
