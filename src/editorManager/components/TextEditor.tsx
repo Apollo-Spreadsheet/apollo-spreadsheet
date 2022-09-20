@@ -8,27 +8,12 @@ import React, {
 } from 'react'
 import { TextareaAutosize, Theme } from '@mui/material'
 import { EditorProps } from '../editorProps'
-import { makeStyles } from '@mui/styles'
 import { handleEditorKeydown } from '../utils'
 import clsx from 'clsx'
 import { GRID_RESIZE, useApiEventHandler } from '../../api'
 import EditorContainer from './EditorContainer'
 import { createDefaultPaperProps } from './createDefaultPaperProps'
-
-const useStyles = makeStyles((theme: Theme) => ({
-  input: {
-    width: '100%',
-    height: '100%',
-    resize: 'none',
-    overflow: 'auto',
-    border: 0,
-    outline: 0,
-    '&:focus': {
-      border: 0,
-      outline: 0,
-    },
-  },
-}))
+import styles from './styles.module.css'
 
 export const TextEditor = forwardRef(
   (
@@ -43,7 +28,6 @@ export const TextEditor = forwardRef(
     }: EditorProps,
     componentRef,
   ) => {
-    const classes = useStyles()
     const [editingValue, setEditingValue] = useState(String(value))
 
     const onAnchorResize = useCallback(() => {
@@ -118,7 +102,7 @@ export const TextEditor = forwardRef(
           aria-label="text apollo editor"
           minRows={1}
           maxLength={maxLength}
-          className={clsx(classes.input, additionalProps?.className, theme?.editorClass)}
+          className={clsx(styles.input, additionalProps?.className, theme?.editorClass)}
           style={additionalProps?.style}
         />
       </EditorContainer>

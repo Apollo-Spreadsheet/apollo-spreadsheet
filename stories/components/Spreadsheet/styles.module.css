@@ -1,0 +1,44 @@
+.root {
+  margin: 10;
+}
+.currentColumnClass {
+  color: #225890;
+}
+.currentColumnClassDark {
+  color: blue;
+}
+.currentRowClass {
+  background-color: green;
+}
+.currentRowClassDark {
+  color: blue;
+}
+.headerClass {
+  background: white;
+  border: none;
+  font-weight: 700;
+  font-size: 11px;
+}
+.headerClassDark {
+  background: white !important;
+  border: none !important;
+  font-weight: 700;
+  font-size: 14px;
+}
+.rowClass {
+  border: 1px solid white;
+  background-color: #e6efed;
+  font-size: 13px;
+}
+.rowClassDark {
+  border: 1px solid white;
+  background-color: black;
+  color: white;
+}
+.disabledCellClass {
+  opacity: 0.6;
+}
+.checkBox {
+  height: 10px;
+  width: 10px;
+}

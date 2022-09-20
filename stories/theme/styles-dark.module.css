@@ -1,0 +1,28 @@
+.container {
+  height: 100%;
+  width: 100%;
+}
+.currentRowClass {
+  font-weight: 500;
+}
+.currentColumnClass {
+  font-weight: 700;
+}
+.headerClass {
+  background: #1f1f1f !important;
+  color: #e6e6e6;
+  border: none;
+  border-top: '0.3px solid #A2ACB2';
+  font-weight: 500;
+  font-size: 14px;
+}
+.cellClass {
+  border: 1.5px solid #1b1c1e;
+  box-shadow: 0 0px 4px 0 rgba(0, 0, 0, 0.08);
+  background-color: #2b2b2b;
+  color: #e6e6e6;
+  font-size: 14px;
+}
+.disabledCellClass {
+  opacity: 0.6;
+}

@@ -7,28 +7,25 @@ import React, {
   useState,
 } from 'react'
 import { EditorProps } from '../editorProps'
-import { TextareaAutosize, Theme } from '@mui/material'
-import { makeStyles } from '@mui/styles'
+import { TextareaAutosize } from '@mui/material'
 import { handleEditorKeydown } from '../utils'
 import clsx from 'clsx'
 import { GRID_RESIZE, useApiEventHandler } from '../../api'
 import { createDefaultPaperProps } from './createDefaultPaperProps'
 import EditorContainer from './EditorContainer'
 
-const useStyles = makeStyles((theme: Theme) => ({
-  input: {
-    width: '100%',
-    height: '100%',
-    resize: 'none',
-    overflow: 'auto',
+const input = {
+  width: '100%',
+  height: '100%',
+  resize: 'none',
+  overflow: 'auto',
+  border: 0,
+  outline: 0,
+  '&:focus': {
     border: 0,
     outline: 0,
-    '&:focus': {
-      border: 0,
-      outline: 0,
-    },
   },
-}))
+}
 
 export const NumericEditor = forwardRef(
   (
@@ -43,7 +40,6 @@ export const NumericEditor = forwardRef(
     }: EditorProps,
     componentRef,
   ) => {
-    const classes = useStyles()
     const [editingValue, setEditingValue] = useState<string>(
       isNaN(Number(value)) ? '0' : String(value),
     )
@@ -134,7 +130,7 @@ export const NumericEditor = forwardRef(
           aria-label="numeric apollo editor"
           minRows={1}
           maxLength={maxLength}
-          className={clsx(classes.input, additionalProps?.className)}
+          className={clsx(input, additionalProps?.className)}
           style={additionalProps?.style}
         />
       </EditorContainer>

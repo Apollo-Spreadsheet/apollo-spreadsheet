@@ -2,16 +2,8 @@ import React, { useState } from 'react'
 import { ApolloSpreadSheet, StretchMode, Column, useApiRef, CellChangeParams } from '../../../src'
 import AddCircle from '@mui/icons-material/AddCircle'
 import { Box, IconButton } from '@mui/material'
-// eslint-disable-next-line import/no-extraneous-dependencies
 import faker from 'faker'
-import { makeStyles } from '@mui/styles'
-
-const useStyles = makeStyles(() => ({
-  selectedCell: {
-    background: '#f5f5f5',
-    color: '#4d4d4d',
-  },
-}))
+import styles from './styles.module.css'
 
 interface DemoRow {
   id: string
@@ -34,7 +26,6 @@ const generateRows = count => {
 }
 
 export function Table() {
-  const classes = useStyles()
   const [rows, setRows] = useState<DemoRow[]>(generateRows(15))
   const apiRef = useApiRef()
   const onHeaderIconClick = () => {
@@ -133,7 +124,7 @@ export function Table() {
         selection={{
           key: 'id',
           onHeaderIconClick,
-          cellClassName: classes.selectedCell,
+          cellClassName: styles.selectedCell,
         }}
         disableSort
       />

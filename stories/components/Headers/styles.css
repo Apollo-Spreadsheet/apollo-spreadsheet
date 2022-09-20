@@ -1,0 +1,8 @@
+.iconBtn {
+  padding: 0;
+  cursor: default;
+  color: #cccccc;
+}
+.iconBtn:hover {
+  background-color: transparent;
+}

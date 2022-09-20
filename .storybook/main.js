@@ -15,4 +15,5 @@ module.exports = {
   features: {
     postcss: false,
   },
+  addons: ['storybook-css-modules-preset'],
 }

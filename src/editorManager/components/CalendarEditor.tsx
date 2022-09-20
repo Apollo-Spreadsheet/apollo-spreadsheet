@@ -1,23 +1,16 @@
 import * as React from 'react'
-import { makeStyles } from '@mui/styles'
 import { EditorProps } from '../editorProps'
 import { forwardRef, useCallback, useEffect, useImperativeHandle, useState } from 'react'
 import { ClickAwayListener, Popper } from '@mui/material'
 import dayjs from 'dayjs'
 import { DatePicker } from '@mui/lab'
 
-const useStyles = makeStyles(() => ({
-  root: {
-    zIndex: 999,
-  },
-  calendarContainer: {
-    border: 'none',
-  },
-}))
+const root = {
+  zIndex: 999,
+}
 
 export const CalendarEditor = forwardRef(
   ({ apiRef, stopEditing, anchorRef, value, additionalProps }: EditorProps, componentRef) => {
-    const classes = useStyles()
     const [state, setState] = useState<{ value: dayjs.Dayjs; close: boolean }>({
       value: value ? dayjs(value) : dayjs(),
       close: false,
@@ -92,7 +85,7 @@ export const CalendarEditor = forwardRef(
           anchorEl={anchorRef}
           placement={'right-start'}
           keepMounted={false}
-          className={classes.root}
+          sx={root}
           modifiers={popperModifiers}
         >
           <DatePicker
