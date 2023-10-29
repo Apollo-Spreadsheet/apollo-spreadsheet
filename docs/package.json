@@ -11,9 +11,9 @@
     "serve": "docusaurus serve"
   },
   "dependencies": {
-    "@docusaurus/core": "2.0.0-alpha.72",
-    "@docusaurus/preset-classic": "^2.0.0-alpha.72",
-    "@docusaurus/theme-search-algolia": "^2.0.0-alpha.72",
+    "@docusaurus/core": "2.4.3",
+    "@docusaurus/preset-classic": "^2.4.3",
+    "@docusaurus/theme-search-algolia": "^2.4.3",
     "@mdx-js/react": "^1.5.8",
     "classnames": "^2.2.6",
     "react": "^17.0.2",
