@@ -10,6 +10,10 @@ module.exports = {
   favicon: 'img/favicon.ico',
   organizationName: 'Famous Gadget', // Usually your GitHub org/user name.
   projectName: 'apollo-spreadsheet', // Usually your repo name.
+  i18n: {
+    defaultLocale: 'en',
+    locales: ['en', 'zh-Hant'],
+  },
   themeConfig: {
     navbar: {
       title: 'Apollo Spreadsheet',
@@ -23,6 +27,10 @@ module.exports = {
           activeBasePath: 'docs',
           label: 'Docs',
           position: 'left',
+        },
+        {
+          type: 'localeDropdown',
+          position: 'right',
         },
         {
           position: 'right',
@@ -78,14 +86,12 @@ module.exports = {
       defaultMode: 'dark',
       disableSwitch: false,
       respectPrefersColorScheme: false,
-      switchConfig: {
-        darkIcon: '🌙',
+    },
+      IconDarkMode: '🌙',
         //lightIcon: '\u{1F602}',
-        lightIcon: '🌞',
+        IconLightMode: '🌞',
         lightIconStyle: {
           marginLeft: '1px',
-        },
-      },
     },
     // algolia: {
     //   apiKey: process.env.API_KEY,

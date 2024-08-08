@@ -1,0 +1,26 @@
+{
+  "version.label": {
+    "message": "當前版本",
+    "description": "The label for version current"
+  },
+  "sidebar.someSidebar.category.Apollo": {
+    "message": "Apollo",
+    "description": "The label for category Apollo in sidebar someSidebar"
+  },
+  "sidebar.someSidebar.category.Columns": {
+    "message": "欄位",
+    "description": "The label for category Columns in sidebar someSidebar"
+  },
+  "sidebar.someSidebar.category.Headers": {
+    "message": "標題列",
+    "description": "The label for category Headers in sidebar someSidebar"
+  },
+  "sidebar.someSidebar.category.Editors": {
+    "message": "編輯器",
+    "description": "The label for category Editors in sidebar someSidebar"
+  },
+  "sidebar.someSidebar.category.Rows": {
+    "message": "列",
+    "description": "The label for category Rows in sidebar someSidebar"
+  }
+}
