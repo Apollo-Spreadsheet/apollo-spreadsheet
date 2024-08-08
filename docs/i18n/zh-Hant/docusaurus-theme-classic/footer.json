@@ -1,0 +1,38 @@
+{
+  "link.title.About Us": {
+    "message": "關於我們",
+    "description": "The title of the footer links column with title=About Us in the footer"
+  },
+  "link.title.More": {
+    "message": "更多",
+    "description": "The title of the footer links column with title=More in the footer"
+  },
+  "link.title.Support": {
+    "message": "支援",
+    "description": "The title of the footer links column with title=Support in the footer"
+  },
+  "link.item.label.Famous Gadget": {
+    "message": "Famous Gadget",
+    "description": "The label of footer link with label=Famous Gadget linking to https://famousgadget.pt/"
+  },
+  "link.item.label.Apollo": {
+    "message": "Apollo",
+    "description": "The label of footer link with label=Apollo linking to https://apollo.famousgadget.pt/"
+  },
+  "link.item.label.GitHub": {
+    "message": "GitHub",
+    "description": "The label of footer link with label=GitHub linking to https://github.com/underfisk/apollo-spreadsheet"
+  },
+  "link.item.label.README": {
+    "message": "README",
+    "description": "The label of footer link with label=README linking to https://github.com/underfisk/apollo-spreadsheet#readme"
+  },
+  "link.item.label.GitHub Issues": {
+    "message": "GitHub Issues",
+    "description": "The label of footer link with label=GitHub Issues linking to https://github.com/underfisk/apollo-spreadsheet/issues"
+  },
+  "copyright": {
+    "message": "Copyright © 2024 Apollo Spreadsheet, Famous Gadget.",
+    "description": "The footer copyright"
+  }
+}
